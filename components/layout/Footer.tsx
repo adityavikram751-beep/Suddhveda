@@ -29,13 +29,13 @@ export default function Footer() {
 
               <Image
                 src="/yellow logo.png"
-                alt="HoneyVeda"
+                alt="Suddhveda"
                 width={32}
                 height={32}
               />
 
               <h2 className="text-[22px] font-semibold">
-                HoneyVeda
+                SuddhVeda
               </h2>
 
             </div>

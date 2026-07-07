@@ -12,12 +12,7 @@ export default function Hero() {
           <div className="flex flex-col items-start pt-4 lg:pt-8">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[13px] sm:text-[14px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
-              <span className="text-base">🍯</span>
-              <span>100% Pure</span>
-              <span className="text-[#D49313] font-bold">•</span>
-              <span>Raw</span>
-              <span className="text-[#D49313] font-bold">•</span>
-              <span>Unprocessed</span>
+              
             </div>
 
             {/* Heading */}
@@ -112,46 +107,9 @@ export default function Hero() {
             {/* Floating Cards Container - desktop only, layout matches 2-col grid */}
             <div className="hidden lg:flex flex-col gap-3 absolute right-[-40px] top-[18%] -translate-y-1/2 z-20">
               {/* Card 1 - No Added Sugar */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                <div className="text-[#B37B1B]">
-                  <TbLeaf size={24} className="stroke-[1.5]" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-[#2C241E] text-[14px] leading-tight">No Added</span>
-                  <span className="text-[#8D7F73] text-[12px]">Sugar</span>
-                </div>
-              </div>
+             
 
-              {/* Card 2 - Raw & Unfiltered */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                <div className="text-[#B37B1B] text-xl">
-                  <div className="flex items-center justify-center w-8 h-8">
-                    <Image
-                      src="/pinhead_honeycomb.png"
-                      alt="Raw & Unfiltered"
-                      width={34}
-                      height={34}
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-[#2C241E] text-[14px] leading-tight">Raw &</span>
-                  <span className="text-[#8D7F73] text-[12px]">Unfiltered</span>
-                </div>
-              </div>
-
-              {/* Card 3 - 4.9 Rating */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                <div className="text-[#D49313] text-lg">★</div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1">
-                    <span className="font-semibold text-[#2C241E] text-[14px] leading-none">4.9</span>
-                    <span className="text-[#D49313] text-[10px]">★</span>
-                  </div>
-                  <span className="text-[#8D7F73] text-[12px] mt-0.5">Rating</span>
-                </div>
-              </div>
+           
             </div>
           </div>
         </div>

@@ -5,89 +5,86 @@ import Image from "next/image";
 const features = [
   {
     id: 1,
-    image: "/whychoose/quality.png",
+    image: "/Polygon 1.png",
     alt: "Quality Guaranteed",
-    title: "QUALITY GUARANTEED",
-    description: "100% pure and authentic honey"
   },
   {
     id: 2,
-    image: "/whychoose/beekeeper.png",
+    image: "/Polygon 2.png",
     alt: "Trusted Beekeeper Network",
-    title: "TRUSTED BEEKEEPER NETWORK",
-    description: "Directly from local beekeepers"
   },
   {
     id: 3,
-    image: "/whychoose/harvest.png",
+    image: "/Polygon 3.png",
     alt: "Fresh Harvest Guarantee",
-    title: "FRESH HARVEST GUARANTEE",
-    description: "Harvested at the right time"
   },
   {
     id: 4,
-    image: "/whychoose/center-logo.png",
+    image: "/Center.png",
     alt: "SuddhVeda",
-    title: "SuddhVeda",
-    description: "Pure honey, just the way nature intended"
   },
   {
     id: 5,
-    image: "/whychoose/no-sugar.png",
-    alt: "No Sugar Added",
-    title: "NO ADDED SUGAR",
-    description: "100% natural sweetness"
+    image: "/Polygon 4.png",
+    alt: "No Sugar Adulteration",
   },
   {
     id: 6,
-    image: "/whychoose/residue-free.png",
-    alt: "Residue Free",
-    title: "RESIDUE-FREE & CHEMICAL-FREE",
-    description: "No pesticides or chemicals"
+    image: "/Polygon 5.png",
+    alt: "Residue-Free & Chemical-Free",
   },
   {
     id: 7,
-    image: "/whychoose/safe-delivery.png",
-    alt: "Safe Delivery",
-    title: "SAFE DELIVERY",
-    description: "Carefully packed and delivered"
+    image: "/Polygon 6.png",
+    alt: "Safe Delivery Promise",
   },
 ];
 
+// Hexagon sizing constants (true pointy-top hexagon tessellation math)
+const HEX_H = 280; // hexagon height (point to point)
+const HEX_W = Math.round(HEX_H * (Math.sqrt(3) / 2)); // hexagon width (flat side to flat side) ≈ 208
+const GAP = 24; // visible gap between every hexagon, in px (increased)
+const SPACING_W = HEX_W + GAP; // horizontal distance used for positioning (bigger than hex itself → creates gap)
+const ROW_GAP = (HEX_H + GAP) * 0.75; // vertical distance between row tops, scaled the same way
+const BORDER = 3; // gold border thickness in px
+
+// Standard pointy-top hexagon clip path (point at top/bottom, flat left/right sides)
+const HEX_CLIP =
+  "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
+const GOLD = "#D89A1B";
+
 export default function ShopWhyChoose() {
   return (
-    <section className="relative overflow-hidden bg-[#FFF8EF] py-16 md:py-24">
+    <section className="relative overflow-hidden bg-[#FFF8EF] py-10 md:py-14">
       {/* Left Honeycomb */}
       <Image
-        src="/whychoose/honeycomb-left.png"
+        src="/contact.png"
         alt=""
-        width={170}
-        height={650}
-        className="absolute left-0 top-0 select-none pointer-events-none opacity-50"
+        width={270}
+        height={50}
+        className="absolute left--10 top-0 select-none pointer-events-none "
       />
 
       {/* Right Honeycomb */}
       <Image
-        src="/whychoose/honeycomb-right.png"
+        src="/honey.png"
         alt=""
-        width={170}
-        height={650}
-        className="absolute right-0 top-0 select-none pointer-events-none opacity-50"
+        width={870}
+        height={1050}
+        className="absolute right-0 top-0 select-none pointer-events-none opacity-70"
       />
 
       <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Heading */}
         <div className="text-center">
-          <h2 className="text-[36px] sm:text-[48px] md:text-[56px] font-semibold text-[#6B2E08]">
-            Why Choose
-            <span className="mx-2 md:mx-3 text-[#D89A1B]">SuddhVeda</span>
-            ?
+          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] font-semibold text-[#6B2E08]">
+            Why choose Suddhveda&nbsp;?
           </h2>
 
-          <div className="flex items-center justify-center gap-3 md:gap-4 mt-4 md:mt-6">
+          <div className="flex items-center justify-center gap-3 md:gap-4 mt-3 md:mt-4">
             <div className="w-12 md:w-20 h-px bg-[#E6D1B3]" />
             <Image
-              src="/whychoose/divider-leaf.png"
+              src="/vector 3.png"
               alt=""
               width={22}
               height={22}
@@ -97,28 +94,49 @@ export default function ShopWhyChoose() {
           </div>
         </div>
 
-        {/* Hexagon Grid Layout */}
-        <div className="relative mt-12 md:mt-20">
-          {/* Desktop Layout - 3+1+3 Hexagonal */}
-          <div className="hidden lg:block">
-            <div className="flex justify-center items-center gap-6">
-              {/* Top Row - 3 items */}
-              {features.slice(0, 3).map((feature) => (
-                <HexagonCard key={feature.id} feature={feature} />
-              ))}
-            </div>
+        {/* Hexagon Honeycomb Grid */}
+        <div className="relative mt-6 md:mt-10">
+          {/* Desktop Layout - True 2-3-2 Honeycomb */}
+          <div
+            className="hidden lg:block relative mx-auto"
+            style={{
+              width: SPACING_W * 4,
+              height: ROW_GAP * 2 + HEX_H,
+            }}
+          >
+            {/* Row 1 - top (2 hexagons) */}
+            <HexagonCard
+              feature={features[0]}
+              style={{ top: 0, left: `calc(50% - ${SPACING_W}px)` }}
+            />
+            <HexagonCard
+              feature={features[1]}
+              style={{ top: 0, left: `calc(50%)` }}
+            />
 
-            {/* Center Row - 1 item (bigger) */}
-            <div className="flex justify-center mt-[-20px]">
-              <CenterHexagon feature={features[3]} />
-            </div>
+            {/* Row 2 - middle (3 hexagons, shifted left by half a hex) */}
+            <HexagonCard
+              feature={features[2]}
+              style={{ top: ROW_GAP, left: `calc(50% - ${SPACING_W * 1.5}px)` }}
+            />
+            <CenterHexagon
+              feature={features[3]}
+              style={{ top: ROW_GAP, left: `calc(50% - ${SPACING_W / 2}px)` }}
+            />
+            <HexagonCard
+              feature={features[4]}
+              style={{ top: ROW_GAP, left: `calc(50% + ${SPACING_W / 2}px)` }}
+            />
 
-            {/* Bottom Row - 3 items */}
-            <div className="flex justify-center items-center gap-6 mt-[-20px]">
-              {features.slice(4, 7).map((feature) => (
-                <HexagonCard key={feature.id} feature={feature} />
-              ))}
-            </div>
+            {/* Row 3 - bottom (2 hexagons) */}
+            <HexagonCard
+              feature={features[5]}
+              style={{ top: ROW_GAP * 2, left: `calc(50% - ${SPACING_W}px)` }}
+            />
+            <HexagonCard
+              feature={features[6]}
+              style={{ top: ROW_GAP * 2, left: `calc(50%)` }}
+            />
           </div>
 
           {/* Mobile/Tablet Layout - Simple Grid */}
@@ -135,131 +153,99 @@ export default function ShopWhyChoose() {
   );
 }
 
-// Hexagon Card Component
-function HexagonCard({ feature }: { feature: typeof features[0] }) {
+// Hexagon Card Component (absolutely positioned) — image already contains all design/text.
+// Gold outline is drawn by a slightly larger gold hexagon sitting behind an inset image hexagon.
+function HexagonCard({
+  feature,
+  style,
+}: {
+  feature: (typeof features)[0];
+  style: React.CSSProperties;
+}) {
   return (
-    <div className="relative w-[200px] h-[230px] group">
-      {/* Hexagon Shape */}
-      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm clip-hexagon shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-[#E6D1B3] hover:border-[#D89A1B]">
-        <div className="flex flex-col items-center justify-center h-full px-4 py-6">
-          {/* Icon */}
-          <div className="w-16 h-16 rounded-full bg-[#FFF8EF] flex items-center justify-center mb-3 border border-[#E6D1B3] group-hover:border-[#D89A1B] transition-colors">
-            <Image
-              src={feature.image}
-              alt={feature.alt}
-              width={40}
-              height={40}
-              className="object-contain"
-            />
-          </div>
-          
-          {/* Title */}
-          <h3 className="text-[13px] font-semibold text-[#6B2E08] text-center leading-tight">
-            {feature.title}
-          </h3>
-          
-          {/* Description */}
-          <p className="text-[10px] text-[#B59A78] text-center mt-1 leading-tight">
-            {feature.description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Center Hexagon Component (Bigger)
-function CenterHexagon({ feature }: { feature: typeof features[0] }) {
-  return (
-    <div className="relative w-[240px] h-[270px] group">
-      <div className="absolute inset-0 bg-[#D89A1B]/10 backdrop-blur-sm clip-hexagon shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-[#D89A1B]">
-        <div className="flex flex-col items-center justify-center h-full px-6 py-8">
-          {/* Logo/Icon */}
-          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-4 shadow-md border-2 border-[#D89A1B]">
-            <Image
-              src={feature.image}
-              alt={feature.alt}
-              width={50}
-              height={50}
-              className="object-contain"
-            />
-          </div>
-          
-          {/* Title */}
-          <h3 className="text-[18px] font-bold text-[#6B2E08] text-center">
-            {feature.title}
-          </h3>
-          
-          {/* Description */}
-          <p className="text-[13px] text-[#6B2E08]/80 text-center mt-2 font-medium">
-            {feature.description}
-          </p>
-          
-          {/* Decorative Line */}
-          <div className="w-12 h-0.5 bg-[#D89A1B] mt-3" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Mobile Card Component
-function MobileCard({ feature }: { feature: typeof features[0] }) {
-  const isCenter = feature.id === 4;
-  
-  return (
-    <div className={`
-      bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300
-      border border-[#E6D1B3] hover:border-[#D89A1B]
-      ${isCenter ? 'col-span-2 sm:col-span-1 bg-[#D89A1B]/5 border-[#D89A1B]' : ''}
-    `}>
-      <div className="flex flex-col items-center text-center">
-        {/* Icon */}
-        <div className={`
-          w-12 h-12 rounded-full flex items-center justify-center mb-2
-          ${isCenter ? 'bg-[#D89A1B] text-white' : 'bg-[#FFF8EF] border border-[#E6D1B3]'}
-        `}>
+    <div
+      className="absolute group hover:z-20 transition-transform duration-300 hover:scale-[1.04]"
+      style={{ width: HEX_W, height: HEX_H, ...style }}
+    >
+      {/* Gold border layer */}
+      <div
+        className="absolute inset-0 drop-shadow-lg group-hover:drop-shadow-xl transition-[filter] duration-300"
+        style={{ clipPath: HEX_CLIP, backgroundColor: GOLD }}
+      >
+        {/* Image layer, inset by BORDER px to reveal gold outline */}
+        <div
+          className="absolute"
+          style={{
+            inset: BORDER,
+            clipPath: HEX_CLIP,
+          }}
+        >
           <Image
             src={feature.image}
             alt={feature.alt}
-            width={30}
-            height={30}
-            className="object-contain"
+            fill
+            className="object-cover"
           />
         </div>
-        
-        {/* Title */}
-        <h3 className={`text-[11px] sm:text-[12px] font-semibold leading-tight ${isCenter ? 'text-[#D89A1B]' : 'text-[#6B2E08]'}`}>
-          {feature.title}
-        </h3>
-        
-        {/* Description */}
-        <p className="text-[9px] sm:text-[10px] text-[#B59A78] mt-1 leading-tight">
-          {feature.description}
-        </p>
       </div>
     </div>
   );
 }
 
-// Add this to your global CSS file or use Tailwind CSS plugin
-// For now, adding style tag for clip-path
-const hexagonStyles = `
-  .clip-hexagon {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  }
-  
-  @media (max-width: 1023px) {
-    .clip-hexagon {
-      clip-path: none;
-      border-radius: 1rem;
-    }
-  }
-`;
+// Center Hexagon Component (Bigger, slightly forward) — image already contains bee + logo
+function CenterHexagon({
+  feature,
+  style,
+}: {
+  feature: (typeof features)[0];
+  style: React.CSSProperties;
+}) {
+  return (
+    <div
+      className="absolute group z-10 hover:scale-[1.04] transition-transform duration-300"
+      style={{ width: HEX_W, height: HEX_H, ...style }}
+    >
+      <div
+        className="absolute inset-0 drop-shadow-xl group-hover:drop-shadow-2xl transition-[filter] duration-300"
+        style={{ clipPath: HEX_CLIP, backgroundColor: GOLD }}
+      >
+        <div
+          className="absolute"
+          style={{
+            inset: BORDER,
+            clipPath: HEX_CLIP,
+          }}
+        >
+          <Image
+            src={feature.image}
+            alt={feature.alt}
+            fill
+            className="object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-// Add styles to document head
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = hexagonStyles;
-  document.head.appendChild(style);
+// Mobile Card Component — image already contains all design/text
+function MobileCard({ feature }: { feature: (typeof features)[0] }) {
+  const isCenter = feature.id === 4;
+
+  return (
+    <div
+      className={`
+      relative aspect-square rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300
+      border-2 border-[#D89A1B]
+      ${isCenter ? "col-span-2 sm:col-span-1" : ""}
+    `}
+    >
+      <Image
+        src={feature.image}
+        alt={feature.alt}
+        fill
+        className="object-cover"
+      />
+    </div>
+  );
 }

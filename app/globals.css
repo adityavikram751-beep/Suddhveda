@@ -296,3 +296,13 @@ top:12%;
 }
 
 }
+.clip-hexagon {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+@media (max-width: 1023px) {
+  .clip-hexagon {
+    clip-path: none;
+    border-radius: 1rem;
+  }
+}
