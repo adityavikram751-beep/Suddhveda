@@ -52,32 +52,53 @@ const badges = [
 export default function BeekeepingProcess() {
   return (
     <section className="bg-[#FAF6F0] relative overflow-hidden">
-      <div className="max-w-[1200px] mx-auto w-full px-6 lg:px-10 py-16 lg:py-20">
+      <style>{`
+        @keyframes arrowMove {
+          0% {
+            transform: translateX(0);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translateX(6px);
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 0.4;
+          }
+        }
+        .arrow-motion {
+          animation: arrowMove 1.4s ease-in-out infinite;
+        }
+      `}</style>
+      <div className="max-w-[1500px] mx-auto w-full px-6 lg:px-10 py-16 lg:py-20">
         {/* Decorative bee + flowers */}
-        <div className="hidden lg:block absolute top-6 right-16 w-24 h-24">
-          <Image
-            src="/bee-flowers.png"
-            alt=""
-            fill
-            className="object-contain"
-          />
-        </div>
-
+        {/* Decorative bee + flowers - BIGGER */}
+{/* Decorative bee + flowers - Bada hua, lekin position stable */}
+{/* Decorative bee + flowers - MEGA BADA */}
+<div className="hidden lg:block absolute top-0 -right-16 w-[400px] h-[220px] pointer-events-none z-2 opacity-80">
+  <Image
+    src="/videoleft.png"
+    alt=""
+    fill
+    className="object-contain"
+  />
+</div>
         {/* Heading */}
         <div className="text-center max-w-[700px] mx-auto">
           <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
             Our Beekeeping Process
           </span>
-          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#2C241E] leading-tight">
+          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2C241E] leading-tight">
             Crafted with Care, From Hive to Home
           </h2>
         </div>
 
         {/* Steps row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-3 mt-14 items-start">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-14 lg:gap-10 mt-14 items-start">
           {steps.map((step, i) => (
-            <div key={i} className="flex flex-col items-start text-left relative">
-              <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-white border border-[#F2ECE4]">
+            <div key={i} className="flex flex-col items-center text-center relative">
+              <div className="relative w-[110px] aspect-square overflow-hidden bg-white border border-[#F2ECE4]">
                 <Image
                   src={step.image}
                   alt={step.title}
@@ -92,7 +113,10 @@ export default function BeekeepingProcess() {
                 {step.desc}
               </p>
               {i < steps.length - 1 && (
-                <span className="hidden lg:block absolute top-[38%] -right-4 text-[#D49313] text-lg">
+                <span
+                  className="arrow-motion hidden lg:block absolute top-[38%] -right-4 text-[#D49313] text-lg"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                >
                   »
                 </span>
               )}
@@ -100,36 +124,38 @@ export default function BeekeepingProcess() {
           ))}
         </div>
 
-        {/* Certified strip */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mt-16">
-          <div>
-            <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
-              Certified Purity. Trusted Quality.
-            </span>
+        {/* Certified strip - Exactly like screenshot */}
+<div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mt-16">
+  {/* Left side - Heading + Badges */}
+  <div>
+    <span className="text-[#D49313] text-[16px] font-semibold tracking-[0.15em] uppercase block text-center">
+      Certified Purity. Trusted Quality.
+    </span>
 
-            <div className="grid grid-cols-3 gap-x-8 gap-y-8 mt-8">
-              {badges.map((badge, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 text-center">
-                  <div className="w-11 h-11 rounded-full border border-[#E6D2B8] flex items-center justify-center text-[#D49313]">
-                    {badge.icon}
-                  </div>
-                  <span className="text-[12px] text-[#2C241E] font-medium">
-                    {badge.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+    <div className="grid grid-cols-3 gap-x-6 gap-y-8 mt-8 max-w-[400px] mx-auto lg:mx-0">
+      {badges.map((badge, i) => (
+        <div key={i} className="flex flex-col items-center gap-2 text-center">
+          <div className="w-12 h-12 rounded-full border-2 border-[#E6D2B8] flex items-center justify-center text-[#D49313] bg-white/50 hover:bg-[#FDF6ED] transition-all duration-200 hover:border-[#D49313] hover:scale-105">
+            {badge.icon}
           </div>
-
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[#F2ECE4]">
-            <Image
-              src="/certified-quality.png"
-              alt="Certified purity and trusted quality"
-              fill
-              className="object-cover"
-            />
-          </div>
+          <span className="text-[12px] text-[#2C241E] font-medium tracking-wide">
+            {badge.label}
+          </span>
         </div>
+      ))}
+    </div>
+  </div>
+
+  {/* Right side - Honey Jar Image */}
+  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-sm">
+    <Image
+      src="/certified-quality.png"
+      alt="Certified purity and trusted quality"
+      fill
+      className="object-cover"
+    />
+  </div>
+</div>
       </div>
     </section>
   );

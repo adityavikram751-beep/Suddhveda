@@ -306,3 +306,21 @@ top:12%;
     border-radius: 1rem;
   }
 }
+.hexagon {
+  width: 58px;
+  height: 66px;
+  clip-path: polygon(
+    25% 6.7%,
+    75% 6.7%,
+    100% 50%,
+    75% 93.3%,
+    25% 93.3%,
+    0% 50%
+  );
+  border: 1.8px solid #b56a2c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffdf8;
+  flex-shrink: 0;
+}
