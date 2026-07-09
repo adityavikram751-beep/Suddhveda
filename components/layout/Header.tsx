@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/components/cart/CartProvider";
 import {
   FiHeart,
   FiUser,
@@ -21,6 +22,7 @@ const navItems = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { itemCount, openCart } = useCart();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
@@ -67,12 +69,19 @@ export default function Header() {
             <FiUser size={22} />
           </Link>
 
-          <Link
-            href="/cart"
-            className="text-[#7A3F10] hover:text-[#D89B00] transition"
+          <button
+            type="button"
+            onClick={openCart}
+            className="relative text-[#7A3F10] transition hover:text-[#D89B00]"
+            aria-label="Open cart"
           >
             <FiShoppingCart size={22} />
-          </Link>
+            {itemCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D89A1B] px-1 text-[10px] font-bold text-white">
+                {itemCount}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Mobile */}
@@ -109,9 +118,22 @@ export default function Header() {
             <Link href="/account" onClick={() => setOpen(false)}>
               <FiUser size={22} className="text-[#7A3F10]" />
             </Link>
-            <Link href="/cart" onClick={() => setOpen(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                openCart();
+              }}
+              aria-label="Open cart"
+              className="relative"
+            >
               <FiShoppingCart size={22} className="text-[#7A3F10]" />
-            </Link>
+              {itemCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D89A1B] px-1 text-[10px] font-bold text-white">
+                  {itemCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Heart, Star, ShoppingCart } from "lucide-react";
+import { Heart, Minus, Plus, ShoppingCart, Star, Trash2 } from "lucide-react";
 
 type ProductCardProps = {
   badge?: string;
@@ -14,6 +14,11 @@ type ProductCardProps = {
   discount?: string;
   rating: number;
   reviews: number;
+  quantity?: number;
+  onAddToCart?: () => void;
+  onIncrement?: () => void;
+  onDecrement?: () => void;
+  onOpenDetails?: () => void;
 };
 
 export default function ProductCard({
@@ -26,91 +31,101 @@ export default function ProductCard({
   discount,
   rating,
   reviews,
+  quantity = 0,
+  onAddToCart,
+  onIncrement,
+  onDecrement,
+  onOpenDetails,
 }: ProductCardProps) {
+  const isClickable = Boolean(onOpenDetails);
+
   return (
     <div
-      className="
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onClick={onOpenDetails}
+      onKeyDown={(event) => {
+        if (isClickable && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onOpenDetails?.();
+        }
+      }}
+      className={`
         relative
         flex
+        h-full
+        ${isClickable ? "cursor-pointer" : ""}
         flex-col
-        bg-white
+        overflow-hidden
         rounded-2xl
         border
         border-[#F3E4CC]
-        overflow-hidden
+        bg-white
         shadow-[0_2px_10px_rgba(0,0,0,0.04)]
-        h-full
-      "
+        transition-all
+        hover:-translate-y-1
+        hover:shadow-[0_12px_30px_rgba(108,55,12,0.12)]
+      `}
     >
-      {/* Badge */}
       {badge && (
         <span
           className="
             absolute
-            top-3
             left-3
+            top-3
             z-10
+            rounded-full
             bg-[#D89A1B]
-            text-white
-            text-[11px]
-            font-semibold
             px-3
             py-1
-            rounded-full
+            text-[11px]
+            font-semibold
+            text-white
           "
         >
           {badge}
         </span>
       )}
 
-      {/* Wishlist */}
       <button
+        type="button"
+        aria-label="Add to wishlist"
+        onClick={(event) => event.stopPropagation()}
         className="
           absolute
-          top-3
           right-3
+          top-3
           z-10
-          w-8
-          h-8
-          rounded-full
-          bg-white/90
           flex
+          h-8
+          w-8
           items-center
           justify-center
+          rounded-full
+          bg-white/90
           shadow-sm
-          hover:bg-white
           transition-colors
+          hover:bg-white
         "
       >
         <Heart size={15} className="text-[#B59A78]" />
       </button>
 
-      {/* Image */}
-      <div className="relative w-full aspect-square bg-[#FFF8EF]">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-contain p-3"
-        />
+      <div className="relative aspect-square w-full bg-[#FFF8EF]">
+        <Image src={image} alt={title} fill className="object-contain p-3" />
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 px-3.5 pb-3.5">
-
+      <div className="flex flex-1 flex-col px-3.5 pb-3.5">
         <p className="text-[11px] text-[#B59A78]">
-          Raw • Unfiltered • Wilderness
+          Raw - Unfiltered - Wilderness
         </p>
 
         <h3 className="mt-0.5 text-[15px] font-semibold text-[#3C2015]">
           {title}
         </h3>
 
-        <p className="text-[12px] text-[#B59A78]">
-          {weight}
-        </p>
+        <p className="text-[12px] text-[#B59A78]">{weight}</p>
 
-        {/* Rating */}
         <div className="mt-1.5 flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
@@ -118,24 +133,21 @@ export default function ProductCard({
               size={12}
               className={
                 i < Math.round(rating)
-                  ? "text-[#D89A1B] fill-[#D89A1B]"
-                  : "text-[#E8D5BA] fill-[#E8D5BA]"
+                  ? "fill-[#D89A1B] text-[#D89A1B]"
+                  : "fill-[#E8D5BA] text-[#E8D5BA]"
               }
             />
           ))}
-          <span className="text-[11px] text-[#B59A78] ml-1">
-            ({reviews})
-          </span>
+          <span className="ml-1 text-[11px] text-[#B59A78]">({reviews})</span>
         </div>
 
-        {/* Price */}
         <div className="mt-1.5 flex items-center gap-1.5">
           <span className="text-[16px] font-bold text-[#3C2015]">
-            ₹{price}
+            Rs.{price}
           </span>
           {!!oldPrice && (
             <span className="text-[13px] text-[#B59A78] line-through">
-              ₹{oldPrice}
+              Rs.{oldPrice}
             </span>
           )}
           {discount && (
@@ -145,30 +157,71 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Add to Cart */}
-        <button
-          className="
-            mt-2.5
-            w-full
-            flex
-            items-center
-            justify-center
-            gap-1.5
-            bg-[#D89A1B]
-            hover:bg-[#C98715]
-            text-white
-            text-[13px]
-            font-semibold
-            py-2
-            rounded-xl
-            transition-colors
-            whitespace-nowrap
-          "
-        >
-          <ShoppingCart size={14} className="shrink-0" />
-          Add to Cart
-        </button>
-
+        {quantity > 0 ? (
+          <div
+            onClick={(event) => event.stopPropagation()}
+            className="
+              mt-2.5
+              grid
+              h-10
+              grid-cols-[40px_1fr_40px]
+              items-center
+              rounded-xl
+              border
+              border-[#D89A1B]
+              bg-white
+              text-[#D89A1B]
+            "
+          >
+            <button
+              type="button"
+              aria-label="Remove one item"
+              onClick={onDecrement}
+              className="flex h-full items-center justify-center rounded-l-xl hover:bg-[#FFF2D8]"
+            >
+              {quantity === 1 ? <Trash2 size={15} /> : <Minus size={15} />}
+            </button>
+            <span className="text-center text-[13px] font-semibold text-[#9A5A05]">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              aria-label="Add one more item"
+              onClick={onIncrement}
+              className="flex h-full items-center justify-center rounded-r-xl hover:bg-[#FFF2D8]"
+            >
+              <Plus size={15} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onAddToCart?.();
+            }}
+            className="
+              mt-2.5
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-1.5
+              whitespace-nowrap
+              rounded-xl
+              bg-[#D89A1B]
+              py-2
+              text-[13px]
+              font-semibold
+              text-white
+              transition-colors
+              hover:bg-[#C98715]
+            "
+          >
+            <ShoppingCart size={14} className="shrink-0" />
+            Add to Cart
+          </button>
+        )}
       </div>
     </div>
   );

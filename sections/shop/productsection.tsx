@@ -1,188 +1,68 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import ProductCard from "@/components/Productcard";
+import { useCart } from "@/components/cart/CartProvider";
+import { allProducts, categories, getCategoryHref } from "@/lib/shop-data";
 
-// Product data
-const allProducts = [
-  {
-    id: 1,
-    badge: "Best Seller",
-    image: "/honneycart.png",
-    title: "Natural Honey",
-    subtitle: "NATURAL HONEY",
-    weight: "500g • Dark • Medium",
-    price: 750,
-    oldPrice: 900,
-    discount: "20% Off",
-    rating: 4.8,
-    reviews: 120,
-    category: "Natural Honey",
-  },
-  {
-    id: 2,
-    badge: "Most Loved",
-    image: "/honneycart.png",
-    title: "Mustard Honey",
-    subtitle: "MUSTARD HONEY",
-    weight: "500g • Dark • Medium",
-    price: 750,
-    oldPrice: 900,
-    discount: "20% Off",
-    rating: 4.7,
-    reviews: 120,
-    category: "Mustered Honey",
-  },
-  {
-    id: 3,
-    badge: "Most Loved",
-    image: "/honneycart.png",
-    title: "Multiflora Honey",
-    subtitle: "MULTIFLORA HONEY",
-    weight: "500g • Dark • Medium",
-    price: 750,
-    oldPrice: 900,
-    discount: "20% Off",
-    rating: 4.9,
-    reviews: 120,
-    category: "Multiflora Honey",
-  },
-  {
-    id: 4,
-    badge: "Litchi Honey",
-    image: "/honneycart.png",
-    title: "Litchi Honey",
-    subtitle: "LITCHI HONEY",
-    weight: "500g • Dark • Medium",
-    price: 750,
-    oldPrice: 900,
-    discount: "20% Off",
-    rating: 4.6,
-    reviews: 120,
-    category: "Litchi Honey",
-  },
-  {
-    id: 5,
-    badge: "Best Seller",
-    image: "/honneycart.png",
-    title: "Natural Honey",
-    subtitle: "NATURAL HONEY",
-    weight: "500g • Dark • Medium",
-    price: 120,
-    oldPrice: 0,
-    discount: "",
-    rating: 4.5,
-    reviews: 210,
-    category: "Natural Honey",
-  },
-  {
-    id: 6,
-    badge: "New",
-    image: "/honneycart.png",
-    title: "Mustard Honey",
-    subtitle: "MUSTARD HONEY",
-    weight: "500g • Dark • Medium",
-    price: 120,
-    oldPrice: 0,
-    discount: "",
-    rating: 4.4,
-    reviews: 76,
-    category: "Mustered Honey",
-  },
-  {
-    id: 7,
-    badge: "Popular",
-    image: "/honneycart.png",
-    title: "Multiflora Honey",
-    subtitle: "MULTIFLORA HONEY",
-    weight: "500g • Dark • Medium",
-    price: 120,
-    oldPrice: 0,
-    discount: "",
-    rating: 4.3,
-    reviews: 143,
-    category: "Multiflora Honey",
-  },
-  {
-    id: 8,
-    badge: "Premium",
-    image: "/honneycart.png",
-    title: "Litchi Honey",
-    subtitle: "LITCHI HONEY",
-    weight: "500g • Dark • Medium",
-    price: 750,
-    oldPrice: 900,
-    discount: "20% Off",
-    rating: 4.8,
-    reviews: 112,
-    category: "Litchi Honey",
-  },
-];
+const VISIBLE_COUNT = 4;
+const SLIDE_INTERVAL = 3000;
 
-const categories = [
-  { name: "All Honey", icon: "" },
-  { name: "Natural Honey", icon: "🍯" },
-  { name: "Mustered Honey", icon: "🌼" },
-  { name: "Multiflora Honey", icon: "🌸" },
-  { name: "Litchi Honey", icon: "🍒" },
-];
-
-const VISIBLE_COUNT = 4; // cards visible at once on desktop
-const SLIDE_INTERVAL = 3000; // ms
+const categoryIcons = {
+  "All Honey": "",
+  "Natural Honey": "🍯",
+  "Mustered Honey": "🌼",
+  "Multiflora Honey": "🌸",
+  "Litchi Honey": "🍒",
+};
 
 export default function ProductSection() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Honey");
   const [sortBy, setSortBy] = useState("Popularity");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { cartItems, addToCart, updateQuantity } = useCart();
 
-  // Filter products
-  const filteredProducts = allProducts.filter((product) => {
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.subtitle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All Honey" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const sortedProducts = useMemo(() => {
+    const filteredProducts = allProducts.filter((product) => {
+      return (
+        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.subtitle.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+    const nextProducts = [...filteredProducts];
 
-  // Sort products
-  const sortedProducts = [...filteredProducts];
-  if (sortBy === "Price: Low to High") {
-    sortedProducts.sort((a, b) => a.price - b.price);
-  } else if (sortBy === "Price: High to Low") {
-    sortedProducts.sort((a, b) => b.price - a.price);
-  }
+    if (sortBy === "Price: Low to High") {
+      nextProducts.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "Price: High to Low") {
+      nextProducts.sort((a, b) => b.price - a.price);
+    }
+
+    return nextProducts;
+  }, [searchTerm, sortBy]);
 
   const total = sortedProducts.length;
-
-  // Duplicate first VISIBLE_COUNT items at the end for a seamless infinite loop
   const extendedProducts =
     total > VISIBLE_COUNT
       ? [...sortedProducts, ...sortedProducts.slice(0, VISIBLE_COUNT)]
       : sortedProducts;
 
-  // Reset slider when filters change
   useEffect(() => {
-    setCurrentIndex(0);
-    setIsTransitioning(true);
-  }, [searchTerm, selectedCategory, sortBy]);
-
-  // Auto slide
-  useEffect(() => {
-    if (total <= VISIBLE_COUNT) return;
+    if (total <= VISIBLE_COUNT || isPaused) return;
 
     const timer = setInterval(() => {
       setCurrentIndex((prev) => prev + 1);
     }, SLIDE_INTERVAL);
 
     return () => clearInterval(timer);
-  }, [total]);
+  }, [total, isPaused]);
 
-  // Seamless loop reset: when we've slid past the real items, snap back instantly
   useEffect(() => {
     if (total <= VISIBLE_COUNT) return;
 
@@ -190,145 +70,144 @@ export default function ProductSection() {
       const resetTimeout = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(0);
-      }, 500); // matches transition duration
+        window.setTimeout(() => setIsTransitioning(true), 20);
+      }, 500);
       return () => clearTimeout(resetTimeout);
-    } else {
-      setIsTransitioning(true);
     }
   }, [currentIndex, total]);
 
+  const stopSliderAndAdd = (product: (typeof allProducts)[number]) => {
+    setIsPaused(true);
+    addToCart(product);
+  };
+
   const goPrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? total - 1 : prev - 1));
+    setIsPaused(true);
+    setCurrentIndex((prev) => (prev === 0 ? Math.max(total - 1, 0) : prev - 1));
   };
 
   const goNext = () => {
+    setIsPaused(true);
     setCurrentIndex((prev) => prev + 1);
   };
 
   return (
     <section className="relative overflow-hidden bg-[#FFF8EF] py-8 md:py-12">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Search Bar */}
-        <div className="flex items-center gap-5 max-w-[1100px] mx-auto">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1220px] items-center gap-7">
           <div className="relative flex-1">
             <input
               type="text"
               placeholder="Search the product here"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentIndex(0);
+                setIsTransitioning(true);
+              }}
               className="
                 w-full
-                pl-12 pr-4
-                py-3 sm:py-4
                 rounded-[10px]
-                border border-[#E8D5BA]
+                border
+                border-[#E8D5BA]
                 bg-white
+                py-3
+                pl-11
+                pr-4
+                text-[13px]
                 text-[#6B2E08]
-                placeholder:text-[#B59A78]
                 outline-none
-                focus:ring-2 focus:ring-[#D89A1B]
                 transition-all
-                text-[14px] sm:text-[16px]
+                placeholder:text-[#B59A78]
+                focus:ring-2
+                focus:ring-[#D89A1B]
+                sm:text-[14px]
               "
             />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B59A78] w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8EA0B5]" />
           </div>
 
-          <button
+          <Link
+            href={`/shop/products?search=${encodeURIComponent(searchTerm)}`}
             className="
+              hidden
               shrink-0
-              px-8 sm:px-18
-              py-8 sm:py-3
-              rounded-[20px]
+              rounded-[14px]
               bg-[#D89A1B]
-              hover:bg-[#C98715]
-              text-white
-              text-[18px] sm:text-[20px]
+              px-12
+              py-3
+              text-[18px]
               font-semibold
+              text-white
               transition-colors
+              hover:bg-[#C98715]
+              sm:block
             "
           >
             Search
-          </button>
+          </Link>
         </div>
 
-        <div className="mt-6 flex items-center gap-3 flex-wrap px-8 lg:px-28">
-          {/* Category Filters */}
-          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-                                    {categories.map((cat) => (
-              <button
-                key={cat.name}
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`
-                  flex items-center gap-1.5
-                  px-4 sm:px-5 py-1.5 sm:py-2
-                  rounded-full
-                  text-[13px] sm:text-[15px]
-                  font-medium
-                  transition-all
-                  border
-                  whitespace-nowrap
-                  ${
-                    selectedCategory === cat.name
-                      ? "bg-[#D89A1B] text-white border-[#D89A1B]"
-                      : "bg-white text-[#6B2E08] border-[#E8D5BA] hover:border-[#D89A1B]"
-                  }
-                `}
-              >
-                {cat.icon && <span>{cat.icon}</span>}
-                {cat.name}
-              </button>
-            ))}
+        <div className="mx-auto mt-9 flex max-w-[1220px] flex-nowrap items-center gap-7 overflow-x-auto">
+          <div className="flex min-w-0 flex-1 items-center gap-4 overflow-x-auto">
+            {categories.map((category, index) => {
+              const icon = categoryIcons[category as keyof typeof categoryIcons];
+              return (
+                <Link
+                  key={category}
+                  href={getCategoryHref(category)}
+                  className={`
+                    flex
+                    items-center
+                    gap-1.5
+                    whitespace-nowrap
+                    rounded-full
+                    border
+                    px-6
+                    py-2
+                    text-[14px]
+                    font-medium
+                    transition-all
+                    sm:text-[16px]
+                    ${
+                      index === 0
+                        ? "border-[#E8D5BA] bg-white text-[#4F2A15]"
+                        : "border-[#E8D5BA] bg-white text-[#6B2E08] hover:border-[#D89A1B]"
+                    }
+                  `}
+                >
+                  {icon && <span className="text-[16px] leading-none">{icon}</span>}
+                  {category}
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Sort By */}
-          <div
-  className="
-    ml-auto
-    flex
-    items-center
-    gap-2
-    border
-    border-[#E8D5BA]
-    bg-white
-    rounded-[10px]
-    pl-4
-    pr-3
-    py-2
-  "
->
-            <span className="text-[#6B2E08] text-[14px] sm:text-[15px] font-medium whitespace-nowrap">
+          <div className="ml-auto flex shrink-0 items-center gap-2 rounded-[10px] border border-[#E8D5BA] bg-white py-2.5 pl-4 pr-3">
+            <span className="whitespace-nowrap text-[14px] font-medium text-[#6B2E08] sm:text-[16px]">
               Sort By:
             </span>
             <div className="relative">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="
-                  appearance-none
-                  pr-6
-                  bg-transparent
-                  text-[#6B2E08]
-                  text-[14px] sm:text-[15px]
-                  font-medium
-                  outline-none
-                  cursor-pointer
-                "
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  setCurrentIndex(0);
+                  setIsTransitioning(true);
+                }}
+                className="cursor-pointer appearance-none bg-transparent pr-6 text-[14px] font-medium text-[#6B2E08] outline-none sm:text-[15px]"
               >
                 <option>Popularity</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
               </select>
-              <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 text-[#B59A78] w-4 h-4 pointer-events-none" />
+              <ChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-[#B59A78]" />
             </div>
           </div>
         </div>
 
-        {/* Product Slider */}
         {total > 0 ? (
           <div className="relative mt-8 md:mt-10">
-
             <div className="overflow-hidden">
               <div
                 ref={trackRef}
@@ -341,13 +220,7 @@ export default function ProductSection() {
                 {extendedProducts.map((product, idx) => (
                   <div
                     key={`${product.id}-${idx}`}
-                    className="
-                      shrink-0
-                      w-1/2
-                      sm:w-1/3
-                      lg:w-1/4
-                      px-2.5
-                    "
+                    className="w-1/2 shrink-0 px-2.5 sm:w-1/3 lg:w-1/4"
                   >
                     <ProductCard
                       badge={product.badge}
@@ -360,67 +233,38 @@ export default function ProductSection() {
                       discount={product.discount}
                       rating={product.rating}
                       reviews={product.reviews}
+                      quantity={cartItems[product.id] ?? 0}
+                      onAddToCart={() => stopSliderAndAdd(product)}
+                      onIncrement={() => {
+                        setIsPaused(true);
+                        updateQuantity(product, 1);
+                      }}
+                      onDecrement={() => updateQuantity(product, -1)}
+                      onOpenDetails={() =>
+                        router.push(`/shop/products/${product.id}`)
+                      }
                     />
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Nav Arrows */}
             {total > VISIBLE_COUNT && (
               <>
                 <button
+                  type="button"
                   onClick={goPrev}
-                  className="
-                    absolute
-                    left-0
-                    top-1/2
-                    -translate-y-1/2
-                    -translate-x-1/2
-                    w-10
-                    h-10
-                    rounded-full
-                    bg-white
-                    border
-                    border-[#E8D5BA]
-                    shadow-md
-                    flex
-                    items-center
-                    justify-center
-                    hover:bg-[#FFF2D8]
-                    transition-colors
-                    z-10
-                    hidden
-                    md:flex
-                  "
+                  aria-label="Previous products"
+                  className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#E8D5BA] bg-white shadow-md transition-colors hover:bg-[#FFF2D8] md:flex"
                 >
                   <ChevronLeft size={18} className="text-[#6B2E08]" />
                 </button>
 
                 <button
+                  type="button"
                   onClick={goNext}
-                  className="
-                    absolute
-                    right-0
-                    top-1/2
-                    -translate-y-1/2
-                    translate-x-1/2
-                    w-10
-                    h-10
-                    rounded-full
-                    bg-white
-                    border
-                    border-[#E8D5BA]
-                    shadow-md
-                    flex
-                    items-center
-                    justify-center
-                    hover:bg-[#FFF2D8]
-                    transition-colors
-                    z-10
-                    hidden
-                    md:flex
-                  "
+                  aria-label="Next products"
+                  className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-[#E8D5BA] bg-white shadow-md transition-colors hover:bg-[#FFF2D8] md:flex"
                 >
                   <ChevronRight size={18} className="text-[#6B2E08]" />
                 </button>
@@ -428,19 +272,16 @@ export default function ProductSection() {
             )}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-[#B59A78] text-[18px]">
+          <div className="py-12 text-center">
+            <p className="text-[18px] text-[#B59A78]">
               No products found matching your search.
             </p>
           </div>
         )}
       </div>
 
-      {/* Bottom Glow */}
-      <div className="absolute left-1/2 bottom-[-100px] -translate-x-1/2 w-[500px] sm:w-[650px] md:w-[800px] h-[180px] sm:h-[210px] md:h-[240px] rounded-full bg-[#FFF2D8] blur-[100px] sm:blur-[120px] md:blur-[130px] opacity-60 pointer-events-none" />
-
-      {/* Bottom Border */}
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#E8D5BA] to-transparent" />
+      <div className="pointer-events-none absolute bottom-[-100px] left-1/2 h-[180px] w-[500px] -translate-x-1/2 rounded-full bg-[#FFF2D8] opacity-60 blur-[100px] sm:h-[210px] sm:w-[650px] sm:blur-[120px] md:h-[240px] md:w-[800px] md:blur-[130px]" />
+      <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-[#E8D5BA] to-transparent" />
     </section>
   );
 }

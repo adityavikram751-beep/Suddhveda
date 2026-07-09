@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import ProductCard from "@/components/Productcard";
+import { allProducts } from "@/lib/shop-data";
 
 const products = [
   {
@@ -55,6 +57,8 @@ const products = [
 ];
 
 export default function HoneySelection() {
+  const router = useRouter();
+
   return (
     <section
     className="
@@ -114,7 +118,7 @@ export default function HoneySelection() {
             text-[#6B2E08]
             "
           >
-            Nature's Finest Honey Selection
+            Nature&apos;s Finest Honey Selection
           </h2>
 
           <p
@@ -160,6 +164,9 @@ export default function HoneySelection() {
               discount={product.discount}
               rating={product.rating}
               reviews={product.reviews}
+              onOpenDetails={() =>
+                router.push(`/shop/products/${allProducts[index].id}`)
+              }
             />
           ))}
         </div>

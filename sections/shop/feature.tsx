@@ -59,12 +59,7 @@ export default function FeaturesBar() {
                   duration-300
                   rounded-xl
                   cursor-pointer
-                  group
-                  ${
-                    isActive
-                      ? "bg-white -translate-y-1 shadow-[0_12px_35px_rgba(0,0,0,0.08)]"
-                      : ""
-                  }
+                 
                 `}
               >
                 {/* Divider */}
