@@ -7,6 +7,7 @@ import Timeline from "@/sections/about/timeline";
 import OurValues from "@/sections/about/ourvalue";
 import Stats  from "@/sections/about/stats";
 import Process from "@/sections/about/process";
+import CertifiedQualitySection from "@/sections/about/certifiedqualitysection";
 import TouchSection from "@/sections/home/TouchSection";
 
 
@@ -22,6 +23,8 @@ export default function AboutPage() {
       <OurValues/>
       <Stats/>
       <Process/>
+      
+      <CertifiedQualitySection/>
       <TouchSection/>
         <Footer/>
     </>

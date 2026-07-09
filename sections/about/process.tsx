@@ -1,11 +1,5 @@
 import Image from "next/image";
-import {
-  BsCheckCircle,
-  BsLightningCharge,
-  BsBoxSeam,
-} from "react-icons/bs";
-import { PiArrowsClockwiseBold, PiWaveformBold } from "react-icons/pi";
-import { FiX } from "react-icons/fi";
+
 
 const steps = [
   {
@@ -40,18 +34,11 @@ const steps = [
   },
 ];
 
-const badges = [
-  { label: "100% Raw", icon: <BsCheckCircle size={18} /> },
-  { label: "GMO Free", icon: <BsLightningCharge size={18} /> },
-  { label: "BPA Free", icon: <BsBoxSeam size={18} /> },
-  { label: "FSSAI Certified", icon: <PiArrowsClockwiseBold size={18} /> },
-  { label: "Lab Tested", icon: <PiWaveformBold size={18} /> },
-  { label: "No Added Sugar", icon: <FiX size={18} /> },
-];
+
 
 export default function BeekeepingProcess() {
   return (
-    <section className="bg-[#FAF6F0] relative overflow-hidden">
+    <section className="bg-[#FDF8F1] relative overflow-hidden">
       <style>{`
         @keyframes arrowMove {
           0% {
@@ -124,38 +111,7 @@ export default function BeekeepingProcess() {
           ))}
         </div>
 
-        {/* Certified strip - Exactly like screenshot */}
-<div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center mt-16">
-  {/* Left side - Heading + Badges */}
-  <div>
-    <span className="text-[#D49313] text-[16px] font-semibold tracking-[0.15em] uppercase block text-center">
-      Certified Purity. Trusted Quality.
-    </span>
 
-    <div className="grid grid-cols-3 gap-x-6 gap-y-8 mt-8 max-w-[400px] mx-auto lg:mx-0">
-      {badges.map((badge, i) => (
-        <div key={i} className="flex flex-col items-center gap-2 text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-[#E6D2B8] flex items-center justify-center text-[#D49313] bg-white/50 hover:bg-[#FDF6ED] transition-all duration-200 hover:border-[#D49313] hover:scale-105">
-            {badge.icon}
-          </div>
-          <span className="text-[12px] text-[#2C241E] font-medium tracking-wide">
-            {badge.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  </div>
-
-  {/* Right side - Honey Jar Image */}
-  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-sm">
-    <Image
-      src="/certified-quality.png"
-      alt="Certified purity and trusted quality"
-      fill
-      className="object-cover"
-    />
-  </div>
-</div>
       </div>
     </section>
   );

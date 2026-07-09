@@ -44,11 +44,7 @@ export default function AccountDashboardPage() {
     <section className="bg-[#FFF8EF] min-h-screen py-10">
       <div className="max-w-[1300px] mx-auto px-6 sm:px-10">
 
-        <div className="flex items-center gap-2 text-[14px] text-[#B59A78]">
-          <Link href="/">Home</Link>
-          <span>›</span>
-          <span className="text-[#D89A1B] font-medium">My Account</span>
-        </div>
+       
 
         <div className="flex items-center justify-between mt-2">
           <div>
@@ -58,10 +54,11 @@ export default function AccountDashboardPage() {
           <Image src="/honeyjar-icon.png" alt="" width={80} height={80} className="hidden sm:block" />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-7">
+        {/* items-start is what lets the sidebar column stick without stretching to match the main column's height */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-7 items-start">
 
-          {/* Sidebar */}
-          <aside className="bg-white border border-[#F0E2CC] rounded-2xl p-5 h-fit">
+          {/* Sidebar — sticky, docks right below the sticky header (h-20 / 80px, see Header.tsx) */}
+          <aside className="bg-white border border-[#F0E2CC] rounded-2xl p-5 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
             <div className="flex items-center gap-3 px-2 pb-5 border-b border-[#F0E2CC]">
               <div className="w-12 h-12 rounded-full bg-[#F0E2CC] flex items-center justify-center text-[15px] font-semibold text-[#6B2E08]">
                 RS
