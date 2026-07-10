@@ -1,6 +1,6 @@
 import Header from "@/components/layout/Header";
 import TopBar from "@/components/layout/TopBar";
-import Checkout from "@/sections/cart/checkout";
+import Shipping from "@/sections/cart/shipping";
 import Footer from "@/components/layout/Footer";
 
 export default function CheckoutPage() {
@@ -8,7 +8,7 @@ export default function CheckoutPage() {
     <>
       <TopBar />
       <Header />
-      <Checkout/>
+      <Shipping/>
       <Footer/>
     </>
   );
