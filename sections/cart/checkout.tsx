@@ -193,7 +193,6 @@ export default function Checkout() {
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
-        <Breadcrumb />
 
         <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
           <section>
@@ -235,18 +234,7 @@ export default function Checkout() {
 // ─── Sub-components ──────────────────────────────────────────────
 
 function Breadcrumb() {
-  return (
-    <nav className="mb-6 text-sm text-[#7B8493]">
-      <Link href="/" className="font-medium text-[#2F241C] hover:text-[#D89A1B]">
-        Home
-      </Link>{" "}
-      &gt;{" "}
-      <Link href="/cart" className="font-medium text-[#2F241C] hover:text-[#D89A1B]">
-        Cart
-      </Link>{" "}
-      &gt; <span className="font-semibold text-[#D89A1B]">Checkout</span>
-    </nav>
-  );
+  
 }
 
 function CheckoutHeader() {

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCart } from "@/components/cart/CartProvider";
 import {
   FiHeart,
@@ -23,6 +24,7 @@ const navItems = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   const { itemCount, openCart } = useCart();
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
@@ -42,15 +44,34 @@ export default function Header() {
 
         {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center gap-12">
-          {navItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              className="flex items-center gap-1 text-[16px] font-medium text-[#7A3F10] hover:text-[#D89B00] transition-all duration-300"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            // "Home" should only be active on the exact "/" route.
+            // Other items are active on their route and any nested sub-routes.
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname === item.href || pathname?.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className={`relative flex items-center gap-1 py-1 text-[16px] font-medium transition-all duration-300 ${
+                  isActive
+                    ? "text-[#D89B00]"
+                    : "text-[#7A3F10] hover:text-[#D89B00]"
+                }`}
+              >
+                {item.title}
+                {/* Active underline indicator */}
+                <span
+                  className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${
+                    isActive ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Desktop Icons */}
@@ -100,16 +121,28 @@ export default function Header() {
         }`}
       >
         <div className="bg-white border-t border-[#EFE7DF]">
-          {navItems.map((item) => (
-            <Link
-              key={item.title}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="block px-6 py-4 border-b border-[#F1ECE6] text-[#7A3F10] font-medium"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname === item.href || pathname?.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={`relative flex items-center justify-between px-6 py-4 border-b border-[#F1ECE6] font-medium ${
+                  isActive ? "text-[#D89B00]" : "text-[#7A3F10]"
+                }`}
+              >
+                {item.title}
+                {isActive && (
+                  <span className="h-2 w-2 rounded-full bg-[#D89B00]" />
+                )}
+              </Link>
+            );
+          })}
 
           <div className="flex items-center gap-6 px-6 py-5">
             <Link href="/wishlist" onClick={() => setOpen(false)}>
