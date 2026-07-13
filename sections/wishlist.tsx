@@ -86,7 +86,7 @@ export default function WishlistPage() {
             <div className="flex items-center gap-6">
               <button
                 onClick={shareWishlist}
-                className="flex items-center gap-1.5 text-[#6B2E08] hover:text-[#D89A1B] transition-colors"
+                className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#D89A1B] transition-colors"
               >
                 <ArrowUpRight size={15} /> Share Wishlist
               </button>
@@ -154,7 +154,7 @@ export default function WishlistPage() {
             />
             <div>
               <p className="text-[19px] font-bold text-[#3C2015]">Refer &amp; Earn Rewards!</p>
-              <p className="text-[15px] text-[#6B2E08] mt-1.5">
+              <p className="text-[15px] text-[#2D3A1B] mt-1.5">
                 Refer your friends and get <span className="text-[#D89A1B] font-semibold">10% off</span> on their first order.
               </p>
               <button

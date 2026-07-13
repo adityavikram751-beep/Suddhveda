@@ -112,7 +112,7 @@ export default function OrderConfirmation() {
   ];
 
   const handleTrackOrder = () => {
-    router.push("/orders");
+    router.push("/trackorder");
   };
 
   return (

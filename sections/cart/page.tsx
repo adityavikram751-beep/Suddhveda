@@ -306,7 +306,7 @@ export function OrderSummary({
 
 export function TrustBadges() {
   return (
-    <div className="mt-8 grid grid-cols-3 gap-3 text-center text-[10px] font-bold text-[#6B2E08]">
+    <div className="mt-8 grid grid-cols-3 gap-3 text-center text-[10px] font-bold text-[#2D3A1B]">
       <span className="rounded bg-white p-2 shadow-sm">
         <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
         Secure Checkout

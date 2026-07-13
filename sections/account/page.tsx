@@ -205,7 +205,7 @@ Edit profile
                                                 relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
                                                 ${isActive
                                                     ? "bg-[#FFF2D8] text-[#D89A1B]"
-                                                    : "text-[#6B2E08] hover:bg-[#FFF8EF]"
+                                                    : "text-[#2D3A1B] hover:bg-[#FFF8EF]"
                                                 }
                                             `}
                                         >

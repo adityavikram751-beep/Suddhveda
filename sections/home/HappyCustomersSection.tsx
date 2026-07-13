@@ -52,7 +52,7 @@ export default function HappyCustomersSection() {
 
         {/* Heading Section */}
         <div className="text-center">
-          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-semibold text-[#6B2E08] leading-tight">
+          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-semibold text-[#2D3A1B] leading-tight">
             Happy Customers
           </h2>
 
@@ -76,12 +76,12 @@ export default function HappyCustomersSection() {
             </div>
             
             {/* 4.9 */}
-            <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#6B2E08] ml-1 sm:ml-2">
+            <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#2D3A1B] ml-1 sm:ml-2">
               4.9
             </span>
 
             {/* loved by */}
-            <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#6B2E08] ml-2 sm:ml-3">
+            <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#2D3A1B] ml-2 sm:ml-3">
               loved by
             </span>
 

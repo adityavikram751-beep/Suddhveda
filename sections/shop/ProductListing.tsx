@@ -251,7 +251,7 @@ export default function ProductListing({
                 placeholder="Search the product here"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-[8px] border border-[#D9B88D] bg-white py-4 pl-12 pr-4 text-[15px] text-[#6B2E08] outline-none placeholder:text-[#B59A78] focus:ring-2 focus:ring-[#D89A1B]"
+                className="w-full rounded-[8px] border border-[#D9B88D] bg-white py-4 pl-12 pr-4 text-[15px] text-[#2D3A1B] outline-none placeholder:text-[#B59A78] focus:ring-2 focus:ring-[#D89A1B]"
               />
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#B59A78]" />
             </div>
@@ -272,7 +272,7 @@ export default function ProductListing({
                   className={`flex items-center gap-2 whitespace-nowrap rounded-[10px] border px-5 py-3 text-[14px] font-semibold transition-all ${
                     selectedCategory === category
                       ? "border-[#D89A1B] bg-[#D89A1B] text-white"
-                      : "border-[#D9B88D] bg-white text-[#6B2E08] hover:border-[#D89A1B]"
+                      : "border-[#D9B88D] bg-white text-[#2D3A1B] hover:border-[#D89A1B]"
                   }`}
                 >
                   <Icon size={15} />
@@ -314,14 +314,14 @@ export default function ProductListing({
                 className={`h-9 w-9 rounded-[10px] border text-[14px] font-semibold ${
                   page === "1"
                     ? "border-[#D89A1B] bg-[#D89A1B] text-white"
-                    : "border-[#D9B88D] bg-white text-[#6B2E08]"
+                    : "border-[#D9B88D] bg-white text-[#2D3A1B]"
                 }`}
               >
                 {page}
               </button>
             ))}
             <span className="px-1 text-[#8E623A]">...</span>
-            <button className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#D9B88D] bg-white text-[#6B2E08]">
+            <button className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#D9B88D] bg-white text-[#2D3A1B]">
               <ChevronRight size={16} />
             </button>
           </div>

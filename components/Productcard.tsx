@@ -25,6 +25,7 @@ export default function ProductCard({
   badge,
   image,
   title,
+  subtitle,
   weight,
   price,
   oldPrice,
@@ -57,101 +58,121 @@ export default function ProductCard({
         ${isClickable ? "cursor-pointer" : ""}
         flex-col
         overflow-hidden
-        rounded-2xl
-        border
-        border-[#F3E4CC]
+        rounded-[22px]
         bg-white
-        shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+        shadow-[0_4px_18px_rgba(0,0,0,0.06)]
         transition-all
+        duration-300
         hover:-translate-y-1
-        hover:shadow-[0_12px_30px_rgba(108,55,12,0.12)]
+        hover:shadow-[0_14px_32px_rgba(108,55,12,0.14)]
       `}
     >
-      {badge && (
-        <span
+      {/* Image area */}
+      <div className="relative bg-[#FBEEDF] px-5 pt-5 pb-6">
+        {badge && (
+          <span
+            className="
+              absolute
+              top-4
+              left-4
+              z-10
+              rounded-full
+              bg-[#F07B1D]
+              px-3
+              py-1
+              text-[13px]
+              font-medium
+              text-white
+            "
+          >
+            {badge}
+          </span>
+        )}
+
+        <button
+          type="button"
+          aria-label="Add to wishlist"
+          onClick={(event) => event.stopPropagation()}
           className="
             absolute
-            left-3
-            top-3
+            top-4
+            right-4
             z-10
+            flex
+            h-8
+            w-8
+            items-center
+            justify-center
             rounded-full
-            bg-[#D89A1B]
-            px-3
-            py-1
-            text-[11px]
-            font-semibold
-            text-white
+            bg-white/70
+            transition-colors
+            duration-200
+            hover:bg-white
           "
         >
-          {badge}
-        </span>
-      )}
+          <Heart
+            size={18}
+            strokeWidth={1.75}
+            className="text-[#B0B0B0] transition-colors duration-200 hover:text-[#F07B1D]"
+          />
+        </button>
 
-      <button
-        type="button"
-        aria-label="Add to wishlist"
-        onClick={(event) => event.stopPropagation()}
-        className="
-          absolute
-          right-3
-          top-3
-          z-10
-          flex
-          h-8
-          w-8
-          items-center
-          justify-center
-          rounded-full
-          bg-white/90
-          shadow-sm
-          transition-colors
-          hover:bg-white
-        "
-      >
-        <Heart size={15} className="text-[#B59A78]" />
-      </button>
-
-      <div className="relative aspect-square w-full bg-[#FFF8EF]">
-        <Image src={image} alt={title} fill className="object-contain p-3" />
+        <div className="relative aspect-square w-full">
+          <Image src={image} alt={title} fill className="object-contain" />
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col px-3.5 pb-3.5">
-        <p className="text-[11px] text-[#B59A78]">
-          Raw - Unfiltered - Wilderness
+      {/* Details */}
+      <div className="flex flex-1 flex-col px-5 pt-4 pb-5">
+        <p className="text-[14px] text-[#8A8A8A]">
+          {subtitle ?? "Raw • Unfiltered • Wilderness"}
         </p>
 
-        <h3 className="mt-0.5 text-[15px] font-semibold text-[#3C2015]">
+        <h3 className="mt-1 text-[20px] font-bold text-[#233821]">
           {title}
         </h3>
 
-        <p className="text-[12px] text-[#B59A78]">{weight}</p>
+        <p className="mt-1 text-[14px] text-[#8A8A8A]">{weight}</p>
 
-        <div className="mt-1.5 flex items-center gap-1">
+        <div className="mt-2 flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              size={12}
+              size={16}
+              strokeWidth={1.5}
               className={
                 i < Math.round(rating)
-                  ? "fill-[#D89A1B] text-[#D89A1B]"
-                  : "fill-[#E8D5BA] text-[#E8D5BA]"
+                  ? "fill-[#F0A826] text-[#F0A826]"
+                  : "fill-transparent text-[#C9C9C9]"
               }
             />
           ))}
-          <span className="ml-1 text-[11px] text-[#B59A78]">({reviews})</span>
+          <span className="ml-1 text-[14px] text-[#8A8A8A]">({reviews})</span>
         </div>
 
-        <div className="mt-1.5 flex items-center gap-1.5">
-          <span className="text-[16px] font-bold text-[#3C2015]">
-            Rs.{price}
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-[20px] font-bold text-[#F07B1D]">
+            ₹{price}
           </span>
           {!!oldPrice && (
-            <span className="text-[13px] text-[#B59A78] line-through">
-              Rs.{oldPrice}
+            <span className="text-[16px] text-[#B0B0B0] line-through">
+              ₹{oldPrice}
             </span>
           )}
           {discount && (
-            <span className="text-[11px] font-medium text-[#D89A1B]">
+            <span
+              className="
+                rounded-full
+                border
+                border-[#3E8E4F]
+                px-3
+                py-[3px]
+                text-[13px]
+                font-medium
+                text-[#3E8E4F]
+                whitespace-nowrap
+              "
+            >
               {discount}
             </span>
           )}
@@ -161,34 +182,34 @@ export default function ProductCard({
           <div
             onClick={(event) => event.stopPropagation()}
             className="
-              mt-2.5
+              mt-3
               grid
               h-10
               grid-cols-[40px_1fr_40px]
               items-center
               rounded-xl
               border
-              border-[#D89A1B]
+              border-[#F07B1D]
               bg-white
-              text-[#D89A1B]
+              text-[#F07B1D]
             "
           >
             <button
               type="button"
               aria-label="Remove one item"
               onClick={onDecrement}
-              className="flex h-full items-center justify-center rounded-l-xl hover:bg-[#FFF2D8]"
+              className="flex h-full items-center justify-center rounded-l-xl transition-colors duration-200 hover:bg-[#FFF1E1]"
             >
               {quantity === 1 ? <Trash2 size={15} /> : <Minus size={15} />}
             </button>
-            <span className="text-center text-[13px] font-semibold text-[#9A5A05]">
+            <span className="text-center text-[13px] font-semibold text-[#233821]">
               {quantity}
             </span>
             <button
               type="button"
               aria-label="Add one more item"
               onClick={onIncrement}
-              className="flex h-full items-center justify-center rounded-r-xl hover:bg-[#FFF2D8]"
+              className="flex h-full items-center justify-center rounded-r-xl transition-colors duration-200 hover:bg-[#FFF1E1]"
             >
               <Plus size={15} />
             </button>
@@ -201,7 +222,7 @@ export default function ProductCard({
               onAddToCart?.();
             }}
             className="
-              mt-2.5
+              mt-3
               flex
               w-full
               items-center
@@ -209,13 +230,14 @@ export default function ProductCard({
               gap-1.5
               whitespace-nowrap
               rounded-xl
-              bg-[#D89A1B]
+              bg-[#F07B1D]
               py-2
               text-[13px]
               font-semibold
               text-white
               transition-colors
-              hover:bg-[#C98715]
+              duration-200
+              hover:bg-[#D96A0F]
             "
           >
             <ShoppingCart size={14} className="shrink-0" />

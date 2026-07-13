@@ -127,7 +127,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               <Check size={22} />
             </div>
             <div>
-              <h3 className="text-[20px] font-bold text-[#6B2E08]">
+              <h3 className="text-[20px] font-bold text-[#2D3A1B]">
                 {toastProduct.title} ({toastProduct.weight.split(" - ")[0]})
               </h3>
               <p className="mt-1 text-[16px] text-[#6D7280]">
@@ -147,7 +147,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                 <button
                   type="button"
                   onClick={() => setToastProduct(null)}
-                  className="px-2 py-2 text-[15px] font-bold text-[#9AA1AF] hover:text-[#6B2E08]"
+                  className="px-2 py-2 text-[15px] font-bold text-[#9AA1AF] hover:text-[#2D3A1B]"
                 >
                   Continue Shopping
                 </button>
@@ -255,7 +255,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               ))}
 
               <div className="rounded bg-[#FCEBDD] px-4 py-3">
-                <p className="flex items-center gap-2 text-[12px] font-bold text-[#6B2E08]">
+                <p className="flex items-center gap-2 text-[12px] font-bold text-[#2D3A1B]">
                   <Tag size={14} className="text-[#9A5A05]" />
                   Yay! You saved ₹{saved} on this order
                 </p>

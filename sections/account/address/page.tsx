@@ -227,14 +227,14 @@ Edit profile
                                 {/* My Orders */}
                                 <Link
                                     href="/account"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#6B2E08] hover:bg-[#FFF8EF] transition-colors"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
                                 >
                                     <Package size={18} className="shrink-0" />
                                     <span>My Orders</span>
                                 </Link>
                                 <Link
                                     href="/trackorder"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#6B2E08] hover:bg-[#FFF8EF] transition-colors"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
                                 >
                                     <Truck size={18} className="shrink-0" />
                                     <span>Track Order</span>
@@ -249,14 +249,14 @@ Edit profile
 
                                 <Link
                                     href="/wishlist"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#6B2E08] hover:bg-[#FFF8EF] transition-colors"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
                                 >
                                     <Heart size={18} className="shrink-0" />
                                     <span>Wishlist</span>
                                 </Link>
                                 <Link
                                     href="/account/privacy"
-                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#6B2E08] hover:bg-[#FFF8EF] transition-colors"
+                                    className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
                                 >
                                     <Settings size={18} className="shrink-0" />
                                     <span>Policy Center</span>

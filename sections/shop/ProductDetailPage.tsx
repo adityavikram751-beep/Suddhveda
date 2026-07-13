@@ -450,7 +450,7 @@ export default function ProductDetailPage({ product }: { product: Product }) {
 
         {/* -------- RECOMMENDATIONS -------- */}
         <section className="mt-17">
-          <h2 className="mb-9 text-[42px] font-bold text-[#6B2E08]">
+          <h2 className="mb-9 text-[42px] font-bold text-[#2D3A1B]">
             Recommendation
           </h2>
           <div className="bg-white/45 p-5">

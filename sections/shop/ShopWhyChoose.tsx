@@ -77,7 +77,7 @@ export default function ShopWhyChoose() {
       <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Heading */}
         <div className="text-center">
-          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] font-semibold text-[#6B2E08]">
+          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] font-semibold text-[#2D3A1B]">
             Why choose Suddhveda&nbsp;?
           </h2>
 

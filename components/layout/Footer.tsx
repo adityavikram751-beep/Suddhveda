@@ -1,21 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 
 import {
   Phone,
   Mail,
   MapPin,
-  // Instagram,
-  // Facebook,
-  // Twitter,
-  // Youtube,
+ 
 } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#3C2015] text-white block">
+    <footer className="bg-[linear-gradient(180deg,#0a1f12_0%,#1f6b3a_50%,#050f09_100%)] text-white block">
 
       <div className="max-w-[1445px] mx-auto px-8 py-12">
 
@@ -27,15 +23,12 @@ export default function Footer() {
 
             <div className="flex items-center gap-3">
 
-              <Image
-                src="/yellow logo.png"
-                alt="Suddhveda"
-                width={32}
-                height={32}
-              />
+              <div className="w-8 h-8 rounded-lg bg-[#D89A1B] flex items-center justify-center text-[16px]">
+                🍯
+              </div>
 
               <h2 className="text-[22px] font-semibold">
-                SuddhVeda
+                HoneyVeda
               </h2>
 
             </div>
@@ -58,27 +51,7 @@ export default function Footer() {
 
             <div className="flex gap-3 mt-6">
 
-              {/* {[Instagram, Facebook, Twitter, Youtube].map((Icon, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="
-                    w-9
-                    h-9
-                    rounded-full
-                    bg-[#563327]
-                    flex
-                    items-center
-                    justify-center
-                    transition-all
-                    duration-300
-                    hover:bg-[#D89A1B]
-                  "
-                >
-                  <Icon size={16} className="text-white" />
-                </a>
-              ))} */}
-
+             
             </div>
 
           </div>
@@ -298,7 +271,7 @@ export default function Footer() {
           className="
             mt-10
             border-t
-            border-[#5A3428]
+            border-[#2e4b36]
             pt-6
             flex
             flex-col
@@ -339,11 +312,11 @@ export default function Footer() {
           >
             <span>FSSAI Licensed</span>
 
-            <span className="text-[#7A5142]">•</span>
+            <span className="text-[#4e7359]">•</span>
 
             <span>ISO Certified</span>
 
-            <span className="text-[#7A5142]">•</span>
+            <span className="text-[#4e7359]">•</span>
 
             <span>100% Natural</span>
           </div>

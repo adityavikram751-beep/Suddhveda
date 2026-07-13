@@ -54,7 +54,56 @@ const products = [
     rating: 4,
     reviews: 120,
   },
+  {
+    badge: "Best Seller",
+    image: "/honneycart.png",
+    title: "Natural Honey",
+    subtitle: "Raw • Unfiltered • Wilderness",
+    weight: "500g • Dark • Medium",
+    price: 750,
+    oldPrice: 900,
+    discount: "20% Off",
+    rating: 4,
+    reviews: 120,
+  },
+  {
+    badge: "Rich Aroma",
+    image: "/honneycart.png",
+    title: "Mustard Honey",
+    subtitle: "Raw • Unfiltered • Wilderness",
+    weight: "500g • Dark • Medium",
+    price: 750,
+    oldPrice: 900,
+    discount: "20% Off",
+    rating: 4,
+    reviews: 120,
+  },
+  {
+    badge: "Most Loved",
+    image: "/honneycart.png",
+    title: "Multiflora Honey",
+    subtitle: "Raw • Unfiltered • Wilderness",
+    weight: "500g • Dark • Medium",
+    price: 750,
+    oldPrice: 900,
+    discount: "20% Off",
+    rating: 4,
+    reviews: 120,
+  },
+  {
+    badge: "Litchi Honey",
+    image: "/honneycart.png",
+    title: "Litchi Honey",
+    subtitle: "Raw • Unfiltered • Wilderness",
+    weight: "500g • Dark • Medium",
+    price: 750,
+    oldPrice: 900,
+    discount: "20% Off",
+    rating: 4,
+    reviews: 120,
+  },
 ];
+
 
 export default function HoneySelection() {
   const router = useRouter();
@@ -63,7 +112,7 @@ export default function HoneySelection() {
     <section
     className="
     relative
-    mt-18
+    mt-2
     bg-[#FFF7ED]
     overflow-hidden
     pt-2
@@ -71,38 +120,9 @@ export default function HoneySelection() {
     "
   >
 
-      {/* Honey Drip */}
-      <Image
-        src="/nature.png"
-        alt=""
-        width={180}
-        height={220}
-        className="
-        absolute
-        left-0
-        top-0
-        w-[150px]
-        lg:w-[180px]
-        h-auto
-        pointer-events-none
-        select-none
-        z-10
-        "
-      />
+      
 
-      {/* Bee */}
-      <Image
-        src="/madhu.png"
-        alt=""
-        width={42}
-        height={42}
-        className="
-        absolute
-        left-[140px]
-        top-[110px]
-        z-20
-        "
-      />
+    
 
 <div className="max-w-[1450px] mx-auto px-6 lg:px-10 pt-10">
         {/* Heading */}
@@ -115,7 +135,7 @@ export default function HoneySelection() {
             lg:text-[56px]
             font-bold
             leading-tight
-            text-[#6B2E08]
+            text-[#2D3A1B]
             "
           >
             Nature&apos;s Finest Honey Selection
@@ -145,8 +165,10 @@ export default function HoneySelection() {
           grid-cols-1
           sm:grid-cols-2
           lg:grid-cols-4
-          gap-4
-          md:gap-5
+          gap-x-6
+          gap-y-8
+          md:gap-x-7
+          md:gap-y-9
           mt-8
           items-stretch
           "

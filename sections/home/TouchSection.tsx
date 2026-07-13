@@ -1,95 +1,134 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Mail } from "lucide-react";
+import Link from "next/link";
+import { FiChevronRight } from "react-icons/fi";
 
-export default function TouchSection() {
-    return (
-        <section className="relative overflow-hidden bg-[#FDF8F2] py-10 lg:py-14">
-            <div className="w-full flex flex-col lg:flex-row items-center px-6 lg:pl-16 lg:pr-0">
+type Recipe = {
+  id: number;
+  slug: string;
+  image: string;
+  title: string;
+  description: string;
+};
 
-                {/* ================= LEFT CONTENT ================= */}
-                <div className="relative z-10 w-full lg:w-[52%] flex flex-col justify-center items-center px-4 lg:px-8">
+const recipes: Recipe[] = [
+  {
+    id: 1,
+    slug: "honey-lemon-tea",
+    image: "/image1.png",
+    title: "Honey Lemon Tea",
+    description:
+      "A soothing drink for a refreshing day and better digestion aditya A soothing drink for a refreshing day and better digestion A soothing drink for a refreshing day and better digestion A soothing drink for a refreshing day and better digestion  .",
+  },
+  {
+    id: 2,
+    slug: "turmeric-honey-shot",
+    image: "/image2.png",
+    title: "Turmeric Honey Shot",
+    description:
+      "A powerful immunity booster packed with natural antioxidants.",
+  },
+  {
+    id: 3,
+    slug: "honey-ginger-remedy",
+    image: "/move1.png",
+    title: "Honey & Ginger Remedy",
+    description: "Natural relief for sore throat and winter coughs.",
+  },
+  {
+    id: 4,
+    slug: "healthy-breakfast-bowl",
+    image: "/move3.png",
+    title: "Healthy Breakfast Bowl",
+    description: "Start your day the natural way with honey and yogurt.",
+  },
+];
 
-                    {/* Top Badge */}
-                    <div className="flex flex-col items-center w-full max-w-[620px]">
-                        <div className="w-[64px] h-[64px] rounded-full border border-[#E3CFA8] bg-[#FFF9F2] flex items-center justify-center">
-                            <Image src="/step1.png" alt="Bee" width={26} height={26} />
-                        </div>
+export default function HealthyIdeas() {
+  // Typed as number | null so setExpandedId(recipe.id) — a number — is valid.
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
-                        <div className="flex items-center gap-3 mt-4">
-                            <div className="w-12 h-px bg-[#E8D5BA]" />
-                            <span className="uppercase tracking-[2px] text-[#C88718] font-semibold text-[14px]">
-                                Join The Hive
-                            </span>
-                            <div className="w-12 h-px bg-[#E8D5BA]" />
-                        </div>
-                    </div>
+  return (
+    <section className="bg-[#FAF6F0] pt-6 pb-14 md:pt-8 md:pb-20">
+      <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
+        {/* Heading row */}
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
+              Recipes &amp; Wellness
+            </span>
+            <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
+            Honey Tips & Benefits
+            </h2>
+          </div>
 
-                    {/* Heading */}
-                    <h2 className="mt-6 font-serif text-[28px] sm:text-[34px] xl:text-[46px] leading-[1.15] text-[#1A1A1A]">
-                        <div className="text-center">Stay close to</div>
-                        <div className="text-center">
-                            Nature&apos;s <span className="text-[#C88718]">Goodness</span>
-                        </div>
-                    </h2>
+          <Link
+            href="/receipe"
+            className="text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold tracking-wide uppercase border-b-2 border-[#D49313] pb-1 hover:text-[#D49313] transition-colors flex-shrink-0"
+          >
+            View All
+          </Link>
+        </div>
 
-                    {/* Small Divider */}
-                    <div className="flex items-center justify-center gap-3 mt-4">
-                        <div className="w-12 h-px bg-[#E8D5BA]" />
-                        <Image src="/vector 3.png" alt="" width={16} height={16} />
-                        <div className="w-12 h-px bg-[#E8D5BA]" />
-                    </div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 mt-6 md:mt-8">
+          {recipes.map((recipe) => {
+            const isExpanded = expandedId === recipe.id;
 
-                    {/* Description */}
-                    <p className="mt-7 max-w-[560px] text-center text-[18px] sm:text-[22px] leading-[32px] sm:leading-[38px] text-[#B59A78] mx-auto">
-                        Get exclusive offers, wellness tips, and early access to new harvests.
-                    </p>
-
-                    {/* Subscribe Form */}
-                    <div className="mt-10 max-w-[620px] w-full">
-                        <div className="flex flex-col sm:flex-row overflow-hidden rounded-xl border border-[#E7D5BA] bg-white h-auto sm:h-[68px]">
-
-                            {/* Input */}
-                            <div className="flex flex-1 items-center gap-3 px-6 py-3 sm:py-0">
-                                <Mail size={20} className="text-[#B59A78] flex-shrink-0" />
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email address"
-                                    className="w-full bg-transparent text-[15px] text-[#6B2E08] placeholder:text-[#B59A78] outline-none"
-                                />
-                            </div>
-
-                            {/* Button */}
-                            <button className="bg-[#C57A08] w-full sm:w-[230px] text-white text-[18px] sm:text-[20px] font-semibold py-3 sm:py-0 hover:bg-[#A76A05] transition-all">
-                                Join The Hive
-                            </button>
-                        </div>
-                    </div>
+            return (
+              <div
+                key={recipe.id}
+                className="bg-white rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.07)] transition-shadow duration-300 group flex flex-col h-[340px] sm:h-[360px]"
+              >
+                {/* Image */}
+                <div className="relative w-full h-[150px] sm:h-[170px] overflow-hidden flex-shrink-0">
+                  <Image
+                    src={recipe.image}
+                    alt={recipe.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
 
-                {/* ================= RIGHT IMAGE ================= */}
-                <div className="w-full lg:w-[48%] relative flex justify-center mt-10 lg:mt-0">
-                    <div className="relative lg:left-[100px] flex justify-center">
-                        <Image
-                            src="/last.png"
-                            alt="Honey Bottle"
-                            width={600}
-                            height={600}
-                            className="w-[280px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-auto object-contain"
-                            priority
-                        />
-                    </div>
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1 min-h-0">
+                  <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#2D3A1B] leading-tight flex-shrink-0">
+                    {recipe.title}
+                  </h3>
+
+                  <p className="no-scrollbar mt-2 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6] overflow-y-auto flex-1 min-h-0 pr-1">
+                    {recipe.description}
+                  </p>
+
+                  {!isExpanded && (
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(recipe.id)}
+                      className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#2D3A1B] hover:text-[#D49313] transition-colors flex-shrink-0"
+                    >
+                      Read More
+                      <FiChevronRight size={16} />
+                    </button>
+                  )}
                 </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-            </div>
-
-            {/* Background Glow */}
-            <div className="absolute left-1/2 bottom-[-180px] -translate-x-1/2 w-[900px] h-[320px] rounded-full bg-[#FFF2D8] blur-[150px] opacity-70 pointer-events-none" />
-
-            {/* Bottom Border */}
-            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#E7D5BA] to-transparent" />
-
-        </section>
-    );
+      {/* Hide scrollbar cross-browser while keeping it scrollable */}
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+    </section>
+  );
 }

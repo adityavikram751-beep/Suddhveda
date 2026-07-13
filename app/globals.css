@@ -29,7 +29,7 @@ body {
 /* ========================= */
 
 .topbar {
-  background: #4a240e;
+  background: #314125;
   height: 34px;
   overflow: hidden;
   display: flex;
@@ -317,7 +317,7 @@ top:12%;
     25% 93.3%,
     0% 50%
   );
-  border: 1.8px solid #b56a2c;
+  border: 1.8px solid #314125;
   display: flex;
   align-items: center;
   justify-content: center;
