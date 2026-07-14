@@ -7,10 +7,8 @@ import CuratedGift from "@/sections/giftsets/curatedgift";
 import GiftSelection from "@/sections/giftsets/giftselection";
 import Movement from "@/sections/giftsets/movement";
 import RealReview from "@/sections/giftsets/realreview";
-import GiftSetSection from "@/sections/home/TouchSection";
 
 import Footer from "@/components/layout/Footer";
-import TouchSection from "@/sections/home/TouchSection";
 export default function GiftsetPage() {
   return (
     <>
@@ -22,7 +20,6 @@ export default function GiftsetPage() {
       <GiftSelection/>
       <Movement/>
       <RealReview/>
-      <TouchSection/>
         <Footer/>
     </>
   );

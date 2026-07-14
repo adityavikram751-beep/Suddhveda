@@ -31,18 +31,18 @@ export default function ContactSection() {
           {/* LEFT - Form Card */}
           <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10">
             <p className="text-[#D49313] italic font-serif text-[17px] sm:text-[18px]">We'd love to</p>
-            <h2 className="text-[26px] sm:text-[32px] font-serif text-[#2C241E] mt-1 mb-6">Hear From You</h2>
+            <h2 className="text-[26px] sm:text-[32px] font-serif text-[#2D3A1B] mt-1 mb-6">Hear From You</h2>
 
             <form className="flex flex-col gap-4">
               <input
                 type="text"
                 placeholder="Full Name"
-                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2C241E] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
               />
               <input
                 type="email"
                 placeholder="Email Address"
-                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2C241E] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
               />
 
               <div className="grid grid-cols-2 gap-4">
@@ -64,14 +64,14 @@ export default function ContactSection() {
                 <input
                   type="tel"
                   placeholder="Phone Number"
-                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2C241E] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                 />
               </div>
 
               <textarea
                 placeholder="Your Message"
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2C241E] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors resize-none"
               />
 
               <label className="flex items-start gap-2 text-[12px] sm:text-[13px] text-[#8D7F73] mt-1 cursor-pointer">
@@ -132,8 +132,8 @@ export default function ContactSection() {
                 <FiPhone size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-[19px] text-[#2C241E]">Call Us</span>
-                <span className="text-[16px] text-[#2C241E] font-medium">+91 123 4567890</span>
+                <span className="font-bold text-[19px] text-[#2D3A1B]">Call Us</span>
+                <span className="text-[16px] text-[#2D3A1B] font-medium">+91 123 4567890</span>
                 <span className="text-[14px] text-[#A69C8F]">Mon – Sat: 9AM – 6PM</span>
               </div>
             </div>
@@ -144,8 +144,8 @@ export default function ContactSection() {
                 <FiMail size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-[19px] text-[#2C241E]">Email Us</span>
-                <span className="text-[16px] text-[#2C241E] font-medium">hello@shudhveda.com</span>
+                <span className="font-bold text-[19px] text-[#2D3A1B]">Email Us</span>
+                <span className="text-[16px] text-[#2D3A1B] font-medium">hello@shudhveda.com</span>
                 <span className="text-[14px] text-[#A69C8F]">We reply within 24 hrs</span>
               </div>
             </div>
@@ -156,8 +156,8 @@ export default function ContactSection() {
                 <FaWhatsapp size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-[19px] text-[#2C241E]">WhatsApp Us</span>
-                <span className="text-[16px] text-[#2C241E] font-medium">+91 987 6543210</span>
+                <span className="font-bold text-[19px] text-[#2D3A1B]">WhatsApp Us</span>
+                <span className="text-[16px] text-[#2D3A1B] font-medium">+91 987 6543210</span>
                 <span className="text-[14px] text-[#A69C8F]">Mon – Sat: 9AM – 6PM</span>
               </div>
             </div>
@@ -168,8 +168,8 @@ export default function ContactSection() {
                 <FiMapPin size={22} />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-[19px] text-[#2C241E]">Visit Our Studio</span>
-                <span className="text-[16px] text-[#2C241E] font-medium">Bengaluru, Karnataka, India</span>
+                <span className="font-bold text-[19px] text-[#2D3A1B]">Visit Our Studio</span>
+                <span className="text-[16px] text-[#2D3A1B] font-medium">Bengaluru, Karnataka, India</span>
                 <a href="#" className="text-[15px] text-[#D49313] font-semibold">Get Directions →</a>
               </div>
             </div>
@@ -177,13 +177,13 @@ export default function ContactSection() {
 
           {/* Company Info */}
           <div className="bg-transparent px-1 pt-1 h-full flex flex-col">
-            <h3 className="font-bold text-[18px] text-[#2C241E]">ShudhVeda Honey Pvt. Ltd.</h3>
+            <h3 className="font-bold text-[18px] text-[#2D3A1B]">ShudhVeda Honey Pvt. Ltd.</h3>
             <p className="text-[15px] text-[#8D7F73] mt-3 leading-relaxed">
               123, Green Hive Road,<br />
               Whitefield, Bengaluru,<br />
               Karnataka – 560066, India
             </p>
-            <p className="text-[15px] text-[#2C241E] font-medium mt-4">Mon – Sat: 9AM – 6PM</p>
+            <p className="text-[15px] text-[#2D3A1B] font-medium mt-4">Mon – Sat: 9AM – 6PM</p>
             <p className="text-[15px] text-[#8D7F73]">Sunday: Closed</p>
             <button className="mt-4 bg-[#D49313] hover:bg-[#B37B1B] transition-colors text-white h-[44px] px-6 rounded-xl flex items-center gap-2 font-medium text-[14px] w-fit">
               Get Directions <FiMapPin size={14} />

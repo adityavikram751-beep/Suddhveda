@@ -74,7 +74,7 @@ export default function OurValues() {
             <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
               Our Values
             </span>
-            <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2C241E] leading-tight">
+            <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight">
               What Drives Everything We Do
             </h2>
 
@@ -92,7 +92,7 @@ export default function OurValues() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[15px] text-[#2C241E]">
+                    <h3 className="font-semibold text-[15px] text-[#2D3A1B]">
                       {item.title}
                     </h3>
                     <p className="text-[13px] text-[#8D7F73] mt-1 leading-[1.5]">

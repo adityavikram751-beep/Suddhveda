@@ -1,165 +1,180 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
+import { FiChevronDown } from "react-icons/fi";
+
+type Feature = {
+  id: number;
+  image: string;
+  title: string;
+  description: string;
+};
+
+type Faq = {
+  id: number;
+  question: string;
+  answer: string;
+};
+
+const features: Feature[] = [
+  {
+    id: 1,
+    image: "/process1.png",
+    title: "From Nature To Your Home",
+    description: "Sourced from the best beekeepers.",
+  },
+  {
+    id: 2,
+    image: "/honneycart.png",
+    title: "Crafted with Care",
+    description: "Handled with care to preserve purity.",
+  },
+  {
+    id: 3,
+    image: "/wishlist.png",
+    title: "Packed Hygienically",
+    description: "Sealed to retain freshness and nutrients.",
+  },
+  {
+    id: 4,
+    image: "/wishlist1.png",
+    title: "Delivered Safely",
+    description: "Secure delivery to your doorstep.",
+  },
+];
+
+const faqs: Faq[] = [
+  {
+    id: 1,
+    question: "Is Shuddh Veda Honey 100% pure?",
+    answer: "Yes, our honey is 100% pure, raw, and unprocessed with no additives.",
+  },
+  {
+    id: 2,
+    question: "Is the honey raw or processed?",
+    answer: "Our honey is completely raw and minimally filtered to retain its natural goodness.",
+  },
+  {
+    id: 3,
+    question: "Does this honey contain any added sugar?",
+    answer: "No, our honey contains no added sugar or syrups whatsoever.",
+  },
+  {
+    id: 4,
+    question: "Which honey is best for immunity?",
+    answer: "Our Turmeric Honey Shot and raw natural honey are both excellent for boosting immunity.",
+  },
+  {
+    id: 5,
+    question: "How should I store honey?",
+    answer: "Store honey in a cool, dry place away from direct sunlight, tightly sealed.",
+  },
+  {
+    id: 6,
+    question: "Can honey be given to kids?",
+    answer: "Honey is safe for children above 1 year of age; avoid giving it to infants under 12 months.",
+  },
+  {
+    id: 7,
+    question: "Why does natural honey crystalize?",
+    answer: "Crystallization is a natural process for raw honey and doesn't affect its quality.",
+  },
+  {
+    id: 8,
+    question: "How long does honey last?",
+    answer: "Pure honey has an almost indefinite shelf life when stored properly.",
+  },
+];
 
 export default function GiftSetSection() {
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const toggleFaq = (id: number) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   return (
     <>
-      <div className="w-full h-px " />
-      <div className="w-full h-12" />
-      <section
-        className="
-          relative
-          overflow-hidden
-          bg-orange-100
-          border-t
-          border-[#F2DFC9]
-          border-b
-          border-b-[#EAD7BE]
-        "
-      >
-      <div
-        className="
-          max-w-[1518px]
-          mx-auto
-          grid
-          lg:grid-cols-[40%_60%]
-          items-stretch
-          min-h-[420px]
-        "
-      >
-        {/* ================= LEFT CONTENT ================= */}
+      {/* ===== TOP THIN LINE ===== */}
 
-        <div
-          className="
-            relative
-            z-20
-            flex
-            flex-col
-            justify-center
-            ml-6
-            lg:ml-12
-            px-18
-            lg:px-12
-            py-12
-            bg-orange-100
-          "
-        >
-          {/* Top Label */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/gifticon.png"
-                alt=""
-                width={22}
-                height={22}
-                className="w-[22px] h-[22px]"
-              />
-              <span
-                className="
-                  text-[18px]
-                  font-medium
-                  uppercase
-                  tracking-[1px]
-                  text-[#C98A16]
-                "
-              >
-                Gift Sets
-              </span>
+      <section className="relative overflow-hidden  ">
+       
+       
+
+        {/* ================= FEATURES STRIP ================= */}
+        <div className="  border-t border-[#00000033] bg-white">
+          <div className="max-w-[1480px] mx-auto w-full px-6 lg:px-16 py-8 md:py-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+              {features.map((feature) => (
+                <div key={feature.id} className="flex items-center gap-4">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={feature.image}
+                      alt={feature.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B] leading-tight">
+                      {feature.title}
+                    </span>
+                    <span className="text-[#8D7F73] text-[12px] sm:text-[13px] mt-0.5">
+                      {feature.description}
+                    </span>
+                    
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ================= FAQ SECTION ================= */}
+        <div className="bg-white border-t  border-[#00000033]  py-16 md:py-20">
+          <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
+            {/* Heading */}
+            <div className="text-center">
+              <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#2D3A1B]">
+                FAQs
+              </h2>
+              <div className="flex items-center justify-center gap-3 mt-4">
+                <div className="w-12 md:w-16 h-px bg-[#2D3A1B]" />
+                <span className="text-[#2D3A1B]">✦</span>
+                <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
+              </div>
             </div>
 
-            <div className="w-28 h-px bg-[#DDBE92]" />
+            {/* FAQ Grid */}
+            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-2 mt-12">
+              {faqs.map((faq) => (
+                <div key={faq.id} className="border-b border-[#E6D2B8]/60 py-4">
+                  <button
+                    onClick={() => toggleFaq(faq.id)}
+                    className="w-full flex items-center justify-between gap-4 text-left"
+                  >
+                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B]">
+                      {faq.question}
+                    </span>
+                    <FiChevronDown
+                      size={18}
+                      className={`text-[#D49313] flex-shrink-0 transition-transform duration-300 ${
+                        expandedId === faq.id ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {expandedId === faq.id && (
+                    <p className="mt-3 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6]">
+                      {faq.answer}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-
-          {/* Heading */}
-
-          <h2
-            className="
-              mt-4
-              text-[60px]
-              leading-[1.12]
-              font-semibold
-              tracking-[-1px]
-              text-[#35261B]
-            "
-          >
-            <span className="whitespace-nowrap">Thoughtful Gifts,</span>
-            <br />
-            <span className="text-[#D89A1B]">Pure Happiness</span>
-          </h2>
-
-          {/* Divider */}
-
-          <div className="flex items-center mt-6">
-            <div className="w-[170px] h-px bg-[#E8D6BC]" />
-            <Image
-              src="/Vector 3.png"
-              alt=""
-              width={18}
-              height={18}
-              className="mx-5"
-            />
-            <div className="w-[170px] h-px bg-[#E8D6BC]" />
-          </div>
-
-          {/* Description */}
-
-          <p
-            className="
-              mt-10
-              max-w-[470px]
-              text-[21px]
-              leading-[1.65]
-              text-[#B49781]
-            "
-          >
-            Curated honey gift sets for every celebration. Beautifully packed.
-            Naturally wholesome.
-          </p>
-
-          {/* Button */}
-
-          <button
-            className="
-              mt-12
-              inline-flex
-              w-fit
-              items-center
-              gap-3
-              rounded-xl
-              bg-[#D89A1B]
-              hover:bg-[#C98715]
-              px-8
-              py-4
-              text-[17px]
-              font-medium
-              text-white
-              transition-all
-              duration-300
-            "
-          >
-            <Image
-              src="/gifticon.png"
-              alt=""
-              width={16}
-              height={16}
-            />
-            Explore the Gift Sets
-          </button>
         </div>
-
-        {/* ================= RIGHT SIDE – single big image, full bleed ================= */}
-        <div className="relative w-280 min-h-[400px] lg:min-h-[500px]">
-          <Image
-            src="/giftset.png"
-            alt="ShudhVeda Honey Gift Set"
-            fill
-            priority
-            className="object-contain object-center"
-            sizes="(max-width: 1024px) 100vw, 86vw"
-          />
-        </div>
-      </div>
       </section>
     </>
   );

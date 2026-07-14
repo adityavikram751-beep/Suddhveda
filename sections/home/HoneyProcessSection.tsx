@@ -59,14 +59,14 @@ export default function HealthyIdeas() {
             <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
               Recipes &amp; Wellness
             </span>
-            <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2C241E] leading-tight">
+            <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
               Healthy Ideas with Honey
             </h2>
           </div>
 
           <Link
             href="/receipe"
-            className="text-[#2C241E] text-[13px] sm:text-[14px] font-semibold tracking-wide uppercase border-b-2 border-[#D49313] pb-1 hover:text-[#D49313] transition-colors flex-shrink-0"
+            className="text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold tracking-wide uppercase border-b-2 border-[#D49313] pb-1 hover:text-[#D49313] transition-colors flex-shrink-0"
           >
             View All
           </Link>
@@ -94,7 +94,7 @@ export default function HealthyIdeas() {
 
                 {/* Content */}
                 <div className="p-5 flex flex-col flex-1 min-h-0">
-                  <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#2C241E] leading-tight flex-shrink-0">
+                  <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#2D3A1B] leading-tight flex-shrink-0">
                     {recipe.title}
                   </h3>
 
@@ -106,7 +106,7 @@ export default function HealthyIdeas() {
                     <button
                       type="button"
                       onClick={() => setExpandedId(recipe.id)}
-                      className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#2C241E] hover:text-[#D49313] transition-colors flex-shrink-0"
+                      className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#2D3A1B] hover:text-[#D49313] transition-colors flex-shrink-0"
                     >
                       Read More
                       <FiChevronRight size={16} />

@@ -76,7 +76,7 @@ export default function BeekeepingProcess() {
           <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
             Our Beekeeping Process
           </span>
-          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2C241E] leading-tight">
+          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight">
             Crafted with Care, From Hive to Home
           </h2>
         </div>
@@ -93,7 +93,7 @@ export default function BeekeepingProcess() {
                   className="object-cover"
                 />
               </div>
-              <h3 className="mt-4 font-semibold text-[13px] tracking-wide text-[#2C241E] uppercase">
+              <h3 className="mt-4 font-semibold text-[13px] tracking-wide text-[#2D3A1B] uppercase">
                 {step.title}
               </h3>
               <p className="mt-1 text-[12px] leading-[1.5] text-[#8D7F73]">

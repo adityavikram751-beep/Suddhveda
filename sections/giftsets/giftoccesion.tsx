@@ -38,13 +38,13 @@ const occasions = [
 
 export default function GiftsForEveryOccasion() {
   return (
-    <section className="relative bg-[#FFF8EF] py-16 md:py-20">
+    <section className="relative bg-white py-16 md:py-20">
       <div className="max-w-[1250px] mx-auto px-6">
         {/* Heading */}
         <div className="text-center">
-          <h2 className="text-[32px] sm:text-[40px] md:text-[46px] font-serif text-[#2E1E16]">
+          <h2 className="text-[32px] sm:text-[40px] md:text-[46px] font-serif text-[#1E392A]">
             Gifts for{" "}
-            <span className="text-[#7A3D08]">Every Occasion</span>
+            <span className="text-[#1E392A]">Every Occasion</span>
           </h2>
           <div className="w-14 h-[3px] bg-[#D89A1B] mx-auto mt-3 rounded-full" />
         </div>
@@ -74,7 +74,7 @@ export default function GiftsForEveryOccasion() {
               </div>
 
               {/* Label */}
-              <p className="mt-4 text-[12px] sm:text-[13px] font-medium tracking-[0.12em] text-[#2E1E16]">
+              <p className="mt-4 text-[12px] sm:text-[13px] font-medium tracking-[0.12em] text-[#1E392A]">
                 {occasion.label}
               </p>
             </div>

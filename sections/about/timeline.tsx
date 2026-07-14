@@ -47,7 +47,7 @@ export default function Timeline() {
           <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
             Our Story
           </span>
-          <h2 className="mt-3 text-[28px] sm:text-[34px] md:text-[34px] font-serif text-[#2C241E] leading-tight">
+          <h2 className="mt-3 text-[28px] sm:text-[34px] md:text-[34px] font-serif text-[#2D3A1B] leading-tight">
             From a Simple Idea to a Promise of Purity
           </h2>
           <p className="mt-4 text-[14px] sm:text-[15px] leading-[1.7] text-[#4B5563] max-w-[620px] mx-auto">
@@ -69,7 +69,7 @@ export default function Timeline() {
                   className="object-cover"
                 />
               </div>
-              <h3 className="mt-5 font-serif text-[18px] sm:text-[19px] text-[#2C241E]">
+              <h3 className="mt-5 font-serif text-[18px] sm:text-[19px] text-[#2D3A1B]">
                 {item.title}
               </h3>
               <p className="mt-2 text-[13px] leading-[1.6] text-[#8D7F73] max-w-[220px]">

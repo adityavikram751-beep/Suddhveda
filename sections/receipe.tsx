@@ -188,7 +188,7 @@ export default function RecipesPage() {
             <span className="text-[#8D7F73] text-[13px] sm:text-[14px]">
               Showing 1-{recipes.length} of {recipes.length} results
             </span>
-            <select className="border border-[#E6D2B8] rounded-lg text-[13px] sm:text-[14px] text-[#2C241E] px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-[#D49313]">
+            <select className="border border-[#E6D2B8] rounded-lg text-[13px] sm:text-[14px] text-[#2D3A1B] px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-[#D49313]">
               <option>Sort by: Featured</option>
               <option>Sort by: Newest</option>
               <option>Sort by: A-Z</option>
@@ -318,7 +318,7 @@ function FaqItem({ faq }: { faq: Faq }) {
         onClick={() => setOpen((prev) => !prev)}
         className="w-full flex items-center justify-between gap-4 text-left"
       >
-        <span className="font-semibold text-[14px] sm:text-[15px] text-[#2C241E]">
+        <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B]">
           {faq.question}
         </span>
         <FiChevronDown

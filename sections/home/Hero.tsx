@@ -27,7 +27,7 @@ export default function Hero() {
             </h1>
 
             {/* Subheading */}
-            <p className="mt-5 lg:mt-6 text-[16px] sm:text-[18px] font-semibold text-[#2C241E]">
+            <p className="mt-5 lg:mt-6 text-[16px] sm:text-[18px] font-semibold text-[#2D3A1B]">
               Raw Natural, Unfiltered
             </p>
 
@@ -131,7 +131,7 @@ export default function Hero() {
                   <TbLeaf size={24} className="stroke-[1.5]" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-[#2C241E] text-[14px] leading-tight">No Added</span>
+                  <span className="font-semibold text-[#2D3A1B] text-[14px] leading-tight">No Added</span>
                   <span className="text-[#8D7F73] text-[12px]">Sugar</span>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function Hero() {
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-[#2C241E] text-[14px] leading-tight">Raw &</span>
+                  <span className="font-semibold text-[#2D3A1B] text-[14px] leading-tight">Raw &</span>
                   <span className="text-[#8D7F73] text-[12px]">Unfiltered</span>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function Hero() {
                 <div className="text-[#D49313] text-lg">★</div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1">
-                    <span className="font-semibold text-[#2C241E] text-[14px] leading-none">4.9</span>
+                    <span className="font-semibold text-[#2D3A1B] text-[14px] leading-none">4.9</span>
                     <span className="text-[#D49313] text-[10px]">★</span>
                   </div>
                   <span className="text-[#8D7F73] text-[12px] mt-0.5">Rating</span>

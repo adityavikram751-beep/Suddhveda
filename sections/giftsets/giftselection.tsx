@@ -7,229 +7,276 @@ import {
   Award,
   PenLine,
   ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 
 const boxes = [
-  { id: "classic-wood", label: "CLASSIC WOOD", price: 599, image: "/build-box/classic-wood.png" },
-  { id: "matte-black", label: "MATTE BLACK", price: 649, image: "/build-box/matte-black.png" },
-  { id: "gold-embossed", label: "GOLD EMBOSSED", price: 749, image: "/build-box/gold-embossed.png" },
+  { id: "small", label: "SMALL", capacity: 2, price: 349 },
+  { id: "medium", label: "MEDIUM", capacity: 4, price: 499 },
+  { id: "large", label: "LARGE", capacity: 6, price: 649 },
 ];
 
 const honeyBlends = [
-  { id: "wildflower", label: "Wildflower Pure Honey (250g)", price: 450 },
-  { id: "multiflora", label: "Multiflora Honey (250g)", price: 420 },
-  { id: "acacia", label: "Acacia Honey (250g)", price: 520 },
-  { id: "raw-forest", label: "Raw Forest Honey (250g)", price: 480 },
+  { id: "natural", label: "Natural Honey (250g)", price: 150 },
+  { id: "mustard", label: "Mustard Honey (250g)", price: 150 },
+  { id: "multiflora", label: "Multiflora Honey (250g)", price: 150 },
+  { id: "litchi", label: "Litchi Honey (250g)", price: 150 },
+  { id: "fennel", label: "Fennel Honey (250g)", price: 150 },
+  { id: "ajwain", label: "Ajwain Honey (250g)", price: 150 },
+  { id: "wildflower", label: "Wildflower Honey (250g)", price: 150 },
+  { id: "acacia", label: "Acacia Honey (250g)", price: 150 },
 ];
 
 const greetingCards = [
-  { id: "birthday", label: "Happy Birthday" },
-  { id: "anniversary", label: "Happy Anniversary" },
-  { id: "love", label: "With Love" },
+  { id: "birthday", label: "Birthday" },
+  { id: "thank-you", label: "Thank You" },
+  { id: "festival", label: "Festival Wishes" },
+  { id: "custom", label: "Custom Note" },
 ];
-
-const wrapColors = [
-  { id: "gold", hex: "#F0C77E" },
-  { id: "peach", hex: "#F3C9A8" },
-  { id: "blush", hex: "#F1CFC2" },
-];
-
-const GIFT_WRAP_PRICE = 150;
 
 export default function BuildYourOwnGiftBox() {
-  const [selectedBox, setSelectedBox] = useState(boxes[0].id);
-  const [selectedHoney, setSelectedHoney] = useState(honeyBlends[0].id);
-  const [selectedCard, setSelectedCard] = useState<string | null>(null);
-  const [selectedWrap, setSelectedWrap] = useState(wrapColors[0].id);
+  const [selectedBox, setSelectedBox] = useState(boxes[1].id);
+  const [selectedHoneys, setSelectedHoneys] = useState<string[]>([
+    "natural",
+    "litchi",
+    "fennel",
+  ]);
+  const [selectedCard, setSelectedCard] = useState<string>("birthday");
+  const [honeyMenuOpen, setHoneyMenuOpen] = useState(false);
 
   const boxData = boxes.find((b) => b.id === selectedBox)!;
-  const honeyData = honeyBlends.find((h) => h.id === selectedHoney)!;
-  const total = boxData.price + honeyData.price + GIFT_WRAP_PRICE;
+  const cardData = greetingCards.find((c) => c.id === selectedCard);
+  const honeyTotal = honeyBlends
+    .filter((h) => selectedHoneys.includes(h.id))
+    .reduce((sum, h) => sum + h.price, 0);
+  const total = boxData.price + honeyTotal;
+
+  const toggleHoney = (id: string) => {
+    setSelectedHoneys((prev) =>
+      prev.includes(id) ? prev.filter((h) => h !== id) : [...prev, id],
+    );
+  };
 
   return (
-    <section className="relative overflow-hidden bg-orange-50 py-20">
-      {/* Top-left honey drip decoration */}
+    <section className="relative overflow-hidden bg-white py-20">
       <Image
         src="/contact.png"
         alt=""
-        width={220}
-        height={140}
+        width={200}
+        height={130}
         className="absolute left-0 top-0 pointer-events-none select-none"
       />
-
-      {/* Right florals decoration (near preview card) */}
       <Image
         src="/videoleft.png"
         alt=""
         width={160}
-        height={300}
-        className="absolute right-22 top-[460px] pointer-events-none select-none opacity-80 hidden lg:block"
+        height={140}
+        className="absolute right-0 top-0 pointer-events-none select-none opacity-90 hidden lg:block"
       />
 
       <div className="max-w-[1250px] mx-auto px-6 relative z-10">
-        {/* Heading */}
         <div className="text-center mb-14">
           <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
-            CREATE SOMETHING UNIQUE
+            MAKE IT PERSONAL
           </p>
-          <h2 className="text-[32px] md:text-[38px] font-serif text-[#2E1E16] mt-2">
-            Build Your Own Gift Box <span className="align-middle">  <Image
-        src="/customer2.png"
-        alt=""
-        width={60}
-        height={300}
-        className="absolute right-88 top-[2px] pointer-events-none select-none opacity-80 hidden lg:block"
-      /></span>
+          <h2 className="flex items-center justify-center gap-3 text-[32px] md:text-[38px] font-serif text-[#2E1E16] mt-2">
+            <span>Build Your Own Gift Box</span>
+            <Image src="/customer2.png" alt="" width={26} height={26} />
+            <Image src="/customer2.png" alt="" width={26} height={26} />
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_300px] gap-10 items-start">
           {/* LEFT COLUMN */}
           <div className="space-y-6">
-            {/* Step 1 - Choose Your Box */}
+            {/* Step 1 */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <StepHeading number={1} title="Choose Your Box" />
-              <div className="grid grid-cols-3 gap-4 mt-5">
+              <p className="mt-1 ml-9 text-[11px] tracking-[0.05em] text-[#9A8F80]">
+                SELECT THE PERFECT BOX SIZE.
+              </p>
+              <div className="grid grid-cols-3 gap-3 mt-5">
                 {boxes.map((box) => (
                   <button
                     key={box.id}
                     onClick={() => setSelectedBox(box.id)}
-                    className={`flex flex-col items-center rounded-xl border-2 p-3 transition-colors ${
+                    className={`flex flex-col items-center rounded-xl border-2 p-2.5 transition-colors ${
                       selectedBox === box.id
-                        ? "border-[#B9791A] bg-[#FFF8EF]"
+                        ? "border-[#D89A1B] bg-[#FFF8EF]"
                         : "border-[#ECE2D2] hover:border-[#D8C4A3]"
                     }`}
                   >
-                    <div className="relative w-full aspect-[4/5] rounded-md overflow-hidden bg-[#F5DCC6]">
-                      <Image
-                        src={box.image}
-                        alt={box.label}
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="relative flex w-full aspect-[4/3] items-center justify-center rounded-md bg-[#EDEDED]">
+                      <div className="h-[35%] w-[55%] rounded bg-[#E6C99B]" />
                     </div>
-                    <span className="mt-3 text-[10px] font-semibold tracking-[0.08em] text-[#2E1E16]">
+                    <span className="mt-2.5 text-center text-[10px] font-semibold leading-tight tracking-[0.06em] text-[#2E1E16]">
                       {box.label}
+                      <br />({box.capacity} JARS)
                     </span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Step 2 - Select Honey Blends */}
+            {/* Step 2 */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <StepHeading number={2} title="Select Honey Blends" />
+              <p className="mt-1 ml-9 text-[11px] tracking-[0.05em] text-[#9A8F80]">
+                CHOOSE FROM OUR {honeyBlends.length} NATURAL VARIANTS.
+              </p>
               <div className="relative mt-5">
-                <select
-                  value={selectedHoney}
-                  onChange={(e) => setSelectedHoney(e.target.value)}
-                  className="w-full appearance-none rounded-xl border border-[#ECE2D2] bg-white px-4 py-3.5 text-[14px] text-[#2E1E16] focus:outline-none focus:border-[#D89A1B] cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setHoneyMenuOpen((o) => !o)}
+                  className="w-full flex items-center justify-between rounded-xl border border-[#ECE2D2] bg-white px-4 py-3.5 text-[14px] text-[#8A7A65] focus:outline-none focus:border-[#D89A1B]"
                 >
-                  {honeyBlends.map((h) => (
-                    <option key={h.id} value={h.id}>
-                      {h.label}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-[#8A7A65]"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                >
-                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
+                  Select Honeys
+                  <ChevronDown
+                    size={14}
+                    className={`text-[#8A7A65] transition-transform ${
+                      honeyMenuOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {honeyMenuOpen && (
+                  <div className="absolute z-20 mt-2 w-full rounded-xl border border-[#ECE2D2] bg-white p-3 shadow-md max-h-[220px] overflow-y-auto">
+                    {honeyBlends.map((h) => (
+                      <label
+                        key={h.id}
+                        className="flex items-center gap-2.5 py-1.5 text-[13px] text-[#4A4038] cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedHoneys.includes(h.id)}
+                          onChange={() => toggleHoney(h.id)}
+                          className="h-4 w-4 accent-[#B9791A]"
+                        />
+                        {h.label}
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Step 3 & 4 side by side */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Step 3 - Greeting Card */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <StepHeading number={3} title="Greeting Card" />
-                <div className="mt-5 space-y-3">
-                  {greetingCards.map((card) => (
-                    <label
-                      key={card.id}
-                      className="flex items-center gap-3 cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="greeting-card"
-                        checked={selectedCard === card.id}
-                        onChange={() => setSelectedCard(card.id)}
-                        className="w-4 h-4 accent-[#B9791A]"
-                      />
-                      <span className="text-[13px] text-[#4A4038]">
-                        {card.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Step 4 - Gift Wrap */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <StepHeading number={4} title="Gift Wrap" />
-                <div className="mt-5 flex items-center gap-3">
-                  {wrapColors.map((wrap) => (
-                    <button
-                      key={wrap.id}
-                      onClick={() => setSelectedWrap(wrap.id)}
-                      className={`w-8 h-8 rounded-full transition-all ${
-                        selectedWrap === wrap.id
-                          ? "ring-2 ring-offset-2 ring-[#B9791A]"
-                          : ""
-                      }`}
-                      style={{ backgroundColor: wrap.hex }}
-                      aria-label={wrap.id}
+            {/* Step 3 */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <StepHeading number={3} title="Add a Greeting Card" />
+              <div className="mt-5 space-y-3">
+                {greetingCards.map((card) => (
+                  <label
+                    key={card.id}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="greeting-card"
+                      checked={selectedCard === card.id}
+                      onChange={() => setSelectedCard(card.id)}
+                      className="w-4 h-4 accent-[#B9791A]"
                     />
-                  ))}
-                </div>
+                    <span className="text-[13px] text-[#4A4038]">
+                      {card.label}
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Preview Your Gift */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 h-fit">
-            <h3 className="text-[19px] font-serif text-[#2E1E16] mb-5">
-              Preview Your Gift
-            </h3>
-
-            <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
+          {/* ===== MIDDLE COLUMN – IMAGE (shifted down, bigger) ===== */}
+          <div className="hidden lg:flex items-center justify-center mt-16">
+            <div className="relative w-full max-h-[300px] aspect-square rounded-xl overflow-hidden">
               <Image
                 src="/image1.png"
-                alt="Gift preview"
+                alt="Gift box preview"
                 fill
-                className="object-cover"
+                className="object-contain"
+                sizes="(max-width: 1024px) 100vw, 40vw"
               />
             </div>
+          </div>
 
-            <div className="mt-5 space-y-2.5">
-              <PriceRow label={boxData.label.charAt(0) + boxData.label.slice(1).toLowerCase()} value={boxData.price} />
-              <PriceRow label={honeyData.label.replace(/\s*\(.*?\)/, "")} value={honeyData.price} />
-              <PriceRow label="Premium Gift Wrap" value={GIFT_WRAP_PRICE} />
+          {/* RIGHT COLUMN - Preview */}
+          <div>
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h3 className="text-[19px] font-serif text-[#2E1E16] mb-5">
+                Preview Your Gift
+              </h3>
+
+              <div className="space-y-4">
+                <div className="flex gap-2.5">
+                  <div className="flex flex-col items-center pt-[3px]">
+                    <span className="h-2 w-2 rounded-full bg-[#1F2B1B]" />
+                    <ChevronDown size={11} className="mt-1 text-[#9A8F80]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                      BOX SIZE
+                    </p>
+                    <p className="mt-1 text-[13px] text-[#2E1E16]">
+                      {boxData.label.charAt(0) + boxData.label.slice(1).toLowerCase()}{" "}
+                      ({selectedHoneys.length} Jars)
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2.5">
+                  <div className="flex flex-col items-center pt-[3px]">
+                    <span className="h-2 w-2 rounded-full border border-[#9A8F80]" />
+                    <ChevronDown size={11} className="mt-1 text-[#9A8F80]" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                      HONEYS
+                    </p>
+                    <div className="mt-1 space-y-0.5">
+                      {selectedHoneys.length === 0 && (
+                        <p className="text-[13px] text-[#9A8F80]">
+                          No honeys selected
+                        </p>
+                      )}
+                      {honeyBlends
+                        .filter((h) => selectedHoneys.includes(h.id))
+                        .map((h) => (
+                          <p key={h.id} className="text-[13px] text-[#2E1E16]">
+                            {h.label}
+                          </p>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                    GREETING CARD
+                  </p>
+                  <p className="mt-1 text-[13px] text-[#2E1E16]">
+                    {cardData ? cardData.label : "None"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="h-px bg-[#F0E4D3] my-4" />
+
+              <div className="flex items-center justify-between">
+                <span className="text-[18px] font-serif text-[#2E1E16]">
+                  Total Price
+                </span>
+                <span className="text-[20px] font-semibold text-[#2E1E16]">
+                  ₹{total.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <button className="w-full mt-5 bg-[#D89A1B] hover:bg-[#C98715] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors">
+                ADD TO CART
+              </button>
             </div>
-
-            <div className="h-px bg-[#F0E4D3] my-4" />
-
-            <div className="flex items-center justify-between">
-              <span className="text-[18px] font-serif text-[#2E1E16]">
-                Total Price
-              </span>
-              <span className="text-[20px] font-semibold text-[#D89A1B]">
-                ₹{total.toLocaleString("en-IN")}
-              </span>
-            </div>
-
-            <button className="w-full mt-5 bg-[#5C3A0E] hover:bg-[#4A2F0B] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors">
-              ADD TO CART
-            </button>
           </div>
         </div>
 
-        {/* Bottom Section - Every Gift is Packed with Love */}
+        {/* Bottom Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
-          {/* Left - Image with quote overlay */}
           <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
             <Image
               src="/image2.png"
@@ -244,7 +291,6 @@ export default function BuildYourOwnGiftBox() {
             </div>
           </div>
 
-          {/* Right - Text content */}
           <div>
             <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
               PREMIUM BY NATURE
@@ -289,19 +335,10 @@ export default function BuildYourOwnGiftBox() {
 function StepHeading({ number, title }: { number: number; title: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#5C3A0E] text-white text-[12px] font-semibold shrink-0">
+      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#1F2B1B] text-white text-[12px] font-semibold shrink-0">
         {number}
       </span>
       <h3 className="text-[18px] font-serif text-[#2E1E16]">{title}</h3>
-    </div>
-  );
-}
-
-function PriceRow({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex items-center justify-between text-[13px]">
-      <span className="text-[#6F665F]">{label}</span>
-      <span className="text-[#2E1E16] font-medium">{value}</span>
     </div>
   );
 }

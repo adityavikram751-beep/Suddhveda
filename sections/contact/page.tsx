@@ -14,7 +14,7 @@ export default function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="mt-10 text-[32px] sm:text-[40px] md:text-[48px] lg:text-[56px] leading-[1.15] lg:leading-[1.12] font-serif text-[#2C241E] tracking-tight font-normal">
+            <h1 className="mt-10 text-[32px] sm:text-[40px] md:text-[48px] lg:text-[56px] leading-[1.15] lg:leading-[1.12] font-serif text-[#2D3A1B] tracking-tight font-normal">
               Let's Start a
               <br />
               <span className="text-[#D49313] italic">Sweet Conversation.</span>
@@ -36,7 +36,7 @@ export default function Hero() {
                   <FiPlay size={16} />
                 </span>
                 <span className="flex flex-col text-left leading-tight">
-                  <span className="font-bold text-[14px] sm:text-[15px] text-[#2C241E]">How We Can Help You</span>
+                  <span className="font-bold text-[14px] sm:text-[15px] text-[#2D3A1B]">How We Can Help You</span>
                   <span className="text-[#8D7F73] text-[12px] sm:text-[13px]">Watch Video</span>
                 </span>
               </button>
@@ -52,7 +52,7 @@ export default function Hero() {
                   <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white bg-[#C9B08A]" />
                 </div>
                 <div className="flex flex-col whitespace-nowrap">
-                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2C241E] leading-tight">20,000+</span>
+                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2D3A1B] leading-tight">20,000+</span>
                   <span className="text-[#8D7F73] text-[11px] sm:text-[13px]">Happy Customers</span>
                 </div>
               </div>
@@ -63,7 +63,7 @@ export default function Hero() {
                   <FiEye size={16} />
                 </span>
                 <div className="flex flex-col whitespace-nowrap">
-                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2C241E] leading-tight">4.9 ★★★★★</span>
+                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2D3A1B] leading-tight">4.9 ★★★★★</span>
                   <span className="text-[#8D7F73] text-[11px] sm:text-[13px]">Average Rating</span>
                 </div>
               </div>
@@ -74,7 +74,7 @@ export default function Hero() {
                   <FiClock size={16} />
                 </span>
                 <div className="flex flex-col whitespace-nowrap">
-                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2C241E] leading-tight">Quick</span>
+                  <span className="font-bold text-[13px] sm:text-[15px] text-[#2D3A1B] leading-tight">Quick</span>
                   <span className="text-[#8D7F73] text-[11px] sm:text-[13px]">24h Support</span>
                 </div>
               </div>
