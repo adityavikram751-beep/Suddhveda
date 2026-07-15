@@ -9,7 +9,7 @@ const products = [
   {
     id: 1,
     badge: "BESTSELLER",
-    badgeColor: "bg-[#2E1E16] text-white",
+    badgeColor: "bg-[#2D3A1B] text-white",
     image: "/product1.png",
     name: "Classic Honey",
     subtitle: "Gift Box",
@@ -42,7 +42,7 @@ const products = [
   {
     id: 4,
     badge: "NEW ARRIVAL",
-    badgeColor: "bg-[#2E1E16] text-white",
+    badgeColor: "bg-[#2D3A1B] text-white",
     image: "/product2.png",
     name: "Minimal Luxe",
     subtitle: "Box",
@@ -53,7 +53,7 @@ const products = [
   {
     id: 5,
     badge: "BESTSELLER",
-    badgeColor: "bg-[#2E1E16] text-white",
+    badgeColor: "bg-[#2D3A1B] text-white",
     image: "/product1.png",
     name: "Wild Forest Honey",
     subtitle: "Premium",
@@ -171,7 +171,7 @@ export default function FeaturedCollection() {
               className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 border border-[#E6D2B8]/30"
               style={{ transform: "translateY(-50%)" }}
             >
-              <ChevronLeft size={24} className="text-[#2E1E16]" />
+              <ChevronLeft size={24} className="text-[#2D3A1B]" />
             </button>
           )}
 
@@ -182,7 +182,7 @@ export default function FeaturedCollection() {
               className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 border border-[#E6D2B8]/30"
               style={{ transform: "translateY(-50%)" }}
             >
-              <ChevronRight size={24} className="text-[#2E1E16]" />
+              <ChevronRight size={24} className="text-[#2D3A1B]" />
             </button>
           )}
 
@@ -232,7 +232,7 @@ export default function FeaturedCollection() {
                       <h3 className="text-[17px] font-medium text-[#1E392A] leading-tight">
                         {product.name}
                       </h3>
-                      <p className="text-[15px] text-[#2E1E16] leading-tight">
+                      <p className="text-[15px] text-[#2D3A1B] leading-tight">
                         {product.subtitle}
                       </p>
                     </div>
@@ -244,7 +244,7 @@ export default function FeaturedCollection() {
                   {/* Rating */}
                   <div className="flex items-center gap-1 mt-2">
                     <Star size={14} className="fill-[#D89A1B] text-[#D89A1B]" />
-                    <span className="text-[13px] font-medium text-[#2E1E16]">
+                    <span className="text-[13px] font-medium text-[#2D3A1B]">
                       {product.rating}
                     </span>
                   </div>
@@ -267,7 +267,7 @@ export default function FeaturedCollection() {
                   {/* Actions */}
                   <div className="flex items-center gap-3 mt-5">
                     <button
-                      className="flex-1 border border-[#2E1E16]/20 rounded-lg py-2.5 text-[13px] font-medium text-[#2E1E16] hover:bg-[#2E1E16] hover:text-white transition-colors"
+                      className="flex-1 border border-[#2D3A1B]/20 rounded-lg py-2.5 text-[13px] font-medium text-[#2D3A1B] hover:bg-[#2D3A1B] hover:text-white transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
                         router.push(`/gift`);

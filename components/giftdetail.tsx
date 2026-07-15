@@ -66,7 +66,7 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FFF8EF]">
         <div className="text-center">
-          <h2 className="text-2xl font-serif text-[#2E1E16]">Product not found</h2>
+          <h2 className="text-2xl font-serif text-[#2D3A1B]">Product not found</h2>
           <button
             onClick={() => window.history.back()}
             className="mt-4 text-[#D89A1B] underline"
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
                 className="object-cover"
               />
               {product.badge && (
-                <span className="absolute top-4 left-4 bg-[#2E1E16] text-white text-[11px] font-semibold px-4 py-1.5 rounded-full">
+                <span className="absolute top-4 left-4 bg-[#2D3A1B] text-white text-[11px] font-semibold px-4 py-1.5 rounded-full">
                   {product.badge}
                 </span>
               )}
@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
             {/* Title & Price */}
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-[32px] font-serif text-[#2E1E16]">
+                <h1 className="text-[32px] font-serif text-[#2D3A1B]">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3 mt-2">
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
 
             {/* Delivery Details */}
             <div className="mt-6 p-4 bg-white rounded-xl border border-[#E6D2B8]/30">
-              <div className="flex items-center gap-2 text-[14px] font-medium text-[#2E1E16]">
+              <div className="flex items-center gap-2 text-[14px] font-medium text-[#2D3A1B]">
                 <Truck size={18} />
                 Delivery Details
               </div>
@@ -180,7 +180,7 @@ export default function ProductDetailPage() {
 
             {/* Weight Options */}
             <div className="mt-6">
-              <h3 className="text-[14px] font-semibold text-[#2E1E16] mb-3">Weight</h3>
+              <h3 className="text-[14px] font-semibold text-[#2D3A1B] mb-3">Weight</h3>
               <div className="flex flex-wrap gap-3">
                 {product.weight.map((w) => (
                   <button

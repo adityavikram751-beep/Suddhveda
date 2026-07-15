@@ -46,10 +46,18 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: fullStars }).map((_, i) => (
-        <Star key={i} size={18} className="fill-[#C9992E] text-[#C9992E]" />
+        <Star
+          key={i}
+          size={22}
+          className="fill-[#A87400] text-[#A87400]"
+        />
       ))}
+  
       {hasHalf && (
-        <StarHalf size={18} className="fill-[#C9992E] text-[#C9992E]" />
+        <StarHalf
+          size={22}
+          className="fill-[#A87400] text-[#A87400]"
+        />
       )}
     </div>
   );
@@ -61,61 +69,69 @@ export default function TestimonialsAndBulkGifting() {
   return (
     <>
       {/* Testimonials Section */}
-      <section className="relative bg-[#FDF3E7] py-16 md:py-20">
+      <section className="relative bg-white py-16 md:py-20">
         <div className="max-w-[1300px] mx-auto px-6">
           {/* Heading */}
           <div className="text-center mb-10">
             <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
               CUSTOMER MOMENTS
             </p>
-            <h2 className="text-[32px] md:text-[40px] font-serif text-[#2E1E16] mt-2">
+            <h2 className="text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
               Real Stories, Real Happiness
             </h2>
           </div>
 
-          {/* Testimonial Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((t) => (
-              <div
-                key={t.id}
-                className="flex flex-col bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300"
-              >
-                <StarRating rating={t.rating} />
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-6">
+  {testimonials.map((t) => (
+    <div
+      key={t.id}
+      className="w-[266px] h-[323px] bg-white rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col"
+    >
+      {/* Stars */}
+      <div className="mb-5">
+        <StarRating rating={t.rating} />
+      </div>
 
-                <p className="text-[15px] text-[#4A4038] leading-relaxed mt-5">
-                  &ldquo;{t.text}&rdquo;
-                </p>
+      {/* Review */}
+      <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1">
+        &ldquo;{t.text}&rdquo;
+      </p>
 
-                {/* This row always sticks to the bottom of the card */}
-                <div className="flex items-center gap-3 mt-auto pt-8">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0">
-                    <Image
-                      src={t.image}
-                      alt={t.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-[14px] font-semibold text-[#2E1E16]">
-                      {t.name}
-                    </p>
-                    <p className="text-[12px] text-[#B9791A]">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* User */}
+      <div className="flex items-center gap-3 mt-6">
+        <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
+          <Image
+            src={t.image}
+            alt={t.name}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div>
+          <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
+            {t.name}
+          </h4>
+
+          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
+            {t.role}
+          </p>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
         </div>
       </section>
 
       {/* Bulk Gifting / Custom Quote Section */}
-      <section className="relative bg-[#FDF3E7] pb-16 md:pb-20">
+      <section className="relative bg-white pb-16 md:pb-20">
         <div className="max-w-[1300px] mx-auto px-6">
-          <div className="bg-[#3A2A1C]  px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="bg-[#011D02]  px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             {/* Left - Text */}
             <div>
-              <h2 className="text-[32px] md:text-[38px] font-serif text-[#F0C77E] leading-tight">
+              <h2 className="text-[
+48px] md:text-[38px] font-serif text-[#F0C77E] leading-tight">
                 Build Strong <br />
                 Relationships with <br />
                 Meaningful Gifts
@@ -138,7 +154,7 @@ export default function TestimonialsAndBulkGifting() {
             </div>
 
             {/* Right - Form */}
-            <div className="bg-white/10 rounded-2xl p-7">
+            <div className="bg-[#2D3A1B] rounded-2xl p-7">
               <h3 className="text-[22px] font-serif text-white mb-5">
                 Get a Custom Quote
               </h3>
@@ -147,32 +163,32 @@ export default function TestimonialsAndBulkGifting() {
                 <input
                   type="text"
                   placeholder="Full Name"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
                 />
                 <input
                   type="email"
                   placeholder="Business Email"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
                 />
                 <div className="relative">
                   <select
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-[14px] text-white/50 focus:outline-none focus:border-[#D89A1B] cursor-pointer"
+                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white/50 focus:outline-none focus:border-[#D89A1B] cursor-pointer"
                   >
-                    <option value="" className="text-[#2E1E16]">
+                    <option value="" className="text-[#2D3A1B]">
                       Expected Quantity (e.g. 50-100)
                     </option>
-                    <option value="50-100" className="text-[#2E1E16]">
+                    <option value="50-100" className="text-[#2D3A1B]">
                       50-100
                     </option>
-                    <option value="100-250" className="text-[#2E1E16]">
+                    <option value="100-250" className="text-[#2D3A1B]">
                       100-250
                     </option>
-                    <option value="250-500" className="text-[#2E1E16]">
+                    <option value="250-500" className="text-[#2D3A1B]">
                       250-500
                     </option>
-                    <option value="500+" className="text-[#2E1E16]">
+                    <option value="500+" className="text-[#2D3A1B]">
                       500+
                     </option>
                   </select>
@@ -185,7 +201,7 @@ export default function TestimonialsAndBulkGifting() {
                   </svg>
                 </div>
 
-                <button className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2E1E16] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1">
+                <button className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2D3A1B] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1">
                   REQUEST QUOTE
                 </button>
               </div>

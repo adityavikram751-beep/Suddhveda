@@ -11,7 +11,7 @@ export default function MomentsMadeSweeter() {
           <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
             GIFTING INSPIRATION
           </p>
-          <h2 className="text-[32px] md:text-[38px] font-serif text-[#2E1E16] mt-2">
+          <h2 className="text-[32px] md:text-[38px] font-serif text-[#2D3A1B] mt-2">
             Moments Made Sweeter
           </h2>
         </div>

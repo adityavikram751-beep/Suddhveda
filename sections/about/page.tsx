@@ -3,13 +3,13 @@ import { FiBox, FiDollarSign, FiHeart } from "react-icons/fi";
 
 export default function Hero() {
   return (
-    <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px]">
+    <section className="bg-[#FEF8F4] overflow-hidden lg:min-h-[720px]">
       <div className="max-w-[1440px] mx-auto w-full px-6 lg:pl-8 lg:pr-16 pt-4 pb-10 lg:pb-0">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-start">
           {/* LEFT CONTENT */}
           <div className="flex flex-col items-start pt-4 lg:pt-8">
             {/* Badge */}
-            <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.08em] uppercase">
+            <span className=" mt-8 text-[#D49313] text-[13px] font-semibold tracking-[0.08em] uppercase">
               Our Story
             </span>
 
@@ -17,14 +17,14 @@ export default function Hero() {
             <h1 className="mt-2 text-[44px] sm:text-[52px] md:text-[60px] lg:text-[68px] leading-[1.18] font-serif text-[#2D3A1B] tracking-tight font-normal">
               Rooted in Nature.
               <br />
-              <span className="italic text-[#D49313]">Driven by</span>
-              <br />
-              <span className="italic text-[#D49313]">Purpose.</span>
+              <span className="italic text-[#D49313]">Driven by Purpose.</span>
             </h1>
 
             {/* Description */}
             <p className="mt-8 text-[18px] sm:text-[16px] leading-[1.65] text-[#8D7F73] max-w-[460px]">
-              At ShudhVeda, we believe honey is more than a sweetener—it's a gift from nature, crafted by hardworking bees and preserved with care and respect.
+              At ShuddhaVeda, we believe honey is more than a sweetener—it's a
+              gift from nature, crafted by hardworking bees and preserved with
+              care and respect.
             </p>
 
             {/* Features */}
@@ -74,7 +74,7 @@ export default function Hero() {
             <div className="relative flex justify-center lg:justify-end items-start w-full h-[280px] sm:h-[380px] md:h-[480px] lg:h-[650px]">
               <Image
                 src="/hero.png"
-                alt="ShudhVeda Natural Honey Jar"
+                alt="ShuddhaVeda Natural Honey Jar"
                 width={1800}
                 height={1800}
                 priority

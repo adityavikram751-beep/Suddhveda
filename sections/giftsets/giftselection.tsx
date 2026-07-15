@@ -59,27 +59,29 @@ export default function BuildYourOwnGiftBox() {
 
   return (
     <section className="relative overflow-hidden bg-white py-20">
+      {/* Decorative corner images — replace with your own assets in /public */}
       <Image
         src="/contact.png"
         alt=""
-        width={200}
-        height={130}
+        width={150}
+        height={110}
         className="absolute left-0 top-0 pointer-events-none select-none"
       />
       <Image
         src="/videoleft.png"
         alt=""
-        width={160}
+        width={220}
         height={140}
-        className="absolute right-0 top-0 pointer-events-none select-none opacity-90 hidden lg:block"
+        className="absolute right-6 top-2 pointer-events-none select-none opacity-95 hidden lg:block"
       />
 
       <div className="max-w-[1250px] mx-auto px-6 relative z-10">
+        {/* Header */}
         <div className="text-center mb-14">
           <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
             MAKE IT PERSONAL
           </p>
-          <h2 className="flex items-center justify-center gap-3 text-[32px] md:text-[38px] font-serif text-[#2E1E16] mt-2">
+          <h2 className="flex items-center justify-center gap-3 text-[32px] md:text-[38px] font-serif text-[#2D3A1B] mt-2">
             <span>Build Your Own Gift Box</span>
             <Image src="/customer2.png" alt="" width={26} height={26} />
             <Image src="/customer2.png" alt="" width={26} height={26} />
@@ -89,8 +91,8 @@ export default function BuildYourOwnGiftBox() {
         <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr_300px] gap-10 items-start">
           {/* LEFT COLUMN */}
           <div className="space-y-6">
-            {/* Step 1 */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            {/* Step 1 — Choose Your Box */}
+            <div className="bg-white   p-6">
               <StepHeading number={1} title="Choose Your Box" />
               <p className="mt-1 ml-9 text-[11px] tracking-[0.05em] text-[#9A8F80]">
                 SELECT THE PERFECT BOX SIZE.
@@ -99,6 +101,7 @@ export default function BuildYourOwnGiftBox() {
                 {boxes.map((box) => (
                   <button
                     key={box.id}
+                    type="button"
                     onClick={() => setSelectedBox(box.id)}
                     className={`flex flex-col items-center rounded-xl border-2 p-2.5 transition-colors ${
                       selectedBox === box.id
@@ -109,7 +112,7 @@ export default function BuildYourOwnGiftBox() {
                     <div className="relative flex w-full aspect-[4/3] items-center justify-center rounded-md bg-[#EDEDED]">
                       <div className="h-[35%] w-[55%] rounded bg-[#E6C99B]" />
                     </div>
-                    <span className="mt-2.5 text-center text-[10px] font-semibold leading-tight tracking-[0.06em] text-[#2E1E16]">
+                    <span className="mt-2.5 text-center text-[10px] font-semibold leading-tight tracking-[0.06em] text-[#2D3A1B]">
                       {box.label}
                       <br />({box.capacity} JARS)
                     </span>
@@ -118,8 +121,8 @@ export default function BuildYourOwnGiftBox() {
               </div>
             </div>
 
-            {/* Step 2 */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            {/* Step 2 — Select Honey Blends */}
+            <div className=" -mt-10 bg-white  p-6">
               <StepHeading number={2} title="Select Honey Blends" />
               <p className="mt-1 ml-9 text-[11px] tracking-[0.05em] text-[#9A8F80]">
                 CHOOSE FROM OUR {honeyBlends.length} NATURAL VARIANTS.
@@ -159,8 +162,8 @@ export default function BuildYourOwnGiftBox() {
               </div>
             </div>
 
-            {/* Step 3 */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            {/* Step 3 — Add a Greeting Card */}
+            <div className=" -mt-10 bg-white  p-6">
               <StepHeading number={3} title="Add a Greeting Card" />
               <div className="mt-5 space-y-3">
                 {greetingCards.map((card) => (
@@ -184,8 +187,8 @@ export default function BuildYourOwnGiftBox() {
             </div>
           </div>
 
-          {/* ===== MIDDLE COLUMN – IMAGE (shifted down, bigger) ===== */}
-          <div className="hidden lg:flex items-center justify-center mt-16">
+          {/* MIDDLE COLUMN — IMAGE */}
+          <div className="hidden lg:flex items-center justify-center mt-36">
             <div className="relative w-full max-h-[300px] aspect-square rounded-xl overflow-hidden">
               <Image
                 src="/image1.png"
@@ -197,10 +200,10 @@ export default function BuildYourOwnGiftBox() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Preview */}
+          {/* RIGHT COLUMN — Preview */}
           <div>
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-[19px] font-serif text-[#2E1E16] mb-5">
+            <div className=" mt-20 bg-white rounded-2xl shadow-sm p-8">
+              <h3 className="text-[19px] font-serif text-[#2D3A1B] mb-5">
                 Preview Your Gift
               </h3>
 
@@ -214,8 +217,9 @@ export default function BuildYourOwnGiftBox() {
                     <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
                       BOX SIZE
                     </p>
-                    <p className="mt-1 text-[13px] text-[#2E1E16]">
-                      {boxData.label.charAt(0) + boxData.label.slice(1).toLowerCase()}{" "}
+                    <p className="mt-1 text-[13px] text-[#2D3A1B]">
+                      {boxData.label.charAt(0) +
+                        boxData.label.slice(1).toLowerCase()}{" "}
                       ({selectedHoneys.length} Jars)
                     </p>
                   </div>
@@ -239,7 +243,7 @@ export default function BuildYourOwnGiftBox() {
                       {honeyBlends
                         .filter((h) => selectedHoneys.includes(h.id))
                         .map((h) => (
-                          <p key={h.id} className="text-[13px] text-[#2E1E16]">
+                          <p key={h.id} className="text-[13px] text-[#2D3A1B]">
                             {h.label}
                           </p>
                         ))}
@@ -251,7 +255,7 @@ export default function BuildYourOwnGiftBox() {
                   <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
                     GREETING CARD
                   </p>
-                  <p className="mt-1 text-[13px] text-[#2E1E16]">
+                  <p className="mt-1 text-[13px] text-[#2D3A1B]">
                     {cardData ? cardData.label : "None"}
                   </p>
                 </div>
@@ -260,73 +264,105 @@ export default function BuildYourOwnGiftBox() {
               <div className="h-px bg-[#F0E4D3] my-4" />
 
               <div className="flex items-center justify-between">
-                <span className="text-[18px] font-serif text-[#2E1E16]">
+                <span className="text-[18px] font-serif text-[#2D3A1B]">
                   Total Price
                 </span>
-                <span className="text-[20px] font-semibold text-[#2E1E16]">
+                <span className="text-[20px] font-semibold text-[#2D3A1B]">
                   ₹{total.toLocaleString("en-IN")}
                 </span>
               </div>
 
-              <button className="w-full mt-5 bg-[#D89A1B] hover:bg-[#C98715] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors">
+              <button
+                type="button"
+                className="w-full mt-5 bg-[#D89A1B] hover:bg-[#C98715] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors"
+              >
                 ADD TO CART
               </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-24">
-          <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-            <Image
-              src="/image2.png"
-              alt="Packing a gift with a ribbon"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute bottom-5 left-5 right-5 sm:right-auto sm:max-w-[280px] bg-white/90 backdrop-blur-sm rounded-lg px-5 py-4">
-              <p className="text-[15px] font-serif italic text-[#2E1E16] leading-snug">
-                &ldquo;Every box is a work of art, packed with intention.&rdquo;
-              </p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[500px_1fr] gap-20 items-center mt-24">
 
-          <div>
-            <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
-              PREMIUM BY NATURE
-            </p>
-            <h2 className="text-[32px] md:text-[38px] font-serif text-[#2E1E16] mt-2 leading-tight">
-              Every Gift is Packed with Love
-            </h2>
-            <p className="text-[15px] text-[#6F665F] leading-relaxed mt-4 max-w-[480px]">
-              We believe the experience starts from the moment the box is
-              held. Our packaging is designed to evoke wonder and warmth.
-            </p>
+{/* Left Image */}
+<div className="relative w-full max-w-[490px] h-[620px] mx-auto lg:mx-0 rounded-[28px] overflow-hidden">
+  <Image
+    src="/image2.png"
+    alt="Gift Packaging"
+    fill
+    className="object-cover"
+    priority
+  />
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-6 mt-8">
-              <Feature
-                icon={<Leaf size={18} />}
-                title="Sustainable Materials"
-                desc="Eco-friendly boxes and fillers."
-              />
-              <Feature
-                icon={<Award size={18} />}
-                title="Hand-Tied Ribbons"
-                desc="Premium satin finish."
-              />
-              <Feature
-                icon={<PenLine size={18} />}
-                title="Personalized Notes"
-                desc="Handwritten for that extra touch."
-              />
-              <Feature
-                icon={<ShieldCheck size={18} />}
-                title="Wax-Sealed Cards"
-                desc="Ensuring exclusivity."
-              />
-            </div>
-          </div>
-        </div>
+  {/* Quote Card */}
+  <div className="absolute bottom-8 left-1/2 -translate-x-1/5 w-[58%] bg-white rounded-[22px] shadow-xl px-7 py-6">
+    <p
+      className="font-serif italic text-[#A16A00] leading-[1.15]"
+      style={{ fontSize: "34px" }}
+    >
+      “Every box is a
+      <br />
+      work of art,
+      <br />
+      packed with
+      <br />
+      intention.”
+    </p>
+  </div>
+</div>
+
+{/* Right Content */}
+<div className="max-w-[600px]">
+
+  <p className="uppercase tracking-[0.18em] text-[#A77710] text-[13px] font-semibold">
+    PREMIUM BY NATURE
+  </p>
+
+  <h2
+    className="font-serif text-[#14361E] mt-4 leading-[1.05]"
+    style={{ fontSize: "58px" }}
+  >
+    Every Gift is Packed
+    <br />
+    with Love
+  </h2>
+
+  <p className="text-[#6C5D53] text-[20px] leading-9 mt-7 max-w-[540px]">
+    We believe the experience starts from the moment the box is held.
+    Our packaging is designed to evoke wonder and warmth.
+  </p>
+
+  <div className="grid grid-cols-2 gap-x-14 gap-y-10 mt-12">
+
+    <Feature
+      icon={<Leaf size={20} />}
+      title="Sustainable Materials"
+      desc="Eco-friendly boxes and fillers."
+    />
+
+    <Feature
+      icon={<Award size={20} />}
+      title="Hand-Tied Ribbons"
+      desc="Premium satin finish."
+    />
+
+    <Feature
+      icon={<PenLine size={20} />}
+      title="Personalized Notes"
+      desc="Handwritten for that extra touch."
+    />
+
+    <Feature
+      icon={<ShieldCheck size={20} />}
+      title="Wax-Sealed Cards"
+      desc="Ensuring exclusivity."
+    />
+
+  </div>
+
+</div>
+
+</div>
       </div>
     </section>
   );
@@ -338,7 +374,7 @@ function StepHeading({ number, title }: { number: number; title: string }) {
       <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#1F2B1B] text-white text-[12px] font-semibold shrink-0">
         {number}
       </span>
-      <h3 className="text-[18px] font-serif text-[#2E1E16]">{title}</h3>
+      <h3 className="text-[18px] font-serif text-[#2D3A1B]">{title}</h3>
     </div>
   );
 }
@@ -356,7 +392,7 @@ function Feature({
     <div className="flex items-start gap-3">
       <span className="text-[#B9791A] mt-0.5 shrink-0">{icon}</span>
       <div>
-        <p className="text-[14px] font-semibold text-[#2E1E16] leading-tight">
+        <p className="text-[14px] font-semibold text-[#2D3A1B] leading-tight">
           {title}
         </p>
         <p className="text-[13px] text-[#6F665F] leading-snug mt-0.5">

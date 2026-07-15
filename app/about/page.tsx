@@ -2,7 +2,6 @@
 import TopBar from "@/components/layout/TopBar";
 import Header from "@/components/layout/Header";
 import About from "@/sections/about/page"
-import FeaturesBar from "@/sections/home/FeaturesBar";
 import Timeline from "@/sections/about/timeline";
 import OurValues from "@/sections/about/ourvalue";
 import Stats  from "@/sections/about/stats";
@@ -18,7 +17,6 @@ export default function AboutPage() {
     <TopBar />
       <Header />
       <About/>
-      <FeaturesBar/>
       <Timeline/>
       <OurValues/>
       <Stats/>
