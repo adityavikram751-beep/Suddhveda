@@ -1,51 +1,47 @@
+"use client";
+
 import Image from "next/image";
+import { Star, Heart, Eye, Users, Globe } from "lucide-react";
 
 const values = [
   {
     title: "Purity First",
     desc: "We never compromise on quality or authenticity.",
-    icon: "/Group.png",
+    icon: Star,
   },
   {
     title: "Respect for Nature",
     desc: "We work in harmony with bees and the environment.",
-    icon: "/Group.png",
+    icon: Heart,
   },
   {
     title: "Transparency",
     desc: "We believe in honesty, clarity, and open communication.",
-    icon: "/Group.png",
+    icon: Eye,
   },
   {
     title: "Ethical Partnership",
     desc: "We support local beekeepers and fair practices.",
-    icon: "/Group.png",
+    icon: Users,
   },
   {
     title: "Sustainability",
     desc: "From hive to home, we care for our planet.",
-    icon: "/Group.png",
+    icon: Globe,
   },
   {
     title: "Wellness for All",
     desc: "Pure honey for healthier homes and happier lives.",
-    icon: "/Group.png",
+    icon: Heart,
   },
-];
-
-const stats = [
-  { value: "20,000+", label: "Happy Customers", icon: "/first.png" },
-  { value: "1,250+", label: "Bee Colonies", icon: "/icons/bee.svg" },
-  { value: "7M+", label: "Bees Protected", icon: "/icons/honeycomb.svg" },
-  { value: "99.9%", label: "Pure & Natural Honey", icon: "/icons/drop.svg" },
 ];
 
 export default function OurValues() {
   return (
-    <section className="bg-[#FAF6F0] relative ">
+    <section className="bg-[#FAF6F0] relative">
       <div className="max-w-[1200px] mx-auto w-full px-6 lg:px-10 py-16 lg:py-20">
         {/* Decorative honeycomb corner */}
-        <div className=" lg:block absolute -top-32 right-2 w-60 h-60 opacity-50 pointer-events-none">
+        <div className="hidden lg:block absolute top-23 right-2 w-50 h-50 opacity-90 pointer-events-none">
           <Image src="/customer.png" alt="" fill className="object-contain" />
         </div>
 
@@ -71,41 +67,36 @@ export default function OurValues() {
 
           {/* RIGHT VALUES */}
           <div className="flex flex-col justify-center h-full">
-            <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
+            <span className="text-[#D49313] text-[13px]  font-semibold tracking-[0.15em] uppercase">
               Our Values
             </span>
-            <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight">
+            <h2 className="mt-4 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight">
               What Drives Everything We Do
             </h2>
 
             <div className="grid sm:grid-cols-2 gap-x-8 gap-y-7 mt-10">
-              {values.map((item, i) => (
-                <div key={i} className="flex flex-col items-start gap-4">
-                  {/* BILKUL SADA ICON - size yahan badlo (width/height) */}
-                  <div className="flex-shrink-0">
-                    <Image
-                      src={item.icon}
-                      alt=""
-                      width={50}  // <-- yeh value badhao ya ghatao
-                      height={50} // <-- yeh value badhao ya ghatao
-                      className="object-contain"
-                    />
+              {values.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.title} className="flex items-start gap-8">
+                    {/* Icon circle */}
+                    <div className="w-11 h-11 rounded-full border border-[#D49313] flex items-center justify-center text-[#D49313] shrink-0 mt-0.5">
+                      <Icon size={18} strokeWidth={1.6} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-[17px] text-[#2D3A1B]">
+                        {item.title}
+                      </h3>
+                      <p className="text-[14.5px] text-[#8D7F73] mt-1.5 leading-[1.6]">
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-[15px] text-[#2D3A1B]">
-                      {item.title}
-                    </h3>
-                    <p className="text-[13px] text-[#8D7F73] mt-1 leading-[1.5]">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
-
-       
       </div>
     </section>
   );

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Heart,
   Lock,
@@ -14,6 +15,10 @@ import {
   Truck,
   Mail,
   Clock,
+  Tag,
+  Check,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import ProductCard from "@/components/Productcard";
 import { useCart } from "@/components/cart/CartProvider";
@@ -21,7 +26,6 @@ import { allProducts } from "@/lib/shop-data";
 
 const freeDeliveryTarget = 2000;
 
-// Payment icons mapping – change paths according to your public folder
 const paymentIcons = {
   VISA: "/visa.png",
   RuPay: "/rupay.png",
@@ -32,6 +36,12 @@ const paymentIcons = {
   mastercard: "/mastercard.png",
   SBI: "/sbi.png",
 };
+
+const coupons = [
+  { code: "WELCOME100", desc: "Save ₹100 on orders above ₹999", minOrder: "₹999" },
+  { code: "FREESHIP", desc: "Free Delivery above ₹499", minOrder: "₹499" },
+  { code: "HONEY20", desc: "Get 20% OFF up to ₹300", minOrder: "₹100" },
+];
 
 export default function Cart() {
   const router = useRouter();
@@ -57,13 +67,13 @@ export default function Cart() {
   return (
     <main className="bg-[#FFF8EF] py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
-        {/* Breadcrumb */}
         <nav className="mb-6 text-sm text-[#7B8493]">
           <span className="font-medium text-[#2F241C]">Home</span> &gt;{" "}
           <span className="font-semibold text-[#D89A1B]">Cart</span>
         </nav>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
+        <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
+          {/* LEFT */}
           <section>
             <h1 className="text-[34px] font-bold">
               Your Cart <span className="text-[#D89A1B]">({visibleProducts.length})</span>
@@ -152,8 +162,9 @@ export default function Cart() {
             </div>
           </section>
 
-          <aside className="space-y-8">
-            <OrderSummary subtotal={subtotal} saved={saved} checkoutHref="/checkout" />
+          {/* RIGHT - Order Summary */}
+          <aside className="space-y-6">
+            <OrderSummaryWithCoupons subtotal={subtotal} saved={saved} />
             <PaymentPanel />
             <HelpPanel />
           </aside>
@@ -216,19 +227,30 @@ export function QuantityControl({
   );
 }
 
-export function OrderSummary({
+// -------- ORDER SUMMARY WITH COUPON DROPDOWN --------
+export function OrderSummaryWithCoupons({
   subtotal,
   saved,
-  checkoutHref,
 }: {
   subtotal: number;
   saved: number;
-  checkoutHref?: string;
 }) {
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [isCouponOpen, setIsCouponOpen] = useState(false);
+
+  const handleApplyCoupon = (code: string) => {
+    setAppliedCoupon(code);
+    setCouponCode("");
+    setIsCouponOpen(false);
+  };
+
   return (
-    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-7 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <h2 className="text-[20px] font-bold">Order Summary</h2>
-      <div className="mt-6 space-y-4 text-[13px] text-[#6F7786]">
+      
+      {/* Summary Rows */}
+      <div className="mt-5 space-y-3 text-[14px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal (2 items)</span>
           <strong className="text-[#1F2937]">₹{subtotal.toLocaleString("en-IN")}</strong>
@@ -242,63 +264,134 @@ export function OrderSummary({
           <strong className="text-[#0BA445]">- ₹{saved}</strong>
         </div>
       </div>
-      <div className="mt-8 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
+
+      <hr className="my-5 border-[#EEF1F4]" />
+
+      {/* Apply Coupon - WITH DROPDOWN */}
+      <div>
+        {/* Coupon Header with Toggle */}
+        <button
+          onClick={() => setIsCouponOpen(!isCouponOpen)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <p className="text-[14px] font-bold text-[#2F241C]">Apply Coupon</p>
+          {isCouponOpen ? (
+            <ChevronUp size={18} className="text-[#6F7786]" />
+          ) : (
+            <ChevronDown size={18} className="text-[#6F7786]" />
+          )}
+        </button>
+
+        {/* Coupon Dropdown Content */}
+        {isCouponOpen && (
+          <div className="mt-3 space-y-3">
+            {/* Input + Apply */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter Coupon Code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#D89A1B] bg-white"
+              />
+              <button 
+                onClick={() => couponCode && handleApplyCoupon(couponCode)}
+                className="bg-[#D89A1B] text-white px-7 py-2.5 rounded-lg text-sm font-bold hover:bg-[#C98500] transition-colors"
+              >
+                Apply
+              </button>
+            </div>
+
+            {/* Available Coupons */}
+            <div>
+              <p className="text-[10px] font-bold text-[#6F7786] uppercase tracking-[0.08em] mb-2">
+                AVAILABLE COUPONS
+              </p>
+              <div className="space-y-2">
+                {coupons.map((coupon) => (
+                  <div 
+                    key={coupon.code}
+                    className={`border rounded-xl p-3 transition-all ${
+                      appliedCoupon === coupon.code 
+                        ? "border-[#D89A1B] bg-[#FFF8EF]" 
+                        : "border-gray-200 hover:border-[#D89A1B]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-[14px] text-[#2F241C]">{coupon.code}</span>
+                          {appliedCoupon === coupon.code && (
+                            <span className="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Check size={9} /> Applied
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#6F7786] mt-0.5">{coupon.desc}</p>
+                        <p className="text-[9px] text-[#9AA3AF] mt-0.5">Min order {coupon.minOrder}</p>
+                      </div>
+                      <button
+                        onClick={() => handleApplyCoupon(coupon.code)}
+                        disabled={appliedCoupon === coupon.code}
+                        className={`text-[11px] font-bold px-4 py-1.5 rounded-lg transition-colors ${
+                          appliedCoupon === coupon.code
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "text-[#D89A1B] border border-[#D89A1B] hover:bg-[#FFF8EF]"
+                        }`}
+                      >
+                        {appliedCoupon === coupon.code ? "Applied" : "Apply"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <hr className="my-5 border-[#EEF1F4]" />
+
+      {/* Total */}
+      <div className="flex items-end justify-between">
         <div>
-          <p className="text-[21px] font-bold">Total</p>
+          <p className="text-[20px] font-bold">Total</p>
           <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
         </div>
         <p className="text-[26px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
       </div>
-      {checkoutHref && (
+
+      {/* Proceed to Checkout */}
       <Link
-      href="/checkout"
-      className="mt-8 flex h-[58px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#C98500] text-[17px] font-semibold text-white hover:bg-[#B97B00] transition-all"
-    >
-      <Lock size={18} />
-      Proceed to Checkout
-    </Link>
-      )}
-   <div className="mt-9 rounded-[18px] border border-[#D7F3D9] bg-[#FAFFF6] px-6 py-5">
-  <div className="flex items-center justify-between">
+        href="/checkout"
+        className="mt-6 flex h-[56px] w-full items-center justify-center gap-2 rounded-[14px] bg-[#C98500] text-[16px] font-semibold text-white hover:bg-[#B97B00] transition-all"
+      >
+        <Lock size={18} />
+        PROCEED TO CHECKOUT
+      </Link>
 
-    {/* Left */}
-    <div className="flex-1">
-
-      {/* Icon + Heading */}
-      <div className="flex items-center gap-3">
-
-        <Image
-          src="/drip.png"
-          alt="Promise"
-          width={22}
-          height={22}
-          className="shrink-0"
-        />
-
-        <h3 className="text-[17px] font-semibold leading-none text-[#187A37]">
-          ShudhVeda Promise
-        </h3>
-
+      {/* ShudhVeda Promise */}
+      <div className="mt-6 rounded-[16px] border border-[#D7F3D9] bg-[#FAFFF6] px-5 py-4">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/drip.png"
+            alt="Promise"
+            width={22}
+            height={22}
+            className="shrink-0"
+          />
+          <div>
+            <h3 className="text-[16px] font-semibold text-[#187A37]">
+              ShudhVeda Promise
+            </h3>
+            <p className="text-[13px] text-[#3F3F3F]">
+              Pure honey, delivered with care.
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Description */}
-      <p className="mt-3 text-[15px] leading-none text-[#3F3F3F]">
-        Pure honey, delivered with care.
-      </p>
-
-    </div>
-
-    {/* Right Image */}
-    <Image
-      src="/wishlist.png"
-      alt="Honey"
-      width={72}
-      height={72}
-      className="ml-6 shrink-0 object-contain"
-    />
-
-  </div>
-</div>
+      {/* Trust Badges */}
       <TrustBadges />
     </div>
   );
@@ -306,16 +399,16 @@ export function OrderSummary({
 
 export function TrustBadges() {
   return (
-    <div className="mt-8 grid grid-cols-3 gap-3 text-center text-[10px] font-bold text-[#2D3A1B]">
-      <span className="rounded bg-white p-2 shadow-sm">
+    <div className="mt-5 grid grid-cols-3 gap-2 text-center text-[9px] font-bold text-[#2D3A1B]">
+      <span className="rounded-lg bg-white p-2.5 shadow-sm border border-gray-100">
         <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
         Secure Checkout
       </span>
-      <span className="rounded bg-white p-2 shadow-sm">
+      <span className="rounded-lg bg-white p-2.5 shadow-sm border border-gray-100">
         <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
         Easy Returns
       </span>
-      <span className="rounded bg-white p-2 shadow-sm">
+      <span className="rounded-lg bg-white p-2.5 shadow-sm border border-gray-100">
         <Truck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
         Fast Delivery
       </span>
@@ -325,18 +418,19 @@ export function TrustBadges() {
 
 function PaymentPanel() {
   return (
-<div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">     <h2 className="text-[20px] font-bold">We Accept</h2>
-      <div className="mt-4 grid grid-cols-4 gap-3">
+    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <h2 className="text-[18px] font-bold">We Accept</h2>
+      <div className="mt-4 grid grid-cols-4 gap-2">
         {Object.entries(paymentIcons).map(([name, path]) => (
           <div
             key={name}
-            className="flex h-11 items-center justify-center rounded-md border border-[#EEF1F4] bg-[#FBFAF8]"
+            className="flex h-10 items-center justify-center rounded-md border border-[#EEF1F4] bg-[#FBFAF8]"
           >
             <Image
               src={path}
               alt={name}
-              width={78}
-              height={32}
+              width={70}
+              height={28}
               className="object-contain"
             />
           </div>
@@ -348,25 +442,25 @@ function PaymentPanel() {
 
 function HelpPanel() {
   return (
-    <div className="relative w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-      <h2 className="text-[19px] font-bold">Need help ?</h2>
-      <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
+    <div className="relative w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-hidden">
+      <h2 className="text-[18px] font-bold">Need help?</h2>
+      <div className="mt-3 space-y-2 text-[14px] text-[#6F7786]">
         <p className="flex items-center gap-2">
-          <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
+          <Phone size={15} className="text-[#D89A1B]" /> +91 98765 43210
         </p>
         <p className="flex items-center gap-2">
-          <Mail size={16} className="text-[#D89A1B]" /> connect@shudhveda.in
+          <Mail size={15} className="text-[#D89A1B]" /> connect@shudhveda.in
         </p>
         <p className="flex items-center gap-2">
-          <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
+          <Clock size={15} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
         </p>
       </div>
-      <div className="absolute bottom-2 right-3 opacity-100">
+      <div className="absolute -bottom-4 -right-2 opacity-100">
         <Image
           src="/need.png"
           alt="Honey illustration"
-          width={240}
-          height={80}
+          width={180}
+          height={60}
           className="object-contain"
         />
       </div>

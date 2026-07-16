@@ -4,7 +4,7 @@ import Header from "@/components/layout/Header";
 
 import Contact from "@/sections/contact/page"
 import Contactsection from "@/sections/contact/contactsection";
-import TouchSection from "@/sections/home/TouchSection";
+import Faq from "@/sections/contact/faq";
 import Footer from "@/components/layout/Footer";
 export default function ContactusPage() {
   return (
@@ -13,7 +13,7 @@ export default function ContactusPage() {
       <Header />
       <Contact/>
       <Contactsection/>
-      <TouchSection/>
+      <Faq/>
         <Footer/>
         
     </>

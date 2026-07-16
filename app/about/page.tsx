@@ -7,7 +7,6 @@ import OurValues from "@/sections/about/ourvalue";
 import Stats  from "@/sections/about/stats";
 import Process from "@/sections/about/process";
 import CertifiedQualitySection from "@/sections/about/certifiedqualitysection";
-import TouchSection from "@/sections/home/TouchSection";
 
 
 import Footer from "@/components/layout/Footer";
@@ -23,7 +22,6 @@ export default function AboutPage() {
       <Process/>
       
       <CertifiedQualitySection/>
-      <TouchSection/>
         <Footer/>
     </>
   );

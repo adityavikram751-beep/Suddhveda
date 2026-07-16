@@ -1,38 +1,30 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Check,
-  Zap,
-  Package,
-  BadgeCheck,
-  Activity,
-  X,
-} from "lucide-react";
 
 const features = [
   {
-    icon: <Check size={24} />,
+    icon: "/icon-raw.png",
     title: "100% RAW",
   },
   {
-    icon: <Zap size={24} />,
+    icon: "/icon-gmo-free.png",
     title: "GMO FREE",
   },
   {
-    icon: <Package size={24} />,
+    icon: "/icon-bpa-free.png",
     title: "BPA FREE",
   },
   {
-    icon: <BadgeCheck size={24} />,
+    icon: "/icon-fssai.png",
     title: "FSSAI CERTIFIED",
   },
   {
-    icon: <Activity size={24} />,
+    icon: "/icon-lab-tested.png",
     title: "LAB TESTED",
   },
   {
-    icon: <X size={24} />,
+    icon: "/icon-no-sugar.png",
     title: "NO ADDED SUGAR",
   },
 ];
@@ -44,24 +36,30 @@ export default function CertifiedQualitySection() {
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           {/* LEFT */}
           <div>
-            <div className="text-center mb-12">
-              <span className="text-[#D89A1B] uppercase tracking-[4px] text-[15px] font-semibold">
+            <div className="mb-12 w-full text-center">
+              <span className="text-[#D89A1B] uppercase tracking-[3px] text-[13px] font-semibold">
                 Certified Purity. Trusted Quality.
               </span>
             </div>
             {/* Feature Grid */}
-            <div className="grid grid-cols-3 gap-x-12 gap-y-12 mt-14">
+            <div className="grid grid-cols-3 gap-x-10 gap-y-10">
               {features.map((item, index) => (
                 <div
                   key={index}
                   className="flex flex-col items-center text-center group transition-all duration-300"
                 >
                   {/* Icon */}
-                  <div className="w-[48px] h-[48px] rounded-full border border-[#E7C890] bg-white flex items-center justify-center text-[#D89A1B] shadow-sm transition-all duration-300 group-hover:bg-[#D89A1B] group-hover:text-white group-hover:scale-110">
-                    {item.icon}
+                  <div className="w-[52px] h-[52px] rounded-full border border-[#D89A1B] bg-[#FDF3E4] flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:bg-[#D89A1B]">
+                    <Image
+                      src={item.icon}
+                      alt={item.title}
+                      width={22}
+                      height={22}
+                      className="object-contain"
+                    />
                   </div>
-                  {/* Title — added whitespace-nowrap */}
-                  <h4 className="mt-5 text-[18px] font-Poppins text-[#34251C] tracking-wide whitespace-nowrap">
+                  {/* Title */}
+                  <h4 className="mt-4 text-[13px] font-semibold text-[#34251C] tracking-wide whitespace-nowrap">
                     {item.title}
                   </h4>
                 </div>
@@ -71,7 +69,7 @@ export default function CertifiedQualitySection() {
 
           {/* RIGHT */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[540px] h-[320px] overflow-hidden bg-white shadow-[0_15px_40px_rgba(0,0,0,0.05)]">
+            <div className="relative w-full max-w-[580px] h-[380px] overflow-hidden bg-white shadow-[0_15px_40px_rgba(0,0,0,0.05)]">
               <Image
                 src="/hero.png"
                 alt="Certified Quality"
