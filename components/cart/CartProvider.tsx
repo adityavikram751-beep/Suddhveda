@@ -140,7 +140,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                     setIsCartOpen(true);
                     setToastProduct(null);
                   }}
-                  className="rounded-lg border border-[#D89A1B] px-5 py-2 text-[15px] font-bold text-[#D89A1B] hover:bg-[#FFF2D8]"
+                  className="rounded-lg border border-[#2D3A1B] px-5 py-2 text-[15px] font-bold text-[#2D3A1B] hover:bg-[#FFF2D8]"
                 >
                   View Cart
                 </button>
@@ -177,7 +177,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             type="button"
             aria-label="Close cart"
             onClick={() => setIsCartOpen(false)}
-            className="text-[#3C2015] hover:text-[#D89A1B]"
+            className="text-[#3C2015] hover:text-[#2D3A1B]"
           >
             <X size={22} />
           </button>
@@ -225,7 +225,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                           return next;
                         })
                       }
-                      className="text-[#5B3A20] hover:text-[#D89A1B]"
+                      className="text-[#5B3A20] hover:text-[#2D3A1B]"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -265,7 +265,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                 </p>
                 <div className="mt-3 h-[6px] overflow-hidden rounded-full bg-white">
                   <div
-                    className="h-full rounded-full bg-[#D89A1B]"
+                    className="h-full rounded-full bg-[#2D3A1B]"
                     style={{ width: `${Math.min((subtotal / 1400) * 100, 100)}%` }}
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           <Link
             href="/checkout"
             onClick={() => setIsCartOpen(false)}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded bg-[#D89A1B] text-[16px] font-bold text-white hover:bg-[#C98715]"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded bg-[#2D3A1B] text-[16px] font-bold text-white hover:bg-[#C98715]"
           >
             <Lock size={14} />
             Checkout Securely

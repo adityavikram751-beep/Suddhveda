@@ -57,7 +57,7 @@ export default function PolicyCenterPage() {
                         {/* Profile Card */}
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#D89A1B]">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
                                     RS
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
@@ -66,7 +66,7 @@ export default function PolicyCenterPage() {
                                 <p className="text-xs text-[#B59A78]">
                                     rahulsharma123@gmail.com
                                 </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#D89A1B] hover:underline">
+                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
 <Link
 href={`/account/editprofile`}
@@ -85,7 +85,7 @@ Edit profile
                                         <Link
                                             key={link.label}
                                             href={link.href}
-                                            className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#D89A1B] transition-all duration-200"
+                                            className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#2D3A1B] transition-all duration-200"
                                         >
                                             <Icon size={18} className="shrink-0" />
                                             <span>{link.label}</span>
@@ -94,10 +94,10 @@ Edit profile
                                 })}
 
                                 {/* Policy Center - active (parent section) */}
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#D89A1B]">
+                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#2D3A1B]">
                                     <Settings size={18} className="shrink-0" />
                                     <span>Policy Center</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#D89A1B]" />
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                                 </div>
                             </nav>
 
@@ -132,20 +132,20 @@ Edit profile
                                     <Link
                                         key={policy.title}
                                         href={policy.href}
-                                        className="flex items-center gap-8 rounded-2xl border border-[#F0E2CC] bg-white p-9 hover:border-[#D89A1B] hover:shadow-lg transition-all duration-300 group"
+                                        className="flex items-center gap-8 rounded-2xl border border-[#F0E2CC] bg-white p-9 hover:border-[#2D3A1B] hover:shadow-lg transition-all duration-300 group"
                                     >
-                                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-[#D89A1B] group-hover:scale-105 transition-transform duration-300">
+                                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-[#2D3A1B] group-hover:scale-105 transition-transform duration-300">
                                             <Icon size={36} />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="font-serif text-2xl font-bold text-[#3C2015] group-hover:text-[#D89A1B] transition-colors">
+                                            <h3 className="font-serif text-2xl font-bold text-[#3C2015] group-hover:text-[#2D3A1B] transition-colors">
                                                 {policy.title}
                                             </h3>
                                             <p className="mt-2 text-base text-[#8A7460] leading-relaxed">
                                                 {policy.description}
                                             </p>
                                         </div>
-                                        <ChevronRight size={28} className="shrink-0 text-[#D89A1B] group-hover:translate-x-1 transition-transform duration-300" />
+                                        <ChevronRight size={28} className="shrink-0 text-[#2D3A1B] group-hover:translate-x-1 transition-transform duration-300" />
                                     </Link>
                                 );
                             })}

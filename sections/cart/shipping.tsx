@@ -109,7 +109,7 @@ export default function ShippingPage() {
         <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
           <section className="flex h-full flex-col gap-8">
             <header className="relative pr-28">
-              <h1 className="font-serif text-[42px] font-bold leading-none text-[#1F2937] md:text-[48px]">
+              <h1 className="font-serif text-[42px] font-bold leading-none text-[#2D3A1B] md:text-[48px]">
                 Shipping
               </h1>
               <p className="mt-4 text-[16px] text-[#5D6778] md:text-[18px]">
@@ -201,7 +201,7 @@ export default function ShippingPage() {
                           {method.icon}
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[16px] font-bold text-[#1F2937]">
+                          <span className="block text-[16px] font-bold text-[#2D3A1B]">
                             {method.label}
                             {method.price === 0 && " (FREE)"}
                           </span>
@@ -291,7 +291,7 @@ export default function ShippingPage() {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[14px] font-bold text-[#1F2937]">
+                      <p className="text-[14px] font-bold text-[#2D3A1B]">
                         {product.title}
                       </p>
                       <p className="mt-2 text-[11px] text-[#9AA3AF]">
@@ -301,7 +301,7 @@ export default function ShippingPage() {
                         Qty: {product.quantity}
                       </p>
                     </div>
-                    <p className="text-[16px] font-bold text-[#1F2937]">
+                    <p className="text-[16px] font-bold text-[#2D3A1B]">
                       ₹{product.price}
                     </p>
                   </div>
@@ -311,13 +311,13 @@ export default function ShippingPage() {
               <div className="mt-8 space-y-4 border-t border-[#EEF1F4] pt-5 text-[14px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <strong className="text-[#1F2937]">
+                  <strong className="text-[#2D3A1B]">
                     ₹{subtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <strong className={shippingCost === 0 ? "text-[#0BA445]" : "text-[#1F2937]"}>
+                  <strong className={shippingCost === 0 ? "text-[#0BA445]" : "text-[#2D3A1B]"}>
                     {shippingCost === 0 ? "FREE" : `₹${shippingCost}`}
                   </strong>
                 </div>
@@ -329,12 +329,12 @@ export default function ShippingPage() {
 
               <div className="mt-6 flex items-end justify-between">
                 <div className="flex items-baseline gap-1">
-                  <p className="text-[19px] font-bold text-[#1F2937]">Total</p>
+                  <p className="text-[19px] font-bold text-[#2D3A1B]">Total</p>
                   <p className="text-[10px] text-[#9AA3AF]">
                     (Inclusive of all taxes)
                   </p>
                 </div>
-                <p className="font-serif text-[26px] font-bold text-[#1F2937]">
+                <p className="font-serif text-[26px] font-bold text-[#2D3A1B]">
                   ₹{total.toLocaleString("en-IN")}
                 </p>
               </div>
@@ -364,19 +364,19 @@ export default function ShippingPage() {
 
               <div className="mt-14 grid grid-cols-3 gap-3 text-center">
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                  <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                   <p className="text-[10px] font-bold text-[#2F241C]">
                     Secure Checkout
                   </p>
                   <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
                 </div>
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                  <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                   <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
                   <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
                 </div>
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                  <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                   <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
                   <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
                 </div>
@@ -387,13 +387,13 @@ export default function ShippingPage() {
               <h2 className="text-[18px] font-bold text-black">Need help ?</h2>
               <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
                 <p className="flex items-center gap-2">
-                  <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
+                  <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
                 </p>
                 <p className="flex items-center gap-2">
-                  <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
+                  <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
                 </p>
                 <p className="flex items-center gap-2">
-                  <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
+                  <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
                 </p>
               </div>
               <Image

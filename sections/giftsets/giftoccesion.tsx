@@ -46,7 +46,7 @@ export default function GiftsForEveryOccasion() {
             Gifts for{" "}
             <span className="text-[#1E392A]">Every Occasion</span>
           </h2>
-          <div className="w-14 h-[3px] bg-[#D89A1B] mx-auto mt-3 rounded-full" />
+          <div className="w-14 h-[3px] bg-[#2D3A1B] mx-auto mt-3 rounded-full" />
         </div>
 
         {/* Occasions Row */}

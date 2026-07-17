@@ -42,7 +42,7 @@ export default function ShippingPolicyPage() {
                         {/* Profile Card */}
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#D89A1B]">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
                                     RS
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
@@ -51,7 +51,7 @@ export default function ShippingPolicyPage() {
                                 <p className="text-xs text-[#B59A78]">
                                     rahulsharma123@gmail.com
                                 </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#D89A1B] hover:underline">
+                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
 <Link
 href={`/account/editprofile`}
@@ -70,7 +70,7 @@ Edit profile
                                         <Link
                                             key={link.label}
                                             href={link.href}
-                                            className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#D89A1B] transition-all duration-200"
+                                            className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#2D3A1B] transition-all duration-200"
                                         >
                                             <Icon size={20} className="shrink-0" />
                                             <span>{link.label}</span>
@@ -79,10 +79,10 @@ Edit profile
                                 })}
 
                                 {/* Policy Center - active (parent section) */}
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#D89A1B]">
+                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#2D3A1B]">
                                     <Settings size={20} className="shrink-0" />
                                     <span>Policy Center</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#D89A1B]" />
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                                 </div>
                             </nav>
 
@@ -100,18 +100,18 @@ Edit profile
 
                         {/* Breadcrumb */}
                         <div className="flex items-center gap-2 text-sm text-[#B59A78]">
-                            <Link href="/" className="hover:text-[#D89A1B] transition-colors">Home</Link>
+                            <Link href="/" className="hover:text-[#2D3A1B] transition-colors">Home</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account" className="hover:text-[#D89A1B] transition-colors">My Account</Link>
+                            <Link href="/account" className="hover:text-[#2D3A1B] transition-colors">My Account</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account/privacy" className="hover:text-[#D89A1B] transition-colors">Policy Center</Link>
+                            <Link href="/account/privacy" className="hover:text-[#2D3A1B] transition-colors">Policy Center</Link>
                             <ChevronRight size={14} />
-                            <span className="font-semibold text-[#D89A1B]">Shipping Policy</span>
+                            <span className="font-semibold text-[#2D3A1B]">Shipping Policy</span>
                         </div>
 
                         {/* Header */}
                         <div className="space-y-1">
-                            <h1 className="font-serif text-4xl font-bold text-[#D89A1B]">
+                            <h1 className="font-serif text-4xl font-bold text-[#2D3A1B]">
                                 Shipping Policy
                             </h1>
                             <p className="text-base text-[#B59A78]">
@@ -125,7 +125,7 @@ Edit profile
                             {/* Order Processing */}
                             <div>
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-[#F0E2CC]">
-                                    <Package size={18} className="text-[#D89A1B]" />
+                                    <Package size={18} className="text-[#2D3A1B]" />
                                     <h2 className="font-serif text-lg font-bold text-[#3C2015]">
                                         Order Processing
                                     </h2>
@@ -138,7 +138,7 @@ Edit profile
                             {/* Shipping Charges */}
                             <div>
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-[#F0E2CC]">
-                                    <Truck size={18} className="text-[#D89A1B]" />
+                                    <Truck size={18} className="text-[#2D3A1B]" />
                                     <h2 className="font-serif text-lg font-bold text-[#3C2015]">
                                         Shipping Charges
                                     </h2>
@@ -151,7 +151,7 @@ Edit profile
                             {/* Delivery Timeline */}
                             <div>
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-[#F0E2CC]">
-                                    <Clock size={18} className="text-[#D89A1B]" />
+                                    <Clock size={18} className="text-[#2D3A1B]" />
                                     <h2 className="font-serif text-lg font-bold text-[#3C2015]">
                                         Delivery Timeline
                                     </h2>
@@ -174,7 +174,7 @@ Edit profile
                             {/* Delivery Delays */}
                             <div>
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-[#F0E2CC]">
-                                    <AlertTriangle size={18} className="text-[#D89A1B]" />
+                                    <AlertTriangle size={18} className="text-[#2D3A1B]" />
                                     <h2 className="font-serif text-lg font-bold text-[#3C2015]">
                                         Delivery Delays
                                     </h2>
@@ -187,7 +187,7 @@ Edit profile
                             {/* Need Help */}
                             <div>
                                 <div className="flex items-center gap-2.5 pb-3 border-b border-[#F0E2CC]">
-                                    <HelpCircle size={18} className="text-[#D89A1B]" />
+                                    <HelpCircle size={18} className="text-[#2D3A1B]" />
                                     <h2 className="font-serif text-lg font-bold text-[#3C2015]">
                                         Need Help?
                                     </h2>

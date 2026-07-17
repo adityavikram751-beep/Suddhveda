@@ -210,7 +210,7 @@ export default function OrderConfirmation() {
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row sm:justify-between">
                 <Link
                   href="/shop"
-                  className="flex h-12 items-center justify-center gap-2 rounded-lg border border-[#D89A1B] px-6 text-[14px] font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition"
+                  className="flex h-12 items-center justify-center gap-2 rounded-lg border border-[#2D3A1B] px-6 text-[14px] font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
                 >
                   <ShoppingCart size={16} />
                   Continue Shopping
@@ -227,9 +227,9 @@ export default function OrderConfirmation() {
             </div>
           </section>
 
-          {/* RIGHT COLUMN – Order Summary (unchanged, working fine) */}
-          <aside className="flex h-full flex-col bg-white px-6 py-5">
-            <div className="w-full rounded-[4px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+          {/* RIGHT COLUMN – Order Summary */}
+          <aside className="flex h-full flex-col">
+            <div className="w-full h-full flex flex-col rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
                 <span className="text-[12px] text-[#9AA3AF]">
@@ -265,7 +265,7 @@ export default function OrderConfirmation() {
               <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <strong className="text-[#1F2937]">
+                  <strong className="text-[#2D3A1B]">
                     ₹{subtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
@@ -277,18 +277,18 @@ export default function OrderConfirmation() {
                   <span>You Save</span>
                   <strong className="text-[#0BA445]">- ₹{saved}</strong>
                 </div>
+                <div className="flex justify-between">
+                  <span>Coupon Applied</span>
+                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
+                </div>
               </div>
 
               <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
                 <div>
-                  <p className="text-[21px] font-bold">Total Paid</p>
-                  <p className="text-[10px] text-[#9AA3AF]">
-                    (Inclusive of all taxes)
-                  </p>
+                  <p className="text-[21px] font-bold">Total</p>
+                  <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                 </div>
-                <p className="text-[26px] font-bold text-[#187A37]">
-                  ₹{total.toLocaleString("en-IN")}
-                </p>
+                <p className="font-serif text-[28px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
               </div>
 
               {/* Savings and free delivery progress */}
@@ -315,53 +315,55 @@ export default function OrderConfirmation() {
                 )}
               </div>
 
-            </div>
-
-              {/* Trust Badges */}
-              <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
-                  <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
-                </div>
-                <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
-                  <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
-                </div>
-                <div className="rounded-lg bg-white p-3 shadow-sm">
-                  <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
-                  <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
-                </div>
-              </div>
-
-              {/* Need Help – at bottom */}
+              {/* Bottom block: Trust Badges + Need Help together in one cream box */}
               <div className="mt-auto pt-8">
-                <div className="relative">
-                  <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
-                  <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
-                    <p className="flex items-center gap-2">
-                      <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
-                    </p>
+                <div className="rounded-[14px] bg-[#FFF8EF] p-5">
+                  {/* Trust Badges */}
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <span className="p-1">
+                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
+                      <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
+                    </span>
+                    <span className="p-1">
+                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
+                      <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
+                    </span>
+                    <span className="p-1">
+                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
+                      <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
+                    </span>
                   </div>
-                  <div className="absolute bottom-0 right-0 opacity-100">
-                    <Image
-                      src="/need.png"
-                      alt="Honey illustration"
-                      width={200}
-                      height={90}
-                      className="object-contain"
-                    />
+
+                  {/* Need Help */}
+                  <div className="relative mt-6">
+                    <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
+                    <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
+                      <p className="flex items-center gap-2">
+                        <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
+                      </p>
+                    </div>
+                    <div className="absolute bottom-0 right-0 opacity-100">
+                      <Image
+                        src="/need.png"
+                        alt="Honey illustration"
+                        width={200}
+                        height={90}
+                        className="object-contain"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
           </aside>
         </div>
       </div>

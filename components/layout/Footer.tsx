@@ -23,7 +23,7 @@ export default function Footer() {
 
             <div className="flex items-center gap-3">
 
-              <div className="w-8 h-8 rounded-lg bg-[#D89A1B] flex items-center justify-center text-[16px]">
+              <div className="w-8 h-8 rounded-lg bg-[#2D3A1B] flex items-center justify-center text-[16px]">
                 🍯
               </div>
 
@@ -68,7 +68,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/products"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   All Honey
                 </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/account"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   My Account
                 </Link>
@@ -86,7 +86,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/b2b"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   B2B Order
                 </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/bulk-gifting"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   Bulk Gifting
                 </Link>
@@ -118,7 +118,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -127,7 +127,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/about"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   About Us
                 </Link>
@@ -136,7 +136,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/our-process"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   Our Process
                 </Link>
@@ -145,7 +145,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blogs"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#D89A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
                   Blogs
                 </Link>
@@ -170,7 +170,7 @@ export default function Footer() {
 
                 <Phone
                   size={15}
-                  className="mt-1 text-[#D89A1B]"
+                  className="mt-1 text-[#2D3A1B]"
                 />
 
                 <a
@@ -178,7 +178,7 @@ export default function Footer() {
                   className="
                     text-[14px]
                     text-[#E2D2C4]
-                    hover:text-[#D89A1B]
+                    hover:text-[#2D3A1B]
                     transition-colors
                   "
                 >
@@ -193,7 +193,7 @@ export default function Footer() {
 
                 <Phone
                   size={15}
-                  className="mt-1 text-[#D89A1B]"
+                  className="mt-1 text-[#2D3A1B]"
                 />
 
                 <a
@@ -201,7 +201,7 @@ export default function Footer() {
                   className="
                     text-[14px]
                     text-[#E2D2C4]
-                    hover:text-[#D89A1B]
+                    hover:text-[#2D3A1B]
                     transition-colors
                   "
                 >
@@ -216,7 +216,7 @@ export default function Footer() {
 
                 <Mail
                   size={15}
-                  className="mt-1 text-[#D89A1B]"
+                  className="mt-1 text-[#2D3A1B]"
                 />
 
                 <a
@@ -224,7 +224,7 @@ export default function Footer() {
                   className="
                     text-[14px]
                     text-[#E2D2C4]
-                    hover:text-[#D89A1B]
+                    hover:text-[#2D3A1B]
                     transition-colors
                   "
                 >
@@ -241,7 +241,7 @@ export default function Footer() {
                   size={16}
                   className="
                     mt-1
-                    text-[#D89A1B]
+                    text-[#2D3A1B]
                     shrink-0
                   "
                 />

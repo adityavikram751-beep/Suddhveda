@@ -164,8 +164,8 @@ export default function HappyCustomersSection() {
                 >
                   <Play
                     size={16}
-                    className="ml-0.5 text-[#D89A1B] fill-[#D89A1B] w-[14px] sm:w-[16px] md:w-[20px] h-auto"
-                    fill="#D89A1B"
+                    className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B] w-[14px] sm:w-[16px] md:w-[20px] h-auto"
+                    fill="#2D3A1B"
                   />
                 </button>
               </div>

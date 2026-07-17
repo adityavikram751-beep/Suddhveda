@@ -98,7 +98,7 @@ export default function Header() {
           >
             <FiShoppingCart size={22} />
             {itemCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D89A1B] px-1 text-[10px] font-bold text-white">
+              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2D3A1B] px-1 text-[10px] font-bold text-white">
                 {itemCount}
               </span>
             )}
@@ -162,7 +162,7 @@ export default function Header() {
             >
               <FiShoppingCart size={22} className="text-[#7A3F10]" />
               {itemCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D89A1B] px-1 text-[10px] font-bold text-white">
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2D3A1B] px-1 text-[10px] font-bold text-white">
                   {itemCount}
                 </span>
               )}

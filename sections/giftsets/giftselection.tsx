@@ -78,7 +78,7 @@ export default function BuildYourOwnGiftBox() {
       <div className="max-w-[1250px] mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-14">
-          <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
+          <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
             MAKE IT PERSONAL
           </p>
           <h2 className="flex items-center justify-center gap-3 text-[32px] md:text-[38px] font-serif text-[#2D3A1B] mt-2">
@@ -105,7 +105,7 @@ export default function BuildYourOwnGiftBox() {
                     onClick={() => setSelectedBox(box.id)}
                     className={`flex flex-col items-center rounded-xl border-2 p-2.5 transition-colors ${
                       selectedBox === box.id
-                        ? "border-[#D89A1B] bg-[#FFF8EF]"
+                        ? "border-[#2D3A1B] bg-[#FFF8EF]"
                         : "border-[#ECE2D2] hover:border-[#D8C4A3]"
                     }`}
                   >
@@ -131,7 +131,7 @@ export default function BuildYourOwnGiftBox() {
                 <button
                   type="button"
                   onClick={() => setHoneyMenuOpen((o) => !o)}
-                  className="w-full flex items-center justify-between rounded-xl border border-[#ECE2D2] bg-white px-4 py-3.5 text-[14px] text-[#8A7A65] focus:outline-none focus:border-[#D89A1B]"
+                  className="w-full flex items-center justify-between rounded-xl border border-[#ECE2D2] bg-white px-4 py-3.5 text-[14px] text-[#8A7A65] focus:outline-none focus:border-[#2D3A1B]"
                 >
                   Select Honeys
                   <ChevronDown
@@ -214,7 +214,7 @@ export default function BuildYourOwnGiftBox() {
                     <ChevronDown size={11} className="mt-1 text-[#9A8F80]" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#2D3A1B]">
                       BOX SIZE
                     </p>
                     <p className="mt-1 text-[13px] text-[#2D3A1B]">
@@ -231,7 +231,7 @@ export default function BuildYourOwnGiftBox() {
                     <ChevronDown size={11} className="mt-1 text-[#9A8F80]" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                    <p className="text-[11px] font-semibold tracking-[0.08em] text-[#2D3A1B]">
                       HONEYS
                     </p>
                     <div className="mt-1 space-y-0.5">
@@ -252,7 +252,7 @@ export default function BuildYourOwnGiftBox() {
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-semibold tracking-[0.08em] text-[#D89A1B]">
+                  <p className="text-[11px] font-semibold tracking-[0.08em] text-[#2D3A1B]">
                     GREETING CARD
                   </p>
                   <p className="mt-1 text-[13px] text-[#2D3A1B]">
@@ -274,7 +274,7 @@ export default function BuildYourOwnGiftBox() {
 
               <button
                 type="button"
-                className="w-full mt-5 bg-[#D89A1B] hover:bg-[#C98715] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors"
+                className="w-full mt-5 bg-[#2D3A1B] hover:bg-[#C98715] text-white text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors"
               >
                 ADD TO CART
               </button>

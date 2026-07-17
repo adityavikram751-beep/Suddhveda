@@ -39,7 +39,7 @@ function SecurityRow({
                 <p className="text-sm font-bold text-[#3C2015]">{title}</p>
                 <p className="mt-0.5 text-xs text-[#B59A78]">{description}</p>
             </div>
-            <button className="flex h-9 shrink-0 items-center justify-center gap-1 rounded-lg border border-[#D89A1B] px-4 text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition">
+            <button className="flex h-9 shrink-0 items-center justify-center gap-1 rounded-lg border border-[#2D3A1B] px-4 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
                 {actionLabel}
                 <ChevronRight size={14} />
             </button>
@@ -59,7 +59,7 @@ export default function EditProfilePage() {
                         {/* Profile Card */}
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#D89A1B]">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
                                     RS
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
@@ -68,7 +68,7 @@ export default function EditProfilePage() {
                                 <p className="text-xs text-[#B59A78]">
                                     rahulsharma123@gmail.com
                                 </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#D89A1B] hover:underline">
+                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
 <Link
 href={`/account/editprofile`}
@@ -138,14 +138,14 @@ Edit profile
                                             Profile Photo
                                         </p>
                                         <div className="relative mt-1">
-                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBE4B8] text-[#D89A1B]">
+                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBE4B8] text-[#2D3A1B]">
                                                 <User size={28} />
                                             </div>
                                             <button className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#3C2015] text-white">
                                                 <Camera size={12} />
                                             </button>
                                         </div>
-                                        <button className="text-xs font-medium text-[#D89A1B] hover:underline">
+                                        <button className="text-xs font-medium text-[#2D3A1B] hover:underline">
                                             Change Photo
                                         </button>
                                     </div>
@@ -159,7 +159,7 @@ Edit profile
                                             <input
                                                 type="text"
                                                 defaultValue="Rahul Sharma"
-                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                             />
                                         </div>
                                         <div>
@@ -169,7 +169,7 @@ Edit profile
                                             <input
                                                 type="email"
                                                 defaultValue="rahulsharma123@gmail.com"
-                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                             />
                                         </div>
                                     </div>
@@ -198,7 +198,7 @@ Edit profile
                                                     <input
                                                         type="text"
                                                         placeholder="DD / MM / YYYY"
-                                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                                     />
                                                     <CalendarDays
                                                         size={16}
@@ -213,7 +213,7 @@ Edit profile
                                                 </label>
                                                 <select
                                                     defaultValue=""
-                                                    className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                                    className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                                 >
                                                     <option value="" disabled>
                                                         Select Gender
@@ -258,7 +258,7 @@ Edit profile
 
                             {/* Actions */}
                             <div className="flex items-center gap-3">
-                                <button className="flex h-11 items-center justify-center rounded-lg bg-[#D89A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition">
+                                <button className="flex h-11 items-center justify-center rounded-lg bg-[#2D3A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition">
                                     Save Changes
                                 </button>
                                 <button className="flex h-11 items-center justify-center rounded-lg border border-[#F0E2CC] px-6 text-sm font-bold text-[#3C2015] hover:bg-[#FFF8EF] transition">

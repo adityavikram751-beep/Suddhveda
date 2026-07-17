@@ -42,7 +42,7 @@ export default function ProcessSection() {
           {/* LEFT - Steps */}
           <div>
             {/* Label */}
-            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#D89A1B] uppercase">
+            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#2D3A1B] uppercase">
               From Hive to Bottle
             </p>
 
@@ -70,19 +70,19 @@ Playfair Display leading-[1.1] text-[#233821] tracking-[-0.02em] whitespace-nowr
                           bg-[#FBEEDF]
                           flex items-center justify-center
                           transition-all duration-300
-                          group-hover:bg-[#D89A1B]/10
+                          group-hover:bg-[#2D3A1B]/10
                           group-hover:scale-105
                           group-hover:shadow-lg
                         "
                       >
                         <Icon 
                           size={28} 
-                          className="text-[#D89A1B] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
+                          className="text-[#2D3A1B] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
                         />
                       </div>
 
                       {/* ✅ Title - Ab 1 line mein */}
-                      <h4 className="mt-3 text-[15px] md:text-[16px] font-semibold text-[#233821] leading-tight transition-colors duration-300 group-hover:text-[#D89A1B]">
+                      <h4 className="mt-3 text-[15px] md:text-[16px] font-semibold text-[#233821] leading-tight transition-colors duration-300 group-hover:text-[#2D3A1B]">
                         {step.title}
                       </h4>
 
@@ -96,7 +96,7 @@ Playfair Display leading-[1.1] text-[#233821] tracking-[-0.02em] whitespace-nowr
                     {!isLast && (
                       <ChevronRight
                         size={18}
-                        className="text-[#D7CBBB] mt-6 mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#D89A1B]"
+                        className="text-[#D7CBBB] mt-6 mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#2D3A1B]"
                       />
                     )}
                   </div>
@@ -123,7 +123,7 @@ Playfair Display leading-[1.1] text-[#233821] tracking-[-0.02em] whitespace-nowr
       </div>
 
       {/* Decorative bottom border */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D89A1B]/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2D3A1B]/20 to-transparent" />
     </section>
   );
 }

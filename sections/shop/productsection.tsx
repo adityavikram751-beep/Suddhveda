@@ -89,7 +89,7 @@ export default function ShopPage() {
           <aside className="lg:sticky lg:top-8 lg:self-start">
             <div className="rounded-lg bg-white p-6 shadow-sm">
               {/* ===== FILTER HEADING – Playfair Display ===== */}
-              <h2 className="font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#D89A1B]">
+              <h2 className="font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#2D3A1B]">
                 Filter By
               </h2>
 
@@ -117,7 +117,7 @@ export default function ShopPage() {
                         type="checkbox"
                         checked={selectedTypes.length === 0}
                         onChange={clearFilters}
-                        className="h-4 w-4 rounded border-[#D89A1B] text-red-500 focus:ring-[#D89A1B]"
+                        className="h-4 w-4 rounded border-[#2D3A1B] text-red-500 focus:ring-[#2D3A1B]"
                       />
                       All Honeys ({allProducts.length})
                     </label>
@@ -134,7 +134,7 @@ export default function ShopPage() {
                             type="checkbox"
                             checked={selectedTypes.includes(type)}
                             onChange={() => toggleType(type)}
-                            className="h-4 w-4 rounded border-[#E4E8EE] text-[#D89A1B] focus:ring-[#D89A1B]"
+                            className="h-4 w-4 rounded border-[#E4E8EE] text-[#2D3A1B] focus:ring-[#2D3A1B]"
                           />
                           {type} ({count})
                         </label>
@@ -172,7 +172,7 @@ export default function ShopPage() {
                           type="checkbox"
                           checked={selectedWeights.includes(weight)}
                           onChange={() => toggleWeight(weight)}
-                          className="h-4 w-4 rounded border-[#E4E8EE] text-[#D89A1B] focus:ring-[#D89A1B]"
+                          className="h-4 w-4 rounded border-[#E4E8EE] text-[#2D3A1B] focus:ring-[#2D3A1B]"
                         />
                         {weight}
                       </label>
@@ -210,7 +210,7 @@ export default function ShopPage() {
                       max={MAX_PRICE}
                       value={priceRange}
                       onChange={(e) => setPriceRange(Number(e.target.value))}
-                      className="mt-2 w-full accent-[#D89A1B]"
+                      className="mt-2 w-full accent-[#2D3A1B]"
                     />
                   </>
                 )}
@@ -220,7 +220,7 @@ export default function ShopPage() {
               <button
                 type="button"
                 onClick={() => {}}
-                className="mt-6 w-full rounded bg-[#D89A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white hover:bg-[#C98715] transition-colors"
+                className="mt-6 w-full rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white hover:bg-[#C98715] transition-colors"
               >
                 Apply Filter
               </button>
@@ -273,7 +273,7 @@ export default function ShopPage() {
                   Showing {filteredProducts.length} of {filteredProducts.length}{" "}
                   results
                 </span>
-                <select className="h-10 rounded border border-[#E4E8EE] bg-white px-3 text-[13px] text-[#2F241C] focus:outline-none focus:ring-1 focus:ring-[#D89A1B]">
+                <select className="h-10 rounded border border-[#E4E8EE] bg-white px-3 text-[13px] text-[#2F241C] focus:outline-none focus:ring-1 focus:ring-[#2D3A1B]">
                   <option>Sort by: Featured</option>
                   <option>Sort by: Price Low to High</option>
                   <option>Sort by: Price High to Low</option>
@@ -297,9 +297,9 @@ export default function ShopPage() {
                     <button
                       type="button"
                       onClick={() => removeTypeFilter(type)}
-                      className="rounded-full p-0.5 hover:bg-[#D89A1B]/10"
+                      className="rounded-full p-0.5 hover:bg-[#2D3A1B]/10"
                     >
-                      <X size={14} className="text-[#D89A1B]" />
+                      <X size={14} className="text-[#2D3A1B]" />
                     </button>
                   </span>
                 ))
@@ -338,7 +338,7 @@ export default function ShopPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="text-[12px] font-medium text-[#697386] underline hover:text-[#D89A1B]"
+                  className="text-[12px] font-medium text-[#697386] underline hover:text-[#2D3A1B]"
                 >
                   Clear all
                 </button>
@@ -376,12 +376,12 @@ export default function ShopPage() {
 
             {filteredProducts.length === 0 && (
               <div className="mt-16 flex flex-col items-center justify-center gap-3 text-center text-[#697386]">
-                <ShoppingCart size={32} className="text-[#D89A1B]" />
+                <ShoppingCart size={32} className="text-[#2D3A1B]" />
                 <p>No honey matches your filters right now.</p>
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="text-[13px] font-semibold text-[#D89A1B] underline"
+                  className="text-[13px] font-semibold text-[#2D3A1B] underline"
                 >
                   Clear filters
                 </button>

@@ -82,7 +82,7 @@ export default function ReviewPage() {
           <section className="flex h-full flex-col gap-7">
             {/* Header */}
             <header className="relative pr-28">
-              <h1 className="font-serif text-[42px] font-bold leading-none text-[#1F2937] md:text-[48px]">
+              <h1 className="font-serif text-[42px] font-bold leading-none text-[#2D3A1B] md:text-[48px]">
                 Review &amp; Place Order
               </h1>
               <p className="mt-4 text-[16px] text-[#5D6778]">
@@ -146,7 +146,7 @@ export default function ReviewPage() {
             {/* Delivery Details */}
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-[20px] font-bold text-[#1F2937]">Delivery Details</h2>
+                <h2 className="text-[20px] font-bold text-[#2D3A1B]">Delivery Details</h2>
                 <button className="flex items-center gap-1 text-[13px] text-[#D18500]">
                   <Edit3 size={14} /> Edit
                 </button>
@@ -200,7 +200,7 @@ export default function ReviewPage() {
             {/* Items in Order */}
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-[20px] font-bold text-[#1F2937]">
+                <h2 className="text-[20px] font-bold text-[#2D3A1B]">
                   Items in Your Order ({visibleProducts.length})
                 </h2>
                 <button className="flex items-center gap-1 text-[13px] text-[#D18500]">
@@ -223,7 +223,7 @@ export default function ReviewPage() {
                       />
                     </div>
                     <div>
-                      <p className="text-[18px] font-bold text-[#1F2937]">{product.title}</p>
+                      <p className="text-[18px] font-bold text-[#2D3A1B]">{product.title}</p>
                       <p className="mt-1 text-[15px] font-medium text-[#7B8493]">
                         {product.weight.split(" - ")[0]} • Raw &amp; Unfiltered
                       </p>
@@ -232,11 +232,11 @@ export default function ReviewPage() {
                         100% Raw &amp; Unfiltered
                       </span>
                     </div>
-                    <p className="text-[20px] font-bold text-[#1F2937]">₹{product.price}</p>
+                    <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price}</p>
                     <span className="flex h-8 w-[96px] items-center justify-center rounded bg-[#FBFCFD] text-[15px] font-semibold text-[#2F3033] shadow-sm">
                       Qty: {product.quantity}
                     </span>
-                    <p className="text-right text-[20px] font-bold text-[#1F2937]">
+                    <p className="text-right text-[20px] font-bold text-[#2D3A1B]">
                       ₹{product.price * product.quantity}
                     </p>
                   </div>
@@ -320,7 +320,7 @@ export default function ReviewPage() {
               <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <strong className="text-[#1F2937]">
+                  <strong className="text-[#2D3A1B]">
                     ₹{subtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
@@ -379,17 +379,17 @@ export default function ReviewPage() {
                   {/* Trust Badges */}
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <span className="p-1">
-                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
                       <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
                     </span>
                     <span className="p-1">
-                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
                       <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
                     </span>
                     <span className="p-1">
-                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
                       <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
                     </span>
@@ -400,13 +400,13 @@ export default function ReviewPage() {
                     <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
                     <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
                       <p className="flex items-center gap-2">
-                        <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
+                        <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
                       </p>
                       <p className="flex items-center gap-2">
-                        <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
+                        <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
                       </p>
                       <p className="flex items-center gap-2">
-                        <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
+                        <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
                       </p>
                     </div>
                     <div className="absolute bottom-0 right-0 opacity-100">

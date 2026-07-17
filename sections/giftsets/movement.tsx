@@ -8,7 +8,7 @@ export default function MomentsMadeSweeter() {
       <div className="max-w-[1250px] mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-8">
-          <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
+          <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
             GIFTING INSPIRATION
           </p>
           <h2 className="text-[32px] md:text-[38px] font-serif text-[#2D3A1B] mt-2">

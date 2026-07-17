@@ -119,7 +119,7 @@ function AddressCard({ address }: { address: Address }) {
     return (
         <div className="flex flex-col rounded-2xl border border-[#F0E2CC] bg-white p-6">
             <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#D89A1B]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
                     <TypeIcon size={18} />
                 </div>
                 {address.isDefault && (
@@ -146,7 +146,7 @@ function AddressCard({ address }: { address: Address }) {
 
             <div className="mt-5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <button className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#D89A1B] transition">
+                    <button className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#2D3A1B] transition">
                         <Pencil size={13} />
                         Edit
                     </button>
@@ -157,11 +157,11 @@ function AddressCard({ address }: { address: Address }) {
                 </div>
 
                 {address.isDefault ? (
-                    <button className="flex h-8 items-center justify-center rounded-lg bg-[#D89A1B] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition">
+                    <button className="flex h-8 items-center justify-center rounded-lg bg-[#2D3A1B] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition">
                         Deliver Here
                     </button>
                 ) : (
-                    <button className="flex h-8 items-center justify-center rounded-lg border border-[#D89A1B] px-4 text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition">
+                    <button className="flex h-8 items-center justify-center rounded-lg border border-[#2D3A1B] px-4 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
                         Set Default
                     </button>
                 )}
@@ -173,7 +173,7 @@ function AddressCard({ address }: { address: Address }) {
 function AddNewAddressCard() {
     return (
         <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E7D3AE] bg-[#FFF8EF] p-6 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#D89A1B]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
                 <Plus size={22} />
             </div>
             <h3 className="mt-4 font-serif text-lg font-bold text-[#3C2015]">
@@ -182,7 +182,7 @@ function AddNewAddressCard() {
             <p className="mt-2 text-sm text-[#8A7460]">
                 Save new address to enjoy faster and hassle-free delivery.
             </p>
-            <button className="mt-5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#D89A1B] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition">
+            <button className="mt-5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2D3A1B] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition">
                 <Plus size={14} />
                 Add Address
             </button>
@@ -202,7 +202,7 @@ export default function MyAddressesPage() {
                         {/* Profile Card */}
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#D89A1B]">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
                                     RS
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
@@ -211,7 +211,7 @@ export default function MyAddressesPage() {
                                 <p className="text-xs text-[#B59A78]">
                                     rahulsharma123@gmail.com
                                 </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#D89A1B] hover:underline">
+                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
 <Link
 href={`/account/editprofile`}
@@ -241,10 +241,10 @@ Edit profile
                                 </Link>
 
                                 {/* My Addresses - this page itself, always active */}
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#D89A1B]">
+                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
                                     <MapPin size={18} className="shrink-0" />
                                     <span>My Addresses</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#D89A1B]" />
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                                 </div>
 
                                 <Link
@@ -292,14 +292,14 @@ Edit profile
                                     <input
                                         type="text"
                                         placeholder="Search address"
-                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-10 pr-4 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-10 pr-4 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                     />
                                     <Search
                                         size={18}
                                         className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#B59A78]"
                                     />
                                 </div>
-                                <button className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#D89A1B] px-4 text-sm font-bold text-white hover:bg-[#C98715] transition">
+                                <button className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#2D3A1B] px-4 text-sm font-bold text-white hover:bg-[#C98715] transition">
                                     <Plus size={16} />
                                     Add New Address
                                 </button>

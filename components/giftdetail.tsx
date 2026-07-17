@@ -69,7 +69,7 @@ export default function ProductDetailPage() {
           <h2 className="text-2xl font-serif text-[#2D3A1B]">Product not found</h2>
           <button
             onClick={() => window.history.back()}
-            className="mt-4 text-[#D89A1B] underline"
+            className="mt-4 text-[#2D3A1B] underline"
           >
             Go Back
           </button>
@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
           <span className="mx-2">/</span>
           <span>Shop</span>
           <span className="mx-2">/</span>
-          <span className="text-[#D89A1B]">{product.name}</span>
+          <span className="text-[#2D3A1B]">{product.name}</span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
@@ -129,7 +129,7 @@ export default function ProductDetailPage() {
                 </h1>
                 <div className="flex items-center gap-3 mt-2">
                   <div className="flex items-center gap-1">
-                    <Star size={18} className="fill-[#D89A1B] text-[#D89A1B]" />
+                    <Star size={18} className="fill-[#2D3A1B] text-[#2D3A1B]" />
                     <span className="font-medium">{product.rating}</span>
                   </div>
                   <span className="text-[#8D7F73] text-sm">
@@ -138,7 +138,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[28px] font-bold text-[#D89A1B]">
+                <span className="text-[28px] font-bold text-[#2D3A1B]">
                   ₹{product.price}
                 </span>
                 {product.originalPrice && (
@@ -170,9 +170,9 @@ export default function ProductDetailPage() {
                   placeholder="Enter your pincode"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-[#E6D2B8] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D89A1B]"
+                  className="flex-1 px-3 py-2 border border-[#E6D2B8] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]"
                 />
-                <button className="px-6 py-2 bg-[#D89A1B] text-white rounded-lg text-sm font-semibold hover:bg-[#C48912] transition-colors">
+                <button className="px-6 py-2 bg-[#2D3A1B] text-white rounded-lg text-sm font-semibold hover:bg-[#C48912] transition-colors">
                   Check
                 </button>
               </div>
@@ -188,8 +188,8 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedWeight(w)}
                     className={`px-4 py-2 rounded-lg border transition-all ${
                       selectedWeight === w
-                        ? "border-[#D89A1B] bg-[#D89A1B]/10 text-[#D89A1B] font-semibold"
-                        : "border-[#E6D2B8] hover:border-[#D89A1B]"
+                        ? "border-[#2D3A1B] bg-[#2D3A1B]/10 text-[#2D3A1B] font-semibold"
+                        : "border-[#E6D2B8] hover:border-[#2D3A1B]"
                     }`}
                   >
                     <div className="text-[14px]">{w}</div>
@@ -221,14 +221,14 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <button className="flex-1 bg-[#D89A1B] text-white py-3 rounded-lg font-semibold hover:bg-[#C48912] transition-colors flex items-center justify-center gap-2">
+              <button className="flex-1 bg-[#2D3A1B] text-white py-3 rounded-lg font-semibold hover:bg-[#C48912] transition-colors flex items-center justify-center gap-2">
                 <ShoppingBag size={18} />
                 Add to Cart
               </button>
             </div>
 
             {/* Buy It Now */}
-            <button className="w-full mt-3 py-3 rounded-lg border-2 border-[#D89A1B] text-[#D89A1B] font-semibold hover:bg-[#D89A1B] hover:text-white transition-colors">
+            <button className="w-full mt-3 py-3 rounded-lg border-2 border-[#2D3A1B] text-[#2D3A1B] font-semibold hover:bg-[#2D3A1B] hover:text-white transition-colors">
               Buy It Now
             </button>
 
@@ -246,7 +246,7 @@ export default function ProductDetailPage() {
                   {["Description", "Nutritional Info", "Product Details", "Benefits", "Ecosystem"].map((tab) => (
                     <button
                       key={tab}
-                      className="pb-3 text-[13px] font-medium text-[#6F665F] hover:text-[#D89A1B] border-b-2 border-transparent hover:border-[#D89A1B] transition-colors"
+                      className="pb-3 text-[13px] font-medium text-[#6F665F] hover:text-[#2D3A1B] border-b-2 border-transparent hover:border-[#2D3A1B] transition-colors"
                     >
                       {tab}
                     </button>

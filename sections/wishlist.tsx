@@ -86,7 +86,7 @@ export default function WishlistPage() {
             <div className="flex items-center gap-6">
               <button
                 onClick={shareWishlist}
-                className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#D89A1B] transition-colors"
+                className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#2D3A1B] transition-colors"
               >
                 <ArrowUpRight size={15} /> Share Wishlist
               </button>
@@ -105,7 +105,7 @@ export default function WishlistPage() {
               <p className="text-[16px] text-[#B59A78]">Your wishlist is empty.</p>
               <Link
                 href="/shop"
-                className="inline-block mt-4 text-[15px] font-semibold text-[#D89A1B] hover:underline"
+                className="inline-block mt-4 text-[15px] font-semibold text-[#2D3A1B] hover:underline"
               >
                 Continue Shopping
               </Link>
@@ -127,7 +127,7 @@ export default function WishlistPage() {
                   <span className="text-[19px] font-bold text-[#3C2015] shrink-0">₹{item.price}</span>
                   <button
                     onClick={() => moveToCart(item.id, item.title)}
-                    className="shrink-0 flex items-center gap-2 border border-[#D89A1B] text-[#D89A1B] text-[14px] font-semibold px-6 py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors"
+                    className="shrink-0 flex items-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[14px] font-semibold px-6 py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors"
                   >
                     <ShoppingCart size={16} /> Move to Cart
                   </button>
@@ -155,11 +155,11 @@ export default function WishlistPage() {
             <div>
               <p className="text-[19px] font-bold text-[#3C2015]">Refer &amp; Earn Rewards!</p>
               <p className="text-[15px] text-[#2D3A1B] mt-1.5">
-                Refer your friends and get <span className="text-[#D89A1B] font-semibold">10% off</span> on their first order.
+                Refer your friends and get <span className="text-[#2D3A1B] font-semibold">10% off</span> on their first order.
               </p>
               <button
                 onClick={referNow}
-                className="mt-4 bg-[#D89A1B] hover:bg-[#C98715] text-white text-[15px] font-semibold px-7 py-3 rounded-xl transition-colors"
+                className="mt-4 bg-[#2D3A1B] hover:bg-[#C98715] text-white text-[15px] font-semibold px-7 py-3 rounded-xl transition-colors"
               >
                 Refer Now
               </button>

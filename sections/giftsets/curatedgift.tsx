@@ -153,7 +153,7 @@ export default function FeaturedCollection() {
         {/* Header */}
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="text-[13px] font-semibold tracking-[0.15em] text-[#D89A1B]">
+            <p className="text-[13px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
               OUR FEATURED COLLECTION
             </p>
             <h2 className="text-[30px] md:text-[36px] font-serif text-[#1E392A] mt-2">
@@ -236,14 +236,14 @@ export default function FeaturedCollection() {
                         {product.subtitle}
                       </p>
                     </div>
-                    <span className="text-[16px] font-semibold text-[#D89A1B] whitespace-nowrap">
+                    <span className="text-[16px] font-semibold text-[#2D3A1B] whitespace-nowrap">
                       ₹{product.price}
                     </span>
                   </div>
 
                   {/* Rating */}
                   <div className="flex items-center gap-1 mt-2">
-                    <Star size={14} className="fill-[#D89A1B] text-[#D89A1B]" />
+                    <Star size={14} className="fill-[#2D3A1B] text-[#2D3A1B]" />
                     <span className="text-[13px] font-medium text-[#2D3A1B]">
                       {product.rating}
                     </span>
@@ -258,7 +258,7 @@ export default function FeaturedCollection() {
                         key={i}
                         className="flex items-center gap-2 text-[13px] text-[#6F665F]"
                       >
-                        <span className="w-1 h-1 rounded-full bg-[#D89A1B]" />
+                        <span className="w-1 h-1 rounded-full bg-[#2D3A1B]" />
                         {feature}
                       </li>
                     ))}
@@ -276,7 +276,7 @@ export default function FeaturedCollection() {
                       View Details
                     </button>
                     <button
-                      className="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg bg-[#D89A1B] hover:bg-[#C48912] transition-colors"
+                      className="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg bg-[#2D3A1B] hover:bg-[#C48912] transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
                         // Add to cart logic

@@ -37,7 +37,7 @@ export default function CertifiedQualitySection() {
           {/* LEFT */}
           <div>
             <div className="mb-12 w-full text-center">
-              <span className="text-[#D89A1B] uppercase tracking-[3px] text-[13px] font-semibold">
+              <span className="text-[#2D3A1B] uppercase tracking-[3px] text-[13px] font-semibold">
                 Certified Purity. Trusted Quality.
               </span>
             </div>
@@ -49,7 +49,7 @@ export default function CertifiedQualitySection() {
                   className="flex flex-col items-center text-center group transition-all duration-300"
                 >
                   {/* Icon */}
-                  <div className="w-[52px] h-[52px] rounded-full border border-[#D89A1B] bg-[#FDF3E4] flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:bg-[#D89A1B]">
+                  <div className="w-[52px] h-[52px] rounded-full border border-[#2D3A1B] bg-[#FDF3E4] flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:bg-[#2D3A1B]">
                     <Image
                       src={item.icon}
                       alt={item.title}

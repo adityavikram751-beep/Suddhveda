@@ -68,7 +68,7 @@ export default function ImpactSection() {
                   border-b-[10px]
                   border-b-transparent
                   border-l-[16px]
-                  border-l-[#D89A1B]
+                  border-l-[#2D3A1B]
                   ml-1
                 "
               />
@@ -82,7 +82,7 @@ export default function ImpactSection() {
               text-[13px]
               font-semibold
               tracking-[0.08em]
-              text-[#D89A1B]
+              text-[#2D3A1B]
               uppercase
               "
             >
@@ -133,7 +133,7 @@ export default function ImpactSection() {
               "
             >
               <div className="flex items-center gap-3">
-                <FiUser size={22} className="text-[#D89A1B]" />
+                <FiUser size={22} className="text-[#2D3A1B]" />
                 <div>
                   <h3 className="text-[24px] font-bold text-[#233821] leading-none">
                     20,000+
@@ -145,7 +145,7 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center gap-3">
-                <GiBee size={22} className="text-[#D89A1B]" />
+                <GiBee size={22} className="text-[#2D3A1B]" />
                 <div>
                   <h3 className="text-[24px] font-bold text-[#233821] leading-none">
                     7M+
@@ -157,7 +157,7 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center gap-3">
-                <FiBox size={22} className="text-[#D89A1B]" />
+                <FiBox size={22} className="text-[#2D3A1B]" />
                 <div>
                   <h3 className="text-[24px] font-bold text-[#233821] leading-none">
                     1,250+
@@ -169,7 +169,7 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center gap-3">
-                <FiDroplet size={22} className="text-[#D89A1B]" />
+                <FiDroplet size={22} className="text-[#2D3A1B]" />
                 <div>
                   <h3 className="text-[24px] font-bold text-[#233821] leading-none">
                     99.9%

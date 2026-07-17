@@ -95,13 +95,13 @@ function OrderActions({ order }: { order: Order }) {
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href="/account/track-order"
-                    className="flex h-9 items-center justify-center rounded-lg bg-[#D89A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                    className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
                 >
                     Track Order
                 </Link>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#D89A1B] text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
                 >
                     View Details
                 </Link>
@@ -115,16 +115,16 @@ function OrderActions({ order }: { order: Order }) {
     if (order.status === "Delivered") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <button className="flex h-9 items-center justify-center rounded-lg bg-[#D89A1B] text-xs font-bold text-white hover:bg-[#C98715] transition">
+                <button className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition">
                     Buy Again
                 </button>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#D89A1B] text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
                 >
                     View Details
                 </Link>
-                <button className="flex h-9 items-center justify-center rounded-lg border border-[#D89A1B] text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition">
+                <button className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
                     Write Review
                 </button>
             </div>
@@ -135,17 +135,17 @@ function OrderActions({ order }: { order: Order }) {
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
                 href="/account/track-order"
-                className="flex h-9 items-center justify-center rounded-lg bg-[#D89A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
             >
                 Track Shipment
             </Link>
             <Link
                 href={`/account/orders/${order.orderId}`}
-                className="flex h-9 items-center justify-center rounded-lg border border-[#D89A1B] text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition"
+                className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
             >
                 View Details
             </Link>
-            <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-[#D89A1B] text-xs font-bold text-[#D89A1B] hover:bg-[#FFF8EF] transition">
+            <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
                 Download Invoice
             </button>
         </div>
@@ -166,7 +166,7 @@ export default function MyOrdersPage() {
                         {/* Profile Card */}
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#D89A1B]">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
                                     RS
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
@@ -175,7 +175,7 @@ export default function MyOrdersPage() {
                                 <p className="text-xs text-[#B59A78]">
                                     rahulsharma123@gmail.com
                                 </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#D89A1B] hover:underline">
+                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
 <Link
 href={`/account/editprofile`}
@@ -189,10 +189,10 @@ Edit profile
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col lg:min-h-[480px]">
                             <nav className="space-y-1">
                                 {/* My Orders - this page itself, no navigation needed */}
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#D89A1B]">
+                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
                                     <Package size={18} className="shrink-0" />
                                     <span>My Orders</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#D89A1B]" />
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                                 </div>
                                 {sidebarLinks.map((link) => {
                                     const Icon = link.icon;
@@ -204,7 +204,7 @@ Edit profile
                                             className={`
                                                 relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
                                                 ${isActive
-                                                    ? "bg-[#FFF2D8] text-[#D89A1B]"
+                                                    ? "bg-[#FFF2D8] text-[#2D3A1B]"
                                                     : "text-[#2D3A1B] hover:bg-[#FFF8EF]"
                                                 }
                                             `}
@@ -212,7 +212,7 @@ Edit profile
                                             <Icon size={18} className="shrink-0" />
                                             <span>{link.label}</span>
                                             {isActive && (
-                                                <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#D89A1B]" />
+                                                <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                                             )}
                                         </Link>
                                     );
@@ -247,7 +247,7 @@ Edit profile
                                 <input
                                     type="text"
                                     placeholder="Search Order ID or Product Name..."
-                                    className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#D89A1B]/40"
+                                    className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                 />
                                 <Search
                                     size={18}
@@ -258,7 +258,7 @@ Edit profile
 
                         {/* Filter pill */}
                         <div>
-                            <button className="rounded-lg border border-[#D89A1B] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#D89A1B]">
+                            <button className="rounded-lg border border-[#2D3A1B] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#2D3A1B]">
                                 All Orders
                             </button>
                         </div>
@@ -337,7 +337,7 @@ Edit profile
                                     key={n}
                                     className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold ${
                                         n === 1
-                                            ? "bg-[#D89A1B] text-white"
+                                            ? "bg-[#2D3A1B] text-white"
                                             : "border border-[#F0E2CC] text-[#3C2015] hover:bg-[#FFF8EF]"
                                     }`}
                                 >

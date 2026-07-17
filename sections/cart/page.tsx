@@ -68,14 +68,14 @@ export default function Cart() {
       <div className="mx-auto max-w-[1410px] px-5">
         <nav className="mb-6 text-sm text-[#7B8493]">
           <span className="font-medium text-[#2F241C]">Home</span> &gt;{" "}
-          <span className="font-semibold text-[#D89A1B]">Cart</span>
+          <span className="font-semibold text-[#2D3A1B]">Cart</span>
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
           {/* LEFT SECTION */}
           <section>
             <h1 className="text-[34px] font-bold">
-              Your Cart <span className="text-[#D89A1B]">({visibleProducts.length})</span>
+              Your Cart <span className="text-[#2D3A1B]">({visibleProducts.length})</span>
             </h1>
 
             <FreeDeliveryBar subtotal={subtotal} />
@@ -111,7 +111,7 @@ export default function Cart() {
                         100% Raw & Unfiltered
                       </span>
                       <div className="mt-2 flex gap-4 text-[11px] text-[#7B8493]">
-                        <button type="button" className="flex items-center gap-1 hover:text-[#D89A1B] transition-colors">
+                        <button type="button" className="flex items-center gap-1 hover:text-[#2D3A1B] transition-colors">
                           <Heart size={12} /> Move to Wishlist
                         </button>
                         <button
@@ -124,13 +124,13 @@ export default function Cart() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-[20px] font-bold text-[#D89A1B]">₹{product.price}</p>
+                  <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price}</p>
                   <QuantityControl
                     quantity={product.quantity}
                     onMinus={() => updateQuantity(product, -1)}
                     onPlus={() => updateQuantity(product, 1)}
                   />
-                  <p className="text-[20px] font-bold text-[#D89A1B]">₹{product.price * product.quantity}</p>
+                  <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price * product.quantity}</p>
                 </div>
               ))}
             </div>
@@ -161,8 +161,8 @@ export default function Cart() {
             </div>
           </section>
 
-          {/* RIGHT SIDEBAR */}
-          <aside className="w-full space-y-10 box-border lg:max-w-[420px]">
+          {/* RIGHT SIDEBAR - STICKY FROM BOTTOM (NO INTERNAL SCROLL, FULL SCREEN SCROLL FIRST) */}
+          <aside className="w-full space-y-8 box-border lg:max-w-[420px] lg:sticky lg:bottom-10 self-end">
             <OrderSummaryWithCoupons subtotal={subtotal} saved={saved} />
             <HelpPanel />
           </aside>
@@ -183,7 +183,7 @@ export function FreeDeliveryBar({ subtotal }: { subtotal: number }) {
       </p>
       <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#E8EBEF]">
         <div
-          className="h-full rounded-full bg-[#D89A1B] transition-all duration-300"
+          className="h-full rounded-full bg-[#2D3A1B] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -268,7 +268,7 @@ export function OrderSummaryWithCoupons({
         </div>
       </div>
 
-      {/* Coupon Card Box */}
+      {/* Coupon Card Box - No inner scroll anymore */}
       <div className="rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] w-full box-border transition-all duration-300">
         <button
           onClick={() => setIsCouponOpen(!isCouponOpen)}
@@ -293,7 +293,7 @@ export function OrderSummaryWithCoupons({
                 placeholder="Enter Coupon Code"
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#D89A1B] bg-[#FBFCFD]"
+                className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2D3A1B] bg-[#FBFCFD]"
               />
               <button
                 onClick={() => couponCode && handleApplyCoupon(couponCode)}
@@ -307,14 +307,14 @@ export function OrderSummaryWithCoupons({
               <p className="text-[10px] font-bold text-[#A2AAB7] uppercase tracking-wider">
                 AVAILABLE COUPONS
               </p>
-
+              
               {coupons.map((coupon) => (
                 <div
                   key={coupon.code}
-                  className="flex items-center justify-between rounded-xl border border-dashed border-[#D89A1B]/60 p-3 bg-white"
+                  className="flex items-center justify-between rounded-xl border border-dashed border-[#2D3A1B]/60 p-3 bg-white"
                 >
                   <div className="flex-1">
-                    <div className="inline-block rounded border border-dashed border-[#D89A1B] bg-[#FFF8EF] px-2 py-0.5 text-[12px] font-bold text-[#B97B00]">
+                    <div className="inline-block rounded border border-dashed border-[#2D3A1B] bg-[#FFF8EF] px-2 py-0.5 text-[12px] font-bold text-[#B97B00]">
                       {coupon.code}
                     </div>
                     <p className="text-[12px] font-medium text-[#2F241C] mt-1.5">{coupon.desc}</p>
@@ -328,7 +328,7 @@ export function OrderSummaryWithCoupons({
                   ) : (
                     <button
                       onClick={() => handleApplyCoupon(coupon.code)}
-                      className="text-[12px] font-bold px-4 py-1.5 rounded-lg border border-[#D89A1B] text-[#D89A1B] hover:bg-[#FFF8EF] transition-colors"
+                      className="text-[12px] font-bold px-4 py-1.5 rounded-lg border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
                     >
                       Apply
                     </button>
@@ -364,13 +364,13 @@ export function OrderSummaryWithCoupons({
 
       {/* Checkout Section & Promise */}
       <div className="px-1 space-y-4 w-full box-border">
-        <div className="flex items-baseline justify-between">
-          <div>
-            <p className="text-[22px] font-bold text-[#2F241C]">Total</p>
-            <p className="text-[11px] text-[#A2AAB7] mt-0.5">(Inclusive of all taxes)</p>
-          </div>
-          <p className="text-[26px] font-bold text-[#2F241C]">₹{subtotal.toLocaleString("en-IN")}</p>
+      <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
+        <div>
+          <p className="text-[21px] font-bold">Total</p>
+          <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
         </div>
+        <p className="font-serif text-[28px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
+      </div>
 
         <Link
           href="/checkout"
@@ -403,40 +403,34 @@ export function OrderSummaryWithCoupons({
 }
 
 export function TrustBadges() {
-  return (
-    <div>
-    
-     
-    </div>
-  );
+  return null;
 }
 
 function PaymentPanel() {
   return null;
 }
 
-// -------- NEED HELP PANEL (stays within sticky sidebar, always visible while scrolling) --------
+// -------- NEED HELP PANEL --------
 function HelpPanel() {
   return (
-    <div className="w-full box-border flex items-center justify-between gap-4 px-1">
+    <div className="w-full box-border flex items-center justify-between gap-4 px-1 pb-2">
       <div className="flex-1 space-y-3">
         <h2 className="text-[18px] font-bold text-[#2F241C]">Need help?</h2>
         <div className="space-y-2 text-[14px] text-[#6F7786]">
           <p className="flex items-center gap-3">
-            <Phone size={16} className="text-[#D89A1B] shrink-0" />
+            <Phone size={16} className="text-[#2D3A1B] shrink-0" />
             <span className="font-medium text-[#2F241C] whitespace-nowrap">+91 98765 43210</span>
           </p>
           <p className="flex items-center gap-3">
-            <Mail size={16} className="text-[#D89A1B] shrink-0" />
+            <Mail size={16} className="text-[#2D3A1B] shrink-0" />
             <span className="font-medium text-[#2F241C] break-all">connect@honeyveda.in</span>
           </p>
           <p className="flex items-center gap-3">
-            <Clock size={16} className="text-[#D89A1B] shrink-0" />
+            <Clock size={16} className="text-[#2D3A1B] shrink-0" />
             <span className="font-medium text-[#2F241C] whitespace-nowrap">Mon – Sat : 9AM – 7PM</span>
           </p>
         </div>
       </div>
-      {/* Right Side Image Box */}
       <div className="relative w-[100px] h-[90px] shrink-0 hidden sm:block">
         <Image
           src="/need.png"

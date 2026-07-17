@@ -73,7 +73,7 @@ export default function TestimonialsAndBulkGifting() {
         <div className="max-w-[1300px] mx-auto px-6">
           {/* Heading */}
           <div className="text-center mb-10">
-            <p className="text-[12px] font-semibold tracking-[0.15em] text-[#D89A1B]">
+            <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
               CUSTOMER MOMENTS
             </p>
             <h2 className="text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
@@ -139,15 +139,15 @@ export default function TestimonialsAndBulkGifting() {
 
               <ul className="mt-7 space-y-3.5">
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#D89A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
                   Bulk Orders &amp; Custom Branding
                 </li>
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#D89A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
                   Personalized Handwritten Messages
                 </li>
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#D89A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
                   Tiered Pricing for Large Quantities
                 </li>
               </ul>
@@ -163,18 +163,18 @@ export default function TestimonialsAndBulkGifting() {
                 <input
                   type="text"
                   placeholder="Full Name"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#2D3A1B]"
                 />
                 <input
                   type="email"
                   placeholder="Business Email"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#D89A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#2D3A1B]"
                 />
                 <div className="relative">
                   <select
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white/50 focus:outline-none focus:border-[#D89A1B] cursor-pointer"
+                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white/50 focus:outline-none focus:border-[#2D3A1B] cursor-pointer"
                   >
                     <option value="" className="text-[#2D3A1B]">
                       Expected Quantity (e.g. 50-100)

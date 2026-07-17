@@ -94,7 +94,7 @@ export default function ProductCardShop({
       {/* Add to cart row */}
       <div className="mt-4 flex items-center gap-2">
         {quantity > 0 ? (
-          <div className="flex flex-1 items-center justify-between rounded bg-[#D89A1B] px-4 py-3 text-white">
+          <div className="flex flex-1 items-center justify-between rounded bg-[#2D3A1B] px-4 py-3 text-white">
             <button type="button" onClick={onDecrement} aria-label="Decrease quantity">
               <Minus size={16} />
             </button>
@@ -107,7 +107,7 @@ export default function ProductCardShop({
           <button
             type="button"
             onClick={onAddToCart}
-            className="flex-1 rounded bg-[#D89A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white hover:bg-[#C98715] transition-colors"
+            className="flex-1 rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white hover:bg-[#C98715] transition-colors"
           >
             Add to Cart
           </button>
@@ -116,7 +116,7 @@ export default function ProductCardShop({
           type="button"
           onClick={onAddToCart}
           aria-label="Add to cart"
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#D89A1B] text-[#D89A1B] hover:bg-[#D89A1B]/10 transition-colors"
+          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#2D3A1B]/10 transition-colors"
         >
           <ShoppingCart size={18} />
         </button>

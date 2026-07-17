@@ -470,7 +470,7 @@ function FormField({
             name={name}
             value={value}
             onChange={onChange}
-            className="h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[13px] text-[#2F241C] outline-none focus:border-[#D89A1B]"
+            className="h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[13px] text-[#2F241C] outline-none focus:border-[#2D3A1B]"
           >
             <option value="">{placeholder}</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -486,7 +486,7 @@ function FormField({
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#D89A1B]"
+            className="h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#2D3A1B]"
           />
         )}
         {action && (
@@ -528,7 +528,7 @@ function SavedAddresses({
         <button
           type="button"
           onClick={onAddNew}
-          className="text-[13px] font-semibold text-[#D89A1B] hover:underline"
+          className="text-[13px] font-semibold text-[#2D3A1B] hover:underline"
         >
           + Add New
         </button>
@@ -542,7 +542,7 @@ function SavedAddresses({
               onClick={() => onSelect(address.id)}
               className={`cursor-pointer rounded-[14px] border p-5 text-left transition-colors ${
                 isSelected
-                  ? "border-[#D89A1B] bg-[#FFF8EF]"
+                  ? "border-[#2D3A1B] bg-[#FFF8EF]"
                   : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
               }`}
             >
@@ -551,13 +551,13 @@ function SavedAddresses({
                   <span
                     className={`h-4 w-4 rounded-full border-2 ${
                       isSelected
-                        ? "border-[#D89A1B] bg-[#D89A1B]"
+                        ? "border-[#2D3A1B] bg-[#2D3A1B]"
                         : "border-[#CBD2DB] bg-white"
                     }`}
                   />
                   {address.label}
                   {address.isDefault && (
-                    <span className="text-[11px] font-normal text-[#D89A1B]">
+                    <span className="text-[11px] font-normal text-[#2D3A1B]">
                       (Default)
                     </span>
                   )}
@@ -569,7 +569,7 @@ function SavedAddresses({
                       e.stopPropagation();
                       onEdit(address);
                     }}
-                    className="text-[12px] font-semibold text-[#D89A1B] hover:underline"
+                    className="text-[12px] font-semibold text-[#2D3A1B] hover:underline"
                   >
                     ✎ Edit
                   </button>
@@ -653,7 +653,7 @@ function CheckoutOrderSummary({
       <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal</span>
-          <strong className="text-[#1F2937]">₹{subtotal.toLocaleString("en-IN")}</strong>
+          <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
         </div>
         <div className="flex justify-between">
           <span>Shipping</span>
@@ -712,17 +712,17 @@ function CheckoutOrderSummary({
           {/* Trust Badges */}
           <div className="grid grid-cols-3 gap-3 text-center">
             <span className="p-1">
-              <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+              <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
               <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
               <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
             </span>
             <span className="p-1">
-              <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+              <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
               <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
               <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
             </span>
             <span className="p-1">
-              <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+              <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
               <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
               <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
             </span>
@@ -733,13 +733,13 @@ function CheckoutOrderSummary({
             <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
             <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
               <p className="flex items-center gap-2">
-                <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
+                <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
               </p>
               <p className="flex items-center gap-2">
-                <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
+                <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
               </p>
               <p className="flex items-center gap-2">
-                <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
+                <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
               </p>
             </div>
             <div className="absolute bottom-0 right-0 opacity-100">
