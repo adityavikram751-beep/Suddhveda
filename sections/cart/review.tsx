@@ -281,22 +281,22 @@ export default function ReviewPage() {
             </div>
           </section>
 
-          {/* Right Column - Order Summary */}
-          <aside className="flex h-full flex-col">
-            {/* Order Summary Card */}
-            <div className="w-full rounded-[4px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">              {/* Header */}
+          {/* Right Column - Order Summary (same structure as Checkout page) */}
+          <aside className="lg:sticky lg:top-6 flex h-full flex-col">
+            <div className="w-full h-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col">
+              {/* Header */}
               <div className="flex items-center justify-between">
-                <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
-                <span className="text-[12px] text-[#7B8493]">
+                <h2 className="font-serif text-[20px] mt-2 font-bold">Order Summary</h2>
+                <span className="text-[12px] text-[#9AA3AF]">
                   {visibleProducts.length} Items
                 </span>
               </div>
 
-              {/* Product List - reduced spacing */}
-              <div className="mt-10 max-h-[280px] space-y-5 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
+              {/* Product List */}
+              <div className="mt-6 max-h-[280px] space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
                 {visibleProducts.map((product) => (
-                  <div key={product.id} className="flex items-start gap-4">
-                    <div className="relative h-[70px] w-[70px] shrink-0 overflow-hidden bg-[#FFF8EF]">
+                  <div key={product.id} className="flex items-center gap-3">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
                       <Image
                         src={product.image}
                         alt={product.title}
@@ -304,26 +304,20 @@ export default function ReviewPage() {
                         className="object-contain p-1.5"
                       />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[14px] font-bold text-[#1F2937]">
-                        {product.title}
+                    <div className="flex-1">
+                      <p className="text-[14px] font-semibold">{product.title}</p>
+                      <p className="text-[11px] text-[#9AA3AF]">
+                        {product.weight.split(" - ")[0]} - Raw &amp; Unfiltered
                       </p>
-                      <p className="mt-1 text-[11px] text-[#9AA3AF]">
-                        {product.weight.split(" - ")[0]} • Raw &amp; Unfiltered
-                      </p>
-                      <p className="mt-1 text-[12px] text-[#6F7786]">
-                        Qty: {product.quantity}
-                      </p>
+                      <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
                     </div>
-                    <p className="text-[16px] font-bold text-[#1F2937]">
-                      ₹{product.price}
-                    </p>
+                    <p className="text-[14px] font-bold">₹{product.price}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Totals - reduced spacing */}
-              <div className="mt-10 space-y-3 border-t border-[#EEF1F4] pt-4 text-[14px] text-[#6F7786]">
+              {/* Totals */}
+              <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <strong className="text-[#1F2937]">
@@ -338,29 +332,31 @@ export default function ReviewPage() {
                   <span>You Save</span>
                   <strong className="text-[#0BA445]">- ₹{saved}</strong>
                 </div>
+                <div className="flex justify-between">
+                  <span>Coupon Applied</span>
+                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
+                </div>
               </div>
 
               {/* Total */}
-              <div className="mt-8 flex items-end justify-between">
-                <div className="flex items-baseline gap-1">
-                  <p className="text-[19px] font-bold text-[#1F2937]">Total</p>
-                  <p className="text-[10px] text-[#9AA3AF]">
-                    (Inclusive of all taxes)
-                  </p>
+              <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
+                <div>
+                  <p className="text-[21px] font-bold">Total</p>
+                  <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                 </div>
-                <p className="font-serif text-[26px] font-bold text-[#1F2937]">
+                <p className="font-serif text-[28px] font-bold">
                   ₹{total.toLocaleString("en-IN")}
                 </p>
               </div>
 
-              {/* Free Delivery Progress */}
-              <div className="mt-10 rounded-md border border-[#D7F3D9] bg-[#F0FFF4] p-4">
-                <p className="flex items-center gap-2 text-[13px] font-bold text-[#187A37]">
+              {/* Savings & Free delivery progress */}
+              <div className="mt-14 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
+                <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
                   <ShieldCheck size={16} /> You&apos;re saving ₹{saved} on this order!
                 </p>
                 {remaining > 0 && (
                   <>
-                    <p className="mt-3 text-[12px] text-[#4C5362]">
+                    <p className="mt-2 text-[12px] text-[#4C5362]">
                       Add items worth ₹{remaining} more to get FREE delivery!
                     </p>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#DDEFE0]">
@@ -377,49 +373,54 @@ export default function ReviewPage() {
                 )}
               </div>
 
-              {/* Trust Badges - 3 columns */}
-              <div className="mt-12 grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-md bg-white p-3 shadow-sm">
-                  <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">
-                    Secure Checkout
-                  </p>
-                  <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
-                </div>
-                <div className="rounded-md bg-white p-3 shadow-sm">
-                  <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
-                  <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
-                </div>
-                <div className="rounded-md bg-white p-3 shadow-sm">
-                  <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
-                  <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
-                  <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
-                </div>
-              </div>
-            </div>
+              {/* Bottom block: gap, then Trust Badges + Need Help together (matches Checkout page) */}
+              <div className="mt-auto pt-24">
+                <div className="rounded-[14px] bg-[#FFF8EF] p-5">
+                  {/* Trust Badges */}
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <span className="p-1">
+                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
+                      <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
+                    </span>
+                    <span className="p-1">
+                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
+                      <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
+                    </span>
+                    <span className="p-1">
+                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#D89A1B]" />
+                      <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
+                      <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
+                    </span>
+                  </div>
 
-            {/* Need help - directly below, no gap, with top border */}
-            <div className="relative min-h-[152px] mt-8 border-t border-[#F2EFE9] bg-white px-8 pt-6 pb-8">
-                <h2 className="text-[18px] font-bold text-black">Need help ?</h2>
-              <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
-                <p className="flex items-center gap-2">
-                  <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
-                </p>
-                <p className="flex items-center gap-2">
-                  <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
-                </p>
-                <p className="flex items-center gap-2">
-                  <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
-                </p>
+                  {/* Need Help */}
+                  <div className="relative mt-6">
+                    <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
+                    <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
+                      <p className="flex items-center gap-2">
+                        <Phone size={16} className="text-[#D89A1B]" /> +91 98765 43210
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Mail size={16} className="text-[#D89A1B]" /> connect@honeyveda.in
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Clock size={16} className="text-[#D89A1B]" /> Mon - Sat : 9AM - 7PM
+                      </p>
+                    </div>
+                    <div className="absolute bottom-0 right-0 opacity-100">
+                      <Image
+                        src="/need.png"
+                        alt="Honey illustration"
+                        width={200}
+                        height={90}
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <Image
-                src="/need.png"
-                alt="Honey dipper and honeycomb"
-                width={185}
-                height={92}
-                className="absolute bottom-0 right-0 hidden object-contain sm:block"
-              />
             </div>
           </aside>
         </div>

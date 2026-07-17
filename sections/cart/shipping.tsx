@@ -262,7 +262,7 @@ export default function ShippingPage() {
               <button
                 type="button"
                 onClick={handleContinue}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#C97B00] px-8 text-[15px] font-medium text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#B97100] sm:w-[260px]"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#C97B00] px-8 text-[15px] font- text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#B97100] sm:w-[260px]"
               >
                 Continue to Review
                 <ArrowRight size={18} />
