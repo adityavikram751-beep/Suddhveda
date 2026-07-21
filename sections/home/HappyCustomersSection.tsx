@@ -1,36 +1,63 @@
 "use client";
 
 import Image from "next/image";
-import { Play, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Play, Star, X, Loader2 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/auth";
 
-const testimonials = [
-  {
-    id: 1,
-    image: "/customers/customer-1.jpg",
-    name: "Priya Sharma",
-  },
-  {
-    id: 2,
-    image: "/customers/customer-2.jpg",
-    name: "Rahul Singh",
-  },
-  {
-    id: 3,
-    image: "/customers/customer-3.jpg",
-    name: "Neha Verma",
-  },
-  {
-    id: 4,
-    image: "/customers/customer-4.jpg",
-    name: "Amit Kumar",
-  },
-];
+interface VideoFeedback {
+  id: string;
+  name: string;
+  videoUrl: string;
+  thumbnail?: string;
+}
 
 export default function HappyCustomersSection() {
+  const [videos, setVideos] = useState<VideoFeedback[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedVideo, setSelectedVideo] = useState<VideoFeedback | null>(null);
+
+  // ---------------- 1. GET Video Feedbacks API ----------------
+  const fetchVideoFeedbacks = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/feedback/all-feedback/videos`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch video feedback");
+      }
+
+      const data = await res.json();
+      const rawList = data.data || data.videos || data.feedbacks || data || [];
+
+      const formattedVideos: VideoFeedback[] = rawList.map((item: any, index: number) => ({
+        id: item._id || item.id || `video-${index}`,
+        name: item.name || item.customerName || item.user?.name || "Happy Customer",
+        videoUrl: item.videoUrl || item.video || item.url || "",
+        thumbnail: item.thumbnail || item.thumbnailUrl || item.image || "",
+      }));
+
+      setVideos(formattedVideos);
+    } catch (error) {
+      console.error("Error fetching video feedback:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVideoFeedbacks();
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-[#FFF8EF] py-8 sm:py-10 lg:py-12">
 
-      {/* Left Decoration - Bee - Hidden on mobile/tablet */}
+      {/* Left Decoration - Bee */}
       <Image
         src="/customer2.png"
         alt=""
@@ -39,7 +66,7 @@ export default function HappyCustomersSection() {
         className="absolute left-[64%] top-10 z-10 hidden lg:block"
       />
 
-      {/* Right Decoration - Honeycomb - Hidden on mobile/tablet */}
+      {/* Right Decoration - Honeycomb */}
       <Image
         src="/customer.png"
         alt=""
@@ -60,9 +87,8 @@ export default function HappyCustomersSection() {
             Trusted By thousand of families who choose Purity, taste, and quality everyday
           </p>
 
-          {/* Rating Section - Responsive */}
+          {/* Rating Section */}
           <div className="mt-2 flex flex-wrap items-center justify-center gap-1 sm:gap-2">
-            {/* Stars */}
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -74,156 +100,139 @@ export default function HappyCustomersSection() {
                 />
               ))}
             </div>
-            
-            {/* 4.9 */}
+
             <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#2D3A1B] ml-1 sm:ml-2">
               4.9
             </span>
 
-            {/* loved by */}
             <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#2D3A1B] ml-2 sm:ml-3">
               loved by
             </span>
 
-            {/* 20,000+ Customers */}
             <span className="text-[#A98F78] text-[14px] sm:text-[16px] md:text-[18px] ml-1 sm:ml-2">
               20,000+ Customers
             </span>
           </div>
         </div>
 
-        {/* Testimonial Cards Grid */}
-        <div className="mt-8 sm:mt-10 md:mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-          
-          {testimonials.map((item) => (
-            <div
-              key={item.id}
-              className="
-                group
-                relative
-                h-[200px] sm:h-[240px] md:h-[280px] lg:h-[320px]
-                overflow-hidden
-                rounded-[14px] sm:rounded-[16px]
-                border
-                border-[#E8D5BA]
-                bg-[#FDF3E4]
-                shadow-[0_8px_30px_rgba(0,0,0,0.06)]
-                cursor-pointer
-                transition-all
-                duration-300
-                hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]
-              "
-            >
-              {/* Customer Image */}
-              <Image
-                src={item.image}
-                alt={item.name}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-
-              {/* Gradient Overlay - LIGHT */}
+        {/* Loader State */}
+        {loading ? (
+          <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
+            <Loader2 size={36} className="text-[#2D3A1B] animate-spin" />
+            <p className="text-[15px] text-[#A98F78]">Loading customer videos...</p>
+          </div>
+        ) : videos.length === 0 ? (
+          <div className="py-12 text-center text-[#A98F78] text-[15px]">
+            No video feedback available right now.
+          </div>
+        ) : (
+          /* 👈 4 Cards Visible Grid with Side Horizontal Scroll & Hidden Scrollbar */
+          <div className="mt-8 sm:mt-10 md:mt-14 flex items-center gap-4 overflow-x-auto scroll-smooth scrollbar-none pb-4 [-ms-overflow-style:none] [scrollbar-width:none]">
+            {videos.map((item) => (
               <div
+                key={item.id}
+                onClick={() => setSelectedVideo(item)}
                 className="
-                  absolute
-                  inset-0
-                  bg-gradient-to-t
-                  from-black/60
-                  via-black/5
-                  to-transparent
-                "
-              />
-
-              {/* Play Button - CENTER */}
-              <div
-                className="
-                  absolute
-                  inset-0
-                  flex
-                  items-center
-                  justify-center
-                  z-20
+                  group
+                  relative
+                  w-[calc(100%/2-12px)] sm:w-[calc(100%/3-14px)] lg:w-[calc(100%/4-15px)]
+                  min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]
+                  h-[240px] sm:h-[280px] lg:h-[340px]
+                  shrink-0
+                  overflow-hidden
+                  rounded-[16px]
+                  border
+                  border-[#E8D5BA]
+                  bg-[#FDF3E4]
+                  shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+                  cursor-pointer
+                  transition-all
+                  duration-300
+                  hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]
                 "
               >
-                <button
-                  className="
-                    w-[40px] sm:w-[44px] md:w-[50px]
-                    h-[40px] sm:h-[44px] md:h-[50px]
-                    rounded-full
-                    bg-white/90
-                    backdrop-blur-md
-                    flex
-                    items-center
-                    justify-center
-                    transition-all
-                    duration-300
-                    hover:scale-110
-                    hover:bg-white
-                    shadow-lg
-                  "
-                >
-                  <Play
-                    size={16}
-                    className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B] w-[14px] sm:w-[16px] md:w-[20px] h-auto"
-                    fill="#2D3A1B"
+                {/* Auto Playing Preview Background Video (Muted for AutoPlay Policy) */}
+                {item.videoUrl ? (
+                  <video
+                    src={item.videoUrl}
+                    poster={item.thumbnail}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
                   />
-                </button>
-              </div>
+                ) : (
+                  <Image
+                    src={item.thumbnail || "/customers/customer-1.jpg"}
+                    alt={item.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
 
-              {/* Bottom Content - Name */}
-              <div
-                className="
-                  absolute
-                  bottom-0
-                  left-0
-                  right-0
-                  z-20
-                  p-3 sm:p-4
-                "
-              >
-                <h3 className="text-white text-[14px] sm:text-[16px] md:text-[18px] font-semibold leading-tight">
-                  {item.name}
-                </h3>
-                <p className="text-white/80 text-[10px] sm:text-[11px] md:text-[12px] mt-0.5">⭐ Verified Buyer</p>
-              </div>
-            </div>
-          ))}
+                {/* Dark Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
 
-        </div>
+                {/* Center Play Button */}
+                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                  <div className="w-[44px] sm:w-[50px] h-[44px] sm:h-[50px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white shadow-lg">
+                    <Play size={18} className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B]" />
+                  </div>
+                </div>
+
+                {/* Customer Name */}
+                <div className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none">
+                  <h3 className="text-white text-[15px] sm:text-[17px] font-semibold leading-tight">
+                    {item.name}
+                  </h3>
+                  <p className="text-white/80 text-[11px] sm:text-[12px] mt-0.5">⭐ Verified Buyer</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
 
+      {/* ---------------- 🎬 Fullscreen / Large Screen Video Popup Modal ---------------- */}
+      {selectedVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-[420px] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/90 to-transparent absolute top-0 left-0 right-0 z-30">
+              <div>
+                <h3 className="text-white text-[15px] font-semibold">{selectedVideo.name}</h3>
+                <p className="text-white/70 text-[11px]">⭐ Verified Customer Review</p>
+              </div>
+              <button
+                onClick={() => setSelectedVideo(null)}
+                className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Popup Audio Video Player */}
+            <div className="relative w-full aspect-[9/16] bg-black">
+              <video
+                src={selectedVideo.videoUrl}
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Glow */}
-      <div
-        className="
-          absolute
-          left-1/2
-          bottom-[-100px] sm:bottom-[-120px] md:bottom-[-140px]
-          -translate-x-1/2
-          w-[500px] sm:w-[650px] md:w-[800px]
-          h-[180px] sm:h-[210px] md:h-[240px]
-          rounded-full
-          bg-[#FFF2D8]
-          blur-[100px] sm:blur-[120px] md:blur-[130px]
-          opacity-60
-          pointer-events-none
-        "
-      />
+      <div className="absolute left-1/2 bottom-[-120px] -translate-x-1/2 w-[650px] h-[210px] rounded-full bg-[#FFF2D8] blur-[120px] opacity-60 pointer-events-none" />
 
       {/* Bottom Border */}
-      <div
-        className="
-          absolute
-          bottom-0
-          left-0
-          w-full
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-[#E8D5BA]
-          to-transparent
-        "
-      />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#E8D5BA] to-transparent" />
 
     </section>
   );

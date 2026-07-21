@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/auth"; // 👈 Base URL imported from lib/auth.ts
 
-const initialWishlist = [
-  { id: 1, title: "Wild Forest Honey", weight: "250g • Raw & Unfiltered", image: "/honneycart.png", price: 799 },
-  { id: 2, title: "Mustard Honey", weight: "250g • Raw & Unfiltered", image: "/honneycart.png", price: 799 },
-  { id: 3, title: "Jamun Honey", weight: "250g • Raw & Unfiltered", image: "/honneycart.png", price: 799 },
-  { id: 4, title: "Acacia Honey", weight: "250g • Raw & Unfiltered", image: "/honneycart.png", price: 799 },
-];
+interface WishlistItem {
+  id: number | string;
+  title: string;
+  weight?: string;
+  image?: string;
+  price: number;
+}
 
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] = useState(initialWishlist);
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -21,19 +24,95 @@ export default function WishlistPage() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  const removeItem = (id: number) => {
-    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+  // ---------------- 1. GET Wishlist API ----------------
+  const fetchWishlist = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch wishlist");
+      }
+
+      const data = await res.json();
+
+      // Backend response mapping
+      const formattedItems = (data.data || data.items || data || []).map((item: any) => ({
+        id: item._id || item.id || item.productId,
+        title: item.title || item.name || item.product?.name || "Honey Product",
+        weight: item.weight || item.product?.weight || "250g • Raw & Unfiltered",
+        image: item.image || item.product?.image || "/honneycart.png",
+        price: item.price || item.product?.price || 799,
+      }));
+
+      setWishlistItems(formattedItems);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      showToast("Couldn't load wishlist items");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const clearAll = () => {
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  // ---------------- 2. DELETE Single Item API ----------------
+  const removeItem = async (id: number | string) => {
+    try {
+      // Optimistic UI update
+      setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+
+      const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to remove item");
+      }
+
+      showToast("Item removed from wishlist");
+    } catch (error) {
+      console.error("Error removing item:", error);
+      showToast("Error removing item");
+      // Revert if API fails
+      fetchWishlist();
+    }
+  };
+
+  // ---------------- 3. Clear All Wishlist Items ----------------
+  const clearAll = async () => {
     if (wishlistItems.length === 0) return;
-    setWishlistItems([]);
-    showToast("Wishlist cleared");
+
+    try {
+      const deletePromises = wishlistItems.map((item) =>
+        fetch(`${API_BASE_URL}/api/wishlist/remove/${item.id}`, {
+          method: "DELETE",
+        })
+      );
+
+      await Promise.all(deletePromises);
+      setWishlistItems([]);
+      showToast("Wishlist cleared");
+    } catch (error) {
+      console.error("Error clearing wishlist:", error);
+      showToast("Failed to clear wishlist");
+      fetchWishlist();
+    }
   };
 
-  const moveToCart = (id: number, title: string) => {
-    // TODO: hook this up to actual cart state / API
-    removeItem(id);
+  // Move to Cart
+  const moveToCart = async (id: number | string, title: string) => {
+    await removeItem(id);
     showToast(`${title} moved to cart`);
   };
 
@@ -47,7 +126,7 @@ export default function WishlistPage() {
         showToast("Wishlist link copied!");
       }
     } catch {
-      // user cancelled share, ignore
+      // User cancelled
     }
   };
 
@@ -63,44 +142,51 @@ export default function WishlistPage() {
   };
 
   return (
-    <section className="bg-[#FFF8EF] min-h-screen py-10">
-      <div className="max-w-[1300px] mx-auto px-6 sm:px-10">
+    <section className="bg-[#FFF8EF] min-h-screen py-6 sm:py-10">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-10">
 
-        <div className="flex items-center gap-2 text-[14px] text-[#B59A78]">
-         
-        </div>
+        <div className="flex items-center gap-2 text-[14px] text-[#B59A78]"></div>
 
+        {/* Header */}
         <div className="flex items-center justify-between mt-2">
           <div>
-            <h1 className="text-[34px] font-bold text-[#3C2015] flex items-center gap-3">
-              My Wishlist <Heart size={26} className="text-red-400 fill-red-400" />
+            <h1 className="text-[26px] sm:text-[34px] font-bold text-[#3C2015] flex items-center gap-2 sm:gap-3">
+              My Wishlist <Heart size={26} className="text-red-400 fill-red-400 shrink-0" />
             </h1>
-            <p className="text-[15px] text-[#B59A78] mt-1">Save your favorite products and buy them anytime.</p>
+            <p className="text-[13px] sm:text-[15px] text-[#B59A78] mt-1">Save your favorite products and buy them anytime.</p>
           </div>
           <Image src="/wishlist.png" alt="" width={130} height={130} className="hidden sm:block" />
         </div>
 
-        <div className="bg-white border border-[#F0E2CC] rounded-2xl mt-8 p-7">
-          <div className="flex items-center justify-between text-[14px] text-[#B59A78] mb-4">
-            <span>{wishlistItems.length} Items in Your Wishlist</span>
-            <div className="flex items-center gap-6">
+        {/* Main Content Box */}
+        <div className="bg-white border border-[#F0E2CC] rounded-2xl mt-6 sm:mt-8 p-4 sm:p-7">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[14px] text-[#B59A78] mb-4">
+            <span className="font-medium">{wishlistItems.length} Items in Your Wishlist</span>
+            <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
               <button
                 onClick={shareWishlist}
-                className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#2D3A1B] transition-colors"
+                className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#2D3A1B] transition-colors cursor-pointer"
               >
                 <ArrowUpRight size={15} /> Share Wishlist
               </button>
               <button
                 onClick={clearAll}
-                className="flex items-center gap-1.5 text-[#B59A78] hover:text-red-500 transition-colors"
+                className="flex items-center gap-1.5 text-[#B59A78] hover:text-red-500 transition-colors cursor-pointer"
               >
                 <Trash2 size={15} /> Clear All
               </button>
             </div>
           </div>
 
-          {wishlistItems.length === 0 ? (
-            <div className="py-20 text-center">
+          {/* Loader State */}
+          {loading ? (
+            <div className="py-16 sm:py-20 text-center flex flex-col items-center justify-center gap-3">
+              <Loader2 size={32} className="text-[#2D3A1B] animate-spin" />
+              <p className="text-[15px] text-[#B59A78]">Loading your wishlist...</p>
+            </div>
+          ) : wishlistItems.length === 0 ? (
+            /* Empty State */
+            <div className="py-16 sm:py-20 text-center">
               <Heart size={40} className="mx-auto text-[#E7D8C2] mb-4" />
               <p className="text-[16px] text-[#B59A78]">Your wishlist is empty.</p>
               <Link
@@ -111,55 +197,72 @@ export default function WishlistPage() {
               </Link>
             </div>
           ) : (
+            /* Wishlist Items List */
             <div className="divide-y divide-[#F0E2CC]">
               {wishlistItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-6 py-5">
-                  <div className="relative w-20 h-20 rounded-xl bg-[#FFF8EF] shrink-0">
-                    <Image src={item.image} alt={item.title} fill className="object-contain p-2" />
+                <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 py-5">
+                  <div className="flex items-center gap-4 sm:gap-6 flex-1">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#FFF8EF] shrink-0">
+                      <Image
+                        src={item.image || "/honneycart.png"}
+                        alt={item.title}
+                        fill
+                        className="object-contain p-2"
+                      />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] sm:text-[17px] font-semibold text-[#3C2015] truncate">{item.title}</p>
+                      <p className="text-[13px] sm:text-[14px] text-[#B59A78]">{item.weight}</p>
+                      <span className="inline-block mt-1 sm:mt-1.5 text-[10px] sm:text-[11px] bg-[#F5F8EE] text-[#3C6B2E] px-2.5 py-0.5 sm:py-1 rounded-full font-medium">
+                        ✓ 100% Raw &amp; Unfiltered
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[17px] font-semibold text-[#3C2015]">{item.title}</p>
-                    <p className="text-[14px] text-[#B59A78]">{item.weight}</p>
-                    <span className="inline-block mt-1.5 text-[11px] bg-[#F5F8EE] text-[#3C6B2E] px-2.5 py-1 rounded-full">
-                      ✓ 100% Raw &amp; Unfiltered
-                    </span>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F0E2CC]/50">
+                    <span className="text-[17px] sm:text-[19px] font-bold text-[#3C2015] shrink-0">₹{item.price}</span>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => moveToCart(item.id, item.title)}
+                        className="shrink-0 flex items-center justify-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors cursor-pointer"
+                      >
+                        <ShoppingCart size={16} /> Move to Cart
+                      </button>
+
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-[#F0E2CC] text-[#B59A78] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
                   </div>
-                  <span className="text-[19px] font-bold text-[#3C2015] shrink-0">₹{item.price}</span>
-                  <button
-                    onClick={() => moveToCart(item.id, item.title)}
-                    className="shrink-0 flex items-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[14px] font-semibold px-6 py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors"
-                  >
-                    <ShoppingCart size={16} /> Move to Cart
-                  </button>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full border border-[#F0E2CC] text-[#B59A78] hover:text-red-500 hover:border-red-200 transition-colors"
-                  >
-                    <X size={18} />
-                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="bg-gradient-to-r from-[#FFF2D8] to-[#FDECC8] border border-[#F0DAAE] rounded-2xl p-7 mt-6 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        {/* Refer Box */}
+        <div className="bg-gradient-to-r from-[#FFF2D8] to-[#FDECC8] border border-[#F0DAAE] rounded-2xl p-5 sm:p-7 mt-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <Image
               src="/wishlist1.png"
               alt="Refer and earn"
               width={110}
               height={110}
-              className="shrink-0"
+              className="shrink-0 w-20 h-20 sm:w-[110px] sm:h-[110px]"
             />
             <div>
-              <p className="text-[19px] font-bold text-[#3C2015]">Refer &amp; Earn Rewards!</p>
-              <p className="text-[15px] text-[#2D3A1B] mt-1.5">
+              <p className="text-[17px] sm:text-[19px] font-bold text-[#3C2015]">Refer &amp; Earn Rewards!</p>
+              <p className="text-[13px] sm:text-[15px] text-[#2D3A1B] mt-1 sm:mt-1.5">
                 Refer your friends and get <span className="text-[#2D3A1B] font-semibold">10% off</span> on their first order.
               </p>
               <button
                 onClick={referNow}
-                className="mt-4 bg-[#2D3A1B] hover:bg-[#C98715] text-white text-[15px] font-semibold px-7 py-3 rounded-xl transition-colors"
+                className="mt-3 sm:mt-4 bg-[#2D3A1B] hover:bg-[#C98715] text-white text-[14px] sm:text-[15px] font-semibold px-6 sm:px-7 py-2.5 sm:py-3 rounded-xl transition-colors cursor-pointer w-full sm:w-auto"
               >
                 Refer Now
               </button>
@@ -171,14 +274,14 @@ export default function WishlistPage() {
             alt="Gift"
             width={140}
             height={140}
-            className="hidden sm:block shrink-0"
+            className="hidden lg:block shrink-0"
           />
         </div>
       </div>
 
-      {/* Toast */}
+      {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#3C2015] text-white text-[14px] px-6 py-3.5 rounded-xl shadow-lg flex items-center gap-2 z-50">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#3C2015] text-white text-[13px] sm:text-[14px] px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl shadow-lg flex items-center gap-2 z-50 animate-in fade-in duration-200 whitespace-nowrap">
           <Check size={16} className="text-green-400" />
           {toast}
         </div>

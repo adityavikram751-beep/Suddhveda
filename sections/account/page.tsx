@@ -2,8 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
+    AUTH_CHANGED_EVENT,
+    AuthSession,
+    clearSession,
+    getInitials,
+    getStoredSession,
+} from "@/lib/auth";
+import {
+    CheckCircle2,
     Package,
     Truck,
     MapPin,
@@ -13,7 +22,6 @@ import {
     Pencil,
     Search,
     Clock,
-    CheckCircle2,
     Ship,
 } from "lucide-react";
 
@@ -154,6 +162,44 @@ function OrderActions({ order }: { order: Order }) {
 
 export default function MyOrdersPage() {
     const pathname = usePathname();
+    const router = useRouter();
+    const [session, setSession] = useState<AuthSession | null>(() => getStoredSession());
+
+    useEffect(() => {
+        function syncSession() {
+            setSession(getStoredSession());
+        }
+
+        window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
+        window.addEventListener("storage", syncSession);
+
+        return () => {
+            window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
+            window.removeEventListener("storage", syncSession);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!session) {
+            router.replace("/login");
+        }
+    }, [router, session]);
+
+    function logout() {
+        clearSession();
+        setSession(null);
+        router.push("/login");
+    }
+
+    if (!session) {
+        return (
+            <section className="min-h-[60vh] bg-[#FFF8EF] px-4 py-16">
+                <div className="mx-auto h-24 max-w-sm animate-pulse rounded-2xl bg-white" />
+            </section>
+        );
+    }
+
+    const user = session.user;
 
     return (
         <section className="min-h-screen bg-[#FFF8EF] py-8 md:py-12">
@@ -167,13 +213,13 @@ export default function MyOrdersPage() {
                         <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
                             <div className="flex flex-col items-center text-center gap-2">
                                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                                    RS
+                                    {getInitials(user)}
                                 </div>
                                 <p className="font-serif text-lg font-bold text-[#3C2015]">
-                                    Rahul Sharma
+                                    {user.name || "Shuddhveda Customer"}
                                 </p>
                                 <p className="text-xs text-[#B59A78]">
-                                    rahulsharma123@gmail.com
+                                    {user.mobile}
                                 </p>
                                 <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                                     <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
@@ -223,7 +269,11 @@ Edit profile
                             <div className="mt-48 border-t border-[#F0E2CC]" />
 
                             {/* Logout - right below nav, not pushed to bottom */}
-                            <button className="flex w-full items-center gap-3 rounded-xl px-4 pt-4 pb-1 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                            <button
+                                type="button"
+                                onClick={logout}
+                                className="flex w-full items-center gap-3 rounded-xl px-4 pt-4 pb-1 text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
+                            >
                                 <LogOut size={18} className="shrink-0" />
                                 Logout
                             </button>

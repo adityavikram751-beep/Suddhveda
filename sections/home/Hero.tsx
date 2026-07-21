@@ -5,12 +5,12 @@ import { TbLeaf } from "react-icons/tb";
 export default function Hero() {
   return (
     <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px]">
-      <div className="max-w-[1440px] mx-auto w-full px-6 lg:pl-8 lg:pr-16 pt-4 pb-10 lg:pb-0">
+      <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-4 pb-10 lg:pb-0">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center lg:min-h-[650px]">
           {/* LEFT CONTENT */}
-          <div className="flex flex-col items-start pt-4 lg:pt-0">
+          <div className="flex min-w-0 flex-col items-start pt-4 lg:pt-0">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[13px] sm:text-[14px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
+            <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 border border-[#E6D2B8] rounded-full px-3 sm:px-4 py-1.5 text-[#B37B1B] text-[12px] sm:text-[14px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
               <span className="text-base">🍯</span>
               <span>100% Pure</span>
               <span className="text-[#D49313] font-bold">•</span>
@@ -21,7 +21,7 @@ export default function Hero() {
 
             {/* Heading */}
             <h1 className="mt-6 text-[32px] sm:text-[40px] md:text-[48px] lg:text-[62px] leading-[1.15] lg:leading-[1.12] font-serif text-[#2D3A1B] tracking-tight font-normal">
-              Nature's Purity.
+              Nature&apos;s Purity.
               <br />
               Delivered <span className="text-[#D49313]">Honestly.</span>
             </h1>
@@ -37,7 +37,7 @@ export default function Hero() {
             </p>
 
             {/* Features */}
-            <div className="grid grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-4 mt-10 lg:mt-16 w-full max-w-[480px]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-5 mt-10 lg:mt-16 w-full max-w-[480px]">
               {/* Feature 1 */}
               <div className="flex flex-col items-center text-center gap-2">
                 <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 flex-shrink-0 text-[11px] font-bold">
@@ -63,7 +63,7 @@ export default function Hero() {
 
               {/* Feature 3 */}
               <div className="flex flex-col items-center text-center gap-2">
-                <div className="w-12 h-12sm:w-12 sm:h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 flex-shrink-0 text-[11px] font-bold">
+                <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 flex-shrink-0 text-[11px] font-bold">
                   NO
                 </div>
                 <span className="text-[#2D3A1B] text-[11px] sm:text-[12px] leading-tight">
