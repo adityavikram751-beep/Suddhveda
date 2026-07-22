@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Play, Star, X, Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -16,6 +16,9 @@ export default function HappyCustomersSection() {
   const [videos, setVideos] = useState<VideoFeedback[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedVideo, setSelectedVideo] = useState<VideoFeedback | null>(null);
+
+  // Auto Scroll Track Reference
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // ---------------- 1. GET Video Feedbacks API ----------------
   const fetchVideoFeedbacks = async () => {
@@ -38,8 +41,18 @@ export default function HappyCustomersSection() {
       const formattedVideos: VideoFeedback[] = rawList.map((item: any, index: number) => ({
         id: item._id || item.id || `video-${index}`,
         name: item.name || item.customerName || item.user?.name || "Happy Customer",
-        videoUrl: item.videoUrl || item.video || item.url || "",
-        thumbnail: item.thumbnail || item.thumbnailUrl || item.image || "",
+        videoUrl:
+          item.video_url ||
+          item.videoUrl ||
+          item.video ||
+          item.url ||
+          "",
+        thumbnail:
+          item.thumbnail_url ||
+          item.thumbnailUrl ||
+          item.thumbnail ||
+          item.image ||
+          "",
       }));
 
       setVideos(formattedVideos);
@@ -54,6 +67,27 @@ export default function HappyCustomersSection() {
     fetchVideoFeedbacks();
   }, []);
 
+  // ---------------- 2. Auto Scroll Logic ----------------
+  useEffect(() => {
+    if (videos.length === 0) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        const scrollStep = clientWidth > 768 ? clientWidth / 2 : 250;
+
+        // Reset to start if end reached
+        if (scrollLeft + clientWidth >= scrollWidth - 20) {
+          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          scrollRef.current.scrollBy({ left: scrollStep, behavior: "smooth" });
+        }
+      }
+    }, 3500); // 3.5 seconds interval
+
+    return () => clearInterval(interval);
+  }, [videos]);
+
   return (
     <section className="relative overflow-hidden bg-[#FFF8EF] py-8 sm:py-10 lg:py-12">
 
@@ -63,7 +97,7 @@ export default function HappyCustomersSection() {
         alt=""
         width={60}
         height={60}
-        className="absolute left-[64%] top-10 z-10 hidden lg:block"
+        className="absolute left-[64%] top-10 z-10 hidden lg:block pointer-events-none"
       />
 
       {/* Right Decoration - Honeycomb */}
@@ -72,7 +106,7 @@ export default function HappyCustomersSection() {
         alt=""
         width={220}
         height={200}
-        className="absolute right-0 top-0 z-10 hidden lg:block"
+        className="absolute right-0 top-0 z-10 hidden lg:block pointer-events-none"
       />
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 z-20">
@@ -126,76 +160,91 @@ export default function HappyCustomersSection() {
             No video feedback available right now.
           </div>
         ) : (
-          /* 👈 4 Cards Visible Grid with Side Horizontal Scroll & Hidden Scrollbar */
-          <div className="mt-8 sm:mt-10 md:mt-14 flex items-center gap-4 overflow-x-auto scroll-smooth scrollbar-none pb-4 [-ms-overflow-style:none] [scrollbar-width:none]">
-            {videos.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setSelectedVideo(item)}
-                className="
-                  group
-                  relative
-                  w-[calc(100%/2-12px)] sm:w-[calc(100%/3-14px)] lg:w-[calc(100%/4-15px)]
-                  min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]
-                  h-[240px] sm:h-[280px] lg:h-[340px]
-                  shrink-0
-                  overflow-hidden
-                  rounded-[16px]
-                  border
-                  border-[#E8D5BA]
-                  bg-[#FDF3E4]
-                  shadow-[0_8px_30px_rgba(0,0,0,0.06)]
-                  cursor-pointer
-                  transition-all
-                  duration-300
-                  hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]
-                "
-              >
-                {/* Auto Playing Preview Background Video (Muted for AutoPlay Policy) */}
-                {item.videoUrl ? (
-                  <video
-                    src={item.videoUrl}
-                    poster={item.thumbnail}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
-                  />
-                ) : (
-                  <Image
-                    src={item.thumbnail || "/customers/customer-1.jpg"}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                )}
+          /* 🎬 Auto-Scrolling Track (4 Cards visible in Desktop) */
+          <div className="relative mt-8 sm:mt-10 md:mt-14 w-full">
+            <div
+              ref={scrollRef}
+              className="
+                flex items-center gap-4 sm:gap-5
+                overflow-x-auto
+                scroll-smooth
+                scrollbar-none
+                py-3 px-1
+                [-ms-overflow-style:none]
+                [scrollbar-width:none]
+              "
+            >
+              {videos.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedVideo(item)}
+                  className="
+                    group
+                    relative
+                    shrink-0
+                    w-[calc((100%-1rem)/2)]
+                    sm:w-[calc((100%-2*1.25rem)/3)]
+                    lg:w-[calc((100%-3*1.25rem)/4)]
+                    h-[250px] sm:h-[290px] lg:h-[350px]
+                    overflow-hidden
+                    rounded-[16px]
+                    border
+                    border-[#E8D5BA]
+                    bg-[#FDF3E4]
+                    shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+                    cursor-pointer
+                    transition-all
+                    duration-300
+                    hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]
+                    hover:-translate-y-1
+                  "
+                >
+                  {/* Auto-playing Background Video */}
+                  {item.videoUrl ? (
+                    <video
+                      src={item.videoUrl}
+                      poster={item.thumbnail || undefined}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none"
+                    />
+                  ) : (
+                    <Image
+                      src={item.thumbnail || "/customers/customer-1.jpg"}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
 
-                {/* Dark Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
+                  {/* Dark Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
 
-                {/* Center Play Button */}
-                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                  <div className="w-[44px] sm:w-[50px] h-[44px] sm:h-[50px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white shadow-lg">
-                    <Play size={18} className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B]" />
+                  {/* Center Play Button */}
+                  <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                    <div className="w-[44px] sm:w-[50px] h-[44px] sm:h-[50px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white shadow-lg">
+                      <Play size={18} className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B]" />
+                    </div>
+                  </div>
+
+                  {/* Customer Name */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none">
+                    <h3 className="text-white text-[15px] sm:text-[17px] font-semibold leading-tight truncate">
+                      {item.name}
+                    </h3>
+                    <p className="text-white/80 text-[11px] sm:text-[12px] mt-0.5">⭐ Verified Buyer</p>
                   </div>
                 </div>
-
-                {/* Customer Name */}
-                <div className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none">
-                  <h3 className="text-white text-[15px] sm:text-[17px] font-semibold leading-tight">
-                    {item.name}
-                  </h3>
-                  <p className="text-white/80 text-[11px] sm:text-[12px] mt-0.5">⭐ Verified Buyer</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
       </div>
 
-      {/* ---------------- 🎬 Fullscreen / Large Screen Video Popup Modal ---------------- */}
+      {/* 🎬 Video Popup Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
           <div className="relative w-full max-w-[420px] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col">
@@ -214,7 +263,7 @@ export default function HappyCustomersSection() {
               </button>
             </div>
 
-            {/* Popup Audio Video Player */}
+            {/* Popup Video Player */}
             <div className="relative w-full aspect-[9/16] bg-black">
               <video
                 src={selectedVideo.videoUrl}

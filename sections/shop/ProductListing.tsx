@@ -12,7 +12,7 @@ import {
   PackageCheck,
   Search,
 } from "lucide-react";
-import ProductCard from "@/components/Productcard";
+import ProductCard from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts, categories } from "@/lib/shop-data";
 
@@ -294,7 +294,6 @@ export default function ProductListing({
                 weight={product.weight}
                 price={product.price}
                 oldPrice={product.oldPrice}
-                discount={product.discount}
                 rating={product.rating}
                 reviews={product.reviews}
                 quantity={cartItems[product.id] ?? 0}

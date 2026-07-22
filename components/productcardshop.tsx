@@ -1,40 +1,83 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { useState } from "react";
+import { Heart, Minus, Plus } from "lucide-react";
+
+type Variant = {
+  _id: string;
+  weight: number;
+  unit: string;
+  price: number;
+  mrp?: number;
+};
 
 type ProductCardShopProps = {
   badge?: string;
   image: string;
   title: string;
   subtitle?: string;
-  weight?: string;
+  weight?: string;          // selected weight display string (e.g., "500g")
   price: number;
   oldPrice?: number;
   rating?: number;
   reviews?: number;
   quantity: number;
+
+  // 👇 New props for variant selection
+  variants?: Variant[];
+  selectedVariantId?: string;
+  onVariantSelect?: (variantId: string) => void;
+
+  // Actions
   onAddToCart: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
   onOpenDetails: () => void;
+  onAddToWishlist?: () => void;
+  onToggleWishlist?: () => void;
 };
-
-const weightOptions = ["250g", "500g", "1kg"];
 
 export default function ProductCardShop({
   badge,
   image,
   title,
   subtitle,
+  weight,
   price,
   oldPrice,
   quantity,
+  variants = [],
+  selectedVariantId,
+  onVariantSelect,
   onAddToCart,
   onIncrement,
   onDecrement,
   onOpenDetails,
+  onAddToWishlist,
+  onToggleWishlist,
 }: ProductCardShopProps) {
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsWishlisted((prev) => !prev);
+    if (onToggleWishlist) onToggleWishlist();
+    if (onAddToWishlist) onAddToWishlist();
+  };
+
+  // Handle variant click
+  const handleVariantClick = (variantId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onVariantSelect) onVariantSelect(variantId);
+  };
+
+  // Build weight label from variant
+  const getVariantLabel = (v: Variant) => `${v.weight}${v.unit}`;
+
+  // Determine if a variant is selected
+  const isSelected = (variantId: string) => variantId === selectedVariantId;
+
   return (
     <div className="flex flex-col rounded-lg border border-[#F0E4D0] bg-white p-4 shadow-sm">
       {/* Image */}
@@ -48,12 +91,7 @@ export default function ProductCardShop({
             {badge}
           </span>
         )}
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-contain p-3"
-        />
+        <Image src={image} alt={title} fill className="object-contain p-3" />
       </button>
 
       {/* Text */}
@@ -78,20 +116,36 @@ export default function ProductCardShop({
           )}
         </div>
 
-        {/* Weight options */}
-        <div className="mt-3 flex items-center justify-center gap-2">
-          {weightOptions.map((w) => (
-            <span
-              key={w}
-              className="rounded border border-[#E4E8EE] px-3 py-1.5 text-[12px] text-[#4E4E4E]"
-            >
-              {w}
-            </span>
-          ))}
-        </div>
+        {/* 👇 Interactive Weight Options */}
+        {variants.length > 0 && (
+          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+            {variants.map((variant) => {
+              const selected = isSelected(variant._id);
+              return (
+                <button
+                  key={variant._id}
+                  type="button"
+                  onClick={(e) => handleVariantClick(variant._id, e)}
+                  className={`rounded border px-3 py-1.5 text-[12px] transition-colors ${
+                    selected
+                      ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
+                      : "border-[#E4E8EE] text-[#4E4E4E] hover:border-[#2D3A1B] hover:bg-[#2D3A1B]/10"
+                  }`}
+                >
+                  {getVariantLabel(variant)}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Show selected weight text if no variants */}
+        {variants.length === 0 && weight && (
+          <div className="mt-3 text-[13px] text-[#4E4E4E]">{weight}</div>
+        )}
       </div>
 
-      {/* Add to cart row */}
+      {/* Add to cart & Wishlist row */}
       <div className="mt-4 flex items-center gap-2">
         {quantity > 0 ? (
           <div className="flex flex-1 items-center justify-between rounded bg-[#2D3A1B] px-4 py-3 text-white">
@@ -112,13 +166,18 @@ export default function ProductCardShop({
             Add to Cart
           </button>
         )}
+
+        {/* Wishlist button */}
         <button
           type="button"
-          onClick={onAddToCart}
-          aria-label="Add to cart"
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#2D3A1B]/10 transition-colors"
+          onClick={handleWishlistClick}
+          aria-label="Add to Wishlist"
+          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#2D3A1B]/10 transition-colors cursor-pointer"
         >
-          <ShoppingCart size={18} />
+          <Heart
+            size={18}
+            className={isWishlisted ? "fill-red-500 text-red-500" : "text-[#2D3A1B]"}
+          />
         </button>
       </div>
     </div>

@@ -15,33 +15,57 @@ export type AuthSession = {
 const AUTH_STORAGE_KEY = "sudhveda_auth_session";
 export const AUTH_CHANGED_EVENT = "sudhveda-auth-changed";
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
+// ---------- Session functions ----------
+// NOTE: Actual auth token cookie is httpOnly and set by the BACKEND
+// (Set-Cookie: token=...; HttpOnly; Secure; SameSite=None).
+// Frontend JS can NEVER read/write that cookie directly (by design, for security).
+// So here we only store the *user profile* (name/mobile) in localStorage,
+// purely for UI purposes (showing name, initials, "is logged in" state etc).
+// The real auth check happens server-side via the cookie sent automatically
+// by the browser when we use `credentials: "include"` on every fetch call.
 
 export function getStoredSession(): AuthSession | null {
   if (typeof window === "undefined") return null;
 
   try {
-    const value = window.localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!value) return null;
+    const stored = window.localStorage.getItem(AUTH_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as AuthSession;
+      if (parsed?.user?.mobile) return parsed;
+    }
+  } catch {}
 
-    const parsed = JSON.parse(value) as AuthSession;
-    if (!parsed?.user?.mobile) return null;
-    return parsed;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export function saveSession(session: AuthSession) {
-  window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  const { user, raw } = session;
+  window.localStorage.setItem(
+    AUTH_STORAGE_KEY,
+    JSON.stringify({ user, raw })
+  );
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
 
 export function clearSession() {
   window.localStorage.removeItem(AUTH_STORAGE_KEY);
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+}
+
+export async function logout() {
+  try {
+    // Ask backend to clear the httpOnly cookie too (it must expose this route)
+    await fetch(`${API_BASE_URL}/api/users/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {}
+  clearSession();
+}
+
+// ---------- Helpers ----------
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
 
 export function getInitials(user?: AuthUser | null) {
@@ -54,6 +78,7 @@ export function getInitials(user?: AuthUser | null) {
 async function postApi<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
+    credentials: "include", // 👈 sends & receives the httpOnly cookie cross-origin
     headers: {
       "Content-Type": "application/json",
     },

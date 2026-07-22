@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth"; // 👈 Base URL imported from lib/auth.ts
@@ -15,6 +16,7 @@ interface WishlistItem {
 }
 
 export default function WishlistPage() {
+  const router = useRouter();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [toast, setToast] = useState<string | null>(null);
@@ -24,16 +26,26 @@ export default function WishlistPage() {
     setTimeout(() => setToast(null), 2000);
   };
 
+  const redirectToLogin = () => {
+    router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+  };
+
   // ---------------- 1. GET Wishlist API ----------------
   const fetchWishlist = async () => {
     try {
       setLoading(true);
       const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
         method: "GET",
+        credentials: "include", // 👈 sends the httpOnly auth cookie
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      if (res.status === 401) {
+        redirectToLogin();
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to fetch wishlist");
@@ -61,20 +73,29 @@ export default function WishlistPage() {
 
   useEffect(() => {
     fetchWishlist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ---------------- 2. DELETE Single Item API ----------------
   const removeItem = async (id: number | string) => {
-    try {
-      // Optimistic UI update
-      setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+    // Optimistic UI update
+    const prevItems = wishlistItems;
+    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
 
+    try {
       const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${id}`, {
         method: "DELETE",
+        credentials: "include", // 👈 sends the httpOnly auth cookie
         headers: {
           "Content-Type": "application/json",
         },
       });
+
+      if (res.status === 401) {
+        setWishlistItems(prevItems);
+        redirectToLogin();
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to remove item");
@@ -85,7 +106,7 @@ export default function WishlistPage() {
       console.error("Error removing item:", error);
       showToast("Error removing item");
       // Revert if API fails
-      fetchWishlist();
+      setWishlistItems(prevItems);
     }
   };
 
@@ -93,27 +114,70 @@ export default function WishlistPage() {
   const clearAll = async () => {
     if (wishlistItems.length === 0) return;
 
+    const prevItems = wishlistItems;
+
     try {
-      const deletePromises = wishlistItems.map((item) =>
-        fetch(`${API_BASE_URL}/api/wishlist/remove/${item.id}`, {
-          method: "DELETE",
-        })
+      const responses = await Promise.all(
+        wishlistItems.map((item) =>
+          fetch(`${API_BASE_URL}/api/wishlist/remove/${item.id}`, {
+            method: "DELETE",
+            credentials: "include", // 👈 sends the httpOnly auth cookie
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        )
       );
 
-      await Promise.all(deletePromises);
+      if (responses.some((r) => r.status === 401)) {
+        redirectToLogin();
+        return;
+      }
+
+      if (responses.some((r) => !r.ok)) {
+        throw new Error("Some items failed to clear");
+      }
+
       setWishlistItems([]);
       showToast("Wishlist cleared");
     } catch (error) {
       console.error("Error clearing wishlist:", error);
       showToast("Failed to clear wishlist");
+      setWishlistItems(prevItems);
       fetchWishlist();
     }
   };
 
   // Move to Cart
   const moveToCart = async (id: number | string, title: string) => {
-    await removeItem(id);
-    showToast(`${title} moved to cart`);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
+        method: "POST",
+        credentials: "include", // 👈 sends the httpOnly auth cookie
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: id,
+          quantity: 1,
+        }),
+      });
+
+      if (res.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error("Failed to move item to cart");
+      }
+
+      await removeItem(id);
+      showToast(`${title} moved to cart`);
+    } catch (error) {
+      console.error("Error moving item to cart:", error);
+      showToast("Couldn't move item to cart");
+    }
   };
 
   const shareWishlist = async () => {
