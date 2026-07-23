@@ -3,6 +3,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import TopBar from "@/components/layout/TopBar";
 import ProductDetailPage from "@/sections/shop/ProductDetailPage";
+import { getProductsFromResponse, getSingleProductFromResponse, type ApiProduct } from "@/lib/api-products";
 
 export default async function ProductPage({
   params,
@@ -14,8 +15,8 @@ export default async function ProductPage({
   // Direct environment variable (Server side par crash nahi hoga)
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sltwdpp8-3000.inc1.devtunnels.ms";
 
-  let product = null;
-  let recommendations: any[] = [];
+  let product: ApiProduct | null = null;
+  let recommendations: ApiProduct[] = [];
 
   try {
     console.log("🔍 Requesting URL:", `${API_BASE_URL}/api/products/${id}`);
@@ -29,9 +30,7 @@ export default async function ProductPage({
     if (res.ok) {
       const result = await res.json();
       console.log("📦 API Data:", result);
-      if (result.success || result.data) {
-        product = result.data || result;
-      }
+      product = getSingleProductFromResponse(result);
     } else {
       console.error("❌ API server error with status:", res.status);
     }
@@ -52,9 +51,9 @@ export default async function ProductPage({
 
     if (recRes.ok) {
       const recResult = await recRes.json();
-      const allList = recResult.data || recResult || [];
+      const allList = getProductsFromResponse(recResult);
       recommendations = allList
-        .filter((item: any) => item._id !== id)
+        .filter((item) => item._id !== id)
         .slice(0, 4);
     }
   } catch (error) {

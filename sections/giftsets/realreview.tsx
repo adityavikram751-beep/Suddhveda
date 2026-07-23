@@ -1,43 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Star, StarHalf, CheckCircle2 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/auth";
 
-const testimonials = [
-  {
-    id: 1,
-    rating: 5,
-    text: "The packaging was so premium, my parents thought it was high-end jewelry! The honey is incredibly rich and authentic.",
-    name: "Ananya Sharma",
-    role: "Verified Buyer",
-    image: "/female.png",
-  },
-  {
-    id: 2,
-    rating: 4.5,
-    text: "Ordered 50 boxes for our corporate event. The team was super helpful with the customization and the delivery was on time.",
-    name: "Vikram Mehta",
-    role: "HR Lead, TechCorp",
-    image: "/male.png",
-  },
-  {
-    id: 3,
-    rating: 5,
-    text: "Best wedding favors ever. My guests are still asking me where I got these from! Truly organic and luxurious.",
-    name: "Priya Rai",
-    role: "Verified Buyer",
-    image: "/female.png",
-  },
-  {
-    id: 4,
-    rating: 5,
-    text: "The wildflower honey is my favorite. I gift these boxes to all my clients and the feedback is always amazing.",
-    name: "Siddharth K.",
-    role: "Creative Director",
-    image: "/male.png",
-  },
-];
+type Review = {
+  _id: string;
+  rating: number;
+  text: string;
+  name: string;
+  role?: string;
+  image?: string;
+};
 
 function StarRating({ rating }: { rating: number }) {
   const fullStars = Math.floor(rating);
@@ -46,18 +21,10 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: fullStars }).map((_, i) => (
-        <Star
-          key={i}
-          size={22}
-          className="fill-[#A87400] text-[#A87400]"
-        />
+        <Star key={i} size={22} className="fill-[#A87400] text-[#A87400]" />
       ))}
-  
       {hasHalf && (
-        <StarHalf
-          size={22}
-          className="fill-[#A87400] text-[#A87400]"
-        />
+        <StarHalf size={22} className="fill-[#A87400] text-[#A87400]" />
       )}
     </div>
   );
@@ -65,13 +32,110 @@ function StarRating({ rating }: { rating: number }) {
 
 export default function TestimonialsAndBulkGifting() {
   const [quantity, setQuantity] = useState("");
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ----- Fetch Reviews -----
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_BASE_URL}/api/reviews/all`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch reviews");
+        const data = await res.json();
+
+        const items = (data.data || data || []).map((item: any) => ({
+          _id: item._id || item.id,
+          rating: item.rating || 5,
+          text: item.review || item.text || item.comment || "",
+          name: item.fullname || item.name || item.userName || "Anonymous",
+          role: item.role || "Verified Buyer",
+          image: item.profile_url || item.image || item.userImage || "/female.png",
+        }));
+        setReviews(items);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  // ----- Responsive visible count -----
+  const getVisibleCount = () => {
+    if (typeof window === "undefined") return 4;
+    if (window.innerWidth >= 1280) return 4;
+    if (window.innerWidth >= 1024) return 3;
+    if (window.innerWidth >= 640) return 2;
+    return 1;
+  };
+
+  const [visibleCount, setVisibleCount] = useState(4);
+  useEffect(() => {
+    const updateVisible = () => setVisibleCount(getVisibleCount());
+    window.addEventListener("resize", updateVisible);
+    updateVisible();
+    return () => window.removeEventListener("resize", updateVisible);
+  }, []);
+
+  // ----- Page Sliding Logic (slide entire page at once) -----
+  const nextSlide = () => {
+    if (reviews.length === 0) return;
+    const totalPages = Math.ceil(reviews.length / visibleCount);
+    setCurrentIndex((prev) => (prev + 1) % totalPages);
+  };
+
+  // ----- Auto-Play Timer -----
+  useEffect(() => {
+    if (reviews.length === 0) return;
+    if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    if (!isPaused) {
+      autoPlayRef.current = setInterval(nextSlide, 4000);
+    }
+    return () => {
+      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    };
+  }, [reviews.length, isPaused, currentIndex, visibleCount]);
+
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+
+  if (loading) {
+    return (
+      <section className="relative bg-white py-16 md:py-20">
+        <div className="max-w-[1300px] mx-auto px-6 text-center py-10">
+          <p className="text-[#8D7F73]">Loading reviews...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return (
+      <section className="relative bg-white py-16 md:py-20">
+        <div className="max-w-[1300px] mx-auto px-6 text-center py-10">
+          <p className="text-[#8D7F73]">No reviews yet. Be the first to review!</p>
+        </div>
+      </section>
+    );
+  }
+
+  const cardWidth = 266;
+  const gap = 12;
+  const totalWidth = (cardWidth + gap) * visibleCount;
 
   return (
     <>
-      {/* Testimonials Section */}
+      {/* ========== TESTIMONIALS SECTION ========== */}
       <section className="relative bg-white py-16 md:py-20">
         <div className="max-w-[1300px] mx-auto px-6">
-          {/* Heading */}
           <div className="text-center mb-10">
             <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
               CUSTOMER MOMENTS
@@ -81,100 +145,107 @@ export default function TestimonialsAndBulkGifting() {
             </h2>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-x-3 gap-y-6">
-  {testimonials.map((t) => (
-    <div
-      key={t.id}
-      className="w-[266px] h-[323px] bg-white rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col"
-    >
-      {/* Stars */}
-      <div className="mb-5">
-        <StarRating rating={t.rating} />
-      </div>
-
-      {/* Review */}
-      <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1">
-        &ldquo;{t.text}&rdquo;
-      </p>
-
-      {/* User */}
-      <div className="flex items-center gap-3 mt-6">
-        <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
-          <Image
-            src={t.image}
-            alt={t.name}
-            fill
-            className="object-cover"
-          />
-        </div>
-
-        <div>
-          <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
-            {t.name}
-          </h4>
-
-          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
-            {t.role}
-          </p>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
+          <div
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div
+              ref={containerRef}
+              className="flex transition-transform duration-700 ease-in-out"
+              style={{
+                transform: `translateX(-${currentIndex * totalWidth}px)`,
+                gap: `${gap}px`,
+              }}
+            >
+              {reviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="flex-shrink-0"
+                  style={{ width: `${cardWidth}px` }}
+                >
+                  {/* ✅ Background changed to orange-50 */}
+                  <div className="w-[266px] h-[323px] bg-orange-50 rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                    <div className="mb-5">
+                      <StarRating rating={review.rating || 5} />
+                    </div>
+                    <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
+                      &ldquo;{review.text}&rdquo;
+                    </p>
+                    <div className="flex items-center gap-3 mt-6">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
+                        <Image
+                          src={review.image || "/female.png"}
+                          alt={review.name}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/female.png";
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
+                          {review.name}
+                        </h4>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
+                          {review.role || "Verified Buyer"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Bulk Gifting / Custom Quote Section */}
+      {/* ========== BULK GIFTING SECTION (unchanged) ========== */}
       <section className="relative bg-white pb-16 md:pb-20">
         <div className="max-w-[1300px] mx-auto px-6">
-          <div className="bg-[#011D02]  px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            {/* Left - Text */}
+          <div className="bg-[#011D02] px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div>
-              <h2 className="text-[
-48px] md:text-[38px] font-serif text-[#F0C77E] leading-tight">
+              <h2 className="text-[38px] md:text-[42px] font-serif text-[#F0C77E] leading-tight">
                 Build Strong <br />
                 Relationships with <br />
                 Meaningful Gifts
               </h2>
-
               <ul className="mt-7 space-y-3.5">
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Bulk Orders &amp; Custom Branding
                 </li>
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Personalized Handwritten Messages
                 </li>
                 <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
-                  <CheckCircle2 size={17} className="text-[#2D3A1B] shrink-0" />
+                  <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Tiered Pricing for Large Quantities
                 </li>
               </ul>
             </div>
 
-            {/* Right - Form */}
             <div className="bg-[#2D3A1B] rounded-2xl p-7">
               <h3 className="text-[22px] font-serif text-white mb-5">
                 Get a Custom Quote
               </h3>
-
               <div className="space-y-3.5">
                 <input
                   type="text"
                   placeholder="Full Name"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#2D3A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
                 />
                 <input
                   type="email"
                   placeholder="Business Email"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#2D3A1B]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
                 />
                 <div className="relative">
                   <select
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white/50 focus:outline-none focus:border-[#2D3A1B] cursor-pointer"
+                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#2D3A1B]"
                   >
                     <option value="" className="text-[#2D3A1B]">
                       Expected Quantity (e.g. 50-100)
@@ -200,7 +271,6 @@ export default function TestimonialsAndBulkGifting() {
                     <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 </div>
-
                 <button className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2D3A1B] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1">
                   REQUEST QUOTE
                 </button>

@@ -26,7 +26,7 @@ import {
 import { allProducts, type Product } from "@/lib/shop-data";
 
 type CartContextValue = {
-  cartItems: Record<number, number>;
+  cartItems: Record<string, number>;
   itemCount: number;
   addToCart: (product: Product) => void;
   updateQuantity: (product: Product, change: number) => void;
@@ -46,15 +46,25 @@ export function useCart() {
 }
 
 export default function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<Record<number, number>>({});
+  const [cartItems, setCartItems] = useState<Record<string, number>>({});
+  const [cartProductMap, setCartProductMap] = useState<Record<string, Product>>(
+    () =>
+      allProducts.reduce<Record<string, Product>>((map, product) => {
+        map[String(product.id)] = product;
+        return map;
+      }, {})
+  );
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastProduct, setToastProduct] = useState<Product | null>(null);
 
   const cartProducts = useMemo(() => {
-    return allProducts
-      .filter((product) => cartItems[product.id] > 0)
-      .map((product) => ({ ...product, quantity: cartItems[product.id] }));
-  }, [cartItems]);
+    return Object.entries(cartItems)
+      .map(([id, quantity]) => {
+        const product = cartProductMap[id];
+        return product ? { ...product, quantity } : null;
+      })
+      .filter(Boolean) as Array<Product & { quantity: number }>;
+  }, [cartItems, cartProductMap]);
 
   const itemCount = cartProducts.reduce(
     (sum, product) => sum + product.quantity,
@@ -81,14 +91,16 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   }, [toastProduct]);
 
   const updateQuantity = (product: Product, change: number) => {
+    const productId = String(product.id);
+    setCartProductMap((prev) => ({ ...prev, [productId]: product }));
     setCartItems((prev) => {
-      const nextQuantity = Math.max((prev[product.id] ?? 0) + change, 0);
+      const nextQuantity = Math.max((prev[productId] ?? 0) + change, 0);
       const next = { ...prev };
 
       if (nextQuantity === 0) {
-        delete next[product.id];
+        delete next[productId];
       } else {
-        next[product.id] = nextQuantity;
+        next[productId] = nextQuantity;
       }
 
       return next;
@@ -128,7 +140,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             </div>
             <div>
               <h3 className="text-[20px] font-bold text-[#2D3A1B]">
-                {toastProduct.title} ({toastProduct.weight.split(" - ")[0]})
+                {toastProduct.title} ({toastProduct.weight?.split(" - ")[0] || "Selected"})
               </h3>
               <p className="mt-1 text-[16px] text-[#6D7280]">
                 added to your cart!
@@ -208,7 +220,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                       {product.title}
                     </h3>
                     <p className="text-[11px] text-[#6F6258]">
-                      {product.weight.split(" - ")[0]}
+                      {product.weight?.split(" - ")[0] || "Selected weight"}
                     </p>
                     <p className="mt-4 text-[15px] font-bold text-[#111]">
                       ₹{product.price}

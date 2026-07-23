@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
 
 interface WishlistItem {
   id: string;
@@ -87,14 +88,8 @@ export default function WishlistPage() {
 
       const formattedItems = products.map((item: any) => {
         const product = item.productId;
-        const variants = product?.variantDocumentId?.variants || [];
+        const variants = getProductVariants(product || {});
         const firstVariant = variants[0] || {};
-        
-        let imageUrl = "/honneycart.png";
-        if (product?.imageDocumentId?.images && product.imageDocumentId.images.length > 0) {
-          const primaryImage = product.imageDocumentId.images.find((img: any) => img.is_primary);
-          imageUrl = primaryImage?.image_url || product.imageDocumentId.images[0]?.image_url || "/honneycart.png";
-        }
 
         return {
           id: item._id || product?._id,
@@ -104,7 +99,7 @@ export default function WishlistPage() {
           brand: product?.brand || "SudhVeda Honey",
           floral_source: product?.floral_source || "Multiflora",
           weight: `${firstVariant.weight || 250}${firstVariant.unit || 'g'}`,
-          image: imageUrl,
+          image: getPrimaryImage(product || {}),
           price: firstVariant.price || 799,
           mrp: firstVariant.mrp || 999,
           discount: firstVariant.discount_value || 0,
@@ -238,6 +233,18 @@ export default function WishlistPage() {
       if (!cartRes.ok) {
         const errorData = await cartRes.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to move item to cart");
+      }
+
+      const removeRes = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!removeRes.ok && removeRes.status !== 404) {
+        throw new Error("Added to cart, but failed to remove from wishlist");
       }
 
       // Remove from wishlist and update count

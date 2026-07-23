@@ -597,7 +597,7 @@ function SavedAddresses({
 // ─── ORDER SUMMARY (matches screenshot - gap before badges, badges + Need help pinned together at bottom) ──────────────────
 
 type CheckoutProduct = {
-  id: number;
+  id: number | string;
   title: string;
   weight: string;
   price: number;

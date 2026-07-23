@@ -15,6 +15,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
+import { getProductImages, getProductVariants, normalizeProduct } from "@/lib/api-products";
 import { Playfair_Display, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -76,7 +77,7 @@ export default function ProductDetailPage({
   product: any;
   recommendations?: any[];
 }) {
-  const { cartItems, updateQuantity } = useCart();
+  const { cartItems, addToCart, updateQuantity } = useCart();
   const router = useRouter();
 
   const redirectToLogin = () => {
@@ -99,8 +100,9 @@ export default function ProductDetailPage({
   const mediaList = useMemo(() => {
     const list: any[] = [];
 
-    if (product?.imageDocumentId) {
-      product.imageDocumentId.forEach((img: any) => {
+    const images = getProductImages(product);
+    if (images.length > 0) {
+      images.forEach((img: any) => {
         list.push({
           id: img._id,
           type: "image",
@@ -127,7 +129,7 @@ export default function ProductDetailPage({
 
   // 2. Dynamic Weight Variants
   const variants = useMemo(() => {
-    return product?.variantDocumentId || [];
+    return getProductVariants(product);
   }, [product]);
 
   // Selected States
@@ -232,7 +234,10 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        updateQuantity(product, selectedQty);
+        const cartProduct = normalizeProduct(product, selectedVariant._id);
+        for (let index = 0; index < selectedQty; index += 1) {
+          addToCart(cartProduct);
+        }
         setSelectedQty(1);
 
         if (redirect) {
@@ -340,7 +345,7 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        updateQuantity(item, 1);
+        updateQuantity(normalizeProduct(item, selectedVariantId), 1);
         showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
       }
     } catch (err) {

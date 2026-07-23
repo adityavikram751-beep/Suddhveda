@@ -4,10 +4,11 @@ import Image from "next/image";
 import { Heart, Minus, Plus } from "lucide-react";
 
 type Variant = {
-  _id: string;
-  weight: number;
-  unit: string;
-  price: number;
+  _id?: string;
+  id?: string;
+  weight?: number | string;
+  unit?: string;
+  price?: number;
   mrp?: number;
 };
 
@@ -16,22 +17,19 @@ export type ProductCardShopProps = {
   image: string;
   title: string;
   subtitle?: string;
-  weight?: string;          // selected weight display string (e.g., "500g")
+  weight?: string;
   price: number;
   oldPrice?: number;
   rating?: number;
   reviews?: number;
   quantity: number;
 
-  // Variant selection props
   variants?: Variant[];
   selectedVariantId?: string;
   onVariantSelect?: (variantId: string) => void;
 
-  // Wishlist Status Prop
-  isWishlisted?: boolean;   // 👈 Parent se control hoga
+  isWishlisted?: boolean;
 
-  // Actions
   onAddToCart: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
@@ -70,17 +68,18 @@ export default function ProductCardShop({
     }
   };
 
-  // Handle variant click
   const handleVariantClick = (variantId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (onVariantSelect) onVariantSelect(variantId);
   };
 
-  // Build weight label from variant
   const getVariantLabel = (v: Variant) => `${v.weight}${v.unit}`;
+  const getVariantId = (v: Variant) => v._id || v.id || "";
 
-  // Determine if a variant is selected
   const isSelected = (variantId: string) => variantId === selectedVariantId;
+
+  // ✅ FIX 1: Fallback image if `image` is empty
+  const imageSrc = image && image.trim() !== "" ? image : "/placeholder.png";
 
   return (
     <div className="flex flex-col rounded-lg border border-[#F0E4D0] bg-white p-4 shadow-sm">
@@ -95,7 +94,25 @@ export default function ProductCardShop({
             {badge}
           </span>
         )}
-        <Image src={image} alt={title} fill className="object-contain p-3" />
+
+        {/* ✅ FIX 2: alt text */}
+        <Image
+          src={imageSrc}
+          alt={title || "Product"}
+          fill
+          className="object-contain p-3"
+          onError={(e) => {
+            // if fallback fails, show plain grey background
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+
+        {/* If image is empty, show fallback text */}
+        {(!image || image.trim() === "") && (
+          <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-500 text-sm">
+            No Image
+          </div>
+        )}
       </button>
 
       {/* Text */}
@@ -123,13 +140,16 @@ export default function ProductCardShop({
         {/* Interactive Weight Options */}
         {variants.length > 0 && (
           <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-            {variants.map((variant) => {
-              const selected = isSelected(variant._id);
+            {variants.map((variant, index) => {
+              const variantId = getVariantId(variant);
+              // ✅ FIX 3: Unique key – use id or fallback to index
+              const uniqueKey = variantId || `variant-${index}`;
+              const selected = isSelected(variantId);
               return (
                 <button
-                  key={variant._id}
+                  key={uniqueKey}
                   type="button"
-                  onClick={(e) => handleVariantClick(variant._id, e)}
+                  onClick={(e) => handleVariantClick(variantId, e)}
                   className={`rounded border px-3 py-1.5 text-[12px] transition-colors ${
                     selected
                       ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
@@ -171,7 +191,6 @@ export default function ProductCardShop({
           </button>
         )}
 
-        {/* Wishlist button */}
         <button
           type="button"
           onClick={handleWishlistClick}
@@ -182,7 +201,7 @@ export default function ProductCardShop({
             size={18}
             className={
               isWishlisted
-                ? "fill-[#FF6F3C] text-[#FF6F3C]" // Red heart when in wishlist
+                ? "fill-[#FF6F3C] text-[#FF6F3C]"
                 : "text-[#2D3A1B]"
             }
           />

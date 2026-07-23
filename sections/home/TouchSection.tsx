@@ -1,54 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiChevronRight } from "react-icons/fi";
+import { API_BASE_URL } from "@/lib/auth";
 
 type Recipe = {
-  id: number;
+  id: string; // API se _id aayega
   slug: string;
   image: string;
   title: string;
   description: string;
 };
 
-const recipes: Recipe[] = [
-  {
-    id: 1,
-    slug: "honey-lemon-tea",
-    image: "/image1.png",
-    title: "Honey Lemon Tea",
-    description:
-      "A soothing drink for a refreshing day and better digestion aditya A soothing drink for a refreshing day and better digestion A soothing drink for a refreshing day and better digestion A soothing drink for a refreshing day and better digestion  .",
-  },
-  {
-    id: 2,
-    slug: "turmeric-honey-shot",
-    image: "/image2.png",
-    title: "Turmeric Honey Shot",
-    description:
-      "A powerful immunity booster packed with natural antioxidants.",
-  },
-  {
-    id: 3,
-    slug: "honey-ginger-remedy",
-    image: "/move1.png",
-    title: "Honey & Ginger Remedy",
-    description: "Natural relief for sore throat and winter coughs.",
-  },
-  {
-    id: 4,
-    slug: "healthy-breakfast-bowl",
-    image: "/move3.png",
-    title: "Healthy Breakfast Bowl",
-    description: "Start your day the natural way with honey and yogurt.",
-  },
-];
+export default function HealthyIdeas({ category = "benefits" }: { category?: string }) {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-export default function HealthyIdeas() {
-  // Typed as number | null so setExpandedId(recipe.id) — a number — is valid.
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`${API_BASE_URL}/api/benefits/all-benefits/${category}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch recipes");
+        const data = await res.json();
+        // Assuming data is an array of benefits with fields: _id, title, description, image, slug
+        const items = (data.data || data).map((item: any) => ({
+          id: item._id,
+          slug: item.slug || item._id,
+          image: item.image || "/placeholder.png",
+          title: item.title,
+          description: item.description,
+        }));
+        setRecipes(items);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [category]);
+
+  if (loading) {
+    return (
+      <section className="bg-[#FAF6F0] pt-6 pb-14 md:pt-8 md:pb-20">
+        <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
+          <div className="text-center py-12 text-[#8D7F73]">Loading recipes...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="bg-[#FAF6F0] pt-6 pb-14 md:pt-8 md:pb-20">
+        <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
+          <div className="text-center py-12 text-red-600">Error: {error}</div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show only first 4 on home page
+  const displayedRecipes = recipes.slice(0, 4);
 
   return (
     <section className="bg-[#FAF6F0] pt-6 pb-14 md:pt-8 md:pb-20">
@@ -60,12 +81,12 @@ export default function HealthyIdeas() {
               Recipes &amp; Wellness
             </span>
             <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
-            Honey Tips & Benefits
+              Honey Tips & Benefits
             </h2>
           </div>
 
           <Link
-            href="/receipe"
+            href={`/receipe?category=${category}`}
             className="text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold tracking-wide uppercase border-b-2 border-[#D49313] pb-1 hover:text-[#D49313] transition-colors flex-shrink-0"
           >
             View All
@@ -74,7 +95,7 @@ export default function HealthyIdeas() {
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 mt-6 md:mt-8">
-          {recipes.map((recipe) => {
+          {displayedRecipes.map((recipe) => {
             const isExpanded = expandedId === recipe.id;
 
             return (
@@ -119,7 +140,6 @@ export default function HealthyIdeas() {
         </div>
       </div>
 
-      {/* Hide scrollbar cross-browser while keeping it scrollable */}
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FiChevronRight, FiChevronDown } from "react-icons/fi";
+import { API_BASE_URL } from "@/lib/auth";
 
 type Recipe = {
-  id: number;
+  id: string;
   slug: string;
   image: string;
   title: string;
@@ -25,69 +26,6 @@ type Faq = {
   question: string;
   answer: string;
 };
-
-const recipes: Recipe[] = [
-  {
-    id: 1,
-    slug: "honey-lemon-tea",
-    image: "/image1.png",
-    title: "Honey Lemon Tea",
-    description:
-      "A soothing drink for a refreshing day and better digestion.",
-  },
-  {
-    id: 2,
-    slug: "turmeric-honey-shot",
-    image: "/image2.png",
-    title: "Turmeric Honey Shot",
-    description:
-      "A powerful immunity booster packed with natural antioxidants.",
-  },
-  {
-    id: 3,
-    slug: "honey-ginger-remedy",
-    image: "/move1.png",
-    title: "Honey & Ginger Remedy",
-    description: "Natural relief for sore throat and winter coughs.",
-  },
-  {
-    id: 4,
-    slug: "healthy-breakfast-bowl",
-    image: "/move3.png",
-    title: "Healthy Breakfast Bowl",
-    description: "Start your day the natural way with honey and yogurt.",
-  },
-  {
-    id: 5,
-    slug: "honey-lemon-tea-2",
-    image: "/image2.png",
-    title: "Honey Lemon Tea",
-    description:
-      "A soothing drink for a refreshing day and better digestion.",
-  },
-  {
-    id: 6,
-    slug: "turmeric-honey-shot-2",
-    image: "/move3.png",
-    title: "Turmeric Honey Shot",
-    description:
-      "A powerful immunity booster packed with natural antioxidants.",
-  },
-  {
-    id: 7,
-    slug: "honey-ginger-remedy-2",
-    image: "/move1.png",
-    title: "Honey & Ginger Remedy",
-    description: "Natural relief for sore throat and winter coughs.",
-  },
-  {
-    id: 8,
-    slug: "healthy-breakfast-bowl-2",
-    image: "/image1.png",
-    title: "Healthy Breakfast Bowl",
-    description: "Start your day the natural way with honey and yogurt.",
-  },
-];
 
 const features: Feature[] = [
   {
@@ -167,26 +105,99 @@ const faqs: Faq[] = [
 ];
 
 export default function RecipesPage() {
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") || "healthy";
+
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const isBenefits = category === "benefits";
+  const pageTitle = isBenefits ? "Benefits of Honey" : "Healthy Ideas with Honey";
+  const pageSubtitle = isBenefits ? "Explore the Benefits" : "Recipes & Wellness";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const url = `${API_BASE_URL}/api/benefits/all-benefits/${category}`;
+        const res = await fetch(url, { credentials: "include" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
+
+        const itemsArray = result.data || [];
+        const mappedItems = itemsArray.map((item: any) => ({
+          id: item._id,
+          slug: item._id,
+          image: item.image || "/placeholder.png",
+          title: item.title || "Untitled",
+          description: item.description || "",
+        }));
+
+        setRecipes(mappedItems);
+      } catch (err: any) {
+        setError(err.message || "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [category]);
+
+  // ----- Loading State (min-height to keep footer down) -----
+  if (loading) {
+    return (
+      <main className="bg-white min-h-[60vh] flex items-center justify-center">
+        <div className="text-center py-12 text-[#8D7F73]">Loading...</div>
+      </main>
+    );
+  }
+
+  // ----- Error State -----
+  if (error) {
+    return (
+      <main className="bg-white min-h-[60vh] flex items-center justify-center">
+        <div className="text-center py-12 text-red-600">
+          <p>Error: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-3 text-[#D49313] underline"
+          >
+            Try Again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ----- Empty State -----
+  if (recipes.length === 0) {
+    return (
+      <main className="bg-white min-h-[60vh] flex items-center justify-center">
+        <div className="text-center py-12 text-[#8D7F73]">
+          No items found for category: <strong>{category}</strong>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-white">
-      {/* ================= RECIPES HEADER + GRID ================= */}
       <section className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 pt-12 md:pt-16 pb-16 md:pb-20">
-        {/* Heading row */}
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
             <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
-              Recipes &amp; Wellness
+              {pageSubtitle}
             </span>
             <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
-              Healthy Ideas with Honey
+              {pageTitle}
             </h1>
           </div>
-
           <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
             <span className="text-[#8D7F73] text-[13px] sm:text-[14px]">
-              Showing 1-{recipes.length} of {recipes.length} results
+              Showing {recipes.length} results
             </span>
             <select className="border border-[#E6D2B8] rounded-lg text-[13px] sm:text-[14px] text-[#2D3A1B] px-3 py-2 bg-white focus:outline-none focus:ring-1 focus:ring-[#D49313]">
               <option>Sort by: Featured</option>
@@ -196,17 +207,14 @@ export default function RecipesPage() {
           </div>
         </div>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 mt-10 md:mt-12">
           {recipes.map((recipe) => {
             const isExpanded = expandedId === recipe.id;
-
             return (
               <div
                 key={recipe.id}
                 className="bg-white rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.07)] transition-shadow duration-300 group flex flex-col h-[340px] sm:h-[360px]"
               >
-                {/* Image */}
                 <div className="relative w-full h-[150px] sm:h-[170px] overflow-hidden flex-shrink-0">
                   <Image
                     src={recipe.image}
@@ -215,17 +223,13 @@ export default function RecipesPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-
-                {/* Content */}
                 <div className="p-5 flex flex-col flex-1 min-h-0">
                   <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#2D3A1B] leading-tight flex-shrink-0">
                     {recipe.title}
                   </h3>
-
                   <p className="no-scrollbar mt-2 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6] overflow-y-auto flex-1 min-h-0 pr-1">
                     {recipe.description}
                   </p>
-
                   {!isExpanded && (
                     <button
                       type="button"
@@ -243,7 +247,7 @@ export default function RecipesPage() {
         </div>
       </section>
 
-      {/* ================= FEATURES STRIP ================= */}
+      {/* Features & FAQs */}
       <section className="border-t border-b border-[#00000033]">
         <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 py-8 md:py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
@@ -271,10 +275,8 @@ export default function RecipesPage() {
         </div>
       </section>
 
-      {/* ================= FAQ SECTION ================= */}
       <section className="bg-[#FFFFFF] py-16 md:py-20">
         <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
-          {/* Heading */}
           <div className="text-center">
             <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#2D3A1B]">
               FAQs
@@ -285,8 +287,6 @@ export default function RecipesPage() {
               <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
             </div>
           </div>
-
-          {/* FAQ grid */}
           <div className="grid sm:grid-cols-2 gap-x-10 gap-y-2 mt-12">
             {faqs.map((faq) => (
               <FaqItem key={faq.id} faq={faq} />
@@ -295,7 +295,6 @@ export default function RecipesPage() {
         </div>
       </section>
 
-      {/* Hide scrollbar cross-browser while keeping it scrollable */}
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -311,7 +310,6 @@ export default function RecipesPage() {
 
 function FaqItem({ faq }: { faq: Faq }) {
   const [open, setOpen] = useState(false);
-
   return (
     <div className="border-b border-[#E6D2B8]/60 py-4">
       <button
@@ -328,7 +326,6 @@ function FaqItem({ faq }: { faq: Faq }) {
           }`}
         />
       </button>
-
       {open && (
         <p className="mt-3 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6]">
           {faq.answer}
