@@ -1,7 +1,9 @@
 "use client";
 
+import { API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
 import { HandHeart, ShieldCheck } from "lucide-react";
+import { useState, useEffect } from "react";
 
 // Custom headset-support icon (exact match to design)
 const HeadsetIcon = ({ size = 32, strokeWidth = 1.6, className = "" }) => (
@@ -26,40 +28,106 @@ const HeadsetIcon = ({ size = 32, strokeWidth = 1.6, className = "" }) => (
   </svg>
 );
 
-const cards = [
-  {
-    icon: HeadsetIcon,
-    title: (
-      <>
-        We're Here To
-        <br />
-        Help
-      </>
-    ),
-  },
-  {
-    icon: HandHeart,
-    title: (
-      <>
-        Quick & Friendly
-        <br />
-        Support
-      </>
-    ),
-  },
-  {
-    icon: ShieldCheck,
-    title: (
-      <>
-        Your Satisfaction
-        <br />
-        Matters
-      </>
-    ),
-  },
-];
+interface LocationData {
+  address: {
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+  };
+  _id: string;
+  phone: string;
+  phone_timing: string;
+  email: string;
+  email_reply_time: string;
+  whatsapp: string;
+  whatsapp_timing: string;
+  map_embed_url: string;
+  isActive: boolean;
+}
 
 export default function Hero() {
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/location/all`, {
+          credentials: "include", // include cookies if needed for auth
+        });
+        if (!response.ok) throw new Error("Failed to fetch location data");
+        const data = await response.json();
+        if (data.success) {
+          setLocationData(data.data);
+        } else {
+          console.error("API returned success: false");
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
+  // Get the first part of address for display
+  const getAddressLine = () => {
+    if (!locationData) return "";
+    const { address } = locationData;
+    return `${address.line1}, ${address.line2}`;
+  };
+
+  // Get city and state for display
+  const getCityState = () => {
+    if (!locationData) return "";
+    const { address } = locationData;
+    return `${address.city}, ${address.state}`;
+  };
+
+  const cards = [
+    {
+      icon: HeadsetIcon,
+      title: (
+        <>
+          We're Here To
+          <br />
+          Help
+        </>
+      ),
+      content: loading ? "Loading..." : `${locationData?.phone || "+91 98765 43210"}`,
+      subContent: loading ? "..." : locationData?.phone_timing || "Mon - Sat: 9AM - 6PM",
+    },
+    {
+      icon: HandHeart,
+      title: (
+        <>
+          Quick & Friendly
+          <br />
+          Support
+        </>
+      ),
+      content: loading ? "Loading..." : getAddressLine() || "123, Green Hive Road",
+      subContent: loading ? "..." : getCityState() || "Whitefield, Bengaluru",
+    },
+    {
+      icon: ShieldCheck,
+      title: (
+        <>
+          Your Satisfaction
+          <br />
+          Matters
+        </>
+      ),
+      content: loading ? "Loading..." : locationData?.email || "hello@shuddhadeva.com",
+      subContent: loading ? "..." : locationData?.email_reply_time || "We reply within 24 hrs",
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden bg-[#FAF6F0]">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
@@ -100,14 +168,22 @@ export default function Hero() {
                 return (
                   <div
                     key={index}
-                    className="group flex h-[140px] flex-col items-center justify-center rounded-[18px] border border-[#E8DED3] bg-white px-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)]"
+                    className="group flex h-[160px] flex-col items-center justify-center rounded-[18px] border border-[#E8DED3] bg-white px-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)]"
                   >
-                    <div className="mb-3 text-[#D49313]">
-                      <Icon size={30} strokeWidth={1.6} />
+                    <div className="mb-2 text-[#D49313]">
+                      <Icon size={28} strokeWidth={1.6} />
                     </div>
 
-                    <p className="text-center text-[15px] leading-[20px] font-normal text-[#453B34]">
+                    <p className="text-center text-[14px] leading-[18px] font-semibold text-[#453B34]">
                       {item.title}
+                    </p>
+                    
+                    <p className="text-center text-[12px] leading-[16px] font-medium text-[#D49313] mt-1">
+                      {item.content}
+                    </p>
+                    
+                    <p className="text-center text-[10px] leading-[14px] text-[#8D7F73] mt-0.5">
+                      {item.subContent}
                     </p>
                   </div>
                 );
@@ -127,25 +203,25 @@ export default function Hero() {
               bg-[radial-gradient(circle,rgba(255,214,120,0.35)_0%,rgba(255,255,255,0)_70%)]"
             />
 
-<Image
-                src="/hero.png"
-                alt="ShudhVeda Natural Honey Jar"
-                width={1800}
-                height={1800}
-                priority
-                className="
-                  relative lg:absolute
-                  top-0 lg:top-43
-                  right-0 lg:right-32
-                  w-full lg:w-[90%]
-                  max-w-full lg:max-w-none
-                  h-full
-                  object-contain
-                  object-center lg:object-right-top
-                  translate-x-0 lg:translate-x-22
-                  scale-100 lg:scale-[1.2]
-                "
-              />
+            <Image
+              src="/hero.png"
+              alt="ShudhVeda Natural Honey Jar"
+              width={1800}
+              height={1800}
+              priority
+              className="
+                relative lg:absolute
+                top-0 lg:top-43
+                right-0 lg:right-32
+                w-full lg:w-[90%]
+                max-w-full lg:max-w-none
+                h-full
+                object-contain
+                object-center lg:object-right-top
+                translate-x-0 lg:translate-x-22
+                scale-100 lg:scale-[1.2]
+              "
+            />
 
           </div>
 

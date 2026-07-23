@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 
 type Variant = {
@@ -12,7 +11,7 @@ type Variant = {
   mrp?: number;
 };
 
-type ProductCardShopProps = {
+export type ProductCardShopProps = {
   badge?: string;
   image: string;
   title: string;
@@ -24,10 +23,13 @@ type ProductCardShopProps = {
   reviews?: number;
   quantity: number;
 
-  // 👇 New props for variant selection
+  // Variant selection props
   variants?: Variant[];
   selectedVariantId?: string;
   onVariantSelect?: (variantId: string) => void;
+
+  // Wishlist Status Prop
+  isWishlisted?: boolean;   // 👈 Parent se control hoga
 
   // Actions
   onAddToCart: () => void;
@@ -50,6 +52,7 @@ export default function ProductCardShop({
   variants = [],
   selectedVariantId,
   onVariantSelect,
+  isWishlisted = false,
   onAddToCart,
   onIncrement,
   onDecrement,
@@ -57,13 +60,14 @@ export default function ProductCardShop({
   onAddToWishlist,
   onToggleWishlist,
 }: ProductCardShopProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsWishlisted((prev) => !prev);
-    if (onToggleWishlist) onToggleWishlist();
-    if (onAddToWishlist) onAddToWishlist();
+    if (onToggleWishlist) {
+      onToggleWishlist();
+    } else if (onAddToWishlist) {
+      onAddToWishlist();
+    }
   };
 
   // Handle variant click
@@ -107,16 +111,16 @@ export default function ProductCardShop({
 
         <div className="mt-2 text-[16px] font-bold text-[#1E392A]">
           ₹{price}
-          {oldPrice && (
+          {oldPrice ? (
             <>
               {" "}
               <span className="mx-0.5 font-normal text-[#9A9A9A]">—</span>{" "}
               ₹{oldPrice}
             </>
-          )}
+          ) : null}
         </div>
 
-        {/* 👇 Interactive Weight Options */}
+        {/* Interactive Weight Options */}
         {variants.length > 0 && (
           <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
             {variants.map((variant) => {
@@ -171,12 +175,16 @@ export default function ProductCardShop({
         <button
           type="button"
           onClick={handleWishlistClick}
-          aria-label="Add to Wishlist"
+          aria-label="Wishlist"
           className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#2D3A1B]/10 transition-colors cursor-pointer"
         >
           <Heart
             size={18}
-            className={isWishlisted ? "fill-red-500 text-red-500" : "text-[#2D3A1B]"}
+            className={
+              isWishlisted
+                ? "fill-[#FF6F3C] text-[#FF6F3C]" // Red heart when in wishlist
+                : "text-[#2D3A1B]"
+            }
           />
         </button>
       </div>

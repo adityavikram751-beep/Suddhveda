@@ -40,10 +40,37 @@ export default function HoneySelection() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  
+  // Wishlist state
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+
+  // ---------- Fetch Wishlist ----------
+  const fetchWishlist = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const products = data?.data?.products || [];
+        const ids = products.map((item: any) => item.productId?._id || item.productId || item._id);
+        setWishlistIds(ids);
+        
+        // Update wishlist count in header
+        window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+          detail: { count: ids.length } 
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+    }
+  };
 
   // ---------- Fetch Products ----------
   useEffect(() => {
     fetchProducts();
+    fetchWishlist();
   }, []);
 
   const fetchProducts = async () => {
@@ -74,10 +101,10 @@ export default function HoneySelection() {
     if (variantId) {
       return variants.find((v: any) => v._id === variantId);
     }
-    return variants[0]; // default to first variant
+    return variants[0];
   };
 
-  // ---------- Add to Cart – with correct field `selectedWeight` ----------
+  // ---------- Add to Cart ----------
   const handleAddToCart = async (product: any) => {
     const variant = getSelectedVariant(product);
 
@@ -97,7 +124,7 @@ export default function HoneySelection() {
         },
         body: JSON.stringify({
           productId: product._id,
-          selectedWeight: variant._id,   // ✅ Backend expects this field name
+          selectedWeight: variant._id,
           quantity: 1,
         }),
       });
@@ -105,15 +132,10 @@ export default function HoneySelection() {
       const result = await res.json();
 
       if (res.ok) {
-        console.log("Item added to cart:", result);
         updateQuantity(product, 1);
-
         const weightStr = `${variant.weight || ""}${variant.unit || ""}`;
-        setToastMessage(
-          `✅ Successfully added ${product.product_name} (${weightStr}) to your cart!`
-        );
+        setToastMessage(`✅ Added ${product.product_name} (${weightStr}) to cart!`);
       } else {
-        console.error("Failed to add to cart:", result.message);
         setToastMessage(`❌ ${result.message || "Something went wrong"}`);
       }
     } catch (err) {
@@ -124,7 +146,7 @@ export default function HoneySelection() {
     }
   };
 
-  // ---------- Increase / Decrease / Wishlist (unchanged) ----------
+  // ---------- Increase / Decrease Quantity ----------
   const handleIncreaseQuantity = async (product: any, variant: any) => {
     if (!variant) return;
     try {
@@ -161,25 +183,48 @@ export default function HoneySelection() {
     }
   };
 
-  const handleAddToWishlist = async (productId: string) => {
+  // ---------- Wishlist Toggle (Add / Remove) ----------
+  const handleToggleWishlist = async (productId: string) => {
+    const isWishlisted = wishlistIds.includes(productId);
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/wishlist/add/${productId}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await res.json();
-      if (res.ok) {
-        console.log("Added to wishlist:", result);
-        setToastMessage("❤️ Added to wishlist!");
+      if (isWishlisted) {
+        // Remove from wishlist
+        const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.ok) {
+          const newCount = wishlistIds.length - 1;
+          setWishlistIds((prev) => prev.filter((id) => id !== productId));
+          
+          // Update count in header
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+            detail: { count: newCount } 
+          }));
+        }
       } else {
-        console.error("Wishlist error:", result.message);
-        if (res.status === 401) {
-          router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+        // Add to wishlist
+        const res = await fetch(`${API_BASE_URL}/api/wishlist/add/${productId}`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.ok) {
+          const newCount = wishlistIds.length + 1;
+          setWishlistIds((prev) => [...prev, productId]);
+          
+          // Update count in header
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+            detail: { count: newCount } 
+          }));
         }
       }
     } catch (err) {
-      console.error("Error adding to wishlist:", err);
+      console.error("Error toggling wishlist:", err);
     }
   };
 
@@ -235,7 +280,8 @@ export default function HoneySelection() {
                   onAddToCart={() => handleAddToCart(product)}
                   onIncrement={() => handleIncreaseQuantity(product, selectedVariant)}
                   onDecrement={() => handleDecreaseQuantity(product, selectedVariant)}
-                  onAddToWishlist={() => handleAddToWishlist(product._id)}
+                  onToggleWishlist={() => handleToggleWishlist(product._id)}
+                  isWishlisted={wishlistIds.includes(product._id)}
                   onOpenDetails={() => router.push(`/shop/products/${product._id}`)}
                 />
               );

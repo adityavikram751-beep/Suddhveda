@@ -28,18 +28,67 @@ const navItems = [
   { title: "Contact", href: "/contact" },
 ];
 
+// API Base URL - import from auth
+import { API_BASE_URL } from "@/lib/auth";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const { itemCount, openCart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
+  // Function to fetch wishlist count from API
+  const fetchWishlistCount = async () => {
+    try {
+      // Check if user is logged in
+      const sessionData = getStoredSession();
+      if (!sessionData) {
+        setWishlistCount(0);
+        return;
+      }
+
+      // ✅ Use API_BASE_URL from auth
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 401) {
+        setWishlistCount(0);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch wishlist: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const products = data?.data?.products || [];
+      const count = Array.isArray(products) ? products.length : 0;
+      setWishlistCount(count);
+      console.log("Wishlist count fetched:", count, "on page:", pathname);
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error);
+      setWishlistCount(0);
+    }
+  };
+
   useEffect(() => {
     function syncSession() {
-      setSession(getStoredSession());
+      const sessionData = getStoredSession();
+      setSession(sessionData);
+      if (sessionData) {
+        fetchWishlistCount();
+      } else {
+        setWishlistCount(0);
+      }
     }
 
     function closeOnOutsideClick(event: MouseEvent) {
@@ -51,16 +100,45 @@ export default function Header() {
       }
     }
 
+    // Listen for wishlist count updates from other components
+    const handleWishlistUpdate = (event: CustomEvent) => {
+      console.log("Wishlist count updated via event:", event.detail.count);
+      setWishlistCount(event.detail.count);
+    };
+
     syncSession();
     window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
     window.addEventListener("storage", syncSession);
     document.addEventListener("mousedown", closeOnOutsideClick);
+    window.addEventListener('wishlist-count-update', handleWishlistUpdate as EventListener);
+    
     return () => {
       window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
       window.removeEventListener("storage", syncSession);
       document.removeEventListener("mousedown", closeOnOutsideClick);
+      window.removeEventListener('wishlist-count-update', handleWishlistUpdate as EventListener);
     };
   }, []);
+
+  // Har page change par count fetch karo
+  useEffect(() => {
+    const sessionData = getStoredSession();
+    if (sessionData) {
+      const timer = setTimeout(() => {
+        fetchWishlistCount();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
+
+  // Jab session change ho count fetch karo
+  useEffect(() => {
+    if (session) {
+      fetchWishlistCount();
+    } else {
+      setWishlistCount(0);
+    }
+  }, [session]);
 
   function handleAccountClick() {
     if (!session) {
@@ -78,6 +156,7 @@ export default function Header() {
     setSession(null);
     setAccountOpen(false);
     setOpen(false);
+    setWishlistCount(0);
     router.push("/login");
   }
 
@@ -100,8 +179,6 @@ export default function Header() {
         {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center gap-12">
           {navItems.map((item) => {
-            // "Home" should only be active on the exact "/" route.
-            // Other items are active on their route and any nested sub-routes.
             const isActive =
               item.href === "/"
                 ? pathname === "/"
@@ -118,7 +195,6 @@ export default function Header() {
                 }`}
               >
                 {item.title}
-                {/* Active underline indicator */}
                 <span
                   className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${
                     isActive ? "opacity-100" : "opacity-0"
@@ -133,9 +209,14 @@ export default function Header() {
         <div className="hidden lg:flex items-center gap-[18px]">
           <Link
             href="/wishlist"
-            className="text-[#7A3F10] hover:text-[#D89B00] transition"
+            className="relative text-[#7A3F10] hover:text-[#D89B00] transition"
           >
             <FiHeart size={22} />
+            {wishlistCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
 
           <div className="relative" ref={accountMenuRef}>
@@ -185,7 +266,7 @@ export default function Header() {
           >
             <FiShoppingCart size={22} />
             {itemCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2D3A1B] px-1 text-[10px] font-bold text-white">
+              <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
                 {itemCount}
               </span>
             )}
@@ -232,8 +313,13 @@ export default function Header() {
           })}
 
           <div className="flex items-center gap-6 px-6 py-5">
-            <Link href="/wishlist" onClick={() => setOpen(false)}>
+            <Link href="/wishlist" onClick={() => setOpen(false)} className="relative">
               <FiHeart size={22} className="text-[#7A3F10]" />
+              {wishlistCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
             <button type="button" onClick={handleAccountClick} className="flex items-center gap-1">
               <FiUser size={22} className="text-[#7A3F10]" />
@@ -250,7 +336,7 @@ export default function Header() {
             >
               <FiShoppingCart size={22} className="text-[#7A3F10]" />
               {itemCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2D3A1B] px-1 text-[10px] font-bold text-white">
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
                   {itemCount}
                 </span>
               )}

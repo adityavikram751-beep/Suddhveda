@@ -5,14 +5,21 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
-import { API_BASE_URL } from "@/lib/auth"; // 👈 Base URL imported from lib/auth.ts
+import { API_BASE_URL } from "@/lib/auth";
 
 interface WishlistItem {
-  id: number | string;
+  id: string;
+  productId: string;
   title: string;
-  weight?: string;
-  image?: string;
+  brand: string;
+  floral_source: string;
+  weight: string;
+  image: string;
   price: number;
+  mrp: number;
+  discount: number;
+  addedAt: string;
+  variantId?: string;
 }
 
 export default function WishlistPage() {
@@ -20,6 +27,8 @@ export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -30,13 +39,27 @@ export default function WishlistPage() {
     router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
   };
 
+  // Function to update wishlist count in header
+  const updateWishlistCount = (count: number) => {
+    window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+      detail: { count } 
+    }));
+  };
+
+  // Function to navigate to product detail
+  const navigateToProduct = (productId: string) => {
+    router.push(`/shop/products/${productId}`);
+  };
+
   // ---------------- 1. GET Wishlist API ----------------
   const fetchWishlist = async () => {
     try {
       setLoading(true);
+      setApiError(null);
+      
       const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
         method: "GET",
-        credentials: "include", // 👈 sends the httpOnly auth cookie
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -48,23 +71,55 @@ export default function WishlistPage() {
       }
 
       if (!res.ok) {
-        throw new Error("Failed to fetch wishlist");
+        throw new Error(`Failed to fetch wishlist: ${res.status}`);
       }
 
       const data = await res.json();
 
-      // Backend response mapping
-      const formattedItems = (data.data || data.items || data || []).map((item: any) => ({
-        id: item._id || item.id || item.productId,
-        title: item.title || item.name || item.product?.name || "Honey Product",
-        weight: item.weight || item.product?.weight || "250g • Raw & Unfiltered",
-        image: item.image || item.product?.image || "/honneycart.png",
-        price: item.price || item.product?.price || 799,
-      }));
+      let products = [];
+      if (data?.data?.products && Array.isArray(data.data.products)) {
+        products = data.data.products;
+      } else {
+        setWishlistItems([]);
+        setLoading(false);
+        return;
+      }
+
+      const formattedItems = products.map((item: any) => {
+        const product = item.productId;
+        const variants = product?.variantDocumentId?.variants || [];
+        const firstVariant = variants[0] || {};
+        
+        let imageUrl = "/honneycart.png";
+        if (product?.imageDocumentId?.images && product.imageDocumentId.images.length > 0) {
+          const primaryImage = product.imageDocumentId.images.find((img: any) => img.is_primary);
+          imageUrl = primaryImage?.image_url || product.imageDocumentId.images[0]?.image_url || "/honneycart.png";
+        }
+
+        return {
+          id: item._id || product?._id,
+          productId: product?._id,
+          variantId: firstVariant._id || variants[0]?._id,
+          title: product?.product_name || "Honey Product",
+          brand: product?.brand || "SudhVeda Honey",
+          floral_source: product?.floral_source || "Multiflora",
+          weight: `${firstVariant.weight || 250}${firstVariant.unit || 'g'}`,
+          image: imageUrl,
+          price: firstVariant.price || 799,
+          mrp: firstVariant.mrp || 999,
+          discount: firstVariant.discount_value || 0,
+          addedAt: item.addedAt || new Date().toISOString(),
+        };
+      });
 
       setWishlistItems(formattedItems);
+      
+      // Update count in header
+      updateWishlistCount(formattedItems.length);
+      
     } catch (error) {
       console.error("Error fetching wishlist:", error);
+      setApiError(error instanceof Error ? error.message : "Couldn't load wishlist items");
       showToast("Couldn't load wishlist items");
     } finally {
       setLoading(false);
@@ -77,15 +132,15 @@ export default function WishlistPage() {
   }, []);
 
   // ---------------- 2. DELETE Single Item API ----------------
-  const removeItem = async (id: number | string) => {
-    // Optimistic UI update
+  const removeItem = async (productId: string) => {
     const prevItems = wishlistItems;
-    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
+    const newItems = wishlistItems.filter((item) => item.productId !== productId);
+    setWishlistItems(newItems);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
         method: "DELETE",
-        credentials: "include", // 👈 sends the httpOnly auth cookie
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -97,15 +152,21 @@ export default function WishlistPage() {
         return;
       }
 
+      if (res.status === 404) {
+        showToast("Item already removed");
+        return;
+      }
+
       if (!res.ok) {
         throw new Error("Failed to remove item");
       }
 
+      // Update count in header
+      updateWishlistCount(newItems.length);
       showToast("Item removed from wishlist");
     } catch (error) {
       console.error("Error removing item:", error);
       showToast("Error removing item");
-      // Revert if API fails
       setWishlistItems(prevItems);
     }
   };
@@ -119,9 +180,9 @@ export default function WishlistPage() {
     try {
       const responses = await Promise.all(
         wishlistItems.map((item) =>
-          fetch(`${API_BASE_URL}/api/wishlist/remove/${item.id}`, {
+          fetch(`${API_BASE_URL}/api/wishlist/remove/${item.productId}`, {
             method: "DELETE",
-            credentials: "include", // 👈 sends the httpOnly auth cookie
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -134,11 +195,13 @@ export default function WishlistPage() {
         return;
       }
 
-      if (responses.some((r) => !r.ok)) {
+      if (responses.some((r) => !r.ok && r.status !== 404)) {
         throw new Error("Some items failed to clear");
       }
 
       setWishlistItems([]);
+      // Update count in header - 0
+      updateWishlistCount(0);
       showToast("Wishlist cleared");
     } catch (error) {
       console.error("Error clearing wishlist:", error);
@@ -149,34 +212,46 @@ export default function WishlistPage() {
   };
 
   // Move to Cart
-  const moveToCart = async (id: number | string, title: string) => {
+  const moveToCart = async (productId: string, variantId: string, title: string) => {
+    if (actionLoading) return;
+    setActionLoading(productId);
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
+      const cartRes = await fetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
-        credentials: "include", // 👈 sends the httpOnly auth cookie
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productId: id,
+          productId: productId,
+          selectedWeight: variantId,
           quantity: 1,
         }),
       });
 
-      if (res.status === 401) {
+      if (cartRes.status === 401) {
         redirectToLogin();
         return;
       }
 
-      if (!res.ok) {
-        throw new Error("Failed to move item to cart");
+      if (!cartRes.ok) {
+        const errorData = await cartRes.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to move item to cart");
       }
 
-      await removeItem(id);
+      // Remove from wishlist and update count
+      const newItems = wishlistItems.filter((item) => item.productId !== productId);
+      setWishlistItems(newItems);
+      updateWishlistCount(newItems.length);
+      
       showToast(`${title} moved to cart`);
     } catch (error) {
       console.error("Error moving item to cart:", error);
-      showToast("Couldn't move item to cart");
+      showToast(error instanceof Error ? error.message : "Couldn't move item to cart");
+      fetchWishlist();
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -248,8 +323,17 @@ export default function WishlistPage() {
               <Loader2 size={32} className="text-[#2D3A1B] animate-spin" />
               <p className="text-[15px] text-[#B59A78]">Loading your wishlist...</p>
             </div>
+          ) : apiError ? (
+            <div className="py-16 sm:py-20 text-center">
+              <p className="text-[16px] text-red-500 mb-4">{apiError}</p>
+              <button
+                onClick={fetchWishlist}
+                className="inline-block mt-4 text-[15px] font-semibold text-[#2D3A1B] hover:underline"
+              >
+                Try Again
+              </button>
+            </div>
           ) : wishlistItems.length === 0 ? (
-            /* Empty State */
             <div className="py-16 sm:py-20 text-center">
               <Heart size={40} className="mx-auto text-[#E7D8C2] mb-4" />
               <p className="text-[16px] text-[#B59A78]">Your wishlist is empty.</p>
@@ -261,14 +345,17 @@ export default function WishlistPage() {
               </Link>
             </div>
           ) : (
-            /* Wishlist Items List */
             <div className="divide-y divide-[#F0E2CC]">
               {wishlistItems.map((item) => (
                 <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 py-5">
-                  <div className="flex items-center gap-4 sm:gap-6 flex-1">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#FFF8EF] shrink-0">
+                  {/* Product Info - Clickable */}
+                  <div 
+                    className="flex items-center gap-4 sm:gap-6 flex-1 cursor-pointer"
+                    onClick={() => navigateToProduct(item.productId)}
+                  >
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#FFF8EF] shrink-0 overflow-hidden">
                       <Image
-                        src={item.image || "/honneycart.png"}
+                        src={item.image}
                         alt={item.title}
                         fill
                         className="object-contain p-2"
@@ -276,27 +363,47 @@ export default function WishlistPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-[15px] sm:text-[17px] font-semibold text-[#3C2015] truncate">{item.title}</p>
-                      <p className="text-[13px] sm:text-[14px] text-[#B59A78]">{item.weight}</p>
-                      <span className="inline-block mt-1 sm:mt-1.5 text-[10px] sm:text-[11px] bg-[#F5F8EE] text-[#3C6B2E] px-2.5 py-0.5 sm:py-1 rounded-full font-medium">
-                        ✓ 100% Raw &amp; Unfiltered
-                      </span>
+                      <p className="text-[15px] sm:text-[17px] font-semibold text-[#3C2015] hover:text-[#D89B00] transition-colors truncate">
+                        {item.title}
+                      </p>
+                      <p className="text-[13px] sm:text-[14px] text-[#B59A78]">
+                        {item.brand} • {item.floral_source}
+                      </p>
+                      <p className="text-[12px] sm:text-[13px] text-[#B59A78]">
+                        {item.weight} • Raw & Unfiltered
+                      </p>
+                      {item.discount > 0 && (
+                        <span className="inline-block mt-1 text-[10px] sm:text-[11px] bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full font-medium">
+                          {Math.round(item.discount)}% OFF
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F0E2CC]/50">
-                    <span className="text-[17px] sm:text-[19px] font-bold text-[#3C2015] shrink-0">₹{item.price}</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F0E2CC]/50 w-full sm:w-auto">
+                    <div className="flex flex-col items-start sm:items-end">
+                      <span className="text-[17px] sm:text-[19px] font-bold text-[#3C2015]">₹{item.price}</span>
+                      {item.mrp > item.price && (
+                        <span className="text-[12px] text-[#B59A78] line-through">₹{item.mrp}</span>
+                      )}
+                    </div>
 
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => moveToCart(item.id, item.title)}
-                        className="shrink-0 flex items-center justify-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors cursor-pointer"
+                        onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
+                        disabled={actionLoading === item.productId}
+                        className="shrink-0 flex items-center justify-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[13px] sm:text-[14px] font-semibold px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ShoppingCart size={16} /> Move to Cart
+                        {actionLoading === item.productId ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <ShoppingCart size={16} />
+                        )}
+                        {actionLoading === item.productId ? "Moving..." : "Move to Cart"}
                       </button>
 
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId)}
                         className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full border border-[#F0E2CC] text-[#B59A78] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer"
                       >
                         <X size={18} />

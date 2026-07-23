@@ -12,7 +12,7 @@ import {
   Share2,
   Play,
 } from "lucide-react";
-import ProductCard from "@/components/productcardshop";
+import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 import { Playfair_Display, Inter } from "next/font/google";
@@ -79,11 +79,26 @@ export default function ProductDetailPage({
   const { cartItems, updateQuantity } = useCart();
   const router = useRouter();
 
+  const redirectToLogin = () => {
+    router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+  };
+
+  // Toast state
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastType, setToastType] = useState<"success" | "error">("success");
+
+  const showToastMessage = (message: string, type: "success" | "error" = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   // 1. Dynamic Media Gallery (Images + Videos)
   const mediaList = useMemo(() => {
     const list: any[] = [];
 
-    // Add Images
     if (product?.imageDocumentId) {
       product.imageDocumentId.forEach((img: any) => {
         list.push({
@@ -95,7 +110,6 @@ export default function ProductDetailPage({
       });
     }
 
-    // Add Videos
     if (product?.videoDocumentId) {
       product.videoDocumentId.forEach((vid: any) => {
         list.push({
@@ -121,6 +135,43 @@ export default function ProductDetailPage({
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [btnLoading, setBtnLoading] = useState(false);
 
+  // Recommendations state for selected variants per product ID
+  const [recSelectedVariants, setRecSelectedVariants] = useState<Record<string, string>>({});
+
+  // Wishlist store state (Array of Product IDs)
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+
+  // Local quantity picker
+  const [selectedQty, setSelectedQty] = useState(1);
+
+  // Fetch current user's wishlist
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const fetchWishlist = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const products = data?.data?.products || [];
+        const ids = products.map((item: any) => item.productId?._id || item.productId || item._id);
+        setWishlistIds(ids);
+        
+        // Update wishlist count in header
+        window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+          detail: { count: ids.length } 
+        }));
+        console.log("Wishlist IDs:", ids);
+      }
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+    }
+  };
+
   // Sync initial selections
   useEffect(() => {
     if (mediaList.length > 0) {
@@ -132,7 +183,9 @@ export default function ProductDetailPage({
     }
   }, [product, mediaList, variants]);
 
-  const quantity = cartItems[product?._id] ?? 1;
+  useEffect(() => {
+    setSelectedQty(1);
+  }, [selectedVariant?._id]);
 
   // Pincode State
   const [pincode, setPincode] = useState("");
@@ -148,75 +201,151 @@ export default function ProductDetailPage({
   const currentMrp = selectedVariant?.mrp ?? 0;
   const currentSave = selectedVariant?.you_save ?? 0;
 
+  // ---------------- Local quantity picker (+/-) ---------------- //
+  const incrementQty = () => setSelectedQty((q) => q + 1);
+  const decrementQty = () => setSelectedQty((q) => Math.max(1, q - 1));
+
   // ---------------- API FUNCTIONS ---------------- //
 
-  // 1. Add to Cart API
-  const handleAddToCartAPI = async (redirect = false) => {
+  // 1. Add to Cart Function
+  const handleAddToCart = async (redirect = false) => {
+    if (!selectedVariant) return;
+
     try {
       setBtnLoading(true);
       const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           productId: product._id,
-          variantId: selectedVariant?._id,
-          quantity: 1,
+          selectedWeight: selectedVariant._id,
+          quantity: selectedQty,
         }),
       });
 
-      const result = await res.json();
+      if (res.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
       if (res.ok) {
-        updateQuantity(product, 1);
+        updateQuantity(product, selectedQty);
+        setSelectedQty(1);
+
         if (redirect) {
           router.push("/cart");
         }
-      } else {
-        console.error("Cart Add Error:", result.message);
       }
     } catch (err) {
-      console.error("Failed to add to cart:", err);
+      console.error("Failed to update cart:", err);
     } finally {
       setBtnLoading(false);
     }
   };
 
-  // 2. Increase Quantity API
-  const handleIncreaseQuantityAPI = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/cart/increase-quantity`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product._id,
-          variantId: selectedVariant?._id,
-        }),
-      });
+  // 2. Wishlist Toggle Function (Add / Remove) - With color change and count update
+  const handleToggleWishlist = async (productId: string) => {
+    const isWishlisted = wishlistIds.includes(productId);
 
-      if (res.ok) {
-        updateQuantity(product, 1);
+    try {
+      if (isWishlisted) {
+        // Remove from Wishlist
+        const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.status === 401) {
+          redirectToLogin();
+          return;
+        }
+
+        if (res.ok) {
+          const newCount = wishlistIds.length - 1;
+          setWishlistIds((prev) => prev.filter((id) => id !== productId));
+          
+          // Update count in header
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+            detail: { count: newCount } 
+          }));
+          
+          showToastMessage("Removed from wishlist ❌", "success");
+        }
+      } else {
+        // Add to Wishlist
+        const res = await fetch(`${API_BASE_URL}/api/wishlist/add/${productId}`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.status === 401) {
+          redirectToLogin();
+          return;
+        }
+
+        if (res.ok) {
+          const newCount = wishlistIds.length + 1;
+          setWishlistIds((prev) => [...prev, productId]);
+          
+          // Update count in header
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
+            detail: { count: newCount } 
+          }));
+          
+          showToastMessage("Added to wishlist! ❤️", "success");
+        }
       }
     } catch (err) {
-      console.error("Error increasing quantity:", err);
+      console.error("Error toggling wishlist:", err);
+      showToastMessage("Something went wrong", "error");
     }
   };
 
-  // 3. Decrease Quantity API
-  const handleDecreaseQuantityAPI = async () => {
+  // 3. Recommendation Variant Select Helper
+  const handleRecVariantSelect = (recProductId: string, variantId: string) => {
+    setRecSelectedVariants((prev) => ({
+      ...prev,
+      [recProductId]: variantId,
+    }));
+  };
+
+  // 4. Recommendation Add to Cart
+  const handleRecommendationCartAction = async (item: any) => {
+    const itemVariants = item.variantDocumentId || [];
+    const selectedVariantId = recSelectedVariants[item._id] || itemVariants[0]?._id;
+    const variant = itemVariants.find((v: any) => v._id === selectedVariantId) || itemVariants[0];
+
+    if (!variant) return;
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/cart/decrease-quantity`, {
+      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: product._id,
-          variantId: selectedVariant?._id,
+          productId: item._id,
+          selectedWeight: variant._id,
+          quantity: 1,
         }),
       });
 
+      if (res.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
       if (res.ok) {
-        updateQuantity(product, -1);
+        updateQuantity(item, 1);
+        showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
       }
     } catch (err) {
-      console.error("Error decreasing quantity:", err);
+      console.error("Failed to update recommendation cart:", err);
+      showToastMessage("Failed to add to cart", "error");
     }
   };
 
@@ -250,7 +379,7 @@ export default function ProductDetailPage({
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_1fr] gap-8">
           
-          {/* THUMBNAILS (Images + Video Thumbnails) */}
+          {/* THUMBNAILS */}
           <div className="hidden lg:flex flex-col gap-3">
             {mediaList.map((item: any) => (
               <button
@@ -308,13 +437,30 @@ export default function ProductDetailPage({
               <h1 className={`${playfair.className} text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal`}>
                 {product.product_name}
               </h1>
-              <button
-                type="button"
-                aria-label="Share product"
-                className="text-gray-400 hover:text-[#B8860B] transition-colors mt-3 mr-1"
-              >
-                <Share2 size={22} className="stroke-[1.5]" />
-              </button>
+              <div className="flex items-center gap-3 mt-3 mr-1">
+                <button
+                  type="button"
+                  onClick={() => handleToggleWishlist(product._id)}
+                  aria-label="Wishlist"
+                  className="transition-colors"
+                >
+                  <Heart
+                    size={24}
+                    className={`stroke-[1.5] transition-colors ${
+                      wishlistIds.includes(product._id)
+                        ? "fill-[#FF6F3C] text-[#FF6F3C]"
+                        : "text-gray-400 hover:text-[#FF6F3C]"
+                    }`}
+                  />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Share product"
+                  className="text-gray-400 hover:text-[#B8860B] transition-colors"
+                >
+                  <Share2 size={22} className="stroke-[1.5]" />
+                </button>
+              </div>
             </div>
 
             {/* Reviews & Offer Badge */}
@@ -415,7 +561,7 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* Quantity & Cart Actions (Connected to APIs) */}
+            {/* Quantity & Cart Actions */}
             <div className="space-y-4 pt-2">
               <h3 className="text-[15px] font-medium text-[#3F3F3F] tracking-normal">Quantity</h3>
               
@@ -423,16 +569,16 @@ export default function ProductDetailPage({
                 {/* Quantity Buttons */}
                 <div className="flex items-center border border-gray-200 rounded bg-white w-[180px] h-[56px] px-2">
                   <button
-                    onClick={handleDecreaseQuantityAPI}
+                    onClick={decrementQty}
                     className="p-2 text-gray-400 hover:text-gray-600 text-xl font-light"
                   >
                     −
                   </button>
                   <span className="flex-1 text-center font-normal text-[15px] text-gray-800">
-                    {quantity}
+                    {selectedQty}
                   </span>
                   <button
-                    onClick={handleIncreaseQuantityAPI}
+                    onClick={incrementQty}
                     className="p-2 text-gray-400 hover:text-gray-600 text-xl font-light"
                   >
                     +
@@ -442,7 +588,7 @@ export default function ProductDetailPage({
                 {/* Add To Cart Button */}
                 <button
                   disabled={btnLoading}
-                  onClick={() => handleAddToCartAPI(false)}
+                  onClick={() => handleAddToCart(false)}
                   className="flex-1 bg-[#FF6F3C] text-white h-[56px] rounded font-semibold hover:bg-[#D64A20] transition-colors text-[14px] tracking-wider uppercase disabled:opacity-50"
                 >
                   {btnLoading ? "ADDING..." : "ADD TO CART"}
@@ -452,7 +598,7 @@ export default function ProductDetailPage({
               {/* Buy It Now Button */}
               <button
                 disabled={btnLoading}
-                onClick={() => handleAddToCartAPI(true)}
+                onClick={() => handleAddToCart(true)}
                 className="w-full max-w-xl border border-[#FF6F3C] text-[#FF6F3C] h-[54px] rounded font-semibold hover:bg-[#FFF3EE] transition-colors text-[14px] tracking-wider uppercase bg-white block text-center mt-3 disabled:opacity-50"
               >
                 BUY IT NOW
@@ -554,65 +700,90 @@ export default function ProductDetailPage({
           />
         </div>
 
-        {/* RECOMMENDATIONS */}
+        {/* RECOMMENDATIONS SECTION */}
         {recommendations.length > 0 && (
           <section className="mt-16">
             <h2 className={`mb-9 text-[32px] font-bold text-[#2F241C] ${playfair.className}`}>
               Recommendation
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {recommendations.map((item: any) => (
-                <ProductCard
-                  key={item._id || item.id}
-                  badge={item.categoryId?.category_name}
-                  image={
-                    item.imageDocumentId?.find((x: any) => x.is_primary)?.image_url ||
-                    item.imageDocumentId?.[0]?.image_url
-                  }
-                  title={item.product_name}
-                  subtitle={item.floral_source}
-                  weight={`${item.variantDocumentId?.[0]?.weight ?? ""}${item.variantDocumentId?.[0]?.unit ?? ""}`}
-                  price={item.variantDocumentId?.[0]?.price}
-                  oldPrice={item.variantDocumentId?.[0]?.mrp}
-                  rating={item.average_rating}
-                  reviews={item.total_reviews}
-                  quantity={cartItems[item._id] ?? 0}
-                  onAddToCart={() => handleAddToCartAPI(false)}
-                  onIncrement={handleIncreaseQuantityAPI}
-                  onDecrement={handleDecreaseQuantityAPI}
-                  onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
-                />
-              ))}
+              {recommendations.map((item: any) => {
+                const recVariants = item.variantDocumentId || [];
+                const selectedVariantId = recSelectedVariants[item._id] || recVariants[0]?._id;
+                const recVariant = recVariants.find((v: any) => v._id === selectedVariantId) || recVariants[0];
+
+                const primaryImage =
+                  item.imageDocumentId?.find((x: any) => x.is_primary)?.image_url ||
+                  item.imageDocumentId?.[0]?.image_url || "";
+                const weightStr = `${recVariant?.weight ?? ""}${recVariant?.unit ?? ""}`;
+
+                return (
+                  <ProductCardShop
+                    key={item._id || item.id}
+                    badge={item.categoryId?.category_name || "Honey"}
+                    image={primaryImage}
+                    title={item.product_name}
+                    subtitle={item.floral_source}
+                    weight={weightStr}
+                    price={recVariant?.price ?? 0}
+                    oldPrice={recVariant?.mrp ?? 0}
+                    rating={item.average_rating}
+                    reviews={item.total_reviews}
+                    quantity={cartItems[item._id] ?? 0}
+                    variants={recVariants}
+                    selectedVariantId={selectedVariantId}
+                    onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}
+                    onAddToCart={() => handleRecommendationCartAction(item)}
+                    onIncrement={() => handleRecommendationCartAction(item)}
+                    onDecrement={() => handleRecommendationCartAction(item)}
+                    onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
+                    onToggleWishlist={() => handleToggleWishlist(item._id)}
+                    isWishlisted={wishlistIds.includes(item._id)}
+                  />
+                );
+              })}
             </div>
           </section>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in duration-200">
+          <div className={`px-6 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${
+            toastType === "success" ? "bg-green-600" : "bg-red-600"
+          }`}>
+            {toastMessage}
+          </div>
+        </div>
+      )}
 
       {/* MOBILE STICKY BAR */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden shadow-lg z-50">
         <div className="flex items-center gap-3">
           <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white">
             <button
-              onClick={handleDecreaseQuantityAPI}
+              onClick={decrementQty}
               className="px-3 py-2 hover:bg-gray-50 text-gray-600 font-medium"
             >
               −
             </button>
             <span className="px-3 py-2 text-sm font-normal min-w-[30px] text-center">
-              {quantity}
+              {selectedQty}
             </span>
             <button
-              onClick={handleIncreaseQuantityAPI}
+              onClick={incrementQty}
               className="px-3 py-2 hover:bg-gray-50 text-gray-600 font-medium"
             >
               +
             </button>
           </div>
           <button
-            onClick={() => handleAddToCartAPI(true)}
-            className="flex-1 bg-[#FF6F3C] text-white py-3 rounded font-bold text-sm tracking-wide"
+            disabled={btnLoading}
+            onClick={() => handleAddToCart(true)}
+            className="flex-1 bg-[#FF6F3C] text-white py-3 rounded font-bold text-sm tracking-wide disabled:opacity-50"
           >
-            Add to Cart · ₹{currentPrice}
+            Buy Now · ₹{currentPrice}
           </button>
         </div>
       </div>

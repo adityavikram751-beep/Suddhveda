@@ -19,7 +19,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import ProductCard from "@/components/Productcard";
+import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts } from "@/lib/shop-data";
 
@@ -139,7 +139,7 @@ export default function Cart() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {recommendations.map((item) => (
                 <div key={item.id} className="h-full">
-                  <ProductCard
+                  <ProductCardShop
                     badge={item.badge}
                     image={item.image}
                     title={item.title}
@@ -147,7 +147,6 @@ export default function Cart() {
                     weight={item.weight}
                     price={item.price}
                     oldPrice={item.oldPrice}
-                    discount={item.discount}
                     rating={item.rating}
                     reviews={item.reviews}
                     quantity={cartItems[item.id] ?? 0}
