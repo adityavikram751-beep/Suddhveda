@@ -51,7 +51,6 @@ export default function Header() {
         return;
       }
 
-      // ✅ Use API_BASE_URL from auth
       const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
         method: "GET",
         credentials: "include",
@@ -77,6 +76,75 @@ export default function Header() {
     } catch (error) {
       console.error("Error fetching wishlist count:", error);
       setWishlistCount(0);
+    }
+  };
+
+  // ================= CLEAR ALL COOKIES FUNCTION =================
+  const clearAllCookies = () => {
+    // Get all cookies
+    const cookies = document.cookie.split(";");
+    
+    // Clear each cookie
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+      
+      // Set expiry date to past to delete cookie
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    }
+    
+    console.log("All cookies cleared");
+  };
+
+  // ================= LOGOUT FUNCTION =================
+  const handleLogout = async () => {
+    try {
+      // 1. Call logout API to invalidate session on server
+      const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        console.warn("Logout API failed, but clearing local session anyway");
+      }
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      // 2. Clear all cookies
+      clearAllCookies();
+      
+      // 3. Clear local storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("session");
+      
+      // 4. Clear session storage
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("session");
+      
+      // 5. Clear auth session using your helper
+      clearSession();
+      
+      // 6. Reset state
+      setSession(null);
+      setAccountOpen(false);
+      setOpen(false);
+      setWishlistCount(0);
+      
+      // 7. Dispatch event for other components
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+      
+      // 8. Redirect to login
+      router.push("/login");
+      
+      console.log("✅ Logout successful - All cookies and storage cleared");
     }
   };
 
@@ -149,15 +217,6 @@ export default function Header() {
     }
 
     setAccountOpen((value) => !value);
-  }
-
-  function handleLogout() {
-    clearSession();
-    setSession(null);
-    setAccountOpen(false);
-    setOpen(false);
-    setWishlistCount(0);
-    router.push("/login");
   }
 
   return (

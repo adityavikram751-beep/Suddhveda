@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,11 +12,10 @@ import {
   Mail,
   Clock,
   ArrowRight,
-  ChevronRight,
   CheckCircle2,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { allProducts } from "@/lib/shop-data";
+import { API_BASE_URL } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -39,36 +38,35 @@ type Address = {
   phone: string;
 };
 
-const initialAddresses: Address[] = [
-  {
-    id: "home",
-    label: "Home",
-    isDefault: true,
-    name: "Rahul Sharma",
-    line: "123, Green Avenue, Near City Park, Koramangala",
-    city: "Bengaluru",
-    state: "Karnataka, India",
-    pincode: "560034",
-    phone: "+91 98765 43210",
-  },
-  {
-    id: "office",
-    label: "Office",
-    isDefault: false,
-    name: "Rahul Sharma",
-    line: "ShudhVeda Naturals Pvt. Ltd., 45, 2nd Cross, HSR Layout",
-    city: "Bengaluru",
-    state: "Karnataka, India",
-    pincode: "560102",
-    phone: "+91 98765 43210",
-  },
-];
+type LocationData = {
+  phone: string;
+  phone_timing: string;
+  email: string;
+  email_reply_time: string;
+  whatsapp: string;
+  whatsapp_timing: string;
+  map_embed_url: string;
+};
+
+// Map API address to UI address
+const mapApiAddress = (item: any): Address => ({
+  id: item._id,
+  label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : "Other",
+  isDefault: item.is_default || false,
+  name: item.full_name || "",
+  line: `${item.address_line1 || ""} ${item.address_line2 || ""}`.trim(),
+  city: item.city || "",
+  state: item.state || "",
+  pincode: item.pincode || "",
+  phone: item.phone || "",
+});
 
 export default function Checkout() {
   const router = useRouter();
   const { cartItems } = useCart();
-  const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>("home");
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const [activeStep] = useState<number>(1);
 
   const [formData, setFormData] = useState({
@@ -85,34 +83,171 @@ export default function Checkout() {
   const [isPincodeVerified, setIsPincodeVerified] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
 
-  const cartProducts = allProducts
-    .filter((product) => cartItems[product.id] > 0)
-    .map((product) => ({ ...product, quantity: cartItems[product.id] }));
-  const visibleProducts =
-    cartProducts.length > 0
-      ? cartProducts
-      : allProducts.slice(0, 2).map((product) => ({ ...product, quantity: 1 }));
+  // ---------- Location (for Need Help) ----------
+  const [location, setLocation] = useState<LocationData | null>(null);
 
-  const subtotal = visibleProducts.reduce(
-    (sum, product) => sum + product.price * product.quantity,
-    0,
-  );
-  const saved = visibleProducts.reduce(
-    (sum, product) =>
-      sum + Math.max(product.oldPrice - product.price, 0) * product.quantity,
-    0,
-  );
+  const fetchLocation = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/location/all`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const loc = data.data || data;
+        setLocation({
+          phone: loc.phone || "+91 98765 43210",
+          phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
+          email: loc.email || "connect@honeyveda.in",
+          email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
+          whatsapp: loc.whatsapp || "",
+          whatsapp_timing: loc.whatsapp_timing || "",
+          map_embed_url: loc.map_embed_url || "",
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching location:", err);
+    }
+  };
 
+  // ---------- Cart ----------
+  const [cartProducts, setCartProducts] = useState<any[]>([]);
+  const [cartLoading, setCartLoading] = useState(true);
+  const [cartError, setCartError] = useState<string | null>(null);
+
+  const fetchCart = async () => {
+    try {
+      setCartLoading(true);
+      setCartError(null);
+      const res = await fetch(`${API_BASE_URL}/api/cart`, {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        setCartError("Please log in to view your cart.");
+        setCartProducts([]);
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const items = data.items || [];
+      const products: any[] = [];
+      items.forEach((item: any) => {
+        if (item.type === "NORMAL" && item.product) {
+          const product = item.product;
+          const variant = product.variant || {};
+          products.push({
+            id: product._id || item.cartItemId,
+            title: product.product_name || "Honey",
+            weight: variant.weight ? `${variant.weight}g` : "",
+            price: variant.price || 0,
+            quantity: item.quantity || 1,
+            image: product.image?.image_url || "/placeholder.png",
+            oldPrice: variant.mrp || 0,
+            type: "NORMAL",
+          });
+        } else if (item.type === "CUSTOM") {
+          const giftBox = item.giftBox || {};
+          products.push({
+            id: item.giftCartItemId,
+            title: `🎁 ${giftBox.name || "Gift Box"}`,
+            weight: `${item.totalWeight || 0}g`,
+            price: item.totalAmount || 0,
+            quantity: item.quantity || 1,
+            image: giftBox.image || "/placeholder.png",
+            oldPrice: 0,
+            type: "CUSTOM",
+          });
+        }
+      });
+      setCartProducts(products);
+    } catch (err: any) {
+      console.error("Error fetching cart:", err);
+      setCartError(err.message || "Failed to load cart");
+      setCartProducts([]);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  // ---------- Addresses ----------
+  const fetchAddresses = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        setAddresses([]);
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const items = data.data || [];
+      // ✅ Explicit type for map callback and the resulting array
+      const list: Address[] = items.map((item: any): Address => mapApiAddress(item));
+      setAddresses(list);
+      if (list.length > 0) {
+        const defaultAddr = list.find((a: Address) => a.isDefault) || list[0];
+        setSelectedAddressId(defaultAddr.id);
+        populateForm(defaultAddr);
+      }
+    } catch (err) {
+      console.error("Error fetching addresses:", err);
+      setAddresses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+    fetchAddresses();
+    fetchLocation();
+  }, []);
+
+  // ---------- Save Address API ----------
+  const saveAddressToAPI = async (addressData: any, isEdit: boolean, addressId?: string) => {
+    const payload = {
+      full_name: addressData.fullName,
+      phone: addressData.phone,
+      address_line1: addressData.address.split(",")[0] || addressData.address,
+      address_line2: addressData.address.split(",").slice(1).join(",").trim() || "",
+      city: addressData.city || "Bengaluru",
+      state: addressData.state || "Karnataka",
+      pincode: addressData.pincode,
+      country: "India",
+      address_type: addressData.address_type || "home",
+      is_default: addressData.isDefault || false,
+    };
+
+    const url = isEdit
+      ? `${API_BASE_URL}/api/addresses/update/${addressId}`
+      : `${API_BASE_URL}/api/addresses/add`;
+    const method = isEdit ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || "Failed to save address");
+    }
+    return res.json();
+  };
+
+  // ---------- Form handlers ----------
   const populateForm = (address: Address) => {
     setFormData({
-      fullName: address.name,
-      phone: address.phone,
-      pincode: address.pincode,
+      fullName: address.name || "",
+      phone: address.phone || "",
+      pincode: address.pincode || "",
       locality: address.line.split(",")[0] || "",
-      address: address.line,
+      address: address.line || "",
       landmark: "",
-      city: address.city,
-      state: address.state,
+      city: address.city || "",
+      state: address.state || "",
       deliveryInstructions: "",
     });
   };
@@ -139,56 +274,63 @@ export default function Checkout() {
     setIsPincodeVerified(false);
   };
 
-  const handleSaveAddressAndContinue = () => {
+  const handleSaveAddressAndContinue = async () => {
     if (!formData.fullName || !formData.phone || !formData.pincode || !formData.address) {
       alert("Please fill all required fields.");
       return;
     }
 
-    const newAddress: Address = {
-      id: editingAddressId || `addr-${Date.now()}`,
-      label: editingAddressId ? "Home" : "Other",
-      isDefault: addresses.length === 0,
-      name: formData.fullName,
-      line: formData.address,
-      city: formData.city || "Bengaluru",
-      state: formData.state || "Karnataka, India",
-      pincode: formData.pincode,
-      phone: formData.phone,
-    };
-
-    if (editingAddressId) {
-      setAddresses((prev) =>
-        prev.map((a) => (a.id === editingAddressId ? newAddress : a))
+    try {
+      const isEdit = !!editingAddressId;
+      await saveAddressToAPI(
+        {
+          ...formData,
+          address_type: "home",
+          isDefault: addresses.length === 0 || false,
+        },
+        isEdit,
+        editingAddressId || undefined
       );
-    } else {
-      setAddresses((prev) => [...prev, newAddress]);
-      setSelectedAddressId(newAddress.id);
+      await fetchAddresses();
+      router.push("/shipping");
+    } catch (err: any) {
+      alert(err.message);
     }
-
-    router.push("/shipping");
-  };
-
-  const isEditing = editingAddressId !== null;
-  const getButtonLabel = () => {
-    if (isEditing) return "Update Address & Continue";
-    return "Add Your Address";
   };
 
   const handleVerifyPincode = () => {
-    setIsPincodeVerified(true);
+    if (formData.pincode.length === 6) {
+      setIsPincodeVerified(true);
+    } else {
+      alert("Please enter a valid 6-digit pincode.");
+    }
   };
 
   const handleSelectAddress = (id: string) => {
     setSelectedAddressId(id);
     setEditingAddressId(null);
+    const addr = addresses.find((a) => a.id === id);
+    if (addr) populateForm(addr);
   };
+
+  // ---------- Computed totals ----------
+  const subtotal = cartProducts.reduce(
+    (sum, product) => sum + product.price * product.quantity,
+    0
+  );
+  const saved = cartProducts.reduce(
+    (sum, product) =>
+      sum + Math.max((product.oldPrice || 0) - product.price, 0) * product.quantity,
+    0
+  );
+
+  const isEditing = editingAddressId !== null;
+  const getButtonLabel = () => (isEditing ? "Update Address & Continue" : "Add Your Address");
 
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
         <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
-          {/* LEFT COLUMN: Checkout steps & forms */}
           <section>
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
@@ -203,22 +345,36 @@ export default function Checkout() {
               isEditing={isEditing}
             />
 
-            <SavedAddresses
-              addresses={addresses}
-              selectedId={selectedAddressId}
-              onSelect={handleSelectAddress}
-              onAddNew={handleAddNew}
-              onEdit={handleEditAddress}
-            />
+            {loading ? (
+              <div className="mt-8 text-center py-10 text-[#B59A78]">Loading addresses...</div>
+            ) : (
+              <SavedAddresses
+                addresses={addresses}
+                selectedId={selectedAddressId}
+                onSelect={handleSelectAddress}
+                onAddNew={handleAddNew}
+                onEdit={handleEditAddress}
+              />
+            )}
           </section>
 
-          {/* RIGHT SIDEBAR: ORDER SUMMARY (Need help section inside this card only) */}
           <aside className="lg:sticky lg:top-6 flex flex-col">
-            <CheckoutOrderSummary
-              products={visibleProducts}
-              subtotal={subtotal}
-              saved={saved}
-            />
+            {cartLoading ? (
+              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 text-center text-[#B59A78]">
+                Loading cart...
+              </div>
+            ) : cartError ? (
+              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 text-center text-red-600">
+                {cartError}
+              </div>
+            ) : (
+              <CheckoutOrderSummary
+                products={cartProducts}
+                subtotal={subtotal}
+                saved={saved}
+                location={location}
+              />
+            )}
           </aside>
         </div>
       </div>
@@ -226,7 +382,7 @@ export default function Checkout() {
   );
 }
 
-// ─── Header ──────────────────────────────────────────────
+// ─── Subcomponents ──────────────────────────────────────────────────────
 
 function CheckoutHeader() {
   return (
@@ -246,16 +402,13 @@ function CheckoutHeader() {
   );
 }
 
-// ─── Stepper ──────────────────────────────────────────────
-
 function Stepper({ activeStep }: { activeStep: number }) {
   return (
     <div className="mt-8 rounded-lg border border-[#F4D7B8] bg-white/55 px-3 py-4 shadow-sm md:px-4">
       <div className="flex items-center justify-between gap-2">
-        {steps.map((step, index) => {
+        {steps.map((step) => {
           const isDone = step.id < activeStep;
           const isActive = step.id === activeStep;
-
           return (
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
               <div className="flex min-w-0 items-center gap-3">
@@ -268,13 +421,8 @@ function Stepper({ activeStep }: { activeStep: number }) {
                       : "border-[#F0DDC8] bg-white text-[#2F241C]"
                   }`}
                 >
-                  {isDone ? (
-                    <CheckCircle2 size={28} strokeWidth={1.8} />
-                  ) : (
-                    step.id
-                  )}
+                  {isDone ? <CheckCircle2 size={28} strokeWidth={1.8} /> : step.id}
                 </span>
-
                 <div className="hidden min-w-0 sm:block">
                   <p
                     className={`text-[15px] font-semibold leading-tight ${
@@ -283,14 +431,12 @@ function Stepper({ activeStep }: { activeStep: number }) {
                   >
                     {step.title}
                   </p>
-
                   <p className="mt-1 truncate text-[12px] leading-tight text-[#596273]">
                     {step.subtitle}
                   </p>
                 </div>
               </div>
-
-              {index < steps.length - 1 && (
+              {step.id < steps.length && (
                 <span className="mx-3 hidden shrink-0 text-[26px] leading-none text-[#F0A33A] md:block">
                   &rsaquo;
                 </span>
@@ -302,7 +448,6 @@ function Stepper({ activeStep }: { activeStep: number }) {
     </div>
   );
 }
-// ─── Delivery Address Form ──────────────────────────────────────
 
 function DeliveryAddressForm({
   formData,
@@ -312,15 +457,7 @@ function DeliveryAddressForm({
   onSave,
   buttonLabel,
   isEditing,
-}: {
-  formData: any;
-  setFormData: (data: any) => void;
-  isPincodeVerified: boolean;
-  onVerifyPincode: () => void;
-  onSave: () => void;
-  buttonLabel: string;
-  isEditing: boolean;
-}) {
+}: any) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -430,8 +567,6 @@ function DeliveryAddressForm({
   );
 }
 
-// ─── Reusable Form Field ──────────────────────────────────────
-
 function FormField({
   label,
   required,
@@ -442,26 +577,14 @@ function FormField({
   onChange,
   action,
   as = "input",
-}: {
-  label: string;
-  required?: boolean;
-  optional?: boolean;
-  placeholder: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  action?: { label: string; onClick: () => void; done?: boolean };
-  as?: "input" | "select";
-}) {
+}: any) {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-semibold text-[#2F241C]">
         {label}
         {required && <span className="text-red-500">*</span>}
         {optional && (
-          <span className="ml-1 text-[11px] font-normal text-[#9AA3AF]">
-            (Optional)
-          </span>
+          <span className="ml-1 text-[11px] font-normal text-[#9AA3AF]">(Optional)</span>
         )}
       </label>
       <div className="flex gap-2">
@@ -494,7 +617,7 @@ function FormField({
             type="button"
             onClick={action.onClick}
             className={`flex h-11 shrink-0 items-center gap-1.5 rounded-lg px-5 text-[13px] font-bold text-white transition-colors ${
-              action.done ? "bg-[#0BA445] hover:bg-[#0A8F3B]" : "bg-[#D18500] hover:bg-[#B97100]"
+              action.done ? "bg-[#0BA445]" : "bg-[#D18500] hover:bg-[#B97100]"
             }`}
           >
             {action.done && <CheckCircle2 size={14} />}
@@ -505,8 +628,6 @@ function FormField({
     </div>
   );
 }
-
-// ─── Saved Addresses ──────────────────────────────────────
 
 function SavedAddresses({
   addresses,
@@ -521,6 +642,14 @@ function SavedAddresses({
   onAddNew: () => void;
   onEdit: (address: Address) => void;
 }) {
+  if (addresses.length === 0) {
+    return (
+      <div className="mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-7 text-center text-[#B59A78]">
+        No saved addresses. Add one below.
+      </div>
+    );
+  }
+
   return (
     <div className="mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-7">
       <div className="flex items-center justify-between">
@@ -534,7 +663,7 @@ function SavedAddresses({
         </button>
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {addresses.map((address) => {
+        {addresses.map((address: Address) => {
           const isSelected = selectedId === address.id;
           return (
             <div
@@ -557,9 +686,7 @@ function SavedAddresses({
                   />
                   {address.label}
                   {address.isDefault && (
-                    <span className="text-[11px] font-normal text-[#2D3A1B]">
-                      (Default)
-                    </span>
+                    <span className="text-[11px] font-normal text-[#2D3A1B]">(Default)</span>
                   )}
                 </span>
                 {isSelected && (
@@ -594,8 +721,7 @@ function SavedAddresses({
   );
 }
 
-// ─── ORDER SUMMARY (matches screenshot - gap before badges, badges + Need help pinned together at bottom) ──────────────────
-
+// ORDER SUMMARY
 type CheckoutProduct = {
   id: number | string;
   title: string;
@@ -603,53 +729,59 @@ type CheckoutProduct = {
   price: number;
   quantity: number;
   image: string;
+  oldPrice?: number;
+  type?: string;
 };
 
 function CheckoutOrderSummary({
   products,
   subtotal,
   saved,
+  location,
 }: {
   products: CheckoutProduct[];
   subtotal: number;
   saved: number;
+  location: LocationData | null;
 }) {
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
   return (
     <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col min-h-[720px]">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
         <span className="text-[12px] text-[#9AA3AF]">{products.length} Items</span>
       </div>
 
-      {/* Product list */}
-      <div className="mt-5 max-h-[280px] space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
-        {products.map((product) => (
-          <div key={product.id} className="flex items-center gap-3">
-            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-              <Image
-                src={product.image}
-                alt={product.title}
-                fill
-                className="object-contain p-1.5"
-              />
+      <div className="mt-5 max-h-[280px] space-y-4 overflow-y-auto pr-1 scrollbar-hide">
+        {products.length === 0 ? (
+          <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
+        ) : (
+          // ✅ Explicitly type the product parameter
+          products.map((product: CheckoutProduct) => (
+            <div key={product.id} className="flex items-center gap-3">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  className="object-contain p-1.5"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="text-[14px] font-semibold">{product.title}</p>
+                <p className="text-[11px] text-[#9AA3AF]">
+                  {product.weight || "Selected weight"} - {product.type === "CUSTOM" ? "Gift Box" : "Raw & Unfiltered"}
+                </p>
+                <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
+              </div>
+              <p className="text-[14px] font-bold">₹{product.price}</p>
             </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold">{product.title}</p>
-              <p className="text-[11px] text-[#9AA3AF]">
-                {product.weight.split(" - ")[0]} - Raw & Unfiltered
-              </p>
-              <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
-            </div>
-            <p className="text-[14px] font-bold">₹{product.price}</p>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* Totals */}
       <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal</span>
@@ -669,7 +801,6 @@ function CheckoutOrderSummary({
         </div>
       </div>
 
-      {/* Total */}
       <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
         <div>
           <p className="text-[21px] font-bold">Total</p>
@@ -678,7 +809,6 @@ function CheckoutOrderSummary({
         <p className="font-serif text-[28px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
       </div>
 
-      {/* Savings & Free delivery progress */}
       <div className="mt-6 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
         <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
           <ShieldCheck size={16} /> You&apos;re saving ₹{saved} on this order!
@@ -702,14 +832,8 @@ function CheckoutOrderSummary({
         )}
       </div>
 
-      {/* ============================================================
-          BOTTOM BLOCK: pushed down with mt-auto so there's a gap
-          after the savings box, then Trust Badges + Need Help sit
-          together, right at the bottom of the card (matches screenshot)
-          ============================================================ */}
       <div className="mt-auto pt-24">
         <div className="rounded-[14px] bg-[#FFF8EF] p-5">
-          {/* Trust Badges */}
           <div className="grid grid-cols-3 gap-3 text-center">
             <span className="p-1">
               <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
@@ -728,18 +852,21 @@ function CheckoutOrderSummary({
             </span>
           </div>
 
-          {/* Need Help */}
+          {/* Need Help Section - populated from location API */}
           <div className="relative mt-6">
             <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
             <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
               <p className="flex items-center gap-2">
-                <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
+                <Phone size={16} className="text-[#2D3A1B]" />
+                {location?.phone || "+91 98765 43210"}
               </p>
               <p className="flex items-center gap-2">
-                <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
+                <Mail size={16} className="text-[#2D3A1B]" />
+                {location?.email || "connect@honeyveda.in"}
               </p>
               <p className="flex items-center gap-2">
-                <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
+                <Clock size={16} className="text-[#2D3A1B]" />
+                {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
               </p>
             </div>
             <div className="absolute bottom-0 right-0 opacity-100">
@@ -754,6 +881,16 @@ function CheckoutOrderSummary({
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

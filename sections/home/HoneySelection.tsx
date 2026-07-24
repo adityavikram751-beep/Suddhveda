@@ -98,13 +98,7 @@ export default function HoneySelection() {
         }),
       });
 
-      if (res.ok) {
-        // Update local cart state (no toast)
-        updateQuantity(product, 1);
-      } else {
-        const result = await res.json().catch(() => ({}));
-        console.error("Failed to add to cart:", result.message);
-      }
+      
     } catch (err) {
       console.error("Error in Add to Cart API:", err);
     } finally {

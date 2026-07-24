@@ -21,17 +21,6 @@ const greetingCardOptions = [
   { id: "Custom Note", label: "Custom Note" },
 ];
 
-// Helper to get token from cookie or localStorage
-function getAuthToken() {
-  if (typeof window === "undefined") return null;
-  // Try to get from localStorage first (if your app stores it)
-  const token = localStorage.getItem("token");
-  if (token) return token;
-  // Alternatively, read from cookie (document.cookie)
-  const match = document.cookie.match(/(?:^|;\s*)token=([^;]*)/);
-  return match ? match[1] : null;
-}
-
 export default function BuildYourOwnGiftBox() {
   // Data States
   const [giftBoxes, setGiftBoxes] = useState<any[]>([]);
@@ -142,7 +131,7 @@ export default function BuildYourOwnGiftBox() {
     setSelectedWeightMap(updatedMap);
   };
 
-  // ----- ADD TO CART (Hybrid Auth) -----
+  // ----- ADD TO CART (Cookies Only) -----
   const handleAddToCart = async () => {
     if (!selectedBoxId) {
       alert("Please select a gift box size.");
@@ -151,12 +140,6 @@ export default function BuildYourOwnGiftBox() {
 
     if (selectedProductIds.length === 0) {
       alert("Please select at least one honey variant.");
-      return;
-    }
-
-    const token = getAuthToken();
-    if (!token) {
-      alert("Please log in to add items to your cart.");
       return;
     }
 
@@ -176,17 +159,15 @@ export default function BuildYourOwnGiftBox() {
 
       const res = await fetch(`${API_BASE_URL}/api/cart/add/customize-product`, {
         method: "POST",
-        credentials: "include", // Send cookies as well
+        credentials: "include", // ✅ cookies will be sent
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Fallback to token
         },
         body: JSON.stringify(payload),
       });
 
       if (res.status === 401) {
-        // If token expired, redirect to login
-        alert("Your session has expired. Please log in again.");
+        alert("Please log in to add items to your cart.");
         window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
         return;
       }
@@ -195,6 +176,8 @@ export default function BuildYourOwnGiftBox() {
 
       if (res.ok) {
         setMessageToast({ type: "success", text: "Customized Gift Box added to cart!" });
+        // Refresh cart count (you might want to emit event or update cart provider)
+        window.dispatchEvent(new CustomEvent('cart-updated'));
       } else {
         setMessageToast({
           type: "error",
