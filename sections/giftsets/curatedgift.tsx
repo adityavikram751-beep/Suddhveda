@@ -140,7 +140,7 @@ export default function FeaturedCollection() {
     setTimeout(() => setToastMessage(null), 2200);
   };
 
-  // ---------- ADD TO CART (no toast) ----------
+  // ---------- ADD TO CART (fixed) ----------
   const handleAddToCart = async (product: ApiProduct) => {
     const productId = getProductId(product);
     const selectedVariantId = getSelectedVariantId(product);
@@ -169,8 +169,8 @@ export default function FeaturedCollection() {
 
       if (!res.ok) throw new Error("Failed to add to cart");
 
-      const normalized = normalizeProduct(product, selectedVariantId);
-      updateQuantity(normalized, 1);
+      // ✅ FIX: order is (productId, variantId, quantity)
+      updateQuantity(productId, selectedVariantId, 1);
     } catch (error) {
       console.error("Error adding to cart:", error);
       showToast("Could not add to cart");
