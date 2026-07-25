@@ -45,9 +45,17 @@ export default function ReviewPage() {
   const router = useRouter();
   const { cartItems } = useCart();
 
+  // ----- FIX: Safely extract quantity from cartItems -----
   const cartProducts = allProducts
-    .filter((product) => cartItems[product.id] > 0)
-    .map((product) => ({ ...product, quantity: cartItems[product.id] }));
+    .filter((product) => {
+      const item = cartItems[product.id];
+      return item && item.quantity > 0;
+    })
+    .map((product) => {
+      const item = cartItems[product.id];
+      return { ...product, quantity: item ? item.quantity : 0 };
+    });
+
   const visibleProducts =
     cartProducts.length > 0
       ? cartProducts
@@ -281,7 +289,7 @@ export default function ReviewPage() {
             </div>
           </section>
 
-          {/* Right Column - Order Summary (same structure as Checkout page) */}
+          {/* Right Column - Order Summary */}
           <aside className="lg:sticky lg:top-6 flex h-full flex-col">
             <div className="w-full h-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col">
               {/* Header */}
@@ -373,7 +381,7 @@ export default function ReviewPage() {
                 )}
               </div>
 
-              {/* Bottom block: gap, then Trust Badges + Need Help together (matches Checkout page) */}
+              {/* Bottom block: gap, then Trust Badges + Need Help */}
               <div className="mt-auto pt-24">
                 <div className="rounded-[14px] bg-[#FFF8EF] p-5">
                   {/* Trust Badges */}

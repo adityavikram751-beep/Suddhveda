@@ -31,7 +31,13 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function TestimonialsAndBulkGifting() {
-  const [quantity, setQuantity] = useState("");
+  // ---- Bulk Enquiry States ----
+  const [fullname, setFullname] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [expectedQuantity, setExpectedQuantity] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ---- Reviews States ----
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,14 +45,12 @@ export default function TestimonialsAndBulkGifting() {
   const containerRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ----- Fetch Reviews -----
+  // ----- Fetch Reviews (NO credentials) -----
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE_URL}/api/reviews/all`, {
-          credentials: "include",
-        });
+        const res = await fetch(`${API_BASE_URL}/api/reviews/all`);
         if (!res.ok) throw new Error("Failed to fetch reviews");
         const data = await res.json();
 
@@ -85,7 +89,7 @@ export default function TestimonialsAndBulkGifting() {
     return () => window.removeEventListener("resize", updateVisible);
   }, []);
 
-  // ----- Page Sliding Logic (slide entire page at once) -----
+  // ----- Page Sliding Logic -----
   const nextSlide = () => {
     if (reviews.length === 0) return;
     const totalPages = Math.ceil(reviews.length / visibleCount);
@@ -107,100 +111,114 @@ export default function TestimonialsAndBulkGifting() {
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
 
-  if (loading) {
-    return (
-      <section className="relative bg-white py-16 md:py-20">
-        <div className="max-w-[1300px] mx-auto px-6 text-center py-10">
-          <p className="text-[#8D7F73]">Loading reviews...</p>
-        </div>
-      </section>
-    );
-  }
+  // ----- Submit Bulk Enquiry (NO credentials, payload as per your requirement) -----
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullname || !businessEmail || !expectedQuantity) {
+      alert("Please fill all fields");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bulkorder/enquiry/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // ❌ credentials: "include" — hataya, kyunki cookies ki zaroorat nahi
+        body: JSON.stringify({ 
+          fullname,        // ✅ exact field name
+          businessEmail,   // ✅ exact field name
+          expectedQuantity // ✅ exact field name
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to send enquiry");
+      alert("Enquiry sent! We'll get back to you soon.");
+      // Reset form
+      setFullname("");
+      setBusinessEmail("");
+      setExpectedQuantity("");
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  if (reviews.length === 0) {
-    return (
-      <section className="relative bg-white py-16 md:py-20">
-        <div className="max-w-[1300px] mx-auto px-6 text-center py-10">
-          <p className="text-[#8D7F73]">No reviews yet. Be the first to review!</p>
-        </div>
-      </section>
-    );
-  }
-
+  // ----- Card width calculations -----
   const cardWidth = 266;
   const gap = 12;
   const totalWidth = (cardWidth + gap) * visibleCount;
 
   return (
     <>
-      {/* ========== TESTIMONIALS SECTION ========== */}
-      <section className="relative bg-white py-16 md:py-20">
-        <div className="max-w-[1300px] mx-auto px-6">
-          <div className="text-center mb-10">
-            <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
-              CUSTOMER MOMENTS
-            </p>
-            <h2 className="text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
-              Real Stories, Real Happiness
-            </h2>
-          </div>
+      {/* ========== TESTIMONIALS SECTION (Conditional) ========== */}
+      {!loading && reviews.length > 0 && (
+        <section className="relative bg-white py-16 md:py-20">
+          <div className="max-w-[1300px] mx-auto px-6">
+            <div className="text-center mb-10">
+              <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
+                CUSTOMER MOMENTS
+              </p>
+              <h2 className="text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
+                Real Stories, Real Happiness
+              </h2>
+            </div>
 
-          <div
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
             <div
-              ref={containerRef}
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{
-                transform: `translateX(-${currentIndex * totalWidth}px)`,
-                gap: `${gap}px`,
-              }}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
-              {reviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="flex-shrink-0"
-                  style={{ width: `${cardWidth}px` }}
-                >
-                  {/* ✅ Background changed to orange-50 */}
-                  <div className="w-[266px] h-[323px] bg-orange-50 rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
-                    <div className="mb-5">
-                      <StarRating rating={review.rating || 5} />
-                    </div>
-                    <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
-                      &ldquo;{review.text}&rdquo;
-                    </p>
-                    <div className="flex items-center gap-3 mt-6">
-                      <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
-                        <Image
-                          src={review.image || "/female.png"}
-                          alt={review.name}
-                          fill
-                          className="object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/female.png";
-                          }}
-                        />
+              <div
+                ref={containerRef}
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{
+                  transform: `translateX(-${currentIndex * totalWidth}px)`,
+                  gap: `${gap}px`,
+                }}
+              >
+                {reviews.map((review) => (
+                  <div
+                    key={review._id}
+                    className="flex-shrink-0"
+                    style={{ width: `${cardWidth}px` }}
+                  >
+                    <div className="w-[266px] h-[323px] bg-orange-50 rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
+                      <div className="mb-5">
+                        <StarRating rating={review.rating || 5} />
                       </div>
-                      <div>
-                        <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
-                          {review.name}
-                        </h4>
-                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
-                          {review.role || "Verified Buyer"}
-                        </p>
+                      <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
+                        &ldquo;{review.text}&rdquo;
+                      </p>
+                      <div className="flex items-center gap-3 mt-6">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
+                          <Image
+                            src={review.image || "/female.png"}
+                            alt={review.name}
+                            fill
+                            className="object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "/female.png";
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
+                            {review.name}
+                          </h4>
+                          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
+                            {review.role || "Verified Buyer"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* ========== BULK GIFTING SECTION (unchanged) ========== */}
+      {/* ========== BULK GIFTING SECTION (Always Visible) ========== */}
       <section className="relative bg-white pb-16 md:pb-20">
         <div className="max-w-[1300px] mx-auto px-6">
           <div className="bg-[#011D02] px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -230,22 +248,29 @@ export default function TestimonialsAndBulkGifting() {
               <h3 className="text-[22px] font-serif text-white mb-5">
                 Get a Custom Quote
               </h3>
-              <div className="space-y-3.5">
+              <form onSubmit={handleSubmit} className="space-y-3.5">
                 <input
                   type="text"
                   placeholder="Full Name"
+                  value={fullname}
+                  onChange={(e) => setFullname(e.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
+                  required
                 />
                 <input
                   type="email"
                   placeholder="Business Email"
+                  value={businessEmail}
+                  onChange={(e) => setBusinessEmail(e.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
+                  required
                 />
                 <div className="relative">
                   <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    value={expectedQuantity}
+                    onChange={(e) => setExpectedQuantity(e.target.value)}
                     className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#2D3A1B]"
+                    required
                   >
                     <option value="" className="text-[#2D3A1B]">
                       Expected Quantity (e.g. 50-100)
@@ -271,10 +296,14 @@ export default function TestimonialsAndBulkGifting() {
                     <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 </div>
-                <button className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2D3A1B] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1">
-                  REQUEST QUOTE
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2D3A1B] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "SENDING..." : "REQUEST QUOTE"}
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>

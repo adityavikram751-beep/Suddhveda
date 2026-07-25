@@ -81,9 +81,17 @@ export default function PaymentPage() {
     const [selectedMethod, setSelectedMethod] = useState<string>("upi");
     const [copied, setCopied] = useState(false);
 
+    // ----- FIX: Safely extract quantity from cartItems -----
     const cartProducts = allProducts
-        .filter((product) => cartItems[product.id] > 0)
-        .map((product) => ({ ...product, quantity: cartItems[product.id] }));
+        .filter((product) => {
+            const item = cartItems[product.id];
+            return item && item.quantity > 0;
+        })
+        .map((product) => {
+            const item = cartItems[product.id];
+            return { ...product, quantity: item ? item.quantity : 0 };
+        });
+
     const visibleProducts =
         cartProducts.length > 0
             ? cartProducts
@@ -120,7 +128,6 @@ export default function PaymentPage() {
     return (
         <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
             <div className="mx-auto max-w-[1410px] px-4 md:px-6">
-              
                 <div className="grid items-stretch gap-6 lg:grid-cols-[1fr_390px] xl:gap-8 xl:grid-cols-[1fr_410px]">
                     {/* Left Column */}
                     <section className="flex h-full flex-col gap-8">
@@ -321,14 +328,14 @@ export default function PaymentPage() {
 
                         {/* Navigation Buttons */}
                         <div className="mt-auto flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                        <button
-                type="button"
-                onClick={handleBack}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-[220px]"
-              >
-                <ArrowLeft size={18} />
-                Back to Review
-              </button>
+                            <button
+                                type="button"
+                                onClick={handleBack}
+                                className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-[220px]"
+                            >
+                                <ArrowLeft size={18} />
+                                Back to Review
+                            </button>
                             <button
                                 type="button"
                                 onClick={handleContinue}
@@ -370,6 +377,7 @@ export default function PaymentPage() {
                                             <p className="mt-2 text-[11px] text-[#9AA3AF]">
                                                 {product.weight.split(" - ")[0]} • Raw & Unfiltered
                                             </p>
+                                            {/* ✅ Fixed: product.quantity ab number hai */}
                                             <p className="mt-2 text-[12px] text-[#6F7786]">
                                                 Qty: {product.quantity}
                                             </p>

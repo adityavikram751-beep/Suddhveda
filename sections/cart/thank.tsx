@@ -53,9 +53,17 @@ export default function OrderConfirmation() {
   const router = useRouter();
   const { cartItems } = useCart();
 
+  // ----- FIX: Safely extract quantity from cartItems -----
   const cartProducts = allProducts
-    .filter((product) => cartItems[product.id] > 0)
-    .map((product) => ({ ...product, quantity: cartItems[product.id] }));
+    .filter((product) => {
+      const item = cartItems[product.id];
+      return item && item.quantity > 0;
+    })
+    .map((product) => {
+      const item = cartItems[product.id];
+      return { ...product, quantity: item ? item.quantity : 0 };
+    });
+
   const visibleProducts =
     cartProducts.length > 0
       ? cartProducts
@@ -118,8 +126,6 @@ export default function OrderConfirmation() {
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
-        {/* Breadcrumb */}
-
         <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
           {/* LEFT COLUMN */}
           <section className="flex h-full flex-col gap-6">

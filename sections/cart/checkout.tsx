@@ -109,10 +109,28 @@ export default function Checkout() {
     }
   };
 
-  // ---------- Cart ----------
+  // ---------- Cart & Coupon Data ----------
   const [cartProducts, setCartProducts] = useState<any[]>([]);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string>("");
   const [cartLoading, setCartLoading] = useState(true);
   const [cartError, setCartError] = useState<string | null>(null);
+
+  // 🟢 LocalStorage se pehle coupon fetch karo (Sync from Cart Page)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("applied_coupon");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed?.discount) setCouponDiscount(parsed.discount);
+          if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+        } catch (e) {
+          console.error("Error parsing saved coupon in checkout", e);
+        }
+      }
+    }
+  }, []);
 
   const fetchCart = async () => {
     try {
@@ -128,6 +146,21 @@ export default function Checkout() {
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      
+      // Server Fallback: Agar local storage me na mila ho toh API response se lo
+      const rawDiscount = data.couponDiscount ?? data.discountAmount ?? data.discount ?? data.data?.discountAmount ?? 0;
+      const apiDiscount = typeof rawDiscount === "string" ? parseFloat(rawDiscount) || 0 : rawDiscount;
+      const apiCode = data.appliedCoupon?.code || data.couponCode || "";
+
+      // Prioritize local storage if already present, else fallback to API
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("applied_coupon");
+        if (!stored && apiDiscount > 0) {
+          setCouponDiscount(apiDiscount);
+          setAppliedCouponCode(apiCode);
+        }
+      }
+
       const items = data.items || [];
       const products: any[] = [];
       items.forEach((item: any) => {
@@ -182,7 +215,6 @@ export default function Checkout() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const items = data.data || [];
-      // ✅ Explicit type for map callback and the resulting array
       const list: Address[] = items.map((item: any): Address => mapApiAddress(item));
       setAddresses(list);
       if (list.length > 0) {
@@ -372,6 +404,8 @@ export default function Checkout() {
                 products={cartProducts}
                 subtotal={subtotal}
                 saved={saved}
+                couponDiscount={couponDiscount}
+                couponCode={appliedCouponCode}
                 location={location}
               />
             )}
@@ -737,13 +771,18 @@ function CheckoutOrderSummary({
   products,
   subtotal,
   saved,
+  couponDiscount = 0,
+  couponCode = "",
   location,
 }: {
   products: CheckoutProduct[];
   subtotal: number;
   saved: number;
+  couponDiscount?: number;
+  couponCode?: string;
   location: LocationData | null;
 }) {
+  const finalTotal = Math.max(subtotal - couponDiscount, 0);
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
@@ -758,7 +797,6 @@ function CheckoutOrderSummary({
         {products.length === 0 ? (
           <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
         ) : (
-          // ✅ Explicitly type the product parameter
           products.map((product: CheckoutProduct) => (
             <div key={product.id} className="flex items-center gap-3">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
@@ -776,7 +814,7 @@ function CheckoutOrderSummary({
                 </p>
                 <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
               </div>
-              <p className="text-[14px] font-bold">₹{product.price}</p>
+              <p className="text-[14px] font-bold">₹{product.price * product.quantity}</p>
             </div>
           ))
         )}
@@ -793,12 +831,16 @@ function CheckoutOrderSummary({
         </div>
         <div className="flex justify-between">
           <span>You Save</span>
-          <strong className="text-[#0BA445]">- ₹{saved}</strong>
+          <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
         </div>
-        <div className="flex justify-between">
-          <span>Coupon Applied</span>
-          <strong className="text-[#0BA445]">- ₹{saved}</strong>
-        </div>
+
+        {/* 🟢 Coupon Discount minus hone ka indicator */}
+        {couponDiscount > 0 && (
+          <div className="flex justify-between text-[#0BA445] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
+            <span>Coupon Discount {couponCode ? `(${couponCode})` : ""}</span>
+            <span>- ₹{couponDiscount.toLocaleString("en-IN")}</span>
+          </div>
+        )}
       </div>
 
       <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
@@ -806,12 +848,13 @@ function CheckoutOrderSummary({
           <p className="text-[21px] font-bold">Total</p>
           <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
         </div>
-        <p className="font-serif text-[28px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
+        {/* 🟢 Coupon Amount minus hone ke baad Sahi Total */}
+        <p className="font-serif text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
       </div>
 
       <div className="mt-6 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
         <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
-          <ShieldCheck size={16} /> You&apos;re saving ₹{saved} on this order!
+          <ShieldCheck size={16} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
         </p>
         {remaining > 0 && (
           <>
@@ -852,7 +895,7 @@ function CheckoutOrderSummary({
             </span>
           </div>
 
-          {/* Need Help Section - populated from location API */}
+          {/* Need Help Section */}
           <div className="relative mt-6">
             <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
             <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
