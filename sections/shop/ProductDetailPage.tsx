@@ -167,7 +167,6 @@ export default function ProductDetailPage({
         window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
           detail: { count: ids.length } 
         }));
-        console.log("Wishlist IDs:", ids);
       }
     } catch (err) {
       console.error("Error fetching wishlist:", err);
@@ -234,10 +233,8 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        const cartProduct = normalizeProduct(product, selectedVariant._id);
-        for (let index = 0; index < selectedQty; index += 1) {
-          addToCart(cartProduct);
-        }
+        // 🟢 FIX: Correct arguments provided to addToCart(productId, variantId)
+        await addToCart(product._id, selectedVariant._id);
         setSelectedQty(1);
 
         if (redirect) {
@@ -251,13 +248,12 @@ export default function ProductDetailPage({
     }
   };
 
-  // 2. Wishlist Toggle Function (Add / Remove) - With color change and count update
+  // 2. Wishlist Toggle Function (Add / Remove)
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
 
     try {
       if (isWishlisted) {
-        // Remove from Wishlist
         const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
           method: "DELETE",
           credentials: "include",
@@ -273,7 +269,6 @@ export default function ProductDetailPage({
           const newCount = wishlistIds.length - 1;
           setWishlistIds((prev) => prev.filter((id) => id !== productId));
           
-          // Update count in header
           window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
             detail: { count: newCount } 
           }));
@@ -281,7 +276,6 @@ export default function ProductDetailPage({
           showToastMessage("Removed from wishlist ❌", "success");
         }
       } else {
-        // Add to Wishlist
         const res = await fetch(`${API_BASE_URL}/api/wishlist/add/${productId}`, {
           method: "POST",
           credentials: "include",
@@ -297,7 +291,6 @@ export default function ProductDetailPage({
           const newCount = wishlistIds.length + 1;
           setWishlistIds((prev) => [...prev, productId]);
           
-          // Update count in header
           window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
             detail: { count: newCount } 
           }));
@@ -345,7 +338,8 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        updateQuantity(normalizeProduct(item, selectedVariantId), 1);
+        // 🟢 FIX: Passed 3 expected arguments (productId, variantId, changeAmount)
+        updateQuantity(item._id, variant._id, 1);
         showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
       }
     } catch (err) {
@@ -734,7 +728,8 @@ export default function ProductDetailPage({
                     oldPrice={recVariant?.mrp ?? 0}
                     rating={item.average_rating}
                     reviews={item.total_reviews}
-                    quantity={cartItems[item._id] ?? 0}
+                    /* 🟢 FIX: Extract scalar quantity number from cartItems object */
+                    quantity={cartItems[item._id]?.quantity ?? 0}
                     variants={recVariants}
                     selectedVariantId={selectedVariantId}
                     onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}

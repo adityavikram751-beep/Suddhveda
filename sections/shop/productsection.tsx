@@ -253,7 +253,6 @@ export default function ShopPage() {
 
       // Update local cart state (no toast for success)
       const normalized = normalizeProduct(product, selectedVariantId);
-      updateQuantity(normalized, 1);
     } catch (error) {
       console.error("Error adding to cart:", error);
       showToast("Could not add to cart");

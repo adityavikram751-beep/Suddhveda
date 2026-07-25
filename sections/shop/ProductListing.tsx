@@ -76,7 +76,6 @@ export default function ProductListing({
 
       const matchesPrice = product.price <= priceMax;
 
-      // Rating: product.rating is a number (e.g., 4.5), we compare with selected ratings
       const matchesRating =
         selectedRatings.length === 0 ||
         selectedRatings.some((r) => {
@@ -142,7 +141,7 @@ export default function ProductListing({
               ))}
             </FilterBlock>
 
-            {/* Price Range – now functional */}
+            {/* Price Range */}
             <FilterBlock
               title="Price Range"
               isOpen={filterStates.price}
@@ -163,7 +162,7 @@ export default function ProductListing({
               </div>
             </FilterBlock>
 
-            {/* Customer Ratings – now functional */}
+            {/* Customer Ratings */}
             <FilterBlock
               title="Customer Ratings"
               isOpen={filterStates.ratings}
@@ -214,13 +213,8 @@ export default function ProductListing({
               </label>
             </FilterBlock>
 
-            {/* Apply Button – for now just resets filters (or you can add more logic) */}
             <button
               type="button"
-              onClick={() => {
-                // If you want to apply filters, you can trigger a refetch, but here we just keep it.
-                // Optionally, you could close the sidebar on mobile, etc.
-              }}
               className="w-full rounded bg-[#2D3A1B] py-4 text-[14px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#C98715]"
             >
               Apply
@@ -284,25 +278,32 @@ export default function ProductListing({
 
           {/* Product Grid */}
           <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {filteredProducts.slice(0, 4).map((product) => (
-              <ProductCard
-                key={product.id}
-                badge={product.badge}
-                image={product.image}
-                title={product.title}
-                subtitle={product.subtitle}
-                weight={product.weight}
-                price={product.price}
-                oldPrice={product.oldPrice}
-                rating={product.rating}
-                reviews={product.reviews}
-                quantity={cartItems[product.id] ?? 0}
-                onAddToCart={() => addToCart(product)}
-                onIncrement={() => updateQuantity(product, 1)}
-                onDecrement={() => updateQuantity(product, -1)}
-                onOpenDetails={() => router.push(`/shop/products/${product.id}`)}
-              />
-            ))}
+            {filteredProducts.slice(0, 4).map((product) => {
+              const productIdStr = String(product.id);
+              const variantIdStr = (product as any).variantId ? String((product as any).variantId) : "default";
+
+              return (
+                <ProductCard
+                  key={product.id}
+                  badge={product.badge}
+                  image={product.image}
+                  title={product.title}
+                  subtitle={product.subtitle}
+                  weight={product.weight}
+                  price={product.price}
+                  oldPrice={product.oldPrice}
+                  rating={product.rating}
+                  reviews={product.reviews}
+                  /* 🟢 FIX 1: Extract number quantity correctly */
+                  quantity={cartItems[productIdStr]?.quantity || 0}
+                  /* 🟢 FIX 2: Pass correct arguments to addToCart and updateQuantity */
+                  onAddToCart={() => addToCart(productIdStr, variantIdStr)}
+                  onIncrement={() => updateQuantity(productIdStr, variantIdStr, 1)}
+                  onDecrement={() => updateQuantity(productIdStr, variantIdStr, -1)}
+                  onOpenDetails={() => router.push(`/shop/products/${product.id}`)}
+                />
+              );
+            })}
           </div>
 
           {/* Pagination */}
@@ -330,7 +331,7 @@ export default function ProductListing({
   );
 }
 
-// Collapsible Filter Block with arrow toggle
+// Collapsible Filter Block
 function FilterBlock({
   title,
   children,
