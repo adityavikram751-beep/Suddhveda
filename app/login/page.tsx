@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, Suspense, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -20,7 +20,7 @@ function normalizeMobile(value: string) {
   return value.replace(/[^\d+]/g, "");
 }
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<AuthMode>("login");
@@ -276,5 +276,19 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-[#FFF8EF]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E69A00] border-t-transparent" />
+        </main>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
