@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -81,9 +82,13 @@ export default function Cart() {
     imageDocumentId?: { image_url?: string; is_primary?: boolean }[];
     variantDocumentId?: { _id: string; weight: number; price: number; mrp?: number; unit?: string }[];
   };
+
   const [recommendations, setRecommendations] = useState<ApiProduct[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Track selected variants for each recommendation product
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   // Fetch recommendations
   useEffect(() => {
@@ -252,7 +257,12 @@ export default function Cart() {
             <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {recommendations.map((item) => {
                 const variants = item.variantDocumentId || [];
-                const defaultVariant = variants[0];
+                const selectedVariantId =
+                  selectedVariants[item._id] || (variants[0]?._id ?? "");
+
+                const currentVariant =
+                  variants.find((v) => v._id === selectedVariantId) || variants[0];
+
                 const primaryImage =
                   item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
                   item.image?.image_url ||
@@ -265,18 +275,23 @@ export default function Cart() {
                       title={item.product_name}
                       subtitle={item.brand || "SudhVeda Honey"}
                       weight={
-                        defaultVariant
-                          ? `${defaultVariant.weight}${defaultVariant.unit || "g"}`
+                        currentVariant
+                          ? `${currentVariant.weight}${currentVariant.unit || "g"}`
                           : ""
                       }
-                      price={defaultVariant?.price || 0}
-                      oldPrice={defaultVariant?.mrp}
+                      price={currentVariant?.price || 0}
+                      oldPrice={currentVariant?.mrp}
                       quantity={0}
+                      variants={variants}
+                      selectedVariantId={selectedVariantId}
+                      onVariantSelect={(vId) =>
+                        setSelectedVariants((prev) => ({ ...prev, [item._id]: vId }))
+                      }
                       isWishlisted={wishlistIds.includes(item._id)}
                       onToggleWishlist={() => handleToggleWishlist(item._id)}
                       onAddToCart={() =>
-                        defaultVariant &&
-                        handleRecommendationAddToCart(item._id, defaultVariant._id)
+                        currentVariant &&
+                        handleRecommendationAddToCart(item._id, currentVariant._id)
                       }
                       onIncrement={() => {}}
                       onDecrement={() => {}}

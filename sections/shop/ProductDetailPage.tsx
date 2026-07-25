@@ -15,7 +15,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
-import { getProductImages, getProductVariants, normalizeProduct } from "@/lib/api-products";
+import { getProductImages, getProductVariants } from "@/lib/api-products";
 import { Playfair_Display, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -113,14 +113,19 @@ export default function ProductDetailPage({
     }
 
     if (product?.videoDocumentId) {
-      product.videoDocumentId.forEach((vid: any) => {
-        list.push({
-          id: vid._id,
-          type: "video",
-          url: vid.video_url,
-          thumbnail: vid.thumbnail_url,
-          primary: false,
-        });
+      const vids = Array.isArray(product.videoDocumentId)
+        ? product.videoDocumentId
+        : [product.videoDocumentId];
+      vids.forEach((vid: any) => {
+        if (vid?.video_url) {
+          list.push({
+            id: vid._id || "vid-1",
+            type: "video",
+            url: vid.video_url,
+            thumbnail: vid.thumbnail_url || "/placeholder.png",
+            primary: false,
+          });
+        }
       });
     }
 
@@ -163,7 +168,6 @@ export default function ProductDetailPage({
         const ids = products.map((item: any) => item.productId?._id || item.productId || item._id);
         setWishlistIds(ids);
         
-        // Update wishlist count in header
         window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
           detail: { count: ids.length } 
         }));
@@ -197,10 +201,21 @@ export default function ProductDetailPage({
 
   const [openSection, setOpenSection] = useState<string | null>(null);
 
-  // Computed Dynamic Prices
+  // Computed Dynamic Prices & Discount Percent
   const currentPrice = selectedVariant?.price ?? 0;
   const currentMrp = selectedVariant?.mrp ?? 0;
   const currentSave = selectedVariant?.you_save ?? 0;
+
+  // 🎯 DISCOUNT CALCULATION (API field OR Dynamic MRP Calculation)
+  const discountPercent = useMemo(() => {
+    if (selectedVariant?.discount_value) {
+      return Math.round(Number(selectedVariant.discount_value));
+    }
+    if (currentMrp > 0 && currentPrice < currentMrp) {
+      return Math.round(((currentMrp - currentPrice) / currentMrp) * 100);
+    }
+    return 0;
+  }, [selectedVariant, currentMrp, currentPrice]);
 
   // ---------------- Local quantity picker (+/-) ---------------- //
   const incrementQty = () => setSelectedQty((q) => q + 1);
@@ -233,7 +248,6 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        // 🟢 FIX: Correct arguments provided to addToCart(productId, variantId)
         await addToCart(product._id, selectedVariant._id);
         setSelectedQty(1);
 
@@ -338,7 +352,7 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        // 🟢 FIX: Passed 3 expected arguments (productId, variantId, changeAmount)
+        // ✅ FIXED: Sirf 3 arguments pass kiye hain (no 4th boolean)
         updateQuantity(item._id, variant._id, 1);
         showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
       }
@@ -467,8 +481,10 @@ export default function ProductDetailPage({
               <span className="text-[14px] text-[#7A7A7A] font-normal tracking-wide">
                 Reviews: {product.total_reviews ?? 0}
               </span>
+
+              {/* 🟢 DYNAMIC OFFER BADGE DISPLAY */}
               <span className="bg-[#FF6F3C] text-white text-[11px] font-bold px-3 py-1.5 rounded tracking-wide uppercase">
-                {selectedVariant?.discount_value ? `${Math.round(selectedVariant.discount_value)}% OFF` : "OFFER"}
+                {discountPercent > 0 ? `${discountPercent}% OFF` : "OFFER"}
               </span>
             </div>
 
@@ -728,7 +744,6 @@ export default function ProductDetailPage({
                     oldPrice={recVariant?.mrp ?? 0}
                     rating={item.average_rating}
                     reviews={item.total_reviews}
-                    /* 🟢 FIX: Extract scalar quantity number from cartItems object */
                     quantity={cartItems[item._id]?.quantity ?? 0}
                     variants={recVariants}
                     selectedVariantId={selectedVariantId}
