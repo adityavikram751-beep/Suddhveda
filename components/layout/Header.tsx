@@ -183,7 +183,7 @@ export default function Header() {
 
   return (
     // Poora block (promo bar + nav bar) ab FIXED hai top pe — scroll pe bilkul nahi hilega
-    <div className="fixed top-0 left-0 w-full z-50">
+    <div className="fixed top-0 left-0 w-full z-60">
       <PromoBar />
 
       <header className="w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
