@@ -89,10 +89,21 @@ export default function TestimonialsAndBulkGifting() {
     return () => window.removeEventListener("resize", updateVisible);
   }, []);
 
+  // Reset to first page whenever the layout (cards-per-page) changes,
+  // so we never land on an out-of-range page on resize.
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [visibleCount]);
+
+  // ----- Group reviews into responsive "pages" (no fixed pixel widths) -----
+  const totalPages = Math.max(1, Math.ceil(reviews.length / visibleCount));
+  const pages = Array.from({ length: totalPages }, (_, i) =>
+    reviews.slice(i * visibleCount, i * visibleCount + visibleCount)
+  );
+
   // ----- Page Sliding Logic -----
   const nextSlide = () => {
     if (reviews.length === 0) return;
-    const totalPages = Math.ceil(reviews.length / visibleCount);
     setCurrentIndex((prev) => (prev + 1) % totalPages);
   };
 
@@ -124,10 +135,10 @@ export default function TestimonialsAndBulkGifting() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // ❌ credentials: "include" — hataya, kyunki cookies ki zaroorat nahi
-        body: JSON.stringify({ 
-          fullname,        // ✅ exact field name
-          businessEmail,   // ✅ exact field name
-          expectedQuantity // ✅ exact field name
+        body: JSON.stringify({
+          fullname, // ✅ exact field name
+          businessEmail, // ✅ exact field name
+          expectedQuantity, // ✅ exact field name
         }),
       });
       if (!res.ok) throw new Error("Failed to send enquiry");
@@ -143,118 +154,121 @@ export default function TestimonialsAndBulkGifting() {
     }
   };
 
-  // ----- Card width calculations -----
-  const cardWidth = 266;
-  const gap = 12;
-  const totalWidth = (cardWidth + gap) * visibleCount;
+  const gap = 10;
 
   return (
     <>
-      {/* ========== TESTIMONIALS SECTION (Conditional) ========== */}
+      {/* ========== TESTIMONIALS SECTION (Conditional — only if reviews exist) ========== */}
       {!loading && reviews.length > 0 && (
-        <section className="relative bg-white py-16 md:py-20">
-          <div className="max-w-[1300px] mx-auto px-6">
-            <div className="text-center mb-10">
-              <p className="text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
+        <section className="relative bg-white py-12 sm:py-16 md:py-20 ">
+          <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-6">
+            <div className="text-center mb-8 sm:mb-10">
+              <p className="text-[11px] sm:text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
                 CUSTOMER MOMENTS
               </p>
-              <h2 className="text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
+              <h2 className="text-[26px] sm:text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
                 Real Stories, Real Happiness
               </h2>
             </div>
 
-            <div
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div
-                ref={containerRef}
-                className="flex transition-transform duration-700 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentIndex * totalWidth}px)`,
-                  gap: `${gap}px`,
-                }}
-              >
-                {reviews.map((review) => (
-                  <div
-                    key={review._id}
-                    className="flex-shrink-0"
-                    style={{ width: `${cardWidth}px` }}
-                  >
-                    <div className="w-[266px] h-[323px] bg-orange-50 rounded-[28px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col">
-                      <div className="mb-5">
-                        <StarRating rating={review.rating || 5} />
-                      </div>
-                      <p className="font-serif italic text-[#14361E] text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
-                        &ldquo;{review.text}&rdquo;
-                      </p>
-                      <div className="flex items-center gap-3 mt-6">
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
-                          <Image
-                            src={review.image || "/female.png"}
-                            alt={review.name}
-                            fill
-                            className="object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = "/female.png";
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-[16px] font-bold text-[#2D2016] leading-none">
-                            {review.name}
-                          </h4>
-                          <p className="mt-1 text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
-                            {review.role || "Verified Buyer"}
+            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+              {/* Viewport — clips the sliding pages, always 100% of its parent */}
+              <div ref={containerRef} className="">
+                {/* Sliding track — one "page" per slide, no fixed pixel widths */}
+                <div
+                  className="flex transition-transform duration-700 ease-in-out"
+                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                >
+                  {pages.map((pageItems, pageIdx) => (
+                    <div
+                      key={pageIdx}
+                      className="w-full flex-shrink-0"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${visibleCount}, minmax(0, 1fr))`,
+                        gap: `${gap}px`,
+                      }}
+                    >
+                      {pageItems.map((review) => (
+                        <div
+                          key={review._id}
+                          className="w-full h-[300px] sm:h-[323px] bg-orange-50 rounded-[22px] sm:rounded-[28px] p-4 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col"
+                        >
+                          <div className="mb-4 sm:mb-5">
+                            <StarRating rating={review.rating || 5} />
+                          </div>
+                          <p className="font-serif italic text-[#14361E] text-[15px] sm:text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
+                            &ldquo;{review.text}&rdquo;
                           </p>
+                          <div className="flex items-center gap-3 mt-5 sm:mt-6">
+                            <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0">
+                              <Image
+                                src={review.image || "/female.png"}
+                                alt={review.name}
+                                fill
+                                className="object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "/female.png";
+                                }}
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="text-[15px] sm:text-[16px] font-bold text-[#2D2016] leading-none truncate">
+                                {review.name}
+                              </h4>
+                              <p className="mt-1 text-[10.5px] sm:text-[11px] uppercase tracking-[0.18em] font-medium text-[#8A6A52]">
+                                {review.role || "Verified Buyer"}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* ========== BULK GIFTING SECTION (Always Visible) ========== */}
-      <section className="relative bg-white pb-16 md:pb-20">
-        <div className="max-w-[1300px] mx-auto px-6">
-          <div className="bg-[#011D02] px-8 py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      {/* ========== BULK GIFTING SECTION (Always Visible — even with zero reviews) ========== */}
+      <section className="relative bg-white pb-12 sm:pb-16 md:pb-20 overflow-x-hidden">
+        <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-6">
+          <div className="bg-[#011D02] px-4 py-8 sm:px-8 sm:py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 items-center">
             <div>
-              <h2 className="text-[38px] md:text-[42px] font-serif text-[#F0C77E] leading-tight">
-                Build Strong <br />
-                Relationships with <br />
-                Meaningful Gifts
+              <h2 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif text-[#F0C77E] leading-tight">
+                Build Strong
+                <br className="hidden sm:block" /> Relationships with
+                <br className="hidden sm:block" /> Meaningful Gifts
               </h2>
-              <ul className="mt-7 space-y-3.5">
-                <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
+              <ul className="mt-6 sm:mt-7 space-y-3 sm:space-y-3.5">
+                <li className="flex items-center gap-2.5 text-[13.5px] sm:text-[14px] text-[#EDE3D3]">
                   <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Bulk Orders &amp; Custom Branding
                 </li>
-                <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
+                <li className="flex items-center gap-2.5 text-[13.5px] sm:text-[14px] text-[#EDE3D3]">
                   <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Personalized Handwritten Messages
                 </li>
-                <li className="flex items-center gap-2.5 text-[14px] text-[#EDE3D3]">
+                <li className="flex items-center gap-2.5 text-[13.5px] sm:text-[14px] text-[#EDE3D3]">
                   <CheckCircle2 size={17} className="text-[#F0C77E] shrink-0" />
                   Tiered Pricing for Large Quantities
                 </li>
               </ul>
             </div>
 
-            <div className="bg-[#2D3A1B] rounded-2xl p-7">
-              <h3 className="text-[22px] font-serif text-white mb-5">
+            <div className="bg-[#2D3A1B] rounded-2xl p-5 sm:p-6 md:p-7">
+              <h3 className="text-[20px] sm:text-[22px] font-serif text-white mb-4 sm:mb-5">
                 Get a Custom Quote
               </h3>
-              <form onSubmit={handleSubmit} className="space-y-3.5">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5">
                 <input
                   type="text"
                   placeholder="Full Name"
                   value={fullname}
                   onChange={(e) => setFullname(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 sm:px-6 sm:py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
                   required
                 />
                 <input
@@ -262,14 +276,14 @@ export default function TestimonialsAndBulkGifting() {
                   placeholder="Business Email"
                   value={businessEmail}
                   onChange={(e) => setBusinessEmail(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 sm:px-6 sm:py-4 text-[14px] text-white placeholder:text-white/50 focus:outline-none focus:border-[#F0C77E]"
                   required
                 />
                 <div className="relative">
                   <select
                     value={expectedQuantity}
                     onChange={(e) => setExpectedQuantity(e.target.value)}
-                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-6 py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#2D3A1B]"
+                    className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-4 py-3 sm:px-6 sm:py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#2D3A1B]"
                     required
                   >
                     <option value="" className="text-[#2D3A1B]">

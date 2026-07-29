@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Loader2, Search, ShoppingCart } from "lucide-react";
+import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -56,6 +56,24 @@ export default function ShopPage() {
   const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+
+  // Mobile Filter Drawer State
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // 🟢 Strict Background Scroll Lock when Filter Drawer is Open
+  useEffect(() => {
+    if (isFilterOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+    };
+  }, [isFilterOpen]);
 
   const [openSections, setOpenSections] = useState({
     category: true,
@@ -130,7 +148,6 @@ export default function ShopPage() {
   useEffect(() => {
     fetchProducts();
     fetchWishlist();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getSelectedVariantId = (product: ApiProduct) => {
@@ -192,6 +209,7 @@ export default function ShopPage() {
       const list = await fetchJsonProducts(url);
       setProducts(list);
       setAppliedFilters(nextAppliedFilters);
+      setIsFilterOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch filtered products");
     } finally {
@@ -206,6 +224,7 @@ export default function ShopPage() {
     setSearchTerm("");
     setAppliedFilters(defaultFilters);
     await fetchProducts();
+    setIsFilterOpen(false);
   };
 
   const toggleSection = (key: keyof typeof openSections) => {
@@ -223,7 +242,6 @@ export default function ShopPage() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // ---------- HANDLE ADD TO CART (No Success Toast) ----------
   const handleAddToCart = async (product: ApiProduct) => {
     const productId = getProductId(product);
     const selectedVariantId = getSelectedVariantId(product);
@@ -250,16 +268,12 @@ export default function ShopPage() {
       }
 
       if (!res.ok) throw new Error("Failed to add to cart");
-
-      // Update local cart state (no toast for success)
-      const normalized = normalizeProduct(product, selectedVariantId);
     } catch (error) {
       console.error("Error adding to cart:", error);
       showToast("Could not add to cart");
     }
   };
 
-  // ---------- WISHLIST TOGGLE ----------
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
     const prevIds = wishlistIds;
@@ -320,109 +334,151 @@ export default function ShopPage() {
   const activeCategoryName =
     categoryOptions.find((category) => category.slug === appliedFilters.categorySlug)?.name || "All Honeys";
 
+  const promoBannerComponent = (
+    <div className="mt-6 overflow-hidden rounded-[14px] bg-[#1F3A2A] px-5 pb-5 pt-6 text-center text-white">
+      <h3 className="font-serif text-[22px] font-medium leading-tight">
+        Pure Honey.
+        <br />
+        <span className="text-white/80">Pure You.</span>
+      </h3>
+      <p className="mx-auto mt-3 max-w-[210px] text-[12px] leading-5 text-white/70">
+        Boost your wellness with nature&apos;s sweetest gift.
+      </p>
+      <div className="relative mt-6 h-[280px] w-full overflow-hidden rounded-[12px]">
+        <Image src="/Promo.png" alt="Bee on flower" fill priority className="object-contain" />
+      </div>
+    </div>
+  );
+
+  const filterContent = (
+    <div className="rounded-lg bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between lg:hidden pb-4 mb-2 border-b border-[#F0E4D0]">
+        <h2 className="font-['Playfair_Display'] text-[18px] font-bold text-[#2D3A1B]">Filters</h2>
+        <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black">
+          <X size={20} />
+        </button>
+      </div>
+
+      <h2 className="hidden lg:block font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#2D3A1B]">
+        Filter By
+      </h2>
+
+      <FilterSection title="Search" isOpen={openSections.search} onToggle={() => toggleSection("search")}>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9A9A9A]" />
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search Honey"
+            className="h-10 w-full rounded border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#2D3A1B]"
+          />
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Honey Category" isOpen={openSections.category} onToggle={() => toggleSection("category")}>
+        <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
+          <input
+            type="radio"
+            checked={!selectedCategorySlug}
+            onChange={() => setSelectedCategorySlug("")}
+            className="h-4 w-4 accent-[#2D3A1B]"
+          />
+          All Honeys ({allProducts.length})
+        </label>
+        {categoryOptions.map((category) => (
+          <label key={category.slug} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
+            <input
+              type="radio"
+              checked={selectedCategorySlug === category.slug}
+              onChange={() => setSelectedCategorySlug(category.slug)}
+              className="h-4 w-4 accent-[#2D3A1B]"
+            />
+            {category.name}
+          </label>
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Net Weight" isOpen={openSections.weight} onToggle={() => toggleSection("weight")}>
+        {weightOptions.map((weight) => (
+          <label key={weight} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
+            <input
+              type="checkbox"
+              checked={selectedWeights.includes(weight)}
+              onChange={() => toggleWeight(weight)}
+              className="h-4 w-4 accent-[#2D3A1B]"
+            />
+            {weight}
+          </label>
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Price Range" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
+        <div className="flex items-center justify-between text-[13px] font-semibold text-[#2F241C]">
+          <span>Rs. {MIN_PRICE}</span>
+          <span>Rs. {priceRange}</span>
+        </div>
+        <input
+          type="range"
+          min={MIN_PRICE}
+          max={MAX_PRICE}
+          value={priceRange}
+          onChange={(event) => setPriceRange(Number(event.target.value))}
+          className="mt-2 w-full accent-[#2D3A1B]"
+        />
+      </FilterSection>
+
+      <button
+        type="button"
+        onClick={applyFilters}
+        disabled={filterLoading}
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
+      >
+        {filterLoading && <Loader2 size={15} className="animate-spin" />}
+        Apply Filter
+      </button>
+
+      {/* Promo Banner inside mobile drawer */}
+      <div className="lg:hidden">
+        {promoBannerComponent}
+      </div>
+    </div>
+  );
+
   return (
     <main className="min-h-screen bg-white text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
       <div className="mx-auto max-w-[1490px] px-4 py-8 pb-20 sm:px-6 lg:px-8">
+        
+        <div className="lg:hidden mb-6 flex items-center justify-between">
+          <button
+            onClick={() => setIsFilterOpen(true)}
+            className="flex items-center gap-2 rounded-md border border-[#2D3A1B] px-4 py-2 text-[13px] font-semibold text-[#2D3A1B] bg-white shadow-sm"
+          >
+            <SlidersHorizontal size={16} />
+            Filter Products
+          </button>
+          <span className="text-[13px] text-[#A6ADB8]">
+            {filteredProducts.length} Results
+          </span>
+        </div>
+
+        {isFilterOpen && (
+          <div className="fixed inset-0 z-50 flex lg:hidden">
+            <div className="fixed inset-0 bg-black/50" onClick={() => setIsFilterOpen(false)} />
+            <div className="relative ml-auto h-full w-[300px] max-w-full overflow-y-auto bg-white p-4 shadow-xl z-10">
+              {filterContent}
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
-          <aside className="lg:sticky lg:top-8 lg:self-start">
-            <div className="rounded-lg bg-white p-6 shadow-sm">
-              <h2 className="font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#2D3A1B]">
-                Filter By
-              </h2>
-
-              <FilterSection title="Search" isOpen={openSections.search} onToggle={() => toggleSection("search")}>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9A9A9A]" />
-                  <input
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Search Honey"
-                    className="h-10 w-full rounded border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#2D3A1B]"
-                  />
-                </div>
-              </FilterSection>
-
-              <FilterSection title="Honey Category" isOpen={openSections.category} onToggle={() => toggleSection("category")}>
-                <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
-                  <input
-                    type="radio"
-                    checked={!selectedCategorySlug}
-                    onChange={() => setSelectedCategorySlug("")}
-                    className="h-4 w-4 accent-[#2D3A1B]"
-                  />
-                  All Honeys ({allProducts.length})
-                </label>
-                {categoryOptions.map((category) => (
-                  <label key={category.slug} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
-                    <input
-                      type="radio"
-                      checked={selectedCategorySlug === category.slug}
-                      onChange={() => setSelectedCategorySlug(category.slug)}
-                      className="h-4 w-4 accent-[#2D3A1B]"
-                    />
-                    {category.name}
-                  </label>
-                ))}
-              </FilterSection>
-
-              <FilterSection title="Net Weight" isOpen={openSections.weight} onToggle={() => toggleSection("weight")}>
-                {weightOptions.map((weight) => (
-                  <label key={weight} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
-                    <input
-                      type="checkbox"
-                      checked={selectedWeights.includes(weight)}
-                      onChange={() => toggleWeight(weight)}
-                      className="h-4 w-4 accent-[#2D3A1B]"
-                    />
-                    {weight}
-                  </label>
-                ))}
-              </FilterSection>
-
-              <FilterSection title="Price Range" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
-                <div className="flex items-center justify-between text-[13px] font-semibold text-[#2F241C]">
-                  <span>Rs. {MIN_PRICE}</span>
-                  <span>Rs. {priceRange}</span>
-                </div>
-                <input
-                  type="range"
-                  min={MIN_PRICE}
-                  max={MAX_PRICE}
-                  value={priceRange}
-                  onChange={(event) => setPriceRange(Number(event.target.value))}
-                  className="mt-2 w-full accent-[#2D3A1B]"
-                />
-              </FilterSection>
-
-              <button
-                type="button"
-                onClick={applyFilters}
-                disabled={filterLoading}
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
-              >
-                {filterLoading && <Loader2 size={15} className="animate-spin" />}
-                Apply Filter
-              </button>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-[14px] bg-[#1F3A2A] px-5 pb-5 pt-6 text-center text-white">
-              <h3 className="font-serif text-[22px] font-medium leading-tight">
-                Pure Honey.
-                <br />
-                <span className="text-white/80">Pure You.</span>
-              </h3>
-              <p className="mx-auto mt-3 max-w-[210px] text-[12px] leading-5 text-white/70">
-                Boost your wellness with nature&apos;s sweetest gift.
-              </p>
-              <div className="relative mt-6 h-[280px] w-full overflow-hidden rounded-[12px]">
-                <Image src="/Promo.png" alt="Bee on flower" fill priority className="object-contain" />
-              </div>
-            </div>
+          <aside className="hidden lg:block lg:sticky lg:top-8 lg:self-start">
+            {filterContent}
+            {promoBannerComponent}
           </aside>
 
           <section>
-            <div className="flex flex-wrap items-end justify-between gap-4">
+            <div className="hidden lg:flex flex-wrap items-end justify-between gap-4">
               <div>
                 <h1 className="font-['Playfair_Display'] text-[30px] font-normal leading-[36px] tracking-normal text-[#1E392A]">
                   {activeCategoryName}
@@ -437,7 +493,7 @@ export default function ShopPage() {
               </span>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="mt-2 lg:mt-4 flex flex-wrap items-center gap-2">
               <Chip label={activeCategoryName} />
               {appliedFilters.search && <Chip label={`Search: ${appliedFilters.search}`} />}
               {appliedFilters.weights.map((weight) => (
@@ -453,7 +509,8 @@ export default function ShopPage() {
 
             {error && <p className="mt-4 text-[13px] text-red-600">{error}</p>}
 
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* 🟢 2 cards per row on mobile/tablet, stacking vertically downwards; 3 cards on desktop */}
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
               {filteredProducts.map((item) => {
                 const productId = getProductId(item);
                 const variants = getProductVariants(item);
@@ -472,7 +529,7 @@ export default function ShopPage() {
                       oldPrice={product.oldPrice}
                       rating={product.rating}
                       reviews={product.reviews}
-                      quantity={0} // 🔥 Always 0 → only "Add to Cart" shows
+                      quantity={0}
                       variants={variants}
                       selectedVariantId={selectedVariantId}
                       onVariantSelect={(variantId) =>
@@ -481,8 +538,8 @@ export default function ShopPage() {
                       isWishlisted={wishlistIds.includes(productId)}
                       onToggleWishlist={() => handleToggleWishlist(productId)}
                       onAddToCart={() => handleAddToCart(item)}
-                      onIncrement={() => {}} // ✅ dummy function to satisfy TypeScript
-                      onDecrement={() => {}} // ✅ dummy function to satisfy TypeScript
+                      onIncrement={() => {}}
+                      onDecrement={() => {}}
                       onOpenDetails={() => router.push(`/shop/products/${productId}`)}
                     />
                   </div>

@@ -73,62 +73,63 @@ export default function ShopHero() {
       {/* ================= Feature Strip ================= */}
       <section className="bg-white border-t border-[#F2ECE4]">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-8 py-8 lg:py-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-6">
+          {/* Mobile: 1 Col with proper space, Tablet: 2 Cols, Desktop: 4 Cols */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-6 sm:gap-y-8 gap-x-6">
             {/* Feature 1 */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
-                <Zap size={20} className="text-[#D49313]" />
+            <div className="flex items-center gap-4 p-2 sm:p-0">
+              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+                <Zap size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#2D3A1B]">
                   100% Pure & Raw
                 </span>
-                <span className="text-[12px] text-[#8D7F73]">
+                <span className="text-[13px] text-[#8D7F73]">
                   Unprocessed & Unfiltered
                 </span>
               </div>
             </div>
 
             {/* Feature 2 */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
-                <BadgeCheck size={20} className="text-[#D49313]" />
+            <div className="flex items-center gap-4 p-2 sm:p-0">
+              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+                <BadgeCheck size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#2D3A1B]">
                   Lab Tested
                 </span>
-                <span className="text-[12px] text-[#8D7F73]">
+                <span className="text-[13px] text-[#8D7F73]">
                   For Purity & Safety
                 </span>
               </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
-                <Tag size={20} className="text-[#D49313]" />
+            <div className="flex items-center gap-4 p-2 sm:p-0">
+              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+                <Tag size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#2D3A1B]">
                   No Added Sugar
                 </span>
-                <span className="text-[12px] text-[#8D7F73]">
+                <span className="text-[13px] text-[#8D7F73]">
                   No Preservatives
                 </span>
               </div>
             </div>
 
             {/* Feature 4 */}
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
-                <Package size={20} className="text-[#D49313]" />
+            <div className="flex items-center gap-4 p-2 sm:p-0">
+              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+                <Package size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[14px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#2D3A1B]">
                   Secure Packaging
                 </span>
-                <span className="text-[12px] text-[#8D7F73]">
+                <span className="text-[13px] text-[#8D7F73]">
                   Safe & Hygienic Delivery
                 </span>
               </div>

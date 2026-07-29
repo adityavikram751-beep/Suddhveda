@@ -140,7 +140,6 @@ export default function FeaturedCollection() {
     setTimeout(() => setToastMessage(null), 2200);
   };
 
-  // ---------- ADD TO CART (fixed) ----------
   const handleAddToCart = async (product: ApiProduct) => {
     const productId = getProductId(product);
     const selectedVariantId = getSelectedVariantId(product);
@@ -169,7 +168,6 @@ export default function FeaturedCollection() {
 
       if (!res.ok) throw new Error("Failed to add to cart");
 
-      // ✅ FIX: order is (productId, variantId, quantity)
       updateQuantity(productId, selectedVariantId, 1);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -229,11 +227,12 @@ export default function FeaturedCollection() {
         </div>
 
         <div className="relative">
+          {/* Desktop Left/Right Arrows */}
           {showLeftArrow && (
             <button
               type="button"
               onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+              className="absolute left-0 top-1/2 z-10 hidden lg:flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             >
               <ChevronLeft size={24} className="text-[#2D3A1B]" />
             </button>
@@ -243,7 +242,7 @@ export default function FeaturedCollection() {
             <button
               type="button"
               onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+              className="absolute right-0 top-1/2 z-10 hidden lg:flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             >
               <ChevronRight size={24} className="text-[#2D3A1B]" />
             </button>
@@ -256,7 +255,7 @@ export default function FeaturedCollection() {
           ) : (
             <div
               ref={scrollContainerRef}
-              className="scrollbar-hide flex cursor-grab gap-8 overflow-x-auto scroll-smooth pb-2"
+              className="scrollbar-hide grid grid-cols-2 lg:flex lg:cursor-grab gap-4 sm:gap-6 lg:gap-8 lg:overflow-x-auto lg:scroll-smooth pb-2"
               style={{ scrollBehavior: "smooth" }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
@@ -275,40 +274,40 @@ export default function FeaturedCollection() {
                   <article
                     key={productId}
                     onClick={() => router.push(`/shop/products/${productId}`)}
-                    className="w-[320px] flex-shrink-0 cursor-pointer rounded-lg border border-[#E6D6C5] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                    className="w-full lg:w-[320px] flex-shrink-0 cursor-pointer rounded-lg border border-[#E6D6C5] bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                   >
-                    <div className="relative h-[200px] overflow-hidden rounded-lg bg-[#F9F0E5] p-3">
+                    <div className="relative h-[150px] sm:h-[200px] overflow-hidden rounded-lg bg-[#F9F0E5] p-3">
                       <Image
                         src={getPrimaryImage(product)}
                         alt={getProductName(product)}
                         fill
                         className="object-cover p-3"
                       />
-                      <span className="absolute left-3 top-3 rounded bg-[#0E2A17] px-2.5 py-1 text-[10px] font-bold uppercase text-white">
+                      <span className="absolute left-2 top-2 sm:left-3 sm:top-3 rounded bg-[#0E2A17] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
                         {getCategoryName(product)}
                       </span>
                     </div>
 
                     <div className="pt-3 text-center">
-                      <h3 className="font-serif text-[18px] leading-tight text-[#003327]">
+                      <h3 className="font-serif text-[15px] sm:text-[18px] leading-tight text-[#003327] line-clamp-1">
                         {getProductName(product)}
                       </h3>
-                      <p className="mt-1.5 text-[13px] text-[#8F979C]">
+                      <p className="mt-1 text-[12px] sm:text-[13px] text-[#8F979C]">
                         {product?.floral_source || normalized.subtitle || "Pure Honey"}
                       </p>
 
-                      <div className="mt-2 text-[17px] font-bold text-[#003327]">
+                      <div className="mt-2 text-[15px] sm:text-[17px] font-bold text-[#003327]">
                         Rs. {selectedVariant?.price ?? normalized.price}
                         {selectedVariant?.mrp ? (
                           <>
-                            <span className="mx-2 font-normal text-[#8F979C]">-</span>
+                            <span className="mx-1 sm:mx-2 font-normal text-[#8F979C]">-</span>
                             <span>Rs. {selectedVariant.mrp}</span>
                           </>
                         ) : null}
                       </div>
 
                       {variants.length > 0 && (
-                        <div className="mt-3 flex flex-wrap justify-center gap-2">
+                        <div className="mt-3 flex flex-wrap justify-center gap-1.5 sm:gap-2">
                           {variants.map((variant) => {
                             const variantId = getVariantId(variant);
                             const selected = variantId === selectedVariantId;
@@ -320,7 +319,7 @@ export default function FeaturedCollection() {
                                   event.stopPropagation();
                                   setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }));
                                 }}
-                                className={`min-w-[54px] rounded border px-3 py-1 text-[11px] transition-colors ${
+                                className={`min-w-[46px] sm:min-w-[54px] rounded border px-2 sm:px-3 py-1 text-[10px] sm:text-[11px] transition-colors ${
                                   selected
                                     ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
                                     : "border-[#E2E6EA] bg-white text-[#2F3A45] hover:border-[#2D3A1B]"
@@ -333,7 +332,7 @@ export default function FeaturedCollection() {
                         </div>
                       )}
 
-                      <div className="mt-4 flex items-center gap-3">
+                      <div className="mt-4 flex items-center gap-2 sm:gap-3">
                         <button
                           type="button"
                           disabled={actionLoading === productId}
@@ -341,7 +340,7 @@ export default function FeaturedCollection() {
                             event.stopPropagation();
                             handleAddToCart(product);
                           }}
-                          className="h-[42px] flex-1 rounded bg-[#2D3A1B] text-[13px] font-bold uppercase text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
+                          className="h-[38px] sm:h-[42px] flex-1 rounded bg-[#2D3A1B] text-[11px] sm:text-[13px] font-bold uppercase text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
                         >
                           {actionLoading === productId ? "Adding..." : "Add to Cart"}
                         </button>
@@ -353,7 +352,7 @@ export default function FeaturedCollection() {
                             handleToggleWishlist(productId);
                           }}
                           aria-label="Wishlist"
-                          className="flex h-[42px] w-[42px] items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] transition-colors hover:bg-[#2D3A1B]/10"
+                          className="flex h-[38px] w-[38px] sm:h-[42px] sm:w-[42px] items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] transition-colors hover:bg-[#2D3A1B]/10 shrink-0"
                         >
                           <Heart
                             size={18}

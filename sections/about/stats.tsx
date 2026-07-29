@@ -33,23 +33,28 @@ const stats = [
 export default function Stats() {
   return (
     <section className="bg-[#FAF6F0] border-t border-b border-[#3F2B1D]">
-      <div className="max-w-[1300px] mx-auto px-4">
-        <div className="flex flex-wrap lg:flex-nowrap items-center justify-center lg:justify-between gap-y-8 py-10">
+      <div className="max-w-[1300px] mx-auto px-6 py-12 lg:py-12">
+        {/* 
+          Mobile / Tablet (default): Flex column centered (ek ke niche ek)
+          Desktop (lg): Flex row spreading evenly across space 
+        */}
+        <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-10 lg:gap-4">
           {stats.map((item) => {
             const Icon = item.icon;
+
             return (
               <div
                 key={item.label}
-                className="flex items-center gap-4 px-5 lg:px-3"
+                className="flex flex-col lg:flex-row items-center lg:items-center text-center lg:text-left gap-4 lg:gap-4 px-2"
               >
                 {/* Icon Circle */}
-                <div className="w-14 h-14 rounded-full border-[1.5px] border-[#D49313] flex items-center justify-center text-[#D49313] shrink-0">
-                  <Icon size={22} strokeWidth={1.6} />
+                <div className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-[1.5px] border-[#D49313] flex items-center justify-center text-[#D49313] shrink-0">
+                  <Icon size={24} strokeWidth={1.6} />
                 </div>
 
                 {/* Text */}
-                <div>
-                  <h3 className="font-serif text-[24px] leading-none text-[#2D3A1B]">
+                <div className="flex flex-col items-center lg:items-start">
+                  <h3 className="font-serif text-[24px] sm:text-[24px] leading-none text-[#2D3A1B]">
                     {item.value}
                   </h3>
                   <p className="mt-2 text-[12px] tracking-[0.08em] uppercase text-[#8E8277] whitespace-nowrap">

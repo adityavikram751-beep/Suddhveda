@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube } from "react-icons/fa6";
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -57,8 +58,114 @@ export default function Footer() {
 
   return (
     <footer className="bg-[linear-gradient(180deg,#0a1f12_0%,#1f6b3a_50%,#050f09_100%)] text-white block">
-      <div className="max-w-[1445px] mx-auto px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+      <div className="max-w-[1445px] mx-auto px-6 sm:px-8 py-12">
+        
+        {/* ================= MOBILE & TABLET LAYOUT (Centered Stack) ================= */}
+        <div className="flex flex-col items-center text-center lg:hidden space-y-10">
+          
+          {/* Logo & Brand */}
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 rounded-lg bg-[#2D3A1B] flex items-center justify-center overflow-hidden p-1.5 shadow-md">
+              <Image
+                src="/yellow logo.png"
+                alt="ShuddhVedahoney Logo"
+                width={42}
+                height={42}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <h2 className="text-[22px] font-semibold mt-3">
+              ShuddhVedaHoney
+            </h2>
+            
+            {/* 4 Social Media Icons */}
+            <div className="flex items-center justify-center gap-3 mt-4">
+              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaInstagram size={16} />
+              </a>
+              <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaFacebookF size={16} />
+              </a>
+              <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaXTwitter size={16} />
+              </a>
+              <a href="#" aria-label="Youtube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaYoutube size={16} />
+              </a>
+            </div>
+          </div>
+
+          {/* Links Grid for Mobile / Tablet (Properly Aligned & Centered) */}
+          <div className="grid grid-cols-2 gap-x-8 sm:gap-x-14 gap-y-8 w-full max-w-lg px-4 justify-items-center text-left">
+            
+            {/* Quick Links */}
+            <div className="w-full max-w-[150px]">
+              <h3 className="text-[16px] font-semibold text-center sm:text-left">Quick Links</h3>
+              <ul className="mt-4 space-y-2.5 text-center sm:text-left">
+                <li><Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">All Honey</Link></li>
+                <li><Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">My Account</Link></li>
+                <li><Link href="/b2b" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">B2B Order</Link></li>
+                <li><Link href="/bulk-gifting" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Bulk Gifting</Link></li>
+              </ul>
+            </div>
+
+            {/* Products */}
+            <div className="w-full max-w-[150px]">
+              <h3 className="text-[16px] font-semibold text-center sm:text-left">Products</h3>
+              <ul className="mt-4 space-y-2.5 text-center sm:text-left">
+                <li><Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Contact Us</Link></li>
+                <li><Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">About Us</Link></li>
+                <li><Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Our Process</Link></li>
+                <li><Link href="/blogs" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Blogs</Link></li>
+              </ul>
+            </div>
+
+          </div>
+
+          {/* Get in Touch (Centered for Mobile/Tablet) */}
+          <div className="w-full flex flex-col items-center text-center px-4">
+            <h3 className="text-[16px] font-semibold">Get in Touch</h3>
+            <div className="mt-4 space-y-3 max-w-md w-full">
+              <div className="flex items-center justify-center gap-3">
+                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
+                <a href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
+                </a>
+              </div>
+              <div className="flex items-center justify-center gap-3">
+                <Mail size={15} className="text-[#E2D2C4] shrink-0" />
+                <a href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@Shuddhveda.in"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  {loading ? "Loading..." : locationData?.email || "connect@Shuddhveda.in"}
+                </a>
+              </div>
+              <div className="flex items-start justify-center gap-3">
+                <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
+                <p className="text-[13px] leading-5 text-[#E2D2C4] text-center max-w-sm">
+                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Ahmedabad, Gujarat, India–380054"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Footer for Mobile */}
+          <div className="w-full border-t border-[#2e4b36] pt-6 flex flex-col items-center gap-3 text-center">
+            <p className="text-[13px] text-[#D9C8BA]">
+              © {new Date().getFullYear()} Shuddhveda. All rights reserved. Made with 🍯 in India.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
+              <span>FSSAI Licensed</span>
+              <span className="text-[#4e7359]">•</span>
+              <span>ISO Certified</span>
+              <span className="text-[#4e7359]">•</span>
+              <span>100% Natural</span>
+            </div>
+          </div>
+
+        </div>
+
+
+        {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
+        <div className="hidden lg:grid grid-cols-4 gap-10">
 
           {/* ================= Logo ================= */}
           <div>
@@ -66,23 +173,32 @@ export default function Footer() {
               <div className="w-16 h-16 rounded-lg bg-[#2D3A1B] flex items-center justify-center overflow-hidden p-1.5">
                 <Image
                   src="/yellow logo.png"
-                  alt="HoneyVeda Logo"
+                  alt="ShuddhVeda Logo"
                   width={42}
                   height={42}
                   className="w-full h-full object-contain"
                 />
               </div>
               <h2 className="text-[22px] font-semibold">
-                Shuddhveda Honey
+                ShuddhVedaHoney
               </h2>
             </div>
             <p className="mt-4 max-w-[280px] text-[14px] leading-6 text-[#E2D2C4]">
-              Bringing nature&apos;s purest honey from
-              the hive to your home. Committed
-              to quality, purity, and sustainability.
+              Bringing nature&apos;s purest honey from the hive to your home. Committed to quality, purity, and sustainability.
             </p>
             <div className="flex gap-3 mt-6">
-              {/* Social icons can be added here */}
+              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaInstagram size={16} />
+              </a>
+              <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaFacebookF size={16} />
+              </a>
+              <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaXTwitter size={16} />
+              </a>
+              <a href="#" aria-label="Youtube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <FaYoutube size={16} />
+              </a>
             </div>
           </div>
 
@@ -93,34 +209,22 @@ export default function Footer() {
             </h3>
             <ul className="mt-5 space-y-3">
               <li>
-                <Link
-                  href="/products"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   All Honey
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/account"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   My Account
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/b2b"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/b2b" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   B2B Order
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/bulk-gifting"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/bulk-gifting" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   Bulk Gifting
                 </Link>
               </li>
@@ -134,34 +238,22 @@ export default function Footer() {
             </h3>
             <ul className="mt-5 space-y-3">
               <li>
-                <Link
-                  href="/contact"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/about"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/our-process"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   Our Process
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/blogs"
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
-                >
+                <Link href="/blogs" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
                   Blogs
                 </Link>
               </li>
@@ -175,7 +267,7 @@ export default function Footer() {
             </h3>
 
             <div className="mt-5 space-y-3">
-              {/* Phone */}
+              {/* Phone 1 */}
               <div className="flex items-start gap-3">
                 <Phone size={15} className="mt-1 text-[#2D3A1B]" />
                 <a
@@ -186,7 +278,7 @@ export default function Footer() {
                 </a>
               </div>
 
-              {/* WhatsApp (Second phone number) */}
+              {/* Phone 2 / WhatsApp */}
               <div className="flex items-start gap-3">
                 <Phone size={15} className="mt-1 text-[#2D3A1B]" />
                 <a
@@ -201,10 +293,10 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <Mail size={15} className="mt-1 text-[#2D3A1B]" />
                 <a
-                  href={`mailto:${loading ? "connect@honeyveda.in" : locationData?.email || "connect@honeyveda.in"}`}
+                  href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@shuddhveda.in"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.email || "connect@honeyveda.in"}
+                  {loading ? "Loading..." : locationData?.email || "connect@shuddhveda.in"}
                 </a>
               </div>
 
@@ -220,17 +312,13 @@ export default function Footer() {
 
         </div>
 
-        {/* ================= Bottom Footer ================= */}
-        <div className="mt-10 border-t border-[#2e4b36] pt-6 flex flex-col lg:flex-row items-center justify-between gap-4">
-          {/* Left */}
-          <p className="text-[13px] text-[#D9C8BA] text-center lg:text-left">
-            © {new Date().getFullYear()} HoneyVeda. All rights reserved.
-            <span className="mx-2">•</span>
-            Made with 🍯 in India.
+        {/* ================= Desktop Bottom Footer ================= */}
+        <div className="hidden lg:flex mt-10 border-t border-[#2e4b36] pt-6 items-center justify-between">
+          <p className="text-[13px] text-[#D9C8BA]">
+            © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with 🍯 in India.
           </p>
 
-          {/* Right */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
+          <div className="flex items-center gap-2 text-[13px] text-[#D9C8BA]">
             <span>FSSAI Licensed</span>
             <span className="text-[#4e7359]">•</span>
             <span>ISO Certified</span>

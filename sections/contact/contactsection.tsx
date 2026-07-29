@@ -390,34 +390,45 @@ export default function ContactSection() {
               <span className="text-[13px] text-[#2D3A1B] font-medium leading-snug">
                 {loading ? "Loading..." : getShortAddress() || "123, Green Hive Road, Whitefield, Bengaluru, KA – 560066"}
               </span>
+              {/* GET DIRECTIONS button - made clickable on mobile with relative z-index */}
               <a
                 href={getDirectionsLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[13px] text-[#D49313] font-semibold mt-0.5"
+                className="text-[13px] text-[#D49313] font-semibold mt-0.5 relative z-10 inline-block"
+                onClick={(e) => {
+                  // Ensure it opens even on mobile
+                  if (!getDirectionsLink() || getDirectionsLink() === '#') {
+                    e.preventDefault();
+                  }
+                }}
               >
-                GET DIRECTIONS
+                GET DIRECTIONS →
               </a>
             </div>
           </div>
         </div>
 
-        {/* FULL WIDTH MAP with overlay card */}
-        <div className="relative mt-10 lg:mt-12 rounded-2xl overflow-hidden bg-[#EFE9DD] min-h-[420px] lg:min-h-[480px]">
-          {embedMapUrl ? (
-            <iframe
-              title="Shuddha Veda location map"
-              src={embedMapUrl}
-              className="absolute inset-0 w-full h-full border-0"
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#EFE9DD]">
-              <p className="text-[#8D7F73]">Map not available</p>
-            </div>
-          )}
+        {/* FULL WIDTH MAP */}
+        <div className="relative mt-10 lg:mt-12 rounded-2xl overflow-hidden bg-[#EFE9DD] w-full">
+          {/* Map container with responsive height */}
+          <div className="relative w-full" style={{ paddingBottom: '56.25%', minHeight: '300px' }}>
+            {embedMapUrl ? (
+              <iframe
+                title="Shuddha Veda location map"
+                src={embedMapUrl}
+                className="absolute inset-0 w-full h-full border-0"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#EFE9DD]">
+                <p className="text-[#8D7F73]">Map not available</p>
+              </div>
+            )}
+          </div>
 
           {/* Bee icon + soft glow marker over the pin location */}
           <div className="hidden sm:flex absolute left-[52%] top-[38%] items-center gap-2 z-10 pointer-events-none select-none">
@@ -439,7 +450,7 @@ export default function ContactSection() {
           </div>
 
           {/* Find Us strip - bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4 sm:py-5 text-center z-10">
+          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4 sm:py-5 text-center z-20">
             <h3 className="font-serif text-[#2D3A1B] text-[20px] sm:text-[22px]">Find Us</h3>
             <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1">
               {loading ? "Loading..." : getFullAddress() || "Shuddha Veda Studio, 4A, Sri Sai Enclave, ECC Road, Whitefield, Bengaluru, Karnataka 560066"}

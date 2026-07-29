@@ -93,8 +93,8 @@ export default function UpcomingProduct() {
       { value: countdown.minutes, label: "Minute" },
       { value: countdown.seconds, label: "Second" },
     ];
-    const boxSize = isMobile ? "w-[50px] h-[50px]" : "w-[64px] h-[64px]";
-    const textSize = isMobile ? "text-[16px]" : "text-[18px]";
+    const boxSize = isMobile ? "w-[46px] h-[46px]" : "w-[64px] h-[64px]";
+    const textSize = isMobile ? "text-[15px]" : "text-[18px]";
     const labelSize = isMobile ? "text-[9px]" : "text-[11px]";
     return items.map((item, i) => (
       <div key={i} className="flex flex-col items-center">
@@ -153,6 +153,7 @@ export default function UpcomingProduct() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-14 py-8 sm:py-10 lg:py-12">
         {/* ===== DESKTOP: 3-Column Layout ===== */}
         <div className="hidden lg:grid grid-cols-[minmax(0,322px)_minmax(0,1fr)_minmax(0,360px)] gap-8 items-center">
+          
           {/* LEFT – Image */}
           <div className="flex justify-center min-w-0">
             <div className="relative w-full max-w-[320px] min-w-0 rounded-[22px] overflow-hidden bg-white shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
@@ -174,24 +175,32 @@ export default function UpcomingProduct() {
             </div>
           </div>
 
-          {/* CENTER – Details + Countdown + Button */}
-          <div className="flex flex-col items-center justify-center text-center bg-white rounded-[18px] border border-[#F3E8DA] px-8 py-6 shadow-sm h-[400px] min-w-0">
+          {/* CENTER – Details + Countdown + Pre-Order Button */}
+          <div className="flex flex-col items-center justify-center text-center bg-white rounded-[18px] border border-[#F3E8DA] px-8 py-6 shadow-sm min-h-[400px] min-w-0">
             <span className="uppercase tracking-[5px] text-[#D49313] text-[13px] font-semibold">
               {banner.tag}
             </span>
-            <h2 className="mt-2 text-[42px] font-semibold leading-tight text-[#5A2505] whitespace-pre-line">
+            <h2 className="mt-2 text-[38px] lg:text-[42px] font-semibold leading-tight text-[#5A2505] whitespace-pre-line">
               {banner.product_name}
             </h2>
             <p className="mt-2 text-[16px] text-[#444]">{banner.subtitle}</p>
-            <p className="mt-1 text-[16px] font-semibold text-[#6B3008]">
-              {banner.subtitle}
-            </p>
-            <div className="flex gap-6 mt-6">{renderCountdown(false)}</div>
-           
+            
+            <div className="flex gap-4 mt-5">{renderCountdown(false)}</div>
+            
+            {banner.pre_order_url && (
+              <a
+                href={banner.pre_order_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 w-full max-w-[240px] bg-[#233821] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[15px] uppercase tracking-wider cursor-pointer"
+              >
+                Pre-Order Now
+              </a>
+            )}
           </div>
 
           {/* RIGHT – Features with /madhu.png icon */}
-          <div className="relative bg-[#FFF8F0] rounded-[18px] border border-[#F3E8DA] px-8 py-8 h-[400px] overflow-hidden min-w-0 flex flex-col justify-center">
+          <div className="relative bg-[#FFF8F0] rounded-[18px] border border-[#F3E8DA] px-8 py-8 min-h-[400px] overflow-hidden min-w-0 flex flex-col justify-center">
             <h3 className="text-[32px] font-serif text-[#2F241B]">{banner.product_name}</h3>
             <p className="mt-3 text-[17px] leading-8 text-[#5B4A3D] whitespace-pre-line break-words">
               {banner.product_description}
@@ -215,9 +224,9 @@ export default function UpcomingProduct() {
           </div>
         </div>
 
-        {/* ===== MOBILE: Single Card ===== */}
+        {/* ===== MOBILE & TABLET: Single Card Layout ===== */}
         <div className="lg:hidden">
-          <div className="max-w-sm mx-auto w-full bg-white rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-[#EEE5D9]">
+          <div className="max-w-sm sm:max-w-md mx-auto w-full bg-white rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-[#EEE5D9]">
             <div className="relative">
               <div className="absolute top-3 left-3 z-10">
                 <span className="bg-[#7DA314] text-white text-[12px] px-4 py-1.5 rounded-lg font-medium">
@@ -232,24 +241,35 @@ export default function UpcomingProduct() {
                 priority
                 quality={100}
                 sizes="(max-width: 640px) 100vw, 400px"
-                className="w-full h-[220px] object-cover"
+                className="w-full h-[240px] object-cover"
               />
             </div>
-            <div className="p-5 text-center">
+            
+            <div className="p-5 sm:p-6 text-center">
               <span className="uppercase tracking-[4px] text-[#D49313] text-[12px] font-semibold">
                 {banner.tag}
               </span>
-              <h2 className="mt-1 text-[26px] font-semibold leading-tight text-[#5A2505] whitespace-pre-line">
+              <h2 className="mt-1 text-[26px] sm:text-[30px] font-semibold leading-tight text-[#5A2505] whitespace-pre-line">
                 {banner.product_name}
               </h2>
               <p className="mt-1 text-[14px] text-[#444]">{banner.subtitle}</p>
-              <p className="mt-0 text-[14px] font-semibold text-[#6B3008]">
-                {banner.subtitle}
-              </p>
+              
               <div className="flex justify-center gap-2 mt-4">
                 {renderCountdown(true)}
               </div>
-              <div className="mt-4 pt-4 border-t border-[#EEE5D9] text-left">
+
+              {banner.pre_order_url && (
+                <a
+                  href={banner.pre_order_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 w-full block bg-[#233821] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[14px] uppercase tracking-wider cursor-pointer"
+                >
+                  Pre-Order Now
+                </a>
+              )}
+
+              <div className="mt-5 pt-5 border-t border-[#EEE5D9] text-left">
                 <h3 className="text-[20px] font-serif text-[#2F241B] text-center">
                   {banner.product_name}
                 </h3>
@@ -273,10 +293,10 @@ export default function UpcomingProduct() {
                   ))}
                 </div>
               </div>
-            
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );

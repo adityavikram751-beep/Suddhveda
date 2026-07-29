@@ -1,9 +1,7 @@
 "use client";
 
-import { API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
 import { HandHeart, ShieldCheck } from "lucide-react";
-import { useState, useEffect } from "react";
 
 // Custom headset-support icon (exact match to design)
 const HeadsetIcon = ({ size = 32, strokeWidth = 1.6, className = "" }) => (
@@ -28,79 +26,17 @@ const HeadsetIcon = ({ size = 32, strokeWidth = 1.6, className = "" }) => (
   </svg>
 );
 
-interface LocationData {
-  address: {
-    line1: string;
-    line2: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-  };
-  _id: string;
-  phone: string;
-  phone_timing: string;
-  email: string;
-  email_reply_time: string;
-  whatsapp: string;
-  whatsapp_timing: string;
-  map_embed_url: string;
-  isActive: boolean;
-}
-
 export default function Hero() {
-  const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/location/all`, {
-          credentials: "include", // include cookies if needed for auth
-        });
-        if (!response.ok) throw new Error("Failed to fetch location data");
-        const data = await response.json();
-        if (data.success) {
-          setLocationData(data.data);
-        } else {
-          console.error("API returned success: false");
-        }
-      } catch (error) {
-        console.error("Error fetching location data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLocation();
-  }, []);
-
-  // Get the first part of address for display
-  const getAddressLine = () => {
-    if (!locationData) return "";
-    const { address } = locationData;
-    return `${address.line1}, ${address.line2}`;
-  };
-
-  // Get city and state for display
-  const getCityState = () => {
-    if (!locationData) return "";
-    const { address } = locationData;
-    return `${address.city}, ${address.state}`;
-  };
-
   const cards = [
     {
       icon: HeadsetIcon,
       title: (
         <>
-          We're Here To
+          We&apos;re Here To
           <br />
           Help
         </>
       ),
-      content: loading ? "Loading..." : `${locationData?.phone || "+91 98765 43210"}`,
-      subContent: loading ? "..." : locationData?.phone_timing || "Mon - Sat: 9AM - 6PM",
     },
     {
       icon: HandHeart,
@@ -111,8 +47,6 @@ export default function Hero() {
           Support
         </>
       ),
-      content: loading ? "Loading..." : getAddressLine() || "123, Green Hive Road",
-      subContent: loading ? "..." : getCityState() || "Whitefield, Bengaluru",
     },
     {
       icon: ShieldCheck,
@@ -123,8 +57,6 @@ export default function Hero() {
           Matters
         </>
       ),
-      content: loading ? "Loading..." : locationData?.email || "hello@shuddhadeva.com",
-      subContent: loading ? "..." : locationData?.email_reply_time || "We reply within 24 hrs",
     },
   ];
 
@@ -143,7 +75,7 @@ export default function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="mt-12 font-serif text-[#3A2C24] leading-[1.05] text-[36px] sm:text-[48px] lg:text-[76px] tracking-[-0.03em]">
+            <h1 className="mt-8 lg:mt-12 font-serif text-[#3A2C24] leading-[1.05] text-[36px] sm:text-[48px] lg:text-[76px] tracking-[-0.03em]">
               Let&apos;s Start a{" "}
               <span className="italic text-[#4D6840]">
                 Sweet
@@ -153,14 +85,17 @@ export default function Hero() {
             </h1>
 
             {/* Description */}
-            <p className="mt-8 max-w-[520px] text-[18px] leading-[1.8] text-[#6E6258]">
+            <p className="mt-6 lg:mt-8 max-w-[520px] text-[16px] lg:text-[18px] leading-[1.8] text-[#6E6258]">
               We&apos;re here to answer your questions, support your journey
               towards natural living, and help you experience the goodness of
               pure honey.
             </p>
 
-            {/* Cards */}
-            <div className="mt-6 grid grid-cols-3 gap-5 max-w-[640px]">
+            {/* Cards 
+                - Mobile: Stacked vertical layout (1 column)
+                - Desktop (lg): Exact original 3 columns grid 
+            */}
+            <div className="mt-8 lg:mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[640px]">
 
               {cards.map((item, index) => {
                 const Icon = item.icon;
@@ -168,22 +103,14 @@ export default function Hero() {
                 return (
                   <div
                     key={index}
-                    className="group flex h-[160px] flex-col items-center justify-center rounded-[18px] border border-[#E8DED3] bg-white px-3 shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)]"
+                    className="group flex flex-row lg:flex-col items-center lg:items-center justify-start lg:justify-center p-4 lg:p-3 h-auto lg:h-[160px] rounded-[18px] border border-[#E8DED3] bg-white gap-4 lg:gap-0 shadow-[0_10px_30px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)]"
                   >
-                    <div className="mb-2 text-[#D49313]">
+                    <div className="w-12 h-12 lg:w-auto lg:h-auto rounded-xl lg:rounded-none bg-[#FDF3E4] lg:bg-transparent flex items-center justify-center text-[#D49313] lg:mb-2 shrink-0">
                       <Icon size={28} strokeWidth={1.6} />
                     </div>
 
-                    <p className="text-center text-[14px] leading-[18px] font-semibold text-[#453B34]">
+                    <p className="text-left lg:text-center text-[13px] lg:text-[14px] leading-[18px] font-semibold text-[#453B34]">
                       {item.title}
-                    </p>
-                    
-                    <p className="text-center text-[12px] leading-[16px] font-medium text-[#D49313] mt-1">
-                      {item.content}
-                    </p>
-                    
-                    <p className="text-center text-[10px] leading-[14px] text-[#8D7F73] mt-0.5">
-                      {item.subContent}
                     </p>
                   </div>
                 );
@@ -194,11 +121,11 @@ export default function Hero() {
           </div>
 
           {/* RIGHT IMAGE */}
-          <div className="relative flex items-center justify-end h-[760px]">
+          <div className="relative flex items-center justify-end h-[400px] sm:h-[500px] lg:h-[760px] -mt-2 lg:mt-0">
 
             <div
-              className="absolute right-[-140px] top-1/2 -translate-y-1/2
-              w-[780px] h-[780px]
+              className="absolute right-[-100px] sm:right-[-140px] top-1/2 -translate-y-1/2
+              w-[400px] sm:w-[600px] lg:w-[780px] h-[400px] sm:h-[600px] lg:h-[780px]
               rounded-full
               bg-[radial-gradient(circle,rgba(255,214,120,0.35)_0%,rgba(255,255,255,0)_70%)]"
             />
@@ -218,6 +145,7 @@ export default function Hero() {
                 h-full
                 object-contain
                 object-center lg:object-right-top
+                -translate-y-6 sm:-translate-y-8 lg:translate-y-0
                 translate-x-0 lg:translate-x-22
                 scale-100 lg:scale-[1.2]
               "

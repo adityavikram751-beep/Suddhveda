@@ -352,7 +352,6 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        // ✅ FIXED: Sirf 3 arguments pass kiye hain (no 4th boolean)
         updateQuantity(item._id, variant._id, 1);
         showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
       }
@@ -387,18 +386,18 @@ export default function ProductDetailPage({
   if (!product) return null;
 
   return (
-    <main className={`bg-white min-h-screen text-[#2F241C] ${inter.className}`}>
+    <main className={`bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 ${inter.className}`}>
       <div className="max-w-[1350px] mx-auto px-4 py-6">
         {/* MAIN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_1fr] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_1fr] gap-6 lg:gap-8">
           
-          {/* THUMBNAILS */}
-          <div className="hidden lg:flex flex-col gap-3">
+          {/* THUMBNAILS (Desktop vertical column / Mobile horizontal scroll) */}
+          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none">
             {mediaList.map((item: any) => (
               <button
                 key={item.id}
                 onClick={() => setSelectedMedia(item)}
-                className={`relative h-[68px] w-[68px] overflow-hidden rounded border bg-white transition-colors ${
+                className={`relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded border bg-white transition-colors ${
                   selectedMedia?.id === item.id
                     ? "border-[#F1592B]"
                     : "border-[#EEE7DA] hover:border-[#B8860B]"
@@ -421,7 +420,7 @@ export default function ProductDetailPage({
           </div>
 
           {/* MAIN MEDIA DISPLAY */}
-          <div className="bg-[#FFF5E6] rounded-2xl p-4 md:p-8 flex items-center justify-center relative h-[450px] md:h-[630px] overflow-hidden">
+          <div className="bg-[#FFF5E6] rounded-2xl p-4 md:p-8 flex items-center justify-center relative h-[380px] sm:h-[480px] lg:h-[630px] overflow-hidden">
             {selectedMedia?.type === "video" ? (
               <video
                 src={selectedMedia.url}
@@ -446,11 +445,11 @@ export default function ProductDetailPage({
 
           {/* PRODUCT DETAILS */}
           <div className="space-y-6 relative bg-white">
-            <div className="flex justify-between items-start w-full">
-              <h1 className={`${playfair.className} text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal`}>
+            <div className="flex justify-between items-start w-full gap-4">
+              <h1 className={`${playfair.className} text-[28px] sm:text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal`}>
                 {product.product_name}
               </h1>
-              <div className="flex items-center gap-3 mt-3 mr-1">
+              <div className="flex items-center gap-3 mt-1 sm:mt-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => handleToggleWishlist(product._id)}
@@ -494,7 +493,7 @@ export default function ProductDetailPage({
                 <span>M.R.P ₹{currentMrp}</span>
                 <span className="absolute left-0 right-[-45px] top-1/2 h-[1px] bg-[#9E9E9E]"></span>
               </div>
-              <div className="text-[44px] font-bold text-[#2A2420] leading-none tracking-tight pt-1">
+              <div className="text-[38px] sm:text-[44px] font-bold text-[#2A2420] leading-none tracking-tight pt-1">
                 ₹{currentPrice}
               </div>
               {currentSave > 0 && (
@@ -512,7 +511,7 @@ export default function ProductDetailPage({
               <h3 className="text-[14px] font-bold text-[#3F3F3F] tracking-normal">
                 Delivery Details
               </h3>
-              <div className="flex border border-[#E3DCCE] rounded overflow-hidden bg-white max-w-xl">
+              <div className="flex flex-col sm:flex-row border border-[#E3DCCE] rounded overflow-hidden bg-white max-w-xl">
                 <input
                   type="text"
                   placeholder="Enter your pincode"
@@ -525,7 +524,7 @@ export default function ProductDetailPage({
                 />
                 <button
                   onClick={handleCheckPincode}
-                  className="bg-[#241A14] text-white px-9 py-3 text-[13px] font-bold hover:bg-black transition-colors tracking-widest uppercase flex-shrink-0"
+                  className="bg-[#241A14] text-white px-6 sm:px-9 py-3 text-[13px] font-bold hover:bg-black transition-colors tracking-widest uppercase flex-shrink-0"
                 >
                   CHECK
                 </button>
@@ -543,12 +542,12 @@ export default function ProductDetailPage({
             {variants.length > 0 && (
               <div className="space-y-3 pt-1">
                 <h3 className="text-[15px] font-medium text-[#3F3F3F] tracking-normal">Weight</h3>
-                <div className="flex gap-4 flex-wrap">
+                <div className="flex gap-3 sm:gap-4 flex-wrap">
                   {variants.map((option: any) => (
                     <button
                       key={option._id}
                       onClick={() => setSelectedVariant(option)}
-                      className={`flex flex-col items-center rounded-md border w-[105px] py-3.5 bg-white transition-all ${
+                      className={`flex flex-col items-center rounded-md border w-[95px] sm:w-[105px] py-3.5 bg-white transition-all ${
                         selectedVariant?._id === option._id
                           ? "border-[#FF6F3C] ring-[1px] ring-[#FF6F3C]"
                           : "border-gray-200 hover:border-gray-400"
@@ -576,8 +575,8 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* Quantity & Cart Actions */}
-            <div className="space-y-4 pt-2">
+            {/* Quantity & Cart Actions (Hidden on mobile since sticky bottom bar handles it) */}
+            <div className="hidden lg:block space-y-4 pt-2">
               <h3 className="text-[15px] font-medium text-[#3F3F3F] tracking-normal">Quantity</h3>
               
               <div className="flex gap-4 max-w-xl">
@@ -621,7 +620,7 @@ export default function ProductDetailPage({
             </div>
 
             {/* Weather Alert */}
-            <div className="bg-[#FFF8F5] border-l-[3px] border-[#FF6F3C] p-5 flex items-start gap-3 max-w-xl rounded-r">
+            <div className="bg-[#FFF8F5] border-l-[3px] border-[#FF6F3C] p-4 sm:p-5 flex items-start gap-3 max-w-xl rounded-r">
               <p className="text-[13px] text-[#555555] font-normal leading-relaxed">
                 <strong>Weather Alert:</strong> Due to heavy rainfall, please expect
                 slight delays in deliveries. Thank you for your patience!
@@ -634,29 +633,29 @@ export default function ProductDetailPage({
             </p>
 
             {/* Tasting Notes */}
-            <div className="grid grid-cols-2 border border-[#E8E2D5] bg-white overflow-hidden max-w-xl rounded-sm">
-              <div className="p-5 border-r border-b border-[#E8E2D5]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 border border-[#E8E2D5] bg-white overflow-hidden max-w-xl rounded-sm">
+              <div className="p-4 sm:p-5 sm:border-r border-b border-[#E8E2D5]">
                 <TastingItem
                   icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="9" strokeDasharray="3 3"/></svg>}
                   label="AROMA"
                   value="Tropical, fruity"
                 />
               </div>
-              <div className="p-5 border-b border-[#E8E2D5]">
+              <div className="p-4 sm:p-5 border-b border-[#E8E2D5]">
                 <TastingItem
                   icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><line x1="5" y1="9" x2="19" y2="15"/><line x1="5" y1="15" x2="19" y2="15"/></svg>}
                   label="TASTE NOTE"
                   value="Fruity, sweet, tropical"
                 />
               </div>
-              <div className="p-5 border-r border-[#E8E2D5]">
+              <div className="p-4 sm:p-5 sm:border-r border-b sm:border-b-0 border-[#E8E2D5]">
                 <TastingItem
                   icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="8"/></svg>}
                   label="SWEETNESS"
                   value="Sweetest, rich aftertaste"
                 />
               </div>
-              <div className="p-5">
+              <div className="p-4 sm:p-5">
                 <TastingItem
                   icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><path d="M12 3v3M12 18v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M3 12h3M18 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>}
                   label="CRYSTALLIZATION"
@@ -668,7 +667,7 @@ export default function ProductDetailPage({
             {/* Accordions */}
             <div className="pt-6 max-w-xl">
               <div className="w-full text-center mb-6">
-                <a href="#compare" className="text-[24px] font-normal text-black underline underline-offset-8 tracking-wide inline-block">
+                <a href="#compare" className="text-[20px] sm:text-[24px] font-normal text-black underline underline-offset-8 tracking-wide inline-block">
                   Compare honey Flora
                 </a>
               </div>
@@ -685,11 +684,11 @@ export default function ProductDetailPage({
                       >
                         <span className="flex items-center gap-3.5 text-gray-800">
                           <Icon size={20} className="text-[#D08722] stroke-[1.5]" />
-                          <span className={`${playfair.className} text-[24px] tracking-wide text-gray-700`}>
+                          <span className={`${playfair.className} text-[20px] sm:text-[24px] tracking-wide text-gray-700`}>
                             {section.title}
                           </span>
                         </span>
-                        {isOpen ? <ChevronUp size={18} className="text-gray-800" /> : <ChevronDown size={18} className="text-gray-400" />}
+                        {isOpen ? <ChevronUp size={18} className="text-gray-800 shrink-0" /> : <ChevronDown size={18} className="text-gray-400 shrink-0" />}
                       </button>
                       {isOpen && (
                         <p className="pb-4 pl-9 text-[14px] leading-relaxed text-gray-600 font-normal">
@@ -711,14 +710,14 @@ export default function ProductDetailPage({
             alt="Uses of Honey"
             width={1400}
             height={500}
-            className="w-full object-cover"
+            className="w-full h-auto object-cover"
           />
         </div>
 
         {/* RECOMMENDATIONS SECTION */}
         {recommendations.length > 0 && (
           <section className="mt-16">
-            <h2 className={`mb-9 text-[32px] font-bold text-[#2F241C] ${playfair.className}`}>
+            <h2 className={`mb-9 text-[28px] sm:text-[32px] font-bold text-[#2F241C] ${playfair.className}`}>
               Recommendation
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -764,7 +763,7 @@ export default function ProductDetailPage({
 
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in duration-200">
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in duration-200">
           <div className={`px-6 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${
             toastType === "success" ? "bg-green-600" : "bg-red-600"
           }`}>
@@ -774,7 +773,7 @@ export default function ProductDetailPage({
       )}
 
       {/* MOBILE STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 lg:hidden shadow-lg z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:p-4 lg:hidden shadow-lg z-50">
         <div className="flex items-center gap-3">
           <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white">
             <button
@@ -796,7 +795,7 @@ export default function ProductDetailPage({
           <button
             disabled={btnLoading}
             onClick={() => handleAddToCart(true)}
-            className="flex-1 bg-[#FF6F3C] text-white py-3 rounded font-bold text-sm tracking-wide disabled:opacity-50"
+            className="flex-1 bg-[#FF6F3C] text-white py-3 rounded font-bold text-sm tracking-wide disabled:opacity-50 text-center"
           >
             Buy Now · ₹{currentPrice}
           </button>

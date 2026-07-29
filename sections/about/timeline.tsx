@@ -47,42 +47,50 @@ export default function Timeline() {
             from the hive to your home.
           </p>
         </div>
-        <div className="mt-14 overflow-x-auto">
-  <div className="relative flex flex-nowrap justify-between min-w-[900px] lg:min-w-0">
 
-    {/* Single Continuous Dashed Line */}
-    <div className="absolute top-8 left-32 right-32 border-t-2 border-dashed border-[#D49313]" />
+        {/* ===== TIMELINE CONTAINER ===== */}
+        <div className="mt-14 relative">
+          
+          {/* Desktop Horizontal Dashed Line */}
+          <div className="hidden lg:block absolute top-8 left-32 right-32 border-t-2 border-dashed border-[#D49313] z-0" />
 
-    {timeline.map((item) => {
-      const Icon = item.icon;
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-12 lg:gap-0">
+            {timeline.map((item) => {
+              const Icon = item.icon;
 
-      return (
-        <div
-          key={item.title}
-          className="relative z-10 flex-1 flex flex-col items-center text-center"
-        >
-          {/* Icon */}
-          <div className="w-16 h-16 rounded-full border-2 border-[#D49313] bg-white flex items-center justify-center text-[#D49313]">
-            <Icon size={22} strokeWidth={1.6} />
+              return (
+                <div
+                  key={item.title}
+                  className="relative z-10 flex-1 flex flex-col items-center lg:items-center text-center px-4"
+                >
+                  {/* Icon Wrapper with Mobile Right Dashed Line */}
+                  <div className="relative flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full border-2 border-[#D49313] bg-white flex items-center justify-center text-[#D49313] shadow-sm z-10">
+                      <Icon size={22} strokeWidth={1.6} />
+                    </div>
+
+                    {/* 🟢 Mobile Right-Side Dashed Line (Dot-Dot effect like reference image) */}
+                    <div className="lg:hidden absolute left-full w-12 sm:w-20 border-t-2 border-dashed border-[#D49313] ml-1" />
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="mt-5 font-serif text-[20px] font-bold text-[#2D3A1B]">
+                    {item.title}
+                  </h3>
+
+                  <p className="mt-2 text-[14px] leading-[1.6] text-[#6B7280] max-w-[240px]">
+                    {item.desc}
+                  </p>
+
+                  <span className="mt-3 text-[#D49313] font-bold text-[14px] tracking-wide uppercase">
+                    {item.year}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-
-          {/* Content */}
-          <h3 className="mt-5 font-serif text-[20px] font-bold text-[#2D3A1B]">
-            {item.title}
-          </h3>
-
-          <p className="mt-2 text-[14px] leading-[1.6] text-[#6B7280] max-w-[220px]">
-            {item.desc}
-          </p>
-
-          <span className="mt-3 text-[#D49313] font-bold text-[14px] tracking-wide uppercase">
-            {item.year}
-          </span>
         </div>
-      );
-    })}
-  </div>
-</div>
+
       </div>
     </section>
   );
