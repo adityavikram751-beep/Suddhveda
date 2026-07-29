@@ -10,6 +10,7 @@ import {
   AuthSession,
   clearSession,
   getStoredSession,
+  API_BASE_URL,
 } from "@/lib/auth";
 import {
   FiHeart,
@@ -28,9 +29,6 @@ const navItems = [
   { title: "Contact", href: "/contact" },
 ];
 
-// API Base URL - import from auth
-import { API_BASE_URL } from "@/lib/auth";
-
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -44,7 +42,6 @@ export default function Header() {
   // Function to fetch wishlist count from API
   const fetchWishlistCount = async () => {
     try {
-      // Check if user is logged in
       const sessionData = getStoredSession();
       if (!sessionData) {
         setWishlistCount(0);
@@ -72,79 +69,49 @@ export default function Header() {
       const products = data?.data?.products || [];
       const count = Array.isArray(products) ? products.length : 0;
       setWishlistCount(count);
-      console.log("Wishlist count fetched:", count, "on page:", pathname);
     } catch (error) {
       console.error("Error fetching wishlist count:", error);
       setWishlistCount(0);
     }
   };
 
-  // ================= CLEAR ALL COOKIES FUNCTION =================
   const clearAllCookies = () => {
-    // Get all cookies
     const cookies = document.cookie.split(";");
-    
-    // Clear each cookie
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i];
       const eqPos = cookie.indexOf("=");
       const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
-      
-      // Set expiry date to past to delete cookie
       document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
     }
-    
-    console.log("All cookies cleared");
   };
 
-  // ================= LOGOUT FUNCTION =================
   const handleLogout = async () => {
     try {
-      // 1. Call logout API to invalidate session on server
-      const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      await fetch(`${API_BASE_URL}/api/users/logout`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      if (!res.ok) {
-        console.warn("Logout API failed, but clearing local session anyway");
-      }
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      // 2. Clear all cookies
       clearAllCookies();
-      
-      // 3. Clear local storage
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("session");
-      
-      // 4. Clear session storage
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("session");
-      
-      // 5. Clear auth session using your helper
       clearSession();
-      
-      // 6. Reset state
       setSession(null);
       setAccountOpen(false);
       setOpen(false);
       setWishlistCount(0);
-      
-      // 7. Dispatch event for other components
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-      
-      // 8. Redirect to login
       router.push("/login");
-      
-      console.log("✅ Logout successful - All cookies and storage cleared");
     }
   };
 
@@ -168,9 +135,7 @@ export default function Header() {
       }
     }
 
-    // Listen for wishlist count updates from other components
     const handleWishlistUpdate = (event: CustomEvent) => {
-      console.log("Wishlist count updated via event:", event.detail.count);
       setWishlistCount(event.detail.count);
     };
 
@@ -188,7 +153,6 @@ export default function Header() {
     };
   }, []);
 
-  // Har page change par count fetch karo
   useEffect(() => {
     const sessionData = getStoredSession();
     if (sessionData) {
@@ -199,7 +163,6 @@ export default function Header() {
     }
   }, [pathname]);
 
-  // Jab session change ho count fetch karo
   useEffect(() => {
     if (session) {
       fetchWishlistCount();
@@ -215,25 +178,50 @@ export default function Header() {
       setOpen(false);
       return;
     }
-
     setAccountOpen((value) => !value);
   }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
-      <div className="max-w-[1445px] mx-auto h-[62px] px-4 sm:px-6 lg:px-[52px] flex items-center justify-between">
+      {/* Mobile & Tablet Layout: Relative wrapper for absolute centering of logo */}
+      <div className="relative max-w-[1445px] mx-auto h-[62px] px-4 sm:px-6 lg:px-[52px] flex items-center justify-between">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center flex-shrink-0">
-          <Image
-            src="/yellow logo.png"
-            alt="ShuddhVeda Honey"
-            width={66}
-            height={66}
-            priority
-            className="object-contain"
-          />
-        </Link>
+        {/* Left Side: Mobile Menu Button / Desktop Logo */}
+        <div className="flex items-center z-10">
+          <button
+            className="lg:hidden text-[#7A3F10] focus:outline-none p-1"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle Menu"
+          >
+            {open ? <FiX size={26} /> : <FiMenu size={26} />}
+          </button>
+
+          {/* Desktop Logo */}
+          <Link href="/" className="hidden lg:flex items-center flex-shrink-0">
+            <Image
+              src="/yellow logo.png"
+              alt="ShuddhVeda Honey"
+              width={66}
+              height={66}
+              priority
+              className="object-contain"
+            />
+          </Link>
+        </div>
+
+        {/* Center Logo for Mobile/Tablet */}
+        <div className="absolute left-1/2 -translate-x-1/2 lg:hidden flex items-center justify-center">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/yellow logo.png"
+              alt="ShuddhVeda Honey"
+              width={56}
+              height={56}
+              priority
+              className="object-contain"
+            />
+          </Link>
+        </div>
 
         {/* Desktop Menu */}
         <nav className="hidden lg:flex items-center gap-12">
@@ -264,8 +252,8 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Desktop Icons */}
-        <div className="hidden lg:flex items-center gap-[18px]">
+        {/* Right Icons (Wishlist, Account, Cart) */}
+        <div className="flex items-center gap-4 sm:gap-[18px] z-10">
           <Link
             href="/wishlist"
             className="relative text-[#7A3F10] hover:text-[#D89B00] transition"
@@ -296,7 +284,7 @@ export default function Header() {
             </button>
 
             {session && accountOpen && (
-              <div className="absolute right-0 top-9 w-44 rounded-xl border border-[#EFE7DF] bg-white p-2 shadow-[0_16px_40px_rgba(45,58,27,0.15)]">
+              <div className="absolute right-0 top-9 w-44 rounded-xl border border-[#EFE7DF] bg-white p-2 shadow-[0_16px_40px_rgba(45,58,27,0.15)] z-50">
                 <Link
                   href="/account"
                   onClick={() => setAccountOpen(false)}
@@ -331,17 +319,9 @@ export default function Header() {
             )}
           </button>
         </div>
-
-        {/* Mobile */}
-        <button
-          className="lg:hidden text-[#7A3F10]"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <FiX size={30} /> : <FiMenu size={30} />}
-        </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       <div
         className={`lg:hidden overflow-hidden transition-all duration-300 ${
           open ? "max-h-[450px]" : "max-h-0"
@@ -371,42 +351,12 @@ export default function Header() {
             );
           })}
 
-          <div className="flex items-center gap-6 px-6 py-5">
-            <Link href="/wishlist" onClick={() => setOpen(false)} className="relative">
-              <FiHeart size={22} className="text-[#7A3F10]" />
-              {wishlistCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-            <button type="button" onClick={handleAccountClick} className="flex items-center gap-1">
-              <FiUser size={22} className="text-[#7A3F10]" />
-              {session && <FiChevronDown size={15} className="text-[#7A3F10]" />}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                openCart();
-              }}
-              aria-label="Open cart"
-              className="relative"
-            >
-              <FiShoppingCart size={22} className="text-[#7A3F10]" />
-              {itemCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
-                  {itemCount}
-                </span>
-              )}
-            </button>
-          </div>
           {session && (
-            <div className="border-t border-[#F1ECE6] px-6 pb-5">
+            <div className="border-t border-[#F1ECE6] px-6 py-4">
               <Link
                 href="/account"
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-between py-3 text-sm font-semibold text-[#2D3A1B]"
+                className="flex items-center justify-between py-2 text-sm font-semibold text-[#2D3A1B]"
               >
                 Account
                 <FiUser size={18} />
@@ -414,7 +364,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center justify-between py-3 text-sm font-semibold text-red-600"
+                className="flex w-full items-center justify-between py-2 text-sm font-semibold text-red-600 mt-2"
               >
                 Logout
                 <FiX size={18} />

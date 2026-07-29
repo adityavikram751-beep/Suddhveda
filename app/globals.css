@@ -19,10 +19,43 @@
   }
 }
 
+html,
+body {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: var(--background);
+  border-radius: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  overscroll-behavior-x: none;
+}
+
+.app-shell {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--background);
+  border-radius: 0;
+}
+
+.app-shell > * {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0;
 }
 /* ========================= */
 /* TOP BAR */
