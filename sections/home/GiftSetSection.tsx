@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import { FiStar, FiHome, FiWind, FiClipboard, FiBox } from "react-icons/fi";
 
-// ✅ Text ko exactly 1 line mein rakha hai, jaise screenshot mein hai
 const steps = [
   {
     icon: FiStar,
@@ -42,26 +41,25 @@ export default function ProcessSection() {
           {/* LEFT - Steps */}
           <div>
             {/* Label */}
-            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#2D3A1B] uppercase">
+            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#2D3A1B] uppercase text-center lg:text-left">
               From Hive to Bottle
             </p>
 
-            {/* Heading - always one line, bigger */}
-            <h2 className="mt-3 text-[34px] md:text-[36px] lg:text-[36px] font-
-Playfair Display leading-[1.1] text-[#233821] tracking-[-0.02em] whitespace-nowrap">
+            {/* Heading */}
+            <h2 className="mt-3 text-[28px] sm:text-[34px] lg:text-[36px] font-serif leading-[1.1] text-[#233821] tracking-[-0.02em] text-center lg:text-left lg:whitespace-nowrap">
               Pure Honey, Thoughtfully Crafted
             </h2>
 
-            {/* Steps - Horizontal Scroll on mobile, flex on desktop */}
-            <div className="mt-10 md:mt-12 flex items-start overflow-x-auto pb-4 md:pb-0 gap-2 md:gap-0 scrollbar-hide">
+            {/* Steps - Vertical Stack on Mobile/Tablet, Horizontal Flex on Desktop */}
+            <div className="mt-8 md:mt-12 flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-0">
               {steps.map((step, index) => {
                 const Icon = step.icon;
                 const isLast = index === steps.length - 1;
 
                 return (
-                  <div key={index} className="flex items-start flex-shrink-0">
+                  <div key={index} className="flex flex-col lg:flex-row items-center lg:items-start flex-shrink-0">
                     {/* Step Card */}
-                    <div className="flex flex-col items-center text-center w-[120px] sm:w-[130px] md:w-[140px] group transition-all duration-300">
+                    <div className="flex flex-col items-center text-center w-[220px] sm:w-[260px] lg:w-[140px] group transition-all duration-300">
                       {/* Icon Circle */}
                       <div
                         className="
@@ -81,23 +79,29 @@ Playfair Display leading-[1.1] text-[#233821] tracking-[-0.02em] whitespace-nowr
                         />
                       </div>
 
-                      {/* ✅ Title - Ab 1 line mein */}
+                      {/* Title */}
                       <h4 className="mt-3 text-[15px] md:text-[16px] font-semibold text-[#233821] leading-tight transition-colors duration-300 group-hover:text-[#2D3A1B]">
                         {step.title}
                       </h4>
 
-                      {/* ✅ Description - Ab 1 line mein */}
+                      {/* Description */}
                       <p className="mt-2 text-[12px] md:text-[13px] leading-[1.5] text-[#9A9A9A] transition-colors duration-300 group-hover:text-[#6B6B6B]">
                         {step.description}
                       </p>
                     </div>
 
-                    {/* Arrow between steps */}
+                    {/* Arrow between steps: Downward on Mobile/Tablet, Rightward on Desktop */}
                     {!isLast && (
-                      <ChevronRight
-                        size={18}
-                        className="text-[#D7CBBB] mt-6 mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#2D3A1B]"
-                      />
+                      <div className="my-2 lg:my-0 lg:mt-6">
+                        <ChevronDown
+                          size={20}
+                          className="block lg:hidden text-[#D7CBBB] transition-colors duration-300"
+                        />
+                        <ChevronRight
+                          size={18}
+                          className="hidden lg:block text-[#D7CBBB] mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#2D3A1B]"
+                        />
+                      </div>
                     )}
                   </div>
                 );

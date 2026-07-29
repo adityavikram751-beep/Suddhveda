@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -17,6 +17,7 @@ export default function HoneySelection() {
   
   // Wishlist state
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   // ---------- Fetch Wishlist ----------
   const fetchWishlist = async () => {
@@ -27,8 +28,8 @@ export default function HoneySelection() {
       });
       if (res.ok) {
         const data = await res.json();
-        const products = data?.data?.products || [];
-        const ids = products.map((item: any) => item.productId?._id || item.productId || item._id);
+        const wishlistProducts = data?.data?.products || [];
+        const ids = wishlistProducts.map((item: any) => item.productId?._id || item.productId || item._id);
         setWishlistIds(ids);
         
         window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
@@ -60,6 +61,26 @@ export default function HoneySelection() {
     }
   };
 
+  // ---------- Auto Slide for Mobile / Tablet (< 1024px) ----------
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (window.innerWidth < 1024 && sliderRef.current) {
+        const maxLen = Math.min(products.length, 8);
+        currentIndex = (currentIndex + 1) % maxLen;
+        const cardWidth = sliderRef.current.offsetWidth;
+        sliderRef.current.scrollTo({
+          left: cardWidth * currentIndex,
+          behavior: "smooth",
+        });
+      }
+    }, 3500); // Har 3.5 seconds mein automatic slide hoga
+
+    return () => clearInterval(interval);
+  }, [products]);
+
   // ---------- Variant Selection ----------
   const handleVariantSelect = (productId: string, variantId: string) => {
     setSelectedVariants((prev) => ({
@@ -77,15 +98,14 @@ export default function HoneySelection() {
     return variants[0];
   };
 
-  // ---------- Add to Cart (No Toast) ----------
+  // ---------- Add to Cart ----------
   const handleAddToCart = async (product: any) => {
     const variant = getSelectedVariant(product);
     if (!variant) return;
 
     try {
       setActionLoading(product._id);
-
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
+      await fetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -97,8 +117,6 @@ export default function HoneySelection() {
           quantity: 1,
         }),
       });
-
-      
     } catch (err) {
       console.error("Error in Add to Cart API:", err);
     } finally {
@@ -106,10 +124,9 @@ export default function HoneySelection() {
     }
   };
 
-  // ---------- Dummy handlers (to satisfy TypeScript, never used) ----------
   const dummyHandler = () => {};
 
-  // ---------- Wishlist Toggle (No Toast) ----------
+  // ---------- Wishlist Toggle ----------
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
 
@@ -151,12 +168,12 @@ export default function HoneySelection() {
   // ---------- Render ----------
   return (
     <section className="relative mt-2 bg-[#FFF7ED] overflow-hidden pt-2 pb-14">
-      <div className="max-w-[1450px] mx-auto px-6 lg:px-10 pt-10">
+      <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10 pt-10">
         <div className="text-center mb-8">
           <h2 className="text-[34px] md:text-[44px] lg:text-[56px] font-bold leading-tight text-[#2D3A1B]">
-            Nature&apos;s Finest Honey Selection
+            Nature&apos;s Finest Selection
           </h2>
-          <p className="mt-2 max-w-[760px] mx-auto text-[#B09077] text-[16px] lg:text-[18px] leading-7">
+          <p className="mt-2 max-w-[760px] mx-auto text-[#B09077] text-[16px] lg:text-[18px] leading-7 px-4">
             From wildflower meadows to mustard fields, experience honey in its purest
             and most authentic form.
           </p>
@@ -167,49 +184,59 @@ export default function HoneySelection() {
             Loading products...
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 md:gap-x-7 md:gap-y-9 mt-8 items-stretch">
-            {products.slice(0, 8).map((product: any) => {
-              const variants = product.variantDocumentId || [];
-              const selectedVariant = getSelectedVariant(product);
-              const primaryImage =
-                product.imageDocumentId?.find((img: any) => img.is_primary)
-                  ?.image_url || product.imageDocumentId?.[0]?.image_url || "";
+          <div className="relative">
+            
+            {/* Mobile: 1 Card per view automatic slider | Desktop: 4-Column Grid */}
+            <div
+              ref={sliderRef}
+              className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
+            >
+              {products.slice(0, 8).map((product: any) => {
+                const variants = product.variantDocumentId || [];
+                const selectedVariant = getSelectedVariant(product);
+                const primaryImage =
+                  product.imageDocumentId?.find((img: any) => img.is_primary)
+                    ?.image_url || product.imageDocumentId?.[0]?.image_url || "";
 
-              const price = selectedVariant?.price ?? 0;
-              const oldPrice = selectedVariant?.mrp ?? 0;
-              const weightStr = `${selectedVariant?.weight || ""}${selectedVariant?.unit || ""}`;
+                const price = selectedVariant?.price ?? 0;
+                const oldPrice = selectedVariant?.mrp ?? 0;
+                const weightStr = `${selectedVariant?.weight || ""}${selectedVariant?.unit || ""}`;
 
-              return (
-                <div
-                  key={product._id}
-                  className="transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
-                >
-                  <ProductCardShop
-                    badge={product.categoryId?.category_name || "Honey"}
-                    image={primaryImage}
-                    title={product.product_name}
-                    subtitle={product.floral_source}
-                    weight={weightStr}
-                    price={price}
-                    oldPrice={oldPrice}
-                    rating={product.average_rating}
-                    reviews={product.total_reviews}
-                    quantity={0} // 🔥 Always 0 → only "Add to Cart" shows
-                    variants={variants}
-                    selectedVariantId={selectedVariants[product._id] || variants[0]?._id}
-                    onVariantSelect={(variantId: string) =>
-                      handleVariantSelect(product._id, variantId)
-                    }
-                    onAddToCart={() => handleAddToCart(product)}
-                    onIncrement={dummyHandler} // ✅ dummy, never used
-                    onDecrement={dummyHandler} // ✅ dummy, never used
-                    onToggleWishlist={() => handleToggleWishlist(product._id)}
-                    isWishlisted={wishlistIds.includes(product._id)}
-                    onOpenDetails={() => router.push(`/shop/products/${product._id}`)}
-                  />
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={product._id}
+                    className="w-full min-w-full lg:min-w-0 snap-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center"
+                  >
+                    <div className="w-full max-w-[340px] lg:max-w-none">
+                      <ProductCardShop
+                        badge={product.categoryId?.category_name || "Honey"}
+                        image={primaryImage}
+                        title={product.product_name}
+                        subtitle={product.floral_source}
+                        weight={weightStr}
+                        price={price}
+                        oldPrice={oldPrice}
+                        rating={product.average_rating}
+                        reviews={product.total_reviews}
+                        quantity={0}
+                        variants={variants}
+                        selectedVariantId={selectedVariants[product._id] || variants[0]?._id}
+                        onVariantSelect={(variantId: string) =>
+                          handleVariantSelect(product._id, variantId)
+                        }
+                        onAddToCart={() => handleAddToCart(product)}
+                        onIncrement={dummyHandler}
+                        onDecrement={dummyHandler}
+                        onToggleWishlist={() => handleToggleWishlist(product._id)}
+                        isWishlisted={wishlistIds.includes(product._id)}
+                        onOpenDetails={() => router.push(`/shop/products/${product._id}`)}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         )}
       </div>

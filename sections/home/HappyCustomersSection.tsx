@@ -74,7 +74,7 @@ export default function HappyCustomersSection() {
     const interval = setInterval(() => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const scrollStep = clientWidth > 768 ? clientWidth / 2 : 250;
+        const scrollStep = clientWidth > 768 ? clientWidth / 2 : clientWidth; // Mobile par 1 full card slide hoga
 
         // Reset to start if end reached
         if (scrollLeft + clientWidth >= scrollWidth - 20) {
@@ -146,6 +146,7 @@ export default function HappyCustomersSection() {
             <span className="text-[#A98F78] text-[14px] sm:text-[16px] md:text-[18px] ml-1 sm:ml-2">
               20,000+ Customers
             </span>
+
           </div>
         </div>
 
@@ -160,7 +161,7 @@ export default function HappyCustomersSection() {
             No video feedback available right now.
           </div>
         ) : (
-          /* 🎬 Auto-Scrolling Track (4 Cards visible in Desktop) */
+          /* 🎬 Auto-Scrolling Track (1 Card in Mobile, 3 in Tablet, 4 in Desktop) */
           <div className="relative mt-8 sm:mt-10 md:mt-14 w-full">
             <div
               ref={scrollRef}
@@ -172,6 +173,8 @@ export default function HappyCustomersSection() {
                 py-3 px-1
                 [-ms-overflow-style:none]
                 [scrollbar-width:none]
+                snap-x
+                snap-mandatory
               "
             >
               {videos.map((item) => (
@@ -182,10 +185,12 @@ export default function HappyCustomersSection() {
                     group
                     relative
                     shrink-0
-                    w-[calc((100%-1rem)/2)]
-                    sm:w-[calc((100%-2*1.25rem)/3)]
+                    snap-center
+                    w-full
+                    sm:w-[calc((100%-1.25rem)/2)]
+                    md:w-[calc((100%-2*1.25rem)/3)]
                     lg:w-[calc((100%-3*1.25rem)/4)]
-                    h-[250px] sm:h-[290px] lg:h-[350px]
+                    h-[360px] sm:h-[320px] lg:h-[350px]
                     overflow-hidden
                     rounded-[16px]
                     border
