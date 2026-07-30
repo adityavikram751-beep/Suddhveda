@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -69,6 +69,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(true);
   const [activeStep] = useState<number>(1);
 
+  // 🔥 Form data – initially empty
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -82,6 +83,9 @@ export default function Checkout() {
   });
   const [isPincodeVerified, setIsPincodeVerified] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+
+  // ---------- ref for scrolling to form ----------
+  const formRef = useRef<HTMLDivElement>(null);
 
   // ---------- Location (for Need Help) ----------
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -116,7 +120,7 @@ export default function Checkout() {
   const [cartLoading, setCartLoading] = useState(true);
   const [cartError, setCartError] = useState<string | null>(null);
 
-  // 🟢 LocalStorage se pehle coupon fetch karo (Sync from Cart Page)
+  // Coupon from localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("applied_coupon");
@@ -219,10 +223,15 @@ export default function Checkout() {
       const items = data.data || [];
       const list: Address[] = items.map((item: any): Address => mapApiAddress(item));
       setAddresses(list);
+      
+      // 🔥 No auto-population – form remains empty
+      // Only set selected address ID for UI highlighting, but don't fill form
       if (list.length > 0) {
         const defaultAddr = list.find((a: Address) => a.isDefault) || list[0];
         setSelectedAddressId(defaultAddr.id);
-        populateForm(defaultAddr);
+        // ❌ DO NOT populate form – we want it empty initially
+      } else {
+        setSelectedAddressId("");
       }
     } catch (err) {
       console.error("Error fetching addresses:", err);
@@ -286,12 +295,18 @@ export default function Checkout() {
     });
   };
 
+  // 🔥 Edit: populate form with address data and scroll to form
   const handleEditAddress = (address: Address) => {
     populateForm(address);
     setEditingAddressId(address.id);
     setSelectedAddressId(address.id);
+    // scroll to form
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
   };
 
+  // 🔥 Add New: clear all fields, set editing mode to null, and scroll to form
   const handleAddNew = () => {
     setFormData({
       fullName: "",
@@ -306,6 +321,23 @@ export default function Checkout() {
     });
     setEditingAddressId(null);
     setIsPincodeVerified(false);
+    // deselect any address
+    setSelectedAddressId("");
+    // scroll to form
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+  };
+
+  // 🔥 Select an existing address: populate form with that address
+  const handleSelectAddress = (id: string) => {
+    setSelectedAddressId(id);
+    setEditingAddressId(null);
+    const addr = addresses.find((a) => a.id === id);
+    if (addr) {
+      populateForm(addr);
+      // Optionally scroll to form? Not necessary but can be added.
+    }
   };
 
   const handleSaveAddressAndContinue = async () => {
@@ -338,13 +370,6 @@ export default function Checkout() {
     } else {
       alert("Please enter a valid 6-digit pincode.");
     }
-  };
-
-  const handleSelectAddress = (id: string) => {
-    setSelectedAddressId(id);
-    setEditingAddressId(null);
-    const addr = addresses.find((a) => a.id === id);
-    if (addr) populateForm(addr);
   };
 
   // ---------- Computed totals ----------
@@ -383,7 +408,9 @@ export default function Checkout() {
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
 
+            {/* DeliveryAddressForm with ref */}
             <DeliveryAddressForm
+              ref={formRef}
               formData={formData}
               setFormData={setFormData}
               isPincodeVerified={isPincodeVerified}
@@ -465,7 +492,6 @@ function Stepper({ activeStep }: { activeStep: number }) {
           return (
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
               <div className="flex min-w-0 items-center gap-1 sm:gap-3">
-                {/* Number - Mobile pe hide, Desktop pe show */}
                 <span
                   className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${
                     isDone
@@ -477,8 +503,6 @@ function Stepper({ activeStep }: { activeStep: number }) {
                 >
                   {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
-                
-                {/* Mobile pe sirf dot dikhega */}
                 <span
                   className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
                     isDone
@@ -488,8 +512,6 @@ function Stepper({ activeStep }: { activeStep: number }) {
                       : "bg-[#F0DDC8]"
                   }`}
                 />
-                
-                {/* Title - Mobile pe chhota, Desktop pe normal */}
                 <div className="min-w-0">
                   <p
                     className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
@@ -516,123 +538,144 @@ function Stepper({ activeStep }: { activeStep: number }) {
   );
 }
 
-function DeliveryAddressForm({
-  formData,
-  setFormData,
-  isPincodeVerified,
-  onVerifyPincode,
-  onSave,
-  buttonLabel,
-  isEditing,
-}: any) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+// ─── DeliveryAddressForm with forwardRef ─────────────────────────────
 
-  return (
-    <div className="mt-6 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
-      <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Delivery Address</h2>
-      <div className="mt-5 sm:mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
-        <FormField
-          label="Full Name"
-          required
-          placeholder="Enter your full name"
-          name="fullName"
-          value={formData.fullName}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Phone Number"
-          required
-          placeholder="Enter 10 digit mobile number"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Pincode"
-          required
-          placeholder="Enter pincode"
-          name="pincode"
-          value={formData.pincode}
-          onChange={handleChange}
-          action={{
-            label: "Verify",
-            onClick: onVerifyPincode,
-            done: isPincodeVerified,
-          }}
-        />
-        <FormField
-          label="Locality / Area"
-          required
-          placeholder="Enter locality or area"
-          name="locality"
-          value={formData.locality}
-          onChange={handleChange}
-        />
-        <div className="sm:col-span-2">
+type DeliveryAddressFormProps = {
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  isPincodeVerified: boolean;
+  onVerifyPincode: () => void;
+  onSave: () => void;
+  buttonLabel: string;
+  isEditing: boolean;
+};
+
+const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>(
+  (
+    {
+      formData,
+      setFormData,
+      isPincodeVerified,
+      onVerifyPincode,
+      onSave,
+      buttonLabel,
+      isEditing,
+    },
+    ref
+  ) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    return (
+      <div ref={ref} className="mt-6 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
+        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Delivery Address</h2>
+        <div className="mt-5 sm:mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
           <FormField
-            label="Address (House No., Building, Street)"
+            label="Full Name"
             required
-            placeholder="Enter complete address"
-            name="address"
-            value={formData.address}
+            placeholder="Enter your full name"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+          />
+          <FormField
+            label="Phone Number"
+            required
+            placeholder="Enter 10 digit mobile number"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+          />
+          <FormField
+            label="Pincode"
+            required
+            placeholder="Enter pincode"
+            name="pincode"
+            value={formData.pincode}
+            onChange={handleChange}
+            action={{
+              label: "Verify",
+              onClick: onVerifyPincode,
+              done: isPincodeVerified,
+            }}
+          />
+          <FormField
+            label="Locality / Area"
+            required
+            placeholder="Enter locality or area"
+            name="locality"
+            value={formData.locality}
+            onChange={handleChange}
+          />
+          <div className="sm:col-span-2">
+            <FormField
+              label="Address (House No., Building, Street)"
+              required
+              placeholder="Enter complete address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </div>
+          <FormField
+            label="Landmark"
+            optional
+            placeholder="E.g. Near post office, school, etc."
+            name="landmark"
+            value={formData.landmark}
+            onChange={handleChange}
+          />
+          <FormField
+            label="City / Town"
+            required
+            placeholder="Enter city or town"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+          />
+          <FormField
+            label="State"
+            required
+            placeholder="Select state"
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            as="select"
+          />
+          <FormField
+            label="Delivery Instructions"
+            optional
+            placeholder="Any special instructions for delivery"
+            name="deliveryInstructions"
+            value={formData.deliveryInstructions}
             onChange={handleChange}
           />
         </div>
-        <FormField
-          label="Landmark"
-          optional
-          placeholder="E.g. Near post office, school, etc."
-          name="landmark"
-          value={formData.landmark}
-          onChange={handleChange}
-        />
-        <FormField
-          label="City / Town"
-          required
-          placeholder="Enter city or town"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-        />
-        <FormField
-          label="State"
-          required
-          placeholder="Select state"
-          name="state"
-          value={formData.state}
-          onChange={handleChange}
-          as="select"
-        />
-        <FormField
-          label="Delivery Instructions"
-          optional
-          placeholder="Any special instructions for delivery"
-          name="deliveryInstructions"
-          value={formData.deliveryInstructions}
-          onChange={handleChange}
-        />
-      </div>
 
-      <label className="mt-4 sm:mt-5 flex items-center gap-2 text-[12px] sm:text-[13px] text-[#4C5362]">
-        <input type="checkbox" className="h-4 w-4 rounded border-[#D3D8DF]" />
-        Save this address for faster checkout next time
-      </label>
+        <label className="mt-4 sm:mt-5 flex items-center gap-2 text-[12px] sm:text-[13px] text-[#4C5362]">
+          <input type="checkbox" className="h-4 w-4 rounded border-[#D3D8DF]" />
+          Save this address for faster checkout next time
+        </label>
 
-      <div className="mt-5 sm:mt-6 flex justify-end">
-        <button
-          type="button"
-          onClick={onSave}
-          className="flex h-11 sm:h-12 items-center gap-2 rounded-lg bg-[#D18500] px-5 sm:px-6 text-[13px] sm:text-[14px] font-bold text-white hover:bg-[#B97100] w-full sm:w-auto justify-center"
-        >
-          {buttonLabel}
-          <ArrowRight size={16} />
-        </button>
+        <div className="mt-5 sm:mt-6 flex justify-end">
+          <button
+            type="button"
+            onClick={onSave}
+            className="flex h-11 sm:h-12 items-center gap-2 rounded-lg bg-[#D18500] px-5 sm:px-6 text-[13px] sm:text-[14px] font-bold text-white hover:bg-[#B97100] w-full sm:w-auto justify-center"
+          >
+            {buttonLabel}
+            <ArrowRight size={16} />
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+DeliveryAddressForm.displayName = "DeliveryAddressForm";
+
+// ─── FormField ────────────────────────────────────────────────────────
 
 function FormField({
   label,
@@ -696,6 +739,8 @@ function FormField({
   );
 }
 
+// ─── SavedAddresses ──────────────────────────────────────────────────
+
 function SavedAddresses({
   addresses,
   selectedId,
@@ -712,7 +757,7 @@ function SavedAddresses({
   if (addresses.length === 0) {
     return (
       <div className="mt-6 sm:mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7 text-center text-[#B59A78]">
-        No saved addresses. Add one below.
+        No saved addresses. Click "Add New" to add one.
       </div>
     );
   }
@@ -788,7 +833,8 @@ function SavedAddresses({
   );
 }
 
-// ORDER SUMMARY - ✅ Fixed Duplicate Key Issue (Bulletproof)
+// ─── Order Summary ──────────────────────────────────────────────────
+
 type CheckoutProduct = {
   id: number | string;
   cartItemId?: string;
@@ -834,14 +880,14 @@ function CheckoutOrderSummary({
           <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
         ) : (
           products.map((product, index) => {
-            // ✅ BULLETPROOF: Multiple layers of uniqueness
+            // ✅ Unique key
             const uniqueKey = [
               product.cartItemId || '',
               product.id || '',
               product.variantId || '',
               product.type || 'normal',
               index,
-              Date.now() // ✅ Fallback: timestamp
+              Date.now()
             ].filter(Boolean).join('-');
             
             return (
