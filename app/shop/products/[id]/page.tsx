@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import TopBar from "@/components/layout/TopBar";
 import ProductDetailPage from "@/sections/shop/ProductDetailPage";
 import { getProductsFromResponse, getSingleProductFromResponse, type ApiProduct } from "@/lib/api-products";
 
@@ -62,7 +61,6 @@ export default async function ProductPage({
 
   return (
     <>
-      <TopBar />
       <Header />
       <ProductDetailPage product={product} recommendations={recommendations} />
       <Footer />

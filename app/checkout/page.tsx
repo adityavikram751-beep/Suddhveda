@@ -1,12 +1,10 @@
 import Header from "@/components/layout/Header";
-import TopBar from "@/components/layout/TopBar";
 import Checkout from "@/sections/cart/checkout";
 import Footer from "@/components/layout/Footer";
 
 export default function CheckoutPage() {
   return (
     <>
-      <TopBar />
       <Header />
       <Checkout/>
       <Footer/>

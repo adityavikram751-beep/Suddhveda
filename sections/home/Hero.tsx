@@ -5,7 +5,7 @@ import { TbLeaf } from "react-icons/tb";
 export default function Hero() {
   return (
     <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px]">
-      <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0">
+      <div className="max-w-[1440px] -m-2 mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0">
         
         {/* Mobile & Tablet Layout (< 1024px): Center aligned text and buttons, image at bottom */}
         <div className="flex flex-col lg:hidden items-center text-center space-y-6">

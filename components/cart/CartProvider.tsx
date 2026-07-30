@@ -6,7 +6,6 @@ import {
   ArrowRight,
   Check,
   Leaf,
-  Lock,
   Minus,
   Plus,
   RotateCcw,
@@ -21,6 +20,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import { API_BASE_URL } from "@/lib/auth";
@@ -63,28 +63,30 @@ type CartItemDetail =
       image: string;
       price: number;
       oldPrice?: number;
-      weight: string; // e.g., "250g"
+      weight: string;
       quantity: number;
     }
   | {
       type: "CUSTOM";
-      cartItemId: string; // mapped from giftCartItemId
-      productName: string; // giftBox.name
-      image: string; // giftBox.image
-      price: number; // totalAmount
+      cartItemId: string;
+      productName: string;
+      image: string;
+      price: number;
       customMessage?: string;
       quantity: number;
     };
 
 type CartContextValue = {
-  cartItems: Record<string, CartItemDetail>; // keyed by cartItemId
+  cartItems: Record<string, CartItemDetail>;
   itemCount: number;
   addToCart: (productId: string, variantId: string) => Promise<void>;
   updateQuantity: (productId: string, variantId: string, change: number) => Promise<void>;
   updateCustomQuantity: (cartItemId: string, change: number) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
   openCart: () => void;
+  closeCart: () => void;
   isLoading: boolean;
+  isCartOpen: boolean;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -103,8 +105,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [toastProduct, setToastProduct] = useState<{ title: string; weight: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ---------- Fetch cart from backend ----------
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await authFetch(`${API_BASE_URL}/api/cart`);
@@ -114,7 +115,6 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
       items.forEach((item: any) => {
         if (item.type === "CUSTOM") {
-          // Gift box item - different shape, no single product/variant
           const cartItemId = item.giftCartItemId;
           newCartItems[cartItemId] = {
             type: "CUSTOM",
@@ -128,10 +128,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // NORMAL item
         const product = item.product;
         const variant = product?.variant;
-        if (!product || !variant) return; // skip malformed items instead of crashing
+        if (!product || !variant) return;
 
         const cartItemId = item.cartItemId;
 
@@ -158,11 +157,57 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCart();
-  }, []);
+
+    const handleLiveCartUpdate = () => {
+      fetchCart();
+    };
+
+    window.addEventListener("trigger-live-update", handleLiveCartUpdate);
+    return () => {
+      window.removeEventListener("trigger-live-update", handleLiveCartUpdate);
+    };
+  }, [fetchCart]);
+
+  useEffect(() => {
+    if (isCartOpen) {
+      fetchCart();
+    }
+  }, [isCartOpen, fetchCart]);
+
+  // ✅ FIX: Background scroll lock + blur effect (NO SPINNER)
+  useEffect(() => {
+    if (isCartOpen) {
+      const scrollY = window.scrollY;
+      
+      // Lock body scroll
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+      
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+      }
+    }
+    
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+    };
+  }, [isCartOpen]);
 
   // ---------- Add to Cart ----------
   const addToCart = async (productId: string, variantId: string) => {
@@ -177,7 +222,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       });
       const updatedCart = await fetchCart();
 
-      // Find added item for toast (use the freshly fetched cart, not stale state)
+      window.dispatchEvent(new CustomEvent('trigger-live-update'));
+
       const added = Object.values(updatedCart).find(
         (item): item is Extract<CartItemDetail, { type: "NORMAL" }> =>
           item.type === "NORMAL" && item.productId === productId && item.variantId === variantId
@@ -190,25 +236,19 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ---------- Update Quantity for NORMAL items (by productId + variantId) ----------
+  // ---------- Update Quantity for NORMAL items ----------
   const updateQuantity = async (productId: string, variantId: string, change: number) => {
-    // Find the cart item with matching productId & variantId (NORMAL items only)
     const item = Object.values(cartItems).find(
       (i): i is Extract<CartItemDetail, { type: "NORMAL" }> =>
         i.type === "NORMAL" && i.productId === productId && i.variantId === variantId
     );
 
-    if (!item) {
-      console.error("Update quantity error: item not found in cart");
-      return;
-    }
+    if (!item) return;
 
-    // Don't let quantity go below 1 on the client
     if (change < 0 && item.quantity <= 1) {
       return;
     }
 
-    // ---------- Optimistic update: change number instantly on screen ----------
     const previousCartItems = cartItems;
     setCartItems((prev) => ({
       ...prev,
@@ -231,36 +271,27 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           variantId,
         }),
       });
-      // Sync with server truth in the background
       await fetchCart();
+      window.dispatchEvent(new CustomEvent('trigger-live-update'));
     } catch (err) {
       console.error("Update quantity error:", err);
-      // Roll back optimistic change if the request failed
       setCartItems(previousCartItems);
     }
   };
 
-  // ---------- Update Quantity for CUSTOM / gift box items (by cartItemId) ----------
-  // NOTE: endpoint names below are ASSUMED (/api/cart/gift/increase-quantity,
-  // /api/cart/gift/decrease-quantity) with body { itemId: giftCartItemId }.
-  // If your backend uses different route names or a different body field,
-  // update ENDPOINT + body below to match.
+  // ---------- Update Quantity for CUSTOM items ----------
   const updateCustomQuantity = async (cartItemId: string, change: number) => {
     const item = Object.values(cartItems).find(
       (i): i is Extract<CartItemDetail, { type: "CUSTOM" }> =>
         i.type === "CUSTOM" && i.cartItemId === cartItemId
     );
 
-    if (!item) {
-      console.error("Update custom quantity error: gift item not found in cart");
-      return;
-    }
+    if (!item) return;
 
     if (change < 0 && item.quantity <= 1) {
       return;
     }
 
-    // ---------- Optimistic update ----------
     const previousCartItems = cartItems;
     setCartItems((prev) => ({
       ...prev,
@@ -282,17 +313,17 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         }),
       });
       await fetchCart();
+      window.dispatchEvent(new CustomEvent('trigger-live-update'));
     } catch (err) {
       console.error("Update custom quantity error:", err);
       setCartItems(previousCartItems);
     }
   };
 
-  // ---------- Remove item (by cartItemId) ----------
+  // ---------- Remove item ----------
   const removeItem = async (cartItemId: string) => {
     const previousCartItems = cartItems;
 
-    // Optimistic removal
     setCartItems((prev) => {
       const next = { ...prev };
       delete next[cartItemId];
@@ -305,11 +336,21 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ itemId: cartItemId }),
       });
       await fetchCart();
+      window.dispatchEvent(new CustomEvent('trigger-live-update'));
     } catch (err) {
       console.error("Remove item error:", err);
       setCartItems(previousCartItems);
     }
   };
+
+  // ---------- Open/Close Cart ----------
+  const openCart = useCallback(() => {
+    setIsCartOpen(true);
+  }, []);
+
+  const closeCart = useCallback(() => {
+    setIsCartOpen(false);
+  }, []);
 
   // ---------- Derived state ----------
   const cartProducts = useMemo(() => {
@@ -340,8 +381,10 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         updateCustomQuantity,
         removeItem,
-        openCart: () => setIsCartOpen(true),
+        openCart,
+        closeCart,
         isLoading,
+        isCartOpen,
       }}
     >
       {children}
@@ -389,21 +432,24 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      {/* Cart overlay */}
+      {/* ✅ Proper Blur Overlay - NO SPINNER */}
       <div
-        className={`fixed inset-0 z-[60] bg-black/35 transition-opacity ${
-          isCartOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        className={`fixed inset-0 z-[60] transition-all duration-300 ${
+          isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsCartOpen(false)}
-      />
+      >
+        {/* Glass morphism blur background */}
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[6px] backdrop-saturate-[1.2]" />
+      </div>
 
-      {/* Cart sidebar */}
+      {/* Cart sidebar with glass effect */}
       <aside
-        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[392px] flex-col rounded-l-[18px] border border-r-0 border-[#D9B88D] bg-white shadow-[-18px_0_50px_rgba(0,0,0,0.18)] transition-transform duration-300 ${
+        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[420px] flex-col rounded-l-[24px] border border-r-0 border-[#D9B88D]/20 bg-white/95 backdrop-blur-xl shadow-[-20px_0_60px_rgba(0,0,0,0.15)] transition-transform duration-300 ${
           isCartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-[#D9B88D] px-4">
+        <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-[#D9B88D]/30 px-4">
           <h2 className="font-serif text-[16px] font-medium text-[#3C2015]">
             My Cart <span className="font-normal">({itemCount})</span>
           </h2>
@@ -418,9 +464,17 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
         <div className="flex-1 overflow-y-auto px-4 py-5">
           {isLoading ? (
-            <div className="text-center text-[#8E623A]">Loading cart...</div>
+            <div className="flex flex-col items-center justify-center py-12">
+              {/* ✅ Simple dots loading instead of spinner */}
+              <div className="flex gap-2">
+                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse" />
+                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse delay-150" />
+                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse delay-300" />
+              </div>
+              <p className="mt-4 text-[14px] text-[#8E623A]">Loading your cart...</p>
+            </div>
           ) : cartProducts.length === 0 ? (
-            <div className="rounded-xl bg-white p-5 text-center text-[#8E623A]">
+            <div className="rounded-xl bg-white/50 p-5 text-center text-[#8E623A]">
               Your cart is empty.
             </div>
           ) : (
@@ -516,7 +570,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           )}
         </div>
 
-        <div className="shrink-0 border-t border-[#D9B88D] bg-[#FFF1E5] px-4 py-5">
+        <div className="shrink-0 border-t border-[#D9B88D]/30 bg-[#FFF1E5]/80 backdrop-blur-sm px-4 py-5">
           <div className="mb-4 flex items-center justify-between text-[#3C2015]">
             <div>
               <p className="text-[15px] font-bold">
@@ -531,23 +585,16 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               <p className="mt-1 text-[12px] font-bold text-[#B97800]">₹{saved}</p>
             </div>
           </div>
-          <Link
-            href="/checkout"
-            onClick={() => setIsCartOpen(false)}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded bg-[#2D3A1B] text-[16px] font-bold text-white hover:bg-[#C98715]"
-          >
-            <Lock size={14} />
-            Checkout Securely
-            <ArrowRight size={17} />
-          </Link>
+          
           <Link
             href="/cart"
             onClick={() => setIsCartOpen(false)}
-            className="mt-3 block h-12 w-full rounded border border-[#9A5A05] bg-white py-3 text-center text-[16px] font-bold text-[#9A5A05] hover:bg-[#FFF8EF]"
+            className="block h-12 w-full rounded border border-[#9A5A05] bg-white py-3 text-center text-[16px] font-bold text-[#9A5A05] hover:bg-[#FFF8EF]"
           >
             View Cart
           </Link>
-          <div className="mt-7 grid grid-cols-3 gap-2 border-t border-[#D9B88D] pt-5 text-center text-[#4A2B12]">
+          
+          <div className="mt-7 grid grid-cols-3 gap-2 border-t border-[#D9B88D]/30 pt-5 text-center text-[#4A2B12]">
             <span className="flex flex-col items-center">
               <RotateCcw className="mb-1 h-5 w-5 text-[#9A5A05]" />
               <strong className="text-[10px]">Easy Returns</strong>

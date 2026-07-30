@@ -1,4 +1,4 @@
-import TopBar from "@/components/layout/TopBar";
+
 import Header from "@/components/layout/Header";
 import Hero from "@/sections/home/Hero";
 import FeaturesBar from "@/sections/home/FeaturesBar";
@@ -15,7 +15,7 @@ import Footer from "@/components/layout/Footer";
 export default function Home() {
   return (
     <>
-      <TopBar />
+    
       <Header />
       <Hero />
       <FeaturesBar />

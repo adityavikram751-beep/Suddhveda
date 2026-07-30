@@ -17,10 +17,8 @@ export default function HappyCustomersSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedVideo, setSelectedVideo] = useState<VideoFeedback | null>(null);
 
-  // Auto Scroll Track Reference
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // ---------------- 1. GET Video Feedbacks API ----------------
   const fetchVideoFeedbacks = async () => {
     try {
       setLoading(true);
@@ -67,23 +65,28 @@ export default function HappyCustomersSection() {
     fetchVideoFeedbacks();
   }, []);
 
-  // ---------------- 2. Auto Scroll Logic ----------------
+  // ---------------- Perfect 1-Card Smooth Scroll Logic ----------------
   useEffect(() => {
     if (videos.length === 0) return;
 
     const interval = setInterval(() => {
       if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const scrollStep = clientWidth > 768 ? clientWidth / 2 : clientWidth; // Mobile par 1 full card slide hoga
+        const container = scrollRef.current;
+        const firstCard = container.querySelector(".feedback-card") as HTMLElement;
+        
+        if (!firstCard) return;
 
-        // Reset to start if end reached
-        if (scrollLeft + clientWidth >= scrollWidth - 20) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        // Exact card width + gap (20px for gap-5)
+        const cardWidth = firstCard.offsetWidth + 20;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+        if (container.scrollLeft >= maxScrollLeft - 10) {
+          container.scrollTo({ left: 0, behavior: "smooth" });
         } else {
-          scrollRef.current.scrollBy({ left: scrollStep, behavior: "smooth" });
+          container.scrollBy({ left: cardWidth, behavior: "smooth" });
         }
       }
-    }, 3500); // 3.5 seconds interval
+    }, 3500);
 
     return () => clearInterval(interval);
   }, [videos]);
@@ -161,12 +164,12 @@ export default function HappyCustomersSection() {
             No video feedback available right now.
           </div>
         ) : (
-          /* 🎬 Auto-Scrolling Track (1 Card in Mobile, 3 in Tablet, 4 in Desktop) */
+          /* 🎬 Cards Track (1 Card in Mobile, exactly 4 Cards in Desktop) */
           <div className="relative mt-8 sm:mt-10 md:mt-14 w-full">
             <div
               ref={scrollRef}
               className="
-                flex items-center gap-4 sm:gap-5
+                flex items-center gap-5
                 overflow-x-auto
                 scroll-smooth
                 scrollbar-none
@@ -182,15 +185,16 @@ export default function HappyCustomersSection() {
                   key={item.id}
                   onClick={() => setSelectedVideo(item)}
                   className="
+                    feedback-card
                     group
                     relative
                     shrink-0
-                    snap-center
+                    snap-start
                     w-full
-                    sm:w-[calc((100%-1.25rem)/2)]
-                    md:w-[calc((100%-2*1.25rem)/3)]
-                    lg:w-[calc((100%-3*1.25rem)/4)]
-                    h-[360px] sm:h-[320px] lg:h-[350px]
+                    sm:w-[calc(50%-10px)]
+                    md:w-[calc(33.333%-14px)]
+                    lg:w-[calc(25%-15px)]
+                    h-[380px] sm:h-[320px] lg:h-[350px]
                     overflow-hidden
                     rounded-[16px]
                     border

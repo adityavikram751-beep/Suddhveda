@@ -1,5 +1,4 @@
 
-import TopBar from "@/components/layout/TopBar";
 import Header from "@/components/layout/Header";
 import GiftSets from "@/sections/giftsets/page";
 import GiftOccession from"@/sections/giftsets/giftoccesion";
@@ -12,7 +11,6 @@ import Footer from "@/components/layout/Footer";
 export default function GiftsetPage() {
   return (
     <>
-    <TopBar />
       <Header />
       <GiftSets/>
       <GiftOccession/>

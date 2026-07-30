@@ -34,21 +34,26 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const { itemCount, openCart } = useCart();
+  const [wishlistCount, setWishlistCount] = useState<number>(0);
+  const [cartCount, setCartCount] = useState<number>(0);
+  const { openCart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const headerWrapperRef = useRef<HTMLDivElement>(null);
 
+  // ✅ FIX: Fetch wishlist count from dedicated API
   const fetchWishlistCount = async () => {
     try {
       const sessionData = getStoredSession();
       if (!sessionData) {
+        console.log("🔴 No session, wishlist count = 0");
         setWishlistCount(0);
         return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+      console.log("🟢 Fetching wishlist count...");
+      const res = await fetch(`${API_BASE_URL}/api/wishlist/product-count`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -56,22 +61,152 @@ export default function Header() {
         },
       });
 
+      console.log("📡 Wishlist API Status:", res.status);
+
       if (res.status === 401) {
+        console.log("🔴 Wishlist API 401 - Unauthorized");
         setWishlistCount(0);
         return;
       }
 
       if (!res.ok) {
-        throw new Error(`Failed to fetch wishlist: ${res.status}`);
+        throw new Error(`Failed to fetch wishlist count: ${res.status}`);
       }
 
       const data = await res.json();
-      const products = data?.data?.products || [];
-      const count = Array.isArray(products) ? products.length : 0;
+      console.log("📦 Wishlist API Full Response:", JSON.stringify(data, null, 2));
+
+      // ✅ Try all possible paths
+      let count = 0;
+      if (data?.data?.count !== undefined) {
+        count = data.data.count;
+        console.log("✅ Found in data.count:", count);
+      } else if (data?.count !== undefined) {
+        count = data.count;
+        console.log("✅ Found in root.count:", count);
+      } else if (data?.data?.total !== undefined) {
+        count = data.data.total;
+        console.log("✅ Found in data.total:", count);
+      } else if (data?.total !== undefined) {
+        count = data.total;
+        console.log("✅ Found in root.total:", count);
+      } else if (data?.data?.totalItems !== undefined) {
+        count = data.data.totalItems;
+        console.log("✅ Found in data.totalItems:", count);
+      } else if (data?.totalItems !== undefined) {
+        count = data.totalItems;
+        console.log("✅ Found in root.totalItems:", count);
+      } else {
+        console.log("❌ No count found in response, checking all keys:", Object.keys(data));
+        // Try to find any number field
+        for (const key of Object.keys(data)) {
+          if (typeof data[key] === 'number') {
+            count = data[key];
+            console.log(`✅ Found number in key "${key}":`, count);
+            break;
+          }
+          if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
+            for (const subKey of Object.keys(data[key])) {
+              if (typeof data[key][subKey] === 'number') {
+                count = data[key][subKey];
+                console.log(`✅ Found number in ${key}.${subKey}:`, count);
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      console.log("🎯 Final wishlist count:", count);
       setWishlistCount(count);
+      
     } catch (error) {
-      console.error("Error fetching wishlist count:", error);
+      console.error("❌ Error fetching wishlist count:", error);
       setWishlistCount(0);
+    }
+  };
+
+  // ✅ NEW: Fetch cart count from dedicated API
+  const fetchCartCount = async () => {
+    try {
+      const sessionData = getStoredSession();
+      if (!sessionData) {
+        console.log("🔴 No session, cart count = 0");
+        setCartCount(0);
+        return;
+      }
+
+      console.log("🟢 Fetching cart count...");
+      const res = await fetch(`${API_BASE_URL}/api/cart/count`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("📡 Cart API Status:", res.status);
+
+      if (res.status === 401) {
+        console.log("🔴 Cart API 401 - Unauthorized");
+        setCartCount(0);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch cart count: ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("📦 Cart API Full Response:", JSON.stringify(data, null, 2));
+
+      // ✅ Try all possible paths
+      let count = 0;
+      if (data?.data?.count !== undefined) {
+        count = data.data.count;
+        console.log("✅ Found in data.count:", count);
+      } else if (data?.count !== undefined) {
+        count = data.count;
+        console.log("✅ Found in root.count:", count);
+      } else if (data?.data?.totalItems !== undefined) {
+        count = data.data.totalItems;
+        console.log("✅ Found in data.totalItems:", count);
+      } else if (data?.totalItems !== undefined) {
+        count = data.totalItems;
+        console.log("✅ Found in root.totalItems:", count);
+      } else if (data?.data?.total !== undefined) {
+        count = data.data.total;
+        console.log("✅ Found in data.total:", count);
+      } else if (data?.total !== undefined) {
+        count = data.total;
+        console.log("✅ Found in root.total:", count);
+      } else {
+        console.log("❌ No count found in response, checking all keys:", Object.keys(data));
+        // Try to find any number field
+        for (const key of Object.keys(data)) {
+          if (typeof data[key] === 'number') {
+            count = data[key];
+            console.log(`✅ Found number in key "${key}":`, count);
+            break;
+          }
+          if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
+            for (const subKey of Object.keys(data[key])) {
+              if (typeof data[key][subKey] === 'number') {
+                count = data[key][subKey];
+                console.log(`✅ Found number in ${key}.${subKey}:`, count);
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      console.log("🎯 Final cart count:", count);
+      setCartCount(count);
+      
+    } catch (error) {
+      console.error("❌ Error fetching cart count:", error);
+      setCartCount(0);
     }
   };
 
@@ -110,6 +245,7 @@ export default function Header() {
       setAccountOpen(false);
       setOpen(false);
       setWishlistCount(0);
+      setCartCount(0);
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
       router.push("/login");
     }
@@ -121,8 +257,10 @@ export default function Header() {
       setSession(sessionData);
       if (sessionData) {
         fetchWishlistCount();
+        fetchCartCount();
       } else {
         setWishlistCount(0);
+        setCartCount(0);
       }
     }
 
@@ -135,41 +273,89 @@ export default function Header() {
       }
     }
 
-    const handleWishlistUpdate = (event: CustomEvent) => {
-      setWishlistCount(event.detail.count);
+    // ✅ Handle wishlist update event
+    const handleWishlistUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log("📢 Wishlist update event:", customEvent.detail);
+      if (customEvent.detail?.count !== undefined) {
+        setWishlistCount(customEvent.detail.count);
+      } else {
+        fetchWishlistCount();
+      }
+    };
+
+    // ✅ Handle cart update event
+    const handleCartUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log("📢 Cart update event:", customEvent.detail);
+      if (customEvent.detail?.count !== undefined) {
+        setCartCount(customEvent.detail.count);
+      } else {
+        fetchCartCount();
+      }
     };
 
     syncSession();
     window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
     window.addEventListener("storage", syncSession);
     document.addEventListener("mousedown", closeOnOutsideClick);
-    window.addEventListener('wishlist-count-update', handleWishlistUpdate as EventListener);
+    window.addEventListener("wishlist-count-update", handleWishlistUpdate);
+    window.addEventListener("cart-count-update", handleCartUpdate);
+    window.addEventListener("trigger-live-update", fetchCartCount);
 
     return () => {
       window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
       window.removeEventListener("storage", syncSession);
       document.removeEventListener("mousedown", closeOnOutsideClick);
-      window.removeEventListener('wishlist-count-update', handleWishlistUpdate as EventListener);
+      window.removeEventListener("wishlist-count-update", handleWishlistUpdate);
+      window.removeEventListener("cart-count-update", handleCartUpdate);
+      window.removeEventListener("trigger-live-update", fetchCartCount);
     };
   }, []);
 
+  // ✅ Refetch when pathname changes
   useEffect(() => {
     const sessionData = getStoredSession();
     if (sessionData) {
       const timer = setTimeout(() => {
         fetchWishlistCount();
+        fetchCartCount();
       }, 100);
       return () => clearTimeout(timer);
     }
   }, [pathname]);
 
+  // ✅ Refetch when session changes
   useEffect(() => {
     if (session) {
       fetchWishlistCount();
+      fetchCartCount();
     } else {
       setWishlistCount(0);
+      setCartCount(0);
     }
   }, [session]);
+
+  // Header padding effect
+  useEffect(() => {
+    function updatePadding() {
+      if (headerWrapperRef.current) {
+        const height = headerWrapperRef.current.offsetHeight;
+        document.body.style.paddingTop = `${height}px`;
+      }
+    }
+
+    updatePadding();
+    window.addEventListener("resize", updatePadding);
+
+    const observer = new ResizeObserver(updatePadding);
+    if (headerWrapperRef.current) observer.observe(headerWrapperRef.current);
+
+    return () => {
+      window.removeEventListener("resize", updatePadding);
+      observer.disconnect();
+    };
+  }, [open]);
 
   function handleAccountClick() {
     if (!session) {
@@ -181,15 +367,15 @@ export default function Header() {
     setAccountOpen((value) => !value);
   }
 
+  // 🔍 Debug: Log current counts on render
+  console.log("🔴 Current state - Wishlist:", wishlistCount, "Cart:", cartCount);
+
   return (
-    // Poora block (promo bar + nav bar) ab FIXED hai top pe — scroll pe bilkul nahi hilega
-    <div className="fixed top-0 left-0 w-full z-60">
+    <div ref={headerWrapperRef} className="fixed top-0 left-0 w-full z-40">
       <PromoBar />
 
       <header className="w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
         <div className="relative max-w-[1445px] mx-auto h-[62px] px-4 sm:px-6 lg:px-[52px] flex items-center justify-between">
-
-          {/* Left Side: Mobile Menu Button / Desktop Logo */}
           <div className="flex items-center z-10">
             <button
               className="lg:hidden text-[#7A3F10] focus:outline-none p-1"
@@ -211,7 +397,6 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Center Logo for Mobile/Tablet */}
           <div className="absolute left-1/2 -translate-x-1/2 lg:hidden flex items-center justify-center">
             <Link href="/" className="flex items-center">
               <Image
@@ -225,7 +410,6 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Menu */}
           <nav className="hidden lg:flex items-center gap-12">
             {navItems.map((item) => {
               const isActive =
@@ -254,18 +438,19 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Right Icons */}
           <div className="flex items-center gap-4 sm:gap-[18px] z-10">
             <Link
               href="/wishlist"
               className="relative text-[#7A3F10] hover:text-[#D89B00] transition"
             >
               <FiHeart size={22} />
-              {wishlistCount > 0 && (
+              {/* 🔍 Debug: Show count in data attribute */}
+              <span data-wishlist-count={wishlistCount} />
+              {wishlistCount > 0 ? (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
                   {wishlistCount}
                 </span>
-              )}
+              ) : null}
             </Link>
 
             <div className="relative" ref={accountMenuRef}>
@@ -307,6 +492,7 @@ export default function Header() {
               )}
             </div>
 
+            {/* ✅ Cart button with dedicated count API */}
             <button
               type="button"
               onClick={openCart}
@@ -314,16 +500,17 @@ export default function Header() {
               aria-label="Open cart"
             >
               <FiShoppingCart size={22} />
-              {itemCount > 0 && (
+              {/* 🔍 Debug: Show count in data attribute */}
+              <span data-cart-count={cartCount} />
+              {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
-                  {itemCount}
+                  {cartCount}
                 </span>
               )}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ${
             open ? "max-h-[450px]" : "max-h-0"

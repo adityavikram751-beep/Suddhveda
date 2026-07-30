@@ -147,12 +147,10 @@ export default function Checkout() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       
-      // Server Fallback: Agar local storage me na mila ho toh API response se lo
       const rawDiscount = data.couponDiscount ?? data.discountAmount ?? data.discount ?? data.data?.discountAmount ?? 0;
       const apiDiscount = typeof rawDiscount === "string" ? parseFloat(rawDiscount) || 0 : rawDiscount;
       const apiCode = data.appliedCoupon?.code || data.couponCode || "";
 
-      // Prioritize local storage if already present, else fallback to API
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem("applied_coupon");
         if (!stored && apiDiscount > 0) {
@@ -169,6 +167,8 @@ export default function Checkout() {
           const variant = product.variant || {};
           products.push({
             id: product._id || item.cartItemId,
+            cartItemId: item.cartItemId || item._id,
+            variantId: variant._id || '',
             title: product.product_name || "Honey",
             weight: variant.weight ? `${variant.weight}g` : "",
             price: variant.price || 0,
@@ -180,7 +180,9 @@ export default function Checkout() {
         } else if (item.type === "CUSTOM") {
           const giftBox = item.giftBox || {};
           products.push({
-            id: item.giftCartItemId,
+            id: item.giftCartItemId || item._id,
+            cartItemId: item.giftCartItemId || item._id,
+            variantId: '',
             title: `🎁 ${giftBox.name || "Gift Box"}`,
             weight: `${item.totalWeight || 0}g`,
             price: item.totalAmount || 0,
@@ -360,10 +362,24 @@ export default function Checkout() {
   const getButtonLabel = () => (isEditing ? "Update Address & Continue" : "Add Your Address");
 
   return (
-    <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
-      <div className="mx-auto max-w-[1410px] px-5">
-        <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
-          <section>
+    <main className="bg-[#FFF8EF] min-h-screen py-6 sm:py-10 text-[#2F241C]">
+      <div className="mx-auto max-w-[1410px] px-4 sm:px-5">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-start">
+          
+          {/* Left Side - Scrollable */}
+          <div 
+            className="max-h-[calc(100vh-80px)] overflow-y-auto pr-1 sm:pr-2"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+          >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
 
@@ -378,7 +394,7 @@ export default function Checkout() {
             />
 
             {loading ? (
-              <div className="mt-8 text-center py-10 text-[#B59A78]">Loading addresses...</div>
+              <div className="mt-6 sm:mt-8 text-center py-8 sm:py-10 text-[#B59A78]">Loading addresses...</div>
             ) : (
               <SavedAddresses
                 addresses={addresses}
@@ -388,15 +404,18 @@ export default function Checkout() {
                 onEdit={handleEditAddress}
               />
             )}
-          </section>
+            
+            <div className="h-6 sm:h-8" />
+          </div>
 
-          <aside className="lg:sticky lg:top-6 flex flex-col">
+          {/* Right Side - Fixed */}
+          <aside className="sticky top-6 flex flex-col self-start">
             {cartLoading ? (
-              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 text-center text-[#B59A78]">
+              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 sm:p-8 text-center text-[#B59A78]">
                 Loading cart...
               </div>
             ) : cartError ? (
-              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 text-center text-red-600">
+              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 sm:p-8 text-center text-red-600">
                 {cartError}
               </div>
             ) : (
@@ -421,16 +440,16 @@ export default function Checkout() {
 function CheckoutHeader() {
   return (
     <div className="relative">
-      <h1 className="font-serif text-[34px] font-bold">Checkout</h1>
-      <p className="mt-1 text-[14px] text-[#7B8493]">
+      <h1 className="font-serif text-[26px] sm:text-[34px] font-bold">Checkout</h1>
+      <p className="mt-1 text-[13px] sm:text-[14px] text-[#7B8493]">
         Almost there! Just a few more details to get your pure honey.
       </p>
       <Image
         src="/need.png"
         alt="Honey illustration"
-        width={200}
-        height={80}
-        className="absolute right-0 -top-6 hidden object-contain sm:block"
+        width={180}
+        height={70}
+        className="absolute right-0 -top-4 sm:-top-6 hidden sm:block object-contain"
       />
     </div>
   );
@@ -438,16 +457,17 @@ function CheckoutHeader() {
 
 function Stepper({ activeStep }: { activeStep: number }) {
   return (
-    <div className="mt-8 rounded-lg border border-[#F4D7B8] bg-white/55 px-3 py-4 shadow-sm md:px-4">
-      <div className="flex items-center justify-between gap-2">
+    <div className="mt-6 sm:mt-8 rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
+      <div className="flex items-center justify-between gap-1 sm:gap-2">
         {steps.map((step) => {
           const isDone = step.id < activeStep;
           const isActive = step.id === activeStep;
           return (
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
-              <div className="flex min-w-0 items-center gap-3">
+              <div className="flex min-w-0 items-center gap-1 sm:gap-3">
+                {/* Number - Mobile pe hide, Desktop pe show */}
                 <span
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-[16px] font-bold ${
+                  className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${
                     isDone
                       ? "border-[#77AE61] bg-white text-[#77AE61]"
                       : isActive
@@ -455,23 +475,36 @@ function Stepper({ activeStep }: { activeStep: number }) {
                       : "border-[#F0DDC8] bg-white text-[#2F241C]"
                   }`}
                 >
-                  {isDone ? <CheckCircle2 size={28} strokeWidth={1.8} /> : step.id}
+                  {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
-                <div className="hidden min-w-0 sm:block">
+                
+                {/* Mobile pe sirf dot dikhega */}
+                <span
+                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
+                    isDone
+                      ? "bg-[#77AE61]"
+                      : isActive
+                      ? "bg-[#D18500]"
+                      : "bg-[#F0DDC8]"
+                  }`}
+                />
+                
+                {/* Title - Mobile pe chhota, Desktop pe normal */}
+                <div className="min-w-0">
                   <p
-                    className={`text-[15px] font-semibold leading-tight ${
+                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
                       isActive ? "text-[#D18500]" : "text-[#2F241C]"
                     }`}
                   >
                     {step.title}
                   </p>
-                  <p className="mt-1 truncate text-[12px] leading-tight text-[#596273]">
+                  <p className="hidden sm:block mt-0.5 sm:mt-1 truncate text-[10px] sm:text-[12px] leading-tight text-[#596273]">
                     {step.subtitle}
                   </p>
                 </div>
               </div>
               {step.id < steps.length && (
-                <span className="mx-3 hidden shrink-0 text-[26px] leading-none text-[#F0A33A] md:block">
+                <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
                   &rsaquo;
                 </span>
               )}
@@ -497,9 +530,9 @@ function DeliveryAddressForm({
   };
 
   return (
-    <div className="mt-6 rounded-[16px] border border-[#F2EFE9] bg-white p-7">
-      <h2 className="font-serif text-[19px] font-bold">Delivery Address</h2>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+    <div className="mt-6 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
+      <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Delivery Address</h2>
+      <div className="mt-5 sm:mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
         <FormField
           label="Full Name"
           required
@@ -582,16 +615,16 @@ function DeliveryAddressForm({
         />
       </div>
 
-      <label className="mt-5 flex items-center gap-2 text-[13px] text-[#4C5362]">
+      <label className="mt-4 sm:mt-5 flex items-center gap-2 text-[12px] sm:text-[13px] text-[#4C5362]">
         <input type="checkbox" className="h-4 w-4 rounded border-[#D3D8DF]" />
         Save this address for faster checkout next time
       </label>
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-5 sm:mt-6 flex justify-end">
         <button
           type="button"
           onClick={onSave}
-          className="flex h-12 items-center gap-2 rounded-lg bg-[#D18500] px-6 text-[14px] font-bold text-white hover:bg-[#B97100]"
+          className="flex h-11 sm:h-12 items-center gap-2 rounded-lg bg-[#D18500] px-5 sm:px-6 text-[13px] sm:text-[14px] font-bold text-white hover:bg-[#B97100] w-full sm:w-auto justify-center"
         >
           {buttonLabel}
           <ArrowRight size={16} />
@@ -614,11 +647,11 @@ function FormField({
 }: any) {
   return (
     <div>
-      <label className="mb-1.5 block text-[13px] font-semibold text-[#2F241C]">
+      <label className="mb-1 block text-[12px] sm:text-[13px] font-semibold text-[#2F241C]">
         {label}
         {required && <span className="text-red-500">*</span>}
         {optional && (
-          <span className="ml-1 text-[11px] font-normal text-[#9AA3AF]">(Optional)</span>
+          <span className="ml-1 text-[10px] sm:text-[11px] font-normal text-[#9AA3AF]">(Optional)</span>
         )}
       </label>
       <div className="flex gap-2">
@@ -627,7 +660,7 @@ function FormField({
             name={name}
             value={value}
             onChange={onChange}
-            className="h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[13px] text-[#2F241C] outline-none focus:border-[#2D3A1B]"
+            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none focus:border-[#2D3A1B]"
           >
             <option value="">{placeholder}</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -643,14 +676,14 @@ function FormField({
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#2D3A1B]"
+            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#2D3A1B]"
           />
         )}
         {action && (
           <button
             type="button"
             onClick={action.onClick}
-            className={`flex h-11 shrink-0 items-center gap-1.5 rounded-lg px-5 text-[13px] font-bold text-white transition-colors ${
+            className={`flex h-10 sm:h-11 shrink-0 items-center gap-1.5 rounded-lg px-4 sm:px-5 text-[12px] sm:text-[13px] font-bold text-white transition-colors ${
               action.done ? "bg-[#0BA445]" : "bg-[#D18500] hover:bg-[#B97100]"
             }`}
           >
@@ -678,41 +711,41 @@ function SavedAddresses({
 }) {
   if (addresses.length === 0) {
     return (
-      <div className="mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-7 text-center text-[#B59A78]">
+      <div className="mt-6 sm:mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7 text-center text-[#B59A78]">
         No saved addresses. Add one below.
       </div>
     );
   }
 
   return (
-    <div className="mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-7">
+    <div className="mt-6 sm:mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-[19px] font-bold">Saved Addresses</h2>
+        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Saved Addresses</h2>
         <button
           type="button"
           onClick={onAddNew}
-          className="text-[13px] font-semibold text-[#2D3A1B] hover:underline"
+          className="text-[12px] sm:text-[13px] font-semibold text-[#2D3A1B] hover:underline"
         >
           + Add New
         </button>
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:gap-4 sm:grid-cols-2">
         {addresses.map((address: Address) => {
           const isSelected = selectedId === address.id;
           return (
             <div
               key={address.id}
               onClick={() => onSelect(address.id)}
-              className={`cursor-pointer rounded-[14px] border p-5 text-left transition-colors ${
+              className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${
                 isSelected
                   ? "border-[#2D3A1B] bg-[#FFF8EF]"
                   : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-[14px] font-bold">
+                <span className="flex items-center gap-2 text-[13px] sm:text-[14px] font-bold">
                   <span
-                    className={`h-4 w-4 rounded-full border-2 ${
+                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 ${
                       isSelected
                         ? "border-[#2D3A1B] bg-[#2D3A1B]"
                         : "border-[#CBD2DB] bg-white"
@@ -720,7 +753,7 @@ function SavedAddresses({
                   />
                   {address.label}
                   {address.isDefault && (
-                    <span className="text-[11px] font-normal text-[#2D3A1B]">(Default)</span>
+                    <span className="text-[10px] sm:text-[11px] font-normal text-[#2D3A1B]">(Default)</span>
                   )}
                 </span>
                 {isSelected && (
@@ -730,13 +763,13 @@ function SavedAddresses({
                       e.stopPropagation();
                       onEdit(address);
                     }}
-                    className="text-[12px] font-semibold text-[#2D3A1B] hover:underline"
+                    className="text-[11px] sm:text-[12px] font-semibold text-[#2D3A1B] hover:underline"
                   >
                     ✎ Edit
                   </button>
                 )}
               </div>
-              <p className="mt-3 text-[13px] leading-relaxed text-[#4C5362]">
+              <p className="mt-2 sm:mt-3 text-[12px] sm:text-[13px] leading-relaxed text-[#4C5362]">
                 {address.name}
                 <br />
                 {address.line}
@@ -755,9 +788,11 @@ function SavedAddresses({
   );
 }
 
-// ORDER SUMMARY
+// ORDER SUMMARY - ✅ Fixed Duplicate Key Issue (Bulletproof)
 type CheckoutProduct = {
   id: number | string;
+  cartItemId?: string;
+  variantId?: string;
   title: string;
   weight: string;
   price: number;
@@ -787,40 +822,54 @@ function CheckoutOrderSummary({
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
   return (
-    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col min-h-[720px]">
+    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6">
+      
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
-        <span className="text-[12px] text-[#9AA3AF]">{products.length} Items</span>
+        <h2 className="font-serif text-[18px] sm:text-[20px] font-bold">Order Summary</h2>
+        <span className="text-[11px] sm:text-[12px] text-[#9AA3AF]">{products.length} Items</span>
       </div>
 
-      <div className="mt-5 max-h-[280px] space-y-4 overflow-y-auto pr-1 scrollbar-hide">
+      <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
         {products.length === 0 ? (
           <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
         ) : (
-          products.map((product: CheckoutProduct) => (
-            <div key={product.id} className="flex items-center gap-3">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  fill
-                  className="object-contain p-1.5"
-                />
+          products.map((product, index) => {
+            // ✅ BULLETPROOF: Multiple layers of uniqueness
+            const uniqueKey = [
+              product.cartItemId || '',
+              product.id || '',
+              product.variantId || '',
+              product.type || 'normal',
+              index,
+              Date.now() // ✅ Fallback: timestamp
+            ].filter(Boolean).join('-');
+            
+            return (
+              <div key={uniqueKey} className="flex items-center gap-2 sm:gap-3">
+                <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    fill
+                    className="object-contain p-1.5"
+                    sizes="(max-width: 640px) 48px, 56px"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>
+                  <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">
+                    {product.weight || "Selected weight"} 
+                  </p>
+                  <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
+                </div>
+                <p className="text-[13px] sm:text-[14px] font-bold shrink-0">₹{product.price * product.quantity}</p>
               </div>
-              <div className="flex-1">
-                <p className="text-[14px] font-semibold">{product.title}</p>
-                <p className="text-[11px] text-[#9AA3AF]">
-                  {product.weight || "Selected weight"} - {product.type === "CUSTOM" ? "Gift Box" : "Raw & Unfiltered"}
-                </p>
-                <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
-              </div>
-              <p className="text-[14px] font-bold">₹{product.price * product.quantity}</p>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
-      <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
+      <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3 border-t border-[#EEF1F4] pt-3 sm:pt-4 text-[12px] sm:text-[13px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
@@ -834,7 +883,6 @@ function CheckoutOrderSummary({
           <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
         </div>
 
-        {/* 🟢 Coupon Discount minus hone ka indicator */}
         {couponDiscount > 0 && (
           <div className="flex justify-between text-[#0BA445] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
             <span>Coupon Discount {couponCode ? `(${couponCode})` : ""}</span>
@@ -843,31 +891,30 @@ function CheckoutOrderSummary({
         )}
       </div>
 
-      <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
+      <div className="mt-3 sm:mt-4 flex items-end justify-between border-t border-[#EEF1F4] pt-3 sm:pt-4">
         <div>
-          <p className="text-[21px] font-bold">Total</p>
-          <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
+          <p className="text-[18px] sm:text-[21px] font-bold">Total</p>
+          <p className="text-[9px] sm:text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
         </div>
-        {/* 🟢 Coupon Amount minus hone ke baad Sahi Total */}
-        <p className="font-serif text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
+        <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
       </div>
 
-      <div className="mt-6 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
-        <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
-          <ShieldCheck size={16} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
+      <div className="mt-3 sm:mt-4 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">
+        <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
+          <ShieldCheck size={14} className="sm:w-[16px] sm:h-[16px]" /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
         </p>
         {remaining > 0 && (
           <>
-            <p className="mt-2 text-[12px] text-[#4C5362]">
+            <p className="mt-1.5 sm:mt-2 text-[11px] sm:text-[12px] text-[#4C5362]">
               Add items worth ₹{remaining} more to get FREE delivery!
             </p>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#DDEFE0]">
+            <div className="mt-1.5 sm:mt-2 h-1.5 overflow-hidden rounded-full bg-[#DDEFE0]">
               <div
                 className="h-full rounded-full bg-[#0BA445]"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-1 flex justify-between text-[10px] text-[#9AA3AF]">
+            <div className="mt-1 flex justify-between text-[9px] sm:text-[10px] text-[#9AA3AF]">
               <span>₹0</span>
               <span>₹{freeDeliveryTarget}</span>
             </div>
@@ -875,65 +922,23 @@ function CheckoutOrderSummary({
         )}
       </div>
 
-      <div className="mt-auto pt-24">
-        <div className="rounded-[14px] bg-[#FFF8EF] p-5">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <span className="p-1">
-              <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
-              <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
-              <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
-            </span>
-            <span className="p-1">
-              <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
-              <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
-              <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
-            </span>
-            <span className="p-1">
-              <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
-              <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
-              <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
-            </span>
-          </div>
-
-          {/* Need Help Section */}
-          <div className="relative mt-6">
-            <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
-            <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
-              <p className="flex items-center gap-2">
-                <Phone size={16} className="text-[#2D3A1B]" />
-                {location?.phone || "+91 98765 43210"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail size={16} className="text-[#2D3A1B]" />
-                {location?.email || "connect@honeyveda.in"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Clock size={16} className="text-[#2D3A1B]" />
-                {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
-              </p>
-            </div>
-            <div className="absolute bottom-0 right-0 opacity-100">
-              <Image
-                src="/need.png"
-                alt="Honey illustration"
-                width={200}
-                height={90}
-                className="object-contain"
-              />
-            </div>
-          </div>
+      <div className="relative mt-3 sm:mt-4">
+        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
+        <div className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2 text-[14px] sm:text-[15px] text-[#6F7786]">
+          <p className="flex items-center gap-2">
+            <Phone size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
+            {location?.phone || "+91 98765 43210"}
+          </p>
+          <p className="flex items-center gap-2">
+            <Mail size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
+            {location?.email || "connect@honeyveda.in"}
+          </p>
+          <p className="flex items-center gap-2">
+            <Clock size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
+            {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
+          </p>
         </div>
       </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }

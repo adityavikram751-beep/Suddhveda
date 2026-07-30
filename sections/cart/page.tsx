@@ -48,6 +48,16 @@ async function authFetch(url: string, options: RequestInit = {}) {
   return res.json();
 }
 
+type LocationData = {
+  phone: string;
+  phone_timing: string;
+  email: string;
+  email_reply_time: string;
+  whatsapp: string;
+  whatsapp_timing: string;
+  map_embed_url: string;
+};
+
 export default function Cart() {
   const router = useRouter();
   const {
@@ -90,6 +100,11 @@ export default function Cart() {
   // Track selected variants for each recommendation product
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
+  // 👇 Location data lifted up here so it's fetched ONCE and shared by both
+  // the desktop "Need Help" panel and the mobile "Need Help" panel (no duplicate API calls)
+  const [location, setLocation] = useState<LocationData | null>(null);
+  const [locationLoading, setLocationLoading] = useState(true);
+
   // Fetch recommendations
   useEffect(() => {
     (async () => {
@@ -121,6 +136,53 @@ export default function Cart() {
         }
       } catch (err) {
         console.error("Error fetching wishlist:", err);
+      }
+    })();
+  }, []);
+
+  // Fetch location/help info once here (shared by desktop + mobile Need Help blocks)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/location/all`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const loc = data.data || data;
+          setLocation({
+            phone: loc.phone || "+91 98765 43210",
+            phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
+            email: loc.email || "connect@honeyveda.in",
+            email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
+            whatsapp: loc.whatsapp || "",
+            whatsapp_timing: loc.whatsapp_timing || "",
+            map_embed_url: loc.map_embed_url || "",
+          });
+        } else {
+          setLocation({
+            phone: "+91 98765 43210",
+            phone_timing: "Mon - Sat : 9AM - 6PM",
+            email: "connect@honeyveda.in",
+            email_reply_time: "We reply within 24 hrs",
+            whatsapp: "",
+            whatsapp_timing: "",
+            map_embed_url: "",
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching location:", err);
+        setLocation({
+          phone: "+91 98765 43210",
+          phone_timing: "Mon - Sat : 9AM - 6PM",
+          email: "connect@honeyveda.in",
+          email_reply_time: "We reply within 24 hrs",
+          whatsapp: "",
+          whatsapp_timing: "",
+          map_embed_url: "",
+        });
+      } finally {
+        setLocationLoading(false);
       }
     })();
   }, []);
@@ -162,6 +224,62 @@ export default function Cart() {
     }
   };
 
+  // 👇 Reusable "You May Also Like" block — rendered once for desktop (original spot)
+  // and once for mobile (bottom of page, above footer). Uses the SAME shared state above,
+  // so no duplicate fetching happens even though it's rendered twice.
+  const renderRecommendations = () => (
+    <>
+      <h2 className="text-[22px] font-semibold">You May Also Like</h2>
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {recommendations.map((item) => {
+          const variants = item.variantDocumentId || [];
+          const selectedVariantId =
+            selectedVariants[item._id] || (variants[0]?._id ?? "");
+
+          const currentVariant =
+            variants.find((v) => v._id === selectedVariantId) || variants[0];
+
+          const primaryImage =
+            item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
+            item.image?.image_url ||
+            "/placeholder.png";
+
+          return (
+            <div key={item._id} className="h-full">
+              <ProductCardShop
+                image={primaryImage}
+                title={item.product_name}
+                subtitle={item.brand || "SudhVeda Honey"}
+                weight={
+                  currentVariant
+                    ? `${currentVariant.weight}${currentVariant.unit || "g"}`
+                    : ""
+                }
+                price={currentVariant?.price || 0}
+                oldPrice={currentVariant?.mrp}
+                quantity={0}
+                variants={variants}
+                selectedVariantId={selectedVariantId}
+                onVariantSelect={(vId) =>
+                  setSelectedVariants((prev) => ({ ...prev, [item._id]: vId }))
+                }
+                isWishlisted={wishlistIds.includes(item._id)}
+                onToggleWishlist={() => handleToggleWishlist(item._id)}
+                onAddToCart={() =>
+                  currentVariant &&
+                  handleRecommendationAddToCart(item._id, currentVariant._id)
+                }
+                onIncrement={() => {}}
+                onDecrement={() => {}}
+                onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+
   return (
     <main className="bg-[#FFF8EF] py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
@@ -199,107 +317,78 @@ export default function Cart() {
                 cartProducts.map((product) => (
                   <div
                     key={product.cartItemId}
-                    className="grid gap-4 rounded bg-white px-5 py-5 md:grid-cols-[1fr_120px_160px_100px] md:items-center"
+                    className="group grid gap-5 rounded-2xl border border-[#F0E4D4] bg-white px-5 py-5 shadow-[0_2px_10px_rgba(60,40,20,0.04)] transition-shadow hover:shadow-[0_4px_16px_rgba(60,40,20,0.08)] md:grid-cols-[1fr_110px_140px_110px] md:items-center"
                   >
-                    <div className="flex gap-5">
-                      <div className="relative h-24 w-24 overflow-hidden rounded bg-[#FFF8EF]">
+                    <div className="flex gap-4 sm:gap-5">
+                      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-[#FFF8EF] ring-1 ring-[#F0E4D4]">
                         <Image
                           src={product.image}
                           alt={product.productName}
                           fill
-                          className="object-contain p-2"
+                          className="object-contain p-2.5"
                         />
                       </div>
-                      <div>
-                        <h2 className="text-[17px] font-bold">{product.productName}</h2>
-                        <p className="mt-1 text-[12px] text-[#7B8493]">
+                      <div className="flex flex-col justify-center gap-1.5">
+                        <h2 className="text-[16px] sm:text-[17px] font-bold leading-snug text-[#2F241C]">
+                          {product.productName}
+                        </h2>
+                        <p className="text-[12.5px] text-[#9B8B76]">
                           {product.type === "NORMAL"
                             ? product.weight
                             : product.customMessage || "Gift box"}
                         </p>
-                        <span className="mt-2 inline-flex rounded-full bg-[#E7F9EA] px-3 py-1 text-[10px] font-bold text-[#149447]">
-                          100% Raw & Unfiltered
+                        <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#E7F9EA] px-2.5 py-1 text-[10px] font-bold text-[#149447]">
+                          <Check size={11} className="stroke-[3]" />
+                          100% Raw &amp; Unfiltered
                         </span>
-                        <div className="mt-2 flex gap-4 text-[11px] text-[#7B8493]">
-                          <button
-                            type="button"
-                            onClick={() => removeItem(product.cartItemId)}
-                            className="flex items-center gap-1 hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 size={12} /> Remove
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(product.cartItemId)}
+                          className="mt-1 flex w-fit items-center gap-1.5 text-[12px] font-medium text-[#B0A18C] transition-colors hover:text-red-500"
+                        >
+                          <Trash2 size={13} /> Remove
+                        </button>
                       </div>
                     </div>
-                    <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price}</p>
-                    <QuantityControl
-                      quantity={product.quantity}
-                      onMinus={() =>
-                        product.type === "NORMAL"
-                          ? updateQuantity(product.productId, product.variantId, -1)
-                          : updateCustomQuantity(product.cartItemId, -1)
-                      }
-                      onPlus={() =>
-                        product.type === "NORMAL"
-                          ? updateQuantity(product.productId, product.variantId, 1)
-                          : updateCustomQuantity(product.cartItemId, 1)
-                      }
-                    />
-                    <p className="text-[20px] font-bold text-[#2D3A1B]">
-                      ₹{product.price * product.quantity}
-                    </p>
+
+                    <div className="flex items-center justify-between md:block">
+                      <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Price</span>
+                      <p className="text-[17px] sm:text-[18px] font-bold text-[#3C2015]">
+                        ₹{product.price}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between md:justify-start">
+                      <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Quantity</span>
+                      <QuantityControl
+                        quantity={product.quantity}
+                        onMinus={() =>
+                          product.type === "NORMAL"
+                            ? updateQuantity(product.productId, product.variantId, -1)
+                            : updateCustomQuantity(product.cartItemId, -1)
+                        }
+                        onPlus={() =>
+                          product.type === "NORMAL"
+                            ? updateQuantity(product.productId, product.variantId, 1)
+                            : updateCustomQuantity(product.cartItemId, 1)
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-[#F5EEE3] pt-3 md:border-t-0 md:pt-0 md:block">
+                      <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Total</span>
+                      <p className="text-[19px] sm:text-[20px] font-bold text-[#2D3A1B]">
+                        ₹{product.price * product.quantity}
+                      </p>
+                    </div>
                   </div>
                 ))
               )}
             </div>
 
-            <h2 className="mt-8 text-[22px] font-semibold">You May Also Like</h2>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {recommendations.map((item) => {
-                const variants = item.variantDocumentId || [];
-                const selectedVariantId =
-                  selectedVariants[item._id] || (variants[0]?._id ?? "");
-
-                const currentVariant =
-                  variants.find((v) => v._id === selectedVariantId) || variants[0];
-
-                const primaryImage =
-                  item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
-                  item.image?.image_url ||
-                  "/placeholder.png";
-
-                return (
-                  <div key={item._id} className="h-full">
-                    <ProductCardShop
-                      image={primaryImage}
-                      title={item.product_name}
-                      subtitle={item.brand || "SudhVeda Honey"}
-                      weight={
-                        currentVariant
-                          ? `${currentVariant.weight}${currentVariant.unit || "g"}`
-                          : ""
-                      }
-                      price={currentVariant?.price || 0}
-                      oldPrice={currentVariant?.mrp}
-                      quantity={0}
-                      variants={variants}
-                      selectedVariantId={selectedVariantId}
-                      onVariantSelect={(vId) =>
-                        setSelectedVariants((prev) => ({ ...prev, [item._id]: vId }))
-                      }
-                      isWishlisted={wishlistIds.includes(item._id)}
-                      onToggleWishlist={() => handleToggleWishlist(item._id)}
-                      onAddToCart={() =>
-                        currentVariant &&
-                        handleRecommendationAddToCart(item._id, currentVariant._id)
-                      }
-                      onIncrement={() => {}}
-                      onDecrement={() => {}}
-                      onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
-                    />
-                  </div>
-                );
-              })}
+            {/* Desktop-only: "You May Also Like" stays exactly where it was (under cart items) */}
+            <div className="hidden lg:block mt-8">
+              {renderRecommendations()}
             </div>
           </section>
 
@@ -310,8 +399,17 @@ export default function Cart() {
               saved={saved}
               itemCount={cartProducts.length}
             />
-            <HelpPanel />
+            {/* Desktop-only: "Need Help" stays exactly where it was (under Order Summary) */}
+            <div className="hidden lg:block">
+              <HelpPanel location={location} loading={locationLoading} />
+            </div>
           </aside>
+        </div>
+
+        {/* Mobile-only: "You May Also Like" + "Need Help" pushed to the very bottom, above the footer */}
+        <div className="lg:hidden mt-10 space-y-10">
+          {renderRecommendations()}
+          <HelpPanel location={location} loading={locationLoading} />
         </div>
       </div>
     </main>
@@ -355,11 +453,11 @@ export function QuantityControl({
   onPlus: () => void;
 }) {
   return (
-    <div className="inline-grid h-9 w-[94px] grid-cols-3 items-center rounded-md border border-[#DFE4EA] bg-[#FBFCFD] text-center">
+    <div className="inline-grid h-10 w-[104px] grid-cols-3 items-center rounded-full border border-[#E4D9C7] bg-[#FBFCFD] text-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
       <button
         type="button"
         onClick={onMinus}
-        className="flex h-full items-center justify-center rounded-l-md transition-colors hover:bg-gray-100"
+        className="flex h-full items-center justify-center rounded-l-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00]"
       >
         <Minus size={14} />
       </button>
@@ -367,7 +465,7 @@ export function QuantityControl({
       <button
         type="button"
         onClick={onPlus}
-        className="flex h-full items-center justify-center rounded-r-md transition-colors hover:bg-gray-100"
+        className="flex h-full items-center justify-center rounded-r-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00]"
       >
         <Plus size={14} />
       </button>
@@ -386,16 +484,6 @@ type ApiCoupon = {
   discountPercentage?: number;
   flatDiscount?: number;
   calculatedDiscount?: number;
-};
-
-type LocationData = {
-  phone: string;
-  phone_timing: string;
-  email: string;
-  email_reply_time: string;
-  whatsapp: string;
-  whatsapp_timing: string;
-  map_embed_url: string;
 };
 
 // ─── Order Summary with Permanent Back Navigation Fix ──────────────────
@@ -877,57 +965,17 @@ export function TrustBadges() {
 }
 
 // ─── NEED HELP PANEL ──────────────────────────────────────────────────
+// Now a presentational component — location/loading are passed in as props
+// from the parent Cart component, so it can be rendered twice (desktop +
+// mobile position) WITHOUT triggering duplicate API calls.
 
-function HelpPanel() {
-  const [location, setLocation] = useState<LocationData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/location/all`, {
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const loc = data.data || data;
-          setLocation({
-            phone: loc.phone || "+91 98765 43210",
-            phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
-            email: loc.email || "connect@honeyveda.in",
-            email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
-            whatsapp: loc.whatsapp || "",
-            whatsapp_timing: loc.whatsapp_timing || "",
-            map_embed_url: loc.map_embed_url || "",
-          });
-        } else {
-          setLocation({
-            phone: "+91 98765 43210",
-            phone_timing: "Mon - Sat : 9AM - 6PM",
-            email: "connect@honeyveda.in",
-            email_reply_time: "We reply within 24 hrs",
-            whatsapp: "",
-            whatsapp_timing: "",
-            map_embed_url: "",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching location:", err);
-        setLocation({
-          phone: "+91 98765 43210",
-          phone_timing: "Mon - Sat : 9AM - 6PM",
-          email: "connect@honeyveda.in",
-          email_reply_time: "We reply within 24 hrs",
-          whatsapp: "",
-          whatsapp_timing: "",
-          map_embed_url: "",
-        });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
+function HelpPanel({
+  location,
+  loading,
+}: {
+  location: LocationData | null;
+  loading: boolean;
+}) {
   return (
     <div className="w-full box-border flex items-center justify-between gap-4 px-1 pb-2">
       <div className="flex-1 space-y-3">
