@@ -23,14 +23,16 @@ import {
     Search,
     Clock,
     Ship,
+    Menu,
+    X,
+    ChevronLeft,
+    ChevronRight,
 } from "lucide-react";
 
 const sidebarLinks = [
-    { icon: Truck, label: "Track Order", href: "/trackorder" },
     { icon: MapPin, label: "My Addresses", href: "/address" },
     { icon: Heart, label: "Wishlist", href: "/wishlist" },
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },
-    
 ];
 
 type OrderStatus = "Processing" | "Delivered" | "Shipped";
@@ -49,7 +51,8 @@ interface Order {
     statusNote: string;
 }
 
-const orders: Order[] = [
+// ---------- More Orders Data (10 orders) ----------
+const allOrders: Order[] = [
     {
         id: "1",
         productTitle: "Wild Forest Honey",
@@ -89,6 +92,97 @@ const orders: Order[] = [
         status: "Shipped",
         statusNote: "Expected delivery 16 May, 2024",
     },
+    {
+        id: "4",
+        productTitle: "Organic Raw Honey",
+        productSub: "1kg",
+        qty: 2,
+        image: "/Upcoming.png",
+        orderId: "SVN1234567",
+        orderedOn: "15 May, 2024",
+        paymentMethod: "UPI",
+        totalAmount: "₹2,199",
+        status: "Delivered",
+        statusNote: "Delivered on 18 May, 2024",
+    },
+    {
+        id: "5",
+        productTitle: "Manuka Honey",
+        productSub: "250g",
+        qty: 1,
+        image: "/Upcoming.png",
+        orderId: "SVN1234568",
+        orderedOn: "18 May, 2024",
+        paymentMethod: "Credit Card",
+        totalAmount: "₹3,499",
+        status: "Processing",
+        statusNote: "Your order is being processed",
+    },
+    {
+        id: "6",
+        productTitle: "Acacia Honey",
+        productSub: "500g",
+        qty: 1,
+        image: "/Upcoming.png",
+        orderId: "SVN1234569",
+        orderedOn: "20 May, 2024",
+        paymentMethod: "UPI",
+        totalAmount: "₹1,199",
+        status: "Shipped",
+        statusNote: "Expected delivery 23 May, 2024",
+    },
+    {
+        id: "7",
+        productTitle: "Buckwheat Honey",
+        productSub: "750g",
+        qty: 1,
+        image: "/Upcoming.png",
+        orderId: "SVN1234570",
+        orderedOn: "22 May, 2024",
+        paymentMethod: "Net Banking",
+        totalAmount: "₹1,499",
+        status: "Delivered",
+        statusNote: "Delivered on 25 May, 2024",
+    },
+    {
+        id: "8",
+        productTitle: "Clover Honey",
+        productSub: "500g",
+        qty: 2,
+        image: "/Upcoming.png",
+        orderId: "SVN1234571",
+        orderedOn: "25 May, 2024",
+        paymentMethod: "UPI",
+        totalAmount: "₹1,299",
+        status: "Processing",
+        statusNote: "Your order is being processed",
+    },
+    {
+        id: "9",
+        productTitle: "Eucalyptus Honey",
+        productSub: "250g",
+        qty: 1,
+        image: "/Upcoming.png",
+        orderId: "SVN1234572",
+        orderedOn: "28 May, 2024",
+        paymentMethod: "Credit Card",
+        totalAmount: "₹899",
+        status: "Shipped",
+        statusNote: "Expected delivery 31 May, 2024",
+    },
+    {
+        id: "10",
+        productTitle: "Orange Blossom Honey",
+        productSub: "1kg",
+        qty: 1,
+        image: "/Upcoming.png",
+        orderId: "SVN1234573",
+        orderedOn: "30 May, 2024",
+        paymentMethod: "UPI",
+        totalAmount: "₹2,499",
+        status: "Delivered",
+        statusNote: "Delivered on 2 June, 2024",
+    },
 ];
 
 const statusStyles: Record<OrderStatus, { bg: string; text: string; icon: typeof Clock }> = {
@@ -102,7 +196,7 @@ function OrderActions({ order }: { order: Order }) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
-                    href="/account/track-order"
+                    href="/trackorder"
                     className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
                 >
                     Track Order
@@ -142,7 +236,7 @@ function OrderActions({ order }: { order: Order }) {
     return (
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
-                href="/account/track-order"
+                href="/trackorder"
                 className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
             >
                 Track Shipment
@@ -160,10 +254,85 @@ function OrderActions({ order }: { order: Order }) {
     );
 }
 
+// ---------- Sidebar Content Component ----------
+function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
+    const pathname = usePathname();
+    
+    const handleClick = () => {
+        if (onLinkClick) onLinkClick();
+    };
+
+    return (
+        <div className="space-y-4 w-full">
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
+                <div className="flex flex-col items-center text-center gap-2">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                        RS
+                    </div>
+                    <p className="font-serif text-lg font-bold text-[#3C2015]">
+                        Rahul Sharma
+                    </p>
+                    <p className="text-xs text-[#B59A78] break-all">
+                        rahulsharma123@gmail.com
+                    </p>
+                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
+                        <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
+                        <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
+                    </button>
+                </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col">
+                <nav className="space-y-1">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
+                        <Package size={18} className="shrink-0" />
+                        <span>My Orders</span>
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                    </div>
+                    {sidebarLinks.map((link) => {
+                        const Icon = link.icon;
+                        const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                        return (
+                            <Link
+                                key={link.label}
+                                href={link.href}
+                                onClick={handleClick}
+                                className={`
+                                    relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
+                                    ${isActive
+                                        ? "bg-[#FFF2D8] text-[#2D3A1B]"
+                                        : "text-[#2D3A1B] hover:bg-[#FFF8EF]"
+                                    }
+                                `}
+                            >
+                                <Icon size={18} className="shrink-0" />
+                                <span>{link.label}</span>
+                                {isActive && (
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
+                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
+                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                        <LogOut size={18} className="shrink-0" />
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function MyOrdersPage() {
     const pathname = usePathname();
     const router = useRouter();
     const [session, setSession] = useState<AuthSession | null>(() => getStoredSession());
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const ordersPerPage = 3;
 
     useEffect(() => {
         function syncSession() {
@@ -201,92 +370,133 @@ export default function MyOrdersPage() {
 
     const user = session.user;
 
+    // ---------- Filter Orders by Search ----------
+    const filteredOrders = allOrders.filter((order) => {
+        const search = searchTerm.toLowerCase().trim();
+        if (!search) return true;
+        return (
+            order.productTitle.toLowerCase().includes(search) ||
+            order.orderId.toLowerCase().includes(search) ||
+            order.status.toLowerCase().includes(search)
+        );
+    });
+
+    // ---------- Pagination Logic ----------
+    const totalOrders = filteredOrders.length;
+    const totalPages = Math.ceil(totalOrders / ordersPerPage);
+    const startIndex = (currentPage - 1) * ordersPerPage;
+    const endIndex = startIndex + ordersPerPage;
+    const currentOrders = filteredOrders.slice(startIndex, endIndex);
+
+    // Reset to page 1 when search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const goToPage = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
+    // Get visible page numbers
+    const getPageNumbers = () => {
+        const pages = [];
+        const maxVisible = 5;
+        
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            pages.push(1);
+            if (currentPage > 3) {
+                pages.push('...');
+            }
+            const start = Math.max(2, currentPage - 1);
+            const end = Math.min(totalPages - 1, currentPage + 1);
+            for (let i = start; i <= end; i++) {
+                if (!pages.includes(i)) {
+                    pages.push(i);
+                }
+            }
+            if (currentPage < totalPages - 2) {
+                pages.push('...');
+            }
+            if (!pages.includes(totalPages)) {
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
+
     return (
-        <section className="min-h-screen bg-[#FFF8EF] py-8 md:py-12">
-            <div className="mx-auto max-w-[1480px] -mt-4 px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+        <section className="min-h-screen bg-[#FFF8EF] py-6 sm:py-8 md:py-12">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+                
+                {/* Mobile Menu Toggle Bar */}
+                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+                            {getInitials(user)}
+                        </div>
+                        <div>
+                            <p className="font-serif text-sm font-bold text-[#3C2015]">
+                                {user.name || "Shuddhveda Customer"}
+                            </p>
+                            <p className="text-xs text-[#B59A78]">Account Navigation</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                    >
+                        <Menu size={16} />
+                        Menu
+                    </button>
+                </div>
 
-                    {/* --- SIDEBAR (Profile + Nav as separate cards) --- */}
-                    <aside className="self-start lg:sticky lg:top-20 w-full space-y-4">
-
-                        {/* Profile Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                                    {getInitials(user)}
-                                </div>
-                                <p className="font-serif text-lg font-bold text-[#3C2015]">
-                                    {user.name || "Shuddhveda Customer"}
-                                </p>
-                                <p className="text-xs text-[#B59A78]">
-                                    {user.mobile}
-                                </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
-                                    <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-<Link
-href={`/account/editprofile`}
->
-Edit profile
-</Link>                                  </button>
+                {/* Mobile Drawer */}
+                {mobileMenuOpen && (
+                    <div 
+                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <div 
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] shadow-2xl overflow-y-auto flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="sticky top-0 bg-[#FFF8EF] z-10 flex items-center justify-between p-4 pb-2 border-b border-[#F0E2CC]">
+                                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
+                                <button 
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-4 pt-2" onClick={() => setMobileMenuOpen(false)}>
+                                <SidebarContent onLinkClick={() => setMobileMenuOpen(false)} />
                             </div>
                         </div>
+                    </div>
+                )}
 
-                        {/* Nav + Logout Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col lg:min-h-[480px]">
-                            <nav className="space-y-1">
-                                {/* My Orders - this page itself, no navigation needed */}
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
-                                    <Package size={18} className="shrink-0" />
-                                    <span>My Orders</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
-                                </div>
-                                {sidebarLinks.map((link) => {
-                                    const Icon = link.icon;
-                                    const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
-                                    return (
-                                        <Link
-                                            key={link.label}
-                                            href={link.href}
-                                            className={`
-                                                relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
-                                                ${isActive
-                                                    ? "bg-[#FFF2D8] text-[#2D3A1B]"
-                                                    : "text-[#2D3A1B] hover:bg-[#FFF8EF]"
-                                                }
-                                            `}
-                                        >
-                                            <Icon size={18} className="shrink-0" />
-                                            <span>{link.label}</span>
-                                            {isActive && (
-                                                <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
-                                            )}
-                                        </Link>
-                                    );
-                                })}
-                            </nav>
+                {/* Main Grid */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
 
-                            {/* Divider */}
-                            <div className="mt-48 border-t border-[#F0E2CC]" />
-
-                            {/* Logout - right below nav, not pushed to bottom */}
-                            <button
-                                type="button"
-                                onClick={logout}
-                                className="flex w-full items-center gap-3 rounded-xl px-4 pt-4 pb-1 text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
-                            >
-                                <LogOut size={18} className="shrink-0" />
-                                Logout
-                            </button>
-                        </div>
+                    {/* Desktop Sidebar */}
+                    <aside className="hidden lg:block lg:sticky lg:top-20 w-full">
+                        <SidebarContent />
                     </aside>
 
                     {/* --- MAIN CONTENT --- */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 w-full min-w-0">
 
                         {/* Header */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="font-serif text-3xl font-bold text-[#3C2015]">
+                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3C2015]">
                                     My Orders
                                 </h1>
                                 <p className="mt-0.5 text-sm text-[#B59A78]">
@@ -297,6 +507,8 @@ Edit profile
                                 <input
                                     type="text"
                                     placeholder="Search Order ID or Product Name..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
                                 />
                                 <Search
@@ -306,102 +518,131 @@ Edit profile
                             </div>
                         </div>
 
-                        {/* Filter pill */}
-                        <div>
+                        {/* Filter pill with count */}
+                        <div className="flex flex-wrap items-center gap-3">
                             <button className="rounded-lg border border-[#2D3A1B] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#2D3A1B]">
                                 All Orders
                             </button>
+                            <span className="text-sm text-[#B59A78]">
+                            </span>
                         </div>
 
                         {/* Order cards */}
                         <div className="space-y-5">
-                            {orders.map((order) => {
-                                const StatusIcon = statusStyles[order.status].icon;
-                                return (
-                                    <div
-                                        key={order.id}
-                                        className="rounded-2xl border border-[#F0E2CC] bg-white p-5 md:p-6"
-                                    >
-                                        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                                            {/* Product */}
-                                            <div className="flex items-center gap-4 md:w-64">
-                                                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#FFF8EF]">
-                                                    <Image
-                                                        src={order.image}
-                                                        alt={order.productTitle}
-                                                        fill
-                                                        className="object-contain p-1.5"
-                                                    />
+                            {currentOrders.length === 0 ? (
+                                <div className="text-center py-12 text-[#B59A78] bg-white rounded-2xl border border-[#F0E2CC]">
+                                    {searchTerm ? "No orders match your search." : "No orders yet."}
+                                </div>
+                            ) : (
+                                currentOrders.map((order) => {
+                                    const StatusIcon = statusStyles[order.status].icon;
+                                    return (
+                                        <div
+                                            key={order.id}
+                                            className="rounded-2xl border border-[#F0E2CC] bg-white p-5 md:p-6"
+                                        >
+                                            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                                                {/* Product */}
+                                                <div className="flex items-center gap-4 md:w-64">
+                                                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#FFF8EF]">
+                                                        <Image
+                                                            src={order.image}
+                                                            alt={order.productTitle}
+                                                            fill
+                                                            className="object-contain p-1.5"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-bold text-[#3C2015]">
+                                                            {order.productTitle}
+                                                        </p>
+                                                        <p className="text-xs text-[#8A7460]">{order.productSub}</p>
+                                                        <p className="mt-1 text-xs text-[#B59A78]">Qty: {order.qty}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-[#3C2015]">
-                                                        {order.productTitle}
-                                                    </p>
-                                                    <p className="text-xs text-[#8A7460]">{order.productSub}</p>
-                                                    <p className="mt-1 text-xs text-[#B59A78]">Qty: {order.qty}</p>
+
+                                                {/* Order ID */}
+                                                <div className="md:w-36">
+                                                    <p className="text-xs text-[#B59A78]">Order ID</p>
+                                                    <p className="text-sm font-bold text-[#3C2015]">{order.orderId}</p>
+                                                    <p className="mt-2 text-xs text-[#B59A78]">Ordered on</p>
+                                                    <p className="text-sm font-semibold text-[#3C2015]">{order.orderedOn}</p>
                                                 </div>
-                                            </div>
 
-                                            {/* Order ID */}
-                                            <div className="md:w-36">
-                                                <p className="text-xs text-[#B59A78]">Order ID</p>
-                                                <p className="text-sm font-bold text-[#3C2015]">{order.orderId}</p>
-                                                <p className="mt-2 text-xs text-[#B59A78]">Ordered on</p>
-                                                <p className="text-sm font-semibold text-[#3C2015]">{order.orderedOn}</p>
-                                            </div>
+                                                {/* Payment */}
+                                                <div className="md:w-32">
+                                                    <p className="text-xs text-[#B59A78]">Payment Method</p>
+                                                    <p className="text-sm font-bold text-[#3C2015]">{order.paymentMethod}</p>
+                                                    <p className="mt-2 text-xs text-[#B59A78]">Total Amount</p>
+                                                    <p className="text-sm font-semibold text-[#3C2015]">{order.totalAmount}</p>
+                                                </div>
 
-                                            {/* Payment */}
-                                            <div className="md:w-32">
-                                                <p className="text-xs text-[#B59A78]">Payment Method</p>
-                                                <p className="text-sm font-bold text-[#3C2015]">{order.paymentMethod}</p>
-                                                <p className="mt-2 text-xs text-[#B59A78]">Total Amount</p>
-                                                <p className="text-sm font-semibold text-[#3C2015]">{order.totalAmount}</p>
-                                            </div>
+                                                {/* Status */}
+                                                <div className="md:w-40">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${statusStyles[order.status].bg} ${statusStyles[order.status].text}`}
+                                                    >
+                                                        <StatusIcon size={13} />
+                                                        {order.status}
+                                                    </span>
+                                                    <p className="mt-2 text-xs text-[#B59A78]">{order.statusNote}</p>
+                                                </div>
 
-                                            {/* Status */}
-                                            <div className="md:w-40">
-                                                <span
-                                                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${statusStyles[order.status].bg} ${statusStyles[order.status].text}`}
-                                                >
-                                                    <StatusIcon size={13} />
-                                                    {order.status}
-                                                </span>
-                                                <p className="mt-2 text-xs text-[#B59A78]">{order.statusNote}</p>
+                                                {/* Actions */}
+                                                <OrderActions order={order} />
                                             </div>
-
-                                            {/* Actions */}
-                                            <OrderActions order={order} />
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })
+                            )}
                         </div>
 
                         {/* Pagination */}
-                        <div className="flex items-center justify-center gap-2 pt-2">
-                            <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]">
-                                ‹
-                            </button>
-                            {[1, 2, 3].map((n) => (
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-2 pt-4 flex-wrap">
                                 <button
-                                    key={n}
-                                    className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold ${
-                                        n === 1
-                                            ? "bg-[#2D3A1B] text-white"
-                                            : "border border-[#F0E2CC] text-[#3C2015] hover:bg-[#FFF8EF]"
+                                    onClick={() => goToPage(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${
+                                        currentPage === 1
+                                            ? "border-[#F0E2CC] text-[#D4C5B2] cursor-not-allowed"
+                                            : "border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]"
                                     }`}
                                 >
-                                    {n}
+                                    <ChevronLeft size={16} />
                                 </button>
-                            ))}
-                            <span className="px-1 text-[#B59A78]">…</span>
-                            <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F0E2CC] text-sm font-bold text-[#3C2015] hover:bg-[#FFF8EF]">
-                                10
-                            </button>
-                            <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]">
-                                ›
-                            </button>
-                        </div>
+                                
+                                {getPageNumbers().map((page, index) => (
+                                    page === '...' ? (
+                                        <span key={`ellipsis-${index}`} className="px-2 text-[#B59A78]">…</span>
+                                    ) : (
+                                        <button
+                                            key={page}
+                                            onClick={() => goToPage(page as number)}
+                                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold transition ${
+                                                page === currentPage
+                                                    ? "bg-[#2D3A1B] text-white"
+                                                    : "border border-[#F0E2CC] text-[#3C2015] hover:bg-[#FFF8EF]"
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                ))}
+                                
+                                <button
+                                    onClick={() => goToPage(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${
+                                        currentPage === totalPages
+                                            ? "border-[#F0E2CC] text-[#D4C5B2] cursor-not-allowed"
+                                            : "border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]"
+                                    }`}
+                                >
+                                    <ChevronRight size={16} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -18,7 +18,6 @@ import {
 
 const sidebarLinks = [
     { icon: Package, label: "My Orders", href: "/account" },
-    { icon: Truck, label: "Track Order", href: "/trackorder" },
     { icon: MapPin, label: "My Addresses", href: "/address" },
     { icon: Heart, label: "Wishlist", href: "/wishlist" },
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },

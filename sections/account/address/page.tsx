@@ -15,9 +15,9 @@ import {
     Trash2,
     Home,
     Briefcase,
-    Gift,
     X,
     CheckCircle,
+    Menu,
 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -63,36 +63,38 @@ function AddressCard({
     const TypeIcon = typeIcons[address.type];
 
     return (
-        <div className="flex flex-col rounded-2xl border border-[#F0E2CC] bg-white p-6">
-            <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
-                    <TypeIcon size={18} />
+        <div className="flex flex-col justify-between rounded-2xl border border-[#F0E2CC] bg-white p-5 sm:p-6 shadow-sm h-full">
+           <div>
+                <div className="flex items-start justify-between">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+                        <TypeIcon size={18} />
+                    </div>
+                    {address.isDefault && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2.5 py-1 text-[10px] font-bold tracking-wide text-green-700">
+                            <CheckCircle size={12} />
+                            DEFAULT
+                        </span>
+                    )}
                 </div>
-                {address.isDefault && (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2.5 py-1 text-[10px] font-bold tracking-wide text-green-700">
-                        <CheckCircle size={12} />
-                        DEFAULT
-                    </span>
-                )}
-            </div>
 
-            <h3 className="mt-4 font-serif text-lg font-bold text-[#3C2015]">
-                {address.label}
-            </h3>
+                <h3 className="mt-4 font-serif text-lg font-bold text-[#3C2015] break-words">
+                    {address.label}
+                </h3>
 
-            <p className="mt-2 text-sm font-bold text-[#3C2015]">{address.name}</p>
-            <p className="text-sm text-[#3C2015]">{address.phone}</p>
+                <p className="mt-2 text-sm font-bold text-[#3C2015] break-words">{address.name}</p>
+                <p className="text-sm text-[#3C2015]">{address.phone}</p>
 
-            <div className="mt-2 space-y-0.5">
-                {address.lines.map((line, idx) => (
-                    <p key={idx} className="text-sm text-[#8A7460]">
-                        {line}
-                    </p>
-                ))}
-            </div>
+                <div className="mt-2 space-y-0.5">
+                    {address.lines.map((line, idx) => (
+                        <p key={idx} className="text-sm text-[#8A7460] break-words">
+                            {line}
+                        </p>
+                    ))}
+                </div>
+           </div>
 
-            <div className="mt-5 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="mt-6 flex items-center justify-between gap-2 pt-3 border-t border-[#F0E2CC]/55">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => onEdit(address)}
                         className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#2D3A1B] transition"
@@ -109,20 +111,21 @@ function AddressCard({
                     </button>
                 </div>
 
-                {/* Default → static badge, else "Set Default" */}
-                {address.isDefault ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#2D3A1B]/10 px-3 py-1.5 text-xs font-bold text-[#2D3A1B]">
-                        <CheckCircle size={14} className="text-[#2D3A1B]" />
-                        Default Address
-                    </span>
-                ) : (
-                    <button
-                        onClick={() => onSetDefault(address.id)}
-                        className="flex h-8 items-center justify-center rounded-lg border border-[#2D3A1B] px-4 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
-                    >
-                        Set Default
-                    </button>
-                )}
+                <div>
+                    {address.isDefault ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#2D3A1B]/10 px-3 py-1.5 text-xs font-bold text-[#2D3A1B]">
+                            <CheckCircle size={14} className="text-[#2D3A1B]" />
+                            Default Address
+                        </span>
+                    ) : (
+                        <button
+                            onClick={() => onSetDefault(address.id)}
+                            className="flex h-8 items-center justify-center rounded-lg border border-[#2D3A1B] px-3 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                        >
+                            Set Default
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -131,14 +134,14 @@ function AddressCard({
 // ---------- Add New Address Card ----------
 function AddNewAddressCard({ onAdd }: { onAdd: () => void }) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E7D3AE] bg-[#FFF8EF] p-6 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E7D3AE] bg-[#FFF8EF] p-6 text-center h-full min-h-[260px]">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
                 <Plus size={22} />
             </div>
             <h3 className="mt-4 font-serif text-lg font-bold text-[#3C2015]">
                 Add New Address
             </h3>
-            <p className="mt-2 text-sm text-[#8A7460]">
+            <p className="mt-2 text-sm text-[#8A7460] max-w-xs">
                 Save new address to enjoy faster and hassle-free delivery.
             </p>
             <button
@@ -152,7 +155,7 @@ function AddNewAddressCard({ onAdd }: { onAdd: () => void }) {
     );
 }
 
-// ---------- Address Form Modal (Improved UI + Scroll Lock) ----------
+// ---------- Address Form Modal ----------
 function AddressModal({
     isOpen,
     onClose,
@@ -175,7 +178,6 @@ function AddressModal({
         isDefault: false,
     });
 
-    // Lock body scroll when modal opens
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
@@ -238,18 +240,17 @@ function AddressModal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
             <div
-                className="w-full max-w-lg rounded-3xl bg-white shadow-2xl transform transition-all duration-300 ease-out max-h-[90vh] overflow-y-auto"
+                className="w-full max-w-lg rounded-3xl bg-white shadow-2xl my-auto max-h-[90vh] flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-[#F0E2CC] px-6 py-5 bg-[#FFFCF8] rounded-t-3xl">
+                <div className="flex items-center justify-between border-b border-[#F0E2CC] px-4 sm:px-6 py-4 sm:py-5 bg-[#FFFCF8] rounded-t-3xl shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
                             <MapPin size={20} />
                         </div>
-                        <h2 className="font-serif text-2xl font-bold text-[#3C2015]">
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#3C2015]">
                             {title}
                         </h2>
                     </div>
@@ -261,8 +262,7 @@ function AddressModal({
                     </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="px-6 py-6 space-y-5">
+                <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-6 space-y-5 overflow-y-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
@@ -341,7 +341,7 @@ function AddressModal({
                                     <button
                                         type="button"
                                         onClick={() => removeLine(idx)}
-                                        className="flex h-11 w-11 items-center justify-center rounded-xl border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-600 transition"
+                                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-600 transition"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -358,7 +358,6 @@ function AddressModal({
                         </button>
                     </div>
 
-                    {/* Set as default checkbox */}
                     <div className="flex items-center gap-3 pt-1">
                         <input
                             type="checkbox"
@@ -372,7 +371,6 @@ function AddressModal({
                         </label>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
                         <button
                             type="button"
@@ -394,16 +392,70 @@ function AddressModal({
     );
 }
 
+// ---------- Sidebar Content Component ----------
+function SidebarContent() {
+    return (
+        <div className="space-y-4 w-full">
+            <div className="rounded-2xl -mt-20 border border-[#F0E2CC] bg-white p-5">
+                <div className="flex flex-col items-center text-center gap-2">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                        RS
+                    </div>
+                    <p className="font-serif text-lg font-bold text-[#3C2015]">
+                        Rahul Sharma
+                    </p>
+                    <p className="text-xs text-[#B59A78] break-all">
+                        rahulsharma123@gmail.com
+                    </p>
+                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
+                        <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
+                        <Link href="/account/editprofile">Edit profile</Link>
+                    </button>
+                </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between">
+                <nav className="space-y-1">
+                    <Link href="/account" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                        <Package size={18} className="shrink-0" />
+                        <span>My Orders</span>
+                    </Link>
+                  
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
+                        <MapPin size={18} className="shrink-0" />
+                        <span>My Addresses</span>
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                    </div>
+                    <Link href="/wishlist" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                        <Heart size={18} className="shrink-0" />
+                        <span>Wishlist</span>
+                    </Link>
+                    <Link href="/account/privacy" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                        <Settings size={18} className="shrink-0" />
+                        <span>Policy Center</span>
+                    </Link>
+                </nav>
+                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
+                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                        <LogOut size={18} className="shrink-0" />
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // ---------- Main Page ----------
 export default function MyAddressesPage() {
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
-    // ---------- Fetch Addresses ----------
     const fetchAddresses = async () => {
         try {
             setLoading(true);
@@ -461,7 +513,6 @@ export default function MyAddressesPage() {
         fetchAddresses();
     }, []);
 
-    // ---------- Add Address ----------
     const addAddress = async (data: AddressFormData) => {
         try {
             const payload = {
@@ -495,7 +546,6 @@ export default function MyAddressesPage() {
         }
     };
 
-    // ---------- Update Address ----------
     const updateAddress = async (id: string, data: AddressFormData) => {
         try {
             const payload = {
@@ -530,7 +580,6 @@ export default function MyAddressesPage() {
         }
     };
 
-    // ---------- Delete Address ----------
     const deleteAddress = async (id: string) => {
         if (!confirm("Delete this address?")) return;
         try {
@@ -549,7 +598,6 @@ export default function MyAddressesPage() {
         }
     };
 
-    // ---------- Set Default ----------
     const setDefaultAddress = async (id: string) => {
         try {
             const address = addresses.find((a) => a.id === id);
@@ -587,72 +635,73 @@ export default function MyAddressesPage() {
 
     const filteredAddresses = addresses.filter((addr) =>
         addr.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        addr.lines.join(" ").toLowerCase().includes(searchTerm.toLowerCase())
+        addr.lines.join(" ").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        addr.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // ---------- Render ----------
     return (
-        <section className="min-h-screen bg-[#FFF8EF] py-8 md:py-12">
-            <div className="mx-auto max-w-[1480px] -mt-4 px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+        <section className="min-h-screen bg-[#FFF8EF] py-6 sm:py-4 md:py-18">
+            <div className="mx-auto max-w-[1480px]  px-4 sm:px-6 lg:px-8">
+                
+                {/* Mobile Menu Toggle Bar */}
+                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+                            RS
+                        </div>
+                        <div>
+                            <p className="font-serif text-sm font-bold text-[#3C2015]">Rahul Sharma</p>
+                            <p className="text-xs text-[#B59A78]">Account Navigation</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                    >
+                        <Menu size={16} />
+                        Menu
+                    </button>
+                </div>
 
-                    {/* Sidebar */}
-                    <aside className="self-start lg:sticky lg:top-20 w-full space-y-4">
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                                    RS
-                                </div>
-                                <p className="font-serif text-lg font-bold text-[#3C2015]">
-                                    Rahul Sharma
-                                </p>
-                                <p className="text-xs text-[#B59A78]">
-                                    rahulsharma123@gmail.com
-                                </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
-                                    <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-                                    <Link href="/account/editprofile">Edit profile</Link>
+                {/* Mobile Drawer Overlay */}
+                {mobileMenuOpen && (
+                    <div 
+                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <div 
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] p-5 shadow-2xl overflow-y-auto flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0E2CC]">
+                                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
+                                <button 
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
+                                >
+                                    <X size={20} />
                                 </button>
                             </div>
+                            <div onClick={() => setMobileMenuOpen(false)}>
+                                <SidebarContent />
+                            </div>
                         </div>
+                    </div>
+                )}
 
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col lg:min-h-[480px]">
-                            <nav className="space-y-1">
-                                <Link href="/account" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
-                                    <Package size={18} className="shrink-0" />
-                                    <span>My Orders</span>
-                                </Link>
-                                <Link href="/trackorder" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
-                                    <Truck size={18} className="shrink-0" />
-                                    <span>Track Order</span>
-                                </Link>
-                                <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
-                                    <MapPin size={18} className="shrink-0" />
-                                    <span>My Addresses</span>
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
-                                </div>
-                                <Link href="/wishlist" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
-                                    <Heart size={18} className="shrink-0" />
-                                    <span>Wishlist</span>
-                                </Link>
-                                <Link href="/account/privacy" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
-                                    <Settings size={18} className="shrink-0" />
-                                    <span>Policy Center</span>
-                                </Link>
-                            </nav>
-                            <div className="mt-48 border-t border-[#F0E2CC]" />
-                            <button className="flex w-full items-center gap-3 rounded-xl px-4 pt-4 pb-1 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
-                                <LogOut size={18} className="shrink-0" />
-                                Logout
-                            </button>
-                        </div>
+                {/* Main Grid using items-start and sticky */}
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+
+                    {/* Desktop Sidebar - top-40 offset lagaya hai taaki header ke bilkul neeche safe distance par ruke */}
+                    <aside className="hidden lg:block lg:sticky lg:top-40 w-full">
+                        <SidebarContent />
                     </aside>
 
                     {/* Main Content */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 w-full min-w-0">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="font-serif text-3xl font-bold text-[#3C2015]">
+                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3C2015]">
                                     My Addresses
                                 </h1>
                                 <p className="mt-0.5 text-sm text-[#B59A78]">
@@ -688,11 +737,11 @@ export default function MyAddressesPage() {
                         ) : (
                             <>
                                 {filteredAddresses.length === 0 ? (
-                                    <div className="text-center py-10 text-[#B59A78]">
-                                        {searchTerm ? "No matches." : "No addresses saved yet."}
+                                    <div className="text-center py-12 text-[#B59A78] bg-white rounded-2xl border border-[#F0E2CC]">
+                                        {searchTerm ? "No matches found." : "No addresses saved yet."}
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+                                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                                         {filteredAddresses.map((address) => (
                                             <AddressCard
                                                 key={address.id}
@@ -739,11 +788,11 @@ export default function MyAddressesPage() {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-6 py-3 text-white shadow-lg ${
+                <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-6 py-3 text-white shadow-lg flex items-center gap-3 ${
                     toast.type === "success" ? "bg-green-600" : "bg-red-600"
                 }`}>
-                    {toast.message}
-                    <button onClick={() => setToast(null)} className="ml-4 text-white/70 hover:text-white">
+                    <span>{toast.message}</span>
+                    <button onClick={() => setToast(null)} className="text-white/70 hover:text-white">
                         <X size={16} />
                     </button>
                 </div>
