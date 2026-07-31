@@ -1,330 +1,423 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-    Package,
-    Truck,
-    MapPin,
-    Heart,
-    Settings,
-    LogOut,
-    Pencil,
-    User,
-    Camera,
-    Lock,
-    ChevronRight,
-    CalendarDays,
-    Menu,
-    X,
-    ArrowLeft,
+  Package,
+  MapPin,
+  Heart,
+  Settings,
+  LogOut,
+  Pencil,
+  User,
+  CalendarDays,
+  Menu,
+  X,
+  Loader2,
+  ShieldCheck,
 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/auth";
 
 const sidebarLinks = [
-    { icon: Package, label: "My Orders", href: "/account" },
-    { icon: MapPin, label: "My Addresses", href: "/address" },
-    { icon: Heart, label: "Wishlist", href: "/wishlist" },
-    { icon: Settings, label: "Policy Center", href: "/account/privacy" },
+  { icon: Package, label: "My Orders", href: "/account" },
+  { icon: MapPin, label: "My Addresses", href: "/address" },
+  { icon: Heart, label: "Wishlist", href: "/wishlist" },
+  { icon: Settings, label: "Policy Center", href: "/account/privacy" },
 ];
 
-function SecurityRow({
-    title,
-    description,
-    actionLabel,
-}: {
-    title: string;
-    description: string;
-    actionLabel: string;
-}) {
-    return (
-        <div className="flex flex-col gap-3 rounded-xl border border-[#F0E2CC] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p className="text-sm font-bold text-[#3C2015]">{title}</p>
-                <p className="mt-0.5 text-xs text-[#B59A78]">{description}</p>
-            </div>
-            <button className="flex h-9 shrink-0 items-center justify-center gap-1 rounded-lg border border-[#2D3A1B] px-4 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
-                {actionLabel}
-                <ChevronRight size={14} />
-            </button>
-        </div>
-    );
+// Helper to get token from cookie
+function getTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+  return match ? decodeURIComponent(match[2]) : null;
 }
 
-// ---------- Reusable Sidebar Content (used in desktop aside + mobile drawer) ----------
-function SidebarContent() {
-    return (
-        <div className="space-y-4 w-full">
-            {/* Profile Card */}
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
-                <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                        RS
-                    </div>
-                    <p className="font-serif text-lg font-bold text-[#3C2015]">
-                        Rahul Sharma
-                    </p>
-                    <p className="text-xs text-[#B59A78] break-all">
-                        rahulsharma123@gmail.com
-                    </p>
-                    <Link
-                        href="/account/editprofile"
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
-                    >
-                        <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-                        Edit profile
-                    </Link>
-                </div>
-            </div>
-
-            {/* Nav + Logout Card */}
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between shadow-sm">
-                <nav className="space-y-1">
-                    {sidebarLinks.map((link) => {
-                        const Icon = link.icon;
-                        return (
-                            <Link
-                                key={link.label}
-                                href={link.href}
-                                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
-                            >
-                                <Icon size={18} className="shrink-0" />
-                                <span>{link.label}</span>
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
-                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
-                        <LogOut size={18} className="shrink-0" />
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+function getInitials(fullName: string) {
+  if (!fullName) return "RS";
+  return fullName
+    .split(" ")
+    .filter(Boolean)
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }
 
+// ---------- Sidebar Content Component ----------
+function SidebarContent({ userData }: { userData: any }) {
+  const fullName = userData?.fullName || "Rahul Sharma";
+  const email = userData?.email || "Not Provided";
+  const initials = getInitials(fullName);
+
+  return (
+    <div className="space-y-4 w-full">
+      {/* Profile Card */}
+      <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+            {initials}
+          </div>
+          <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
+            {fullName}
+          </p>
+          <p className="text-xs text-[#B59A78] break-all">
+            {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
+          </p>
+          <Link
+            href="/account/editprofile"
+            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+          >
+            <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
+            Edit profile
+          </Link>
+        </div>
+      </div>
+
+      {/* Nav + Logout Card */}
+      <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between shadow-sm">
+        <nav className="space-y-1">
+          {sidebarLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
+              >
+                <Icon size={18} className="shrink-0" />
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
+          <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+            <LogOut size={18} className="shrink-0" />
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- Main Edit Profile Page ----------
 export default function EditProfilePage() {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    return (
-        <section className="min-h-screen bg-[#FFF8EF] pt-6 pb-8 md:py-12">
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+  // Form State
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    mobile: "",
+    phone: "",
+    gender: "",
+    DOB: "",
+    password: "",
+  });
 
-                {/* Mobile Header Bar - Safe layout */}
-                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <Link href="/account" className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFF8EF] text-[#3C2015] hover:bg-[#F0E2CC] transition">
-                            <ArrowLeft size={18} />
-                        </Link>
-                        <h1 className="font-serif text-base font-bold text-[#3C2015]">Edit Profile</h1>
-                    </div>
-                    <button
-                        onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#2D3A1B] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
-                    >
-                        <Menu size={15} />
-                        Menu
-                    </button>
-                </div>
+  // Fetch Profile Details
+  const fetchProfileDetails = async () => {
+    setLoading(true);
+    try {
+      const token = getTokenFromCookie();
+      const res = await fetch(`${API_BASE_URL}/api/users/profile-details`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
 
-                {/* Mobile Drawer Overlay */}
-                {mobileMenuOpen && (
-                    <div
-                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        <div
-                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] p-5 shadow-2xl overflow-y-auto flex flex-col"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0E2CC]">
-                                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
-                                <button
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
-                            <div onClick={() => setMobileMenuOpen(false)}>
-                                <SidebarContent />
-                            </div>
-                        </div>
-                    </div>
-                )}
+      if (res.ok) {
+        const data = await res.json();
+        const user = data.data || data.user || data;
 
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+        setFormData({
+          fullName: user.name || user.full_name || "",
+          email: user.email || "",
+          mobile: user.mobile || user.phone || "",
+          phone: user.mobile || user.phone || "",
+          gender: user.gender || "",
+          DOB: user.DOB || user.dob || "",
+          password: "",
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching profile details:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    {/* --- DESKTOP SIDEBAR --- */}
-                    <aside className="hidden lg:block lg:sticky lg:top-20 w-full">
-                        <SidebarContent />
-                    </aside>
+  useEffect(() => {
+    fetchProfileDetails();
+  }, []);
 
-                    {/* --- MAIN CONTENT --- */}
-                    <div className="space-y-6 w-full min-w-0">
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-                        {/* Header - desktop only */}
-                        <div className="hidden lg:block">
-                            <h1 className="font-serif text-3xl font-bold text-[#3C2015]">
-                                Edit Profile
-                            </h1>
-                            <p className="mt-0.5 text-sm text-[#B59A78]">
-                                Update your personal information and login details
-                            </p>
-                        </div>
+  // Submit Handler for PUT Update Profile API
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage(null);
 
-                        {/* Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-6 md:p-8 space-y-8 shadow-sm">
+    try {
+      const token = getTokenFromCookie();
+      const payload: any = {
+        email: formData.email,
+        gender: formData.gender,
+        DOB: formData.DOB,
+      };
 
-                            {/* Personal Information */}
-                            <div>
-                                <div className="flex items-center gap-2 pb-3 border-b border-[#F0E2CC]">
-                                    <User size={18} className="text-[#3C2015]" />
-                                    <h2 className="font-serif text-lg font-bold text-[#3C2015]">
-                                        Personal Information
-                                    </h2>
-                                </div>
+      if (formData.password) {
+        payload.password = formData.password;
+      }
 
-                                <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[auto_1fr_1fr]">
-                                    {/* Profile photo */}
-                                    <div className="flex flex-col items-center gap-2 sm:w-28">
-                                        <p className="text-sm font-semibold text-[#3C2015] self-start sm:self-center">
-                                            Profile Photo
-                                        </p>
-                                        <div className="relative mt-1">
-                                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBE4B8] text-[#2D3A1B]">
-                                                <User size={28} />
-                                            </div>
-                                            <button className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#3C2015] text-white">
-                                                <Camera size={12} />
-                                            </button>
-                                        </div>
-                                        <button className="text-xs font-medium text-[#2D3A1B] hover:underline">
-                                            Change Photo
-                                        </button>
-                                    </div>
+      const res = await fetch(`${API_BASE_URL}/api/users/update/profile`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
 
-                                    {/* Full name + Email */}
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-sm font-semibold text-[#3C2015]">
-                                                Full Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                defaultValue="Rahul Sharma"
-                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-sm font-semibold text-[#3C2015]">
-                                                Email Address
-                                            </label>
-                                            <input
-                                                type="email"
-                                                defaultValue="rahulsharma123@gmail.com"
-                                                className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
-                                            />
-                                        </div>
-                                    </div>
+      const resData = await res.json().catch(() => ({}));
 
-                                    {/* Mobile + DOB + Gender */}
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-sm font-semibold text-[#3C2015]">
-                                                Mobile Number
-                                            </label>
-                                            <div className="mt-2 flex h-11 items-center justify-between rounded-lg border border-[#F0E2CC] bg-white px-3">
-                                                <span className="text-sm text-[#3C2015]">+91 98765 43210</span>
-                                                <span className="rounded-md bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
-                                                    Verified
-                                                </span>
-                                            </div>
-                                        </div>
+      if (res.ok) {
+        setMessage({ type: "success", text: resData.message || "Profile updated successfully!" });
+        setFormData((prev) => ({ ...prev, password: "" }));
+      } else {
+        throw new Error(resData.message || "Failed to update profile");
+      }
+    } catch (err: any) {
+      setMessage({ type: "error", text: err.message || "Something went wrong" });
+    } finally {
+      setSaving(false);
+    }
+  };
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="text-sm font-semibold text-[#3C2015]">
-                                                    Date of Birth{" "}
-                                                    <span className="font-normal text-[#B59A78]">(Optional)</span>
-                                                </label>
-                                                <div className="relative mt-2">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="DD / MM / YYYY"
-                                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
-                                                    />
-                                                    <CalendarDays
-                                                        size={16}
-                                                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#B59A78]"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="text-sm font-semibold text-[#3C2015]">
-                                                    Gender{" "}
-                                                    <span className="font-normal text-[#B59A78]">(Optional)</span>
-                                                </label>
-                                                <select
-                                                    defaultValue=""
-                                                    className="mt-2 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
-                                                >
-                                                    <option value="" disabled>
-                                                        Select Gender
-                                                    </option>
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>
-                                                    <option value="other">Other</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+  const initials = getInitials(formData.fullName);
 
-                            {/* Login & Security */}
-                            <div>
-                                <div className="flex items-center gap-2 pb-3 border-b border-[#F0E2CC]">
-                                    <Lock size={18} className="text-[#3C2015]" />
-                                    <h2 className="font-serif text-lg font-bold text-[#3C2015]">
-                                        Login &amp; Security
-                                    </h2>
-                                </div>
-
-                                <div className="mt-4 space-y-3">
-                                    <SecurityRow
-                                        title="Change Password"
-                                        description="Choose a strong password to keep your account secure."
-                                        actionLabel="Change Password"
-                                    />
-                                    <SecurityRow
-                                        title="Change Mobile Number"
-                                        description="Update your mobile number with OTP verification."
-                                        actionLabel="Change Mobile Number"
-                                    />
-                                    <SecurityRow
-                                        title="Change Email Address"
-                                        description="Update your email address with OTP verification."
-                                        actionLabel="Change Email Address"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-3 pt-2">
-                                <button className="flex h-11 items-center justify-center rounded-lg bg-[#2D3A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition">
-                                    Save Changes
-                                </button>
-                                <button className="flex h-11 items-center justify-center rounded-lg border border-[#F0E2CC] px-6 text-sm font-bold text-[#3C2015] hover:bg-[#FFF8EF] transition">
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <section className="min-h-screen bg-[#FFF8EF] py-6 sm:py-4 md:py-12">
+      <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+        
+        {/* Mobile Menu Toggle Bar - Matched with Policy Center */}
+        <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+              {initials}
             </div>
-        </section>
-    );
+            <div>
+              <p className="font-serif text-sm font-bold text-[#3C2015] capitalize">
+                {formData.fullName || "Rahul Sharma"}
+              </p>
+              <p className="text-xs text-[#B59A78]">Account Navigation</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+          >
+            <Menu size={16} />
+            Menu
+          </button>
+        </div>
+
+        {/* Mobile Drawer Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] p-5 shadow-2xl overflow-y-auto flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0E2CC]">
+                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div onClick={() => setMobileMenuOpen(false)}>
+                <SidebarContent userData={formData} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+          {/* --- DESKTOP SIDEBAR --- */}
+          <aside className="hidden lg:block lg:sticky lg:top-20 w-full">
+            <SidebarContent userData={formData} />
+          </aside>
+
+          {/* --- MAIN CONTENT --- */}
+          <div className="space-y-6 w-full min-w-0">
+            {/* Header */}
+            <div className="space-y-1">
+              <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#3C2015]">
+                Edit Profile
+              </h1>
+              <p className="text-base text-[#B59A78]">
+                Update your personal information and login details.
+              </p>
+            </div>
+
+            {/* Form Card */}
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 sm:p-6 md:p-8 shadow-sm">
+              {loading ? (
+                <div className="flex h-64 items-center justify-center text-[#2D3A1B]">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <form onSubmit={handleUpdateProfile} className="space-y-6 sm:space-y-8">
+                  {/* Status Message */}
+                  {message && (
+                    <div
+                      className={`p-4 rounded-xl text-sm font-semibold ${
+                        message.type === "success"
+                          ? "bg-green-100 text-green-800 border border-green-300"
+                          : "bg-red-100 text-red-800 border border-red-300"
+                      }`}
+                    >
+                      {message.text}
+                    </div>
+                  )}
+
+                  {/* Personal Information Section */}
+                  <div>
+                    <div className="flex items-center gap-2 pb-3 border-b border-[#F0E2CC]">
+                      <User size={18} className="text-[#3C2015]" />
+                      <h2 className="font-serif text-base sm:text-lg font-bold text-[#3C2015]">
+                        Personal Information
+                      </h2>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2">
+                      <div>
+                        <label className="text-xs sm:text-sm font-semibold text-[#3C2015]">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={formData.fullName}
+                          readOnly
+                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-gray-50 px-3 text-sm text-[#3C2015] cursor-not-allowed outline-none select-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-semibold text-[#3C2015]">
+                          Mobile Number
+                        </label>
+                        <div className="mt-1.5 flex h-11 items-center justify-between rounded-lg border border-[#F0E2CC] bg-gray-50 px-3 select-none">
+                          <span className="text-sm text-[#3C2015] font-medium">
+                            {formData.mobile ? `+91 ${formData.mobile}` : "Not Available"}
+                          </span>
+                          {formData.mobile && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+                              <ShieldCheck size={11} />
+                              Verified
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-semibold text-[#3C2015]">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="Enter email address"
+                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs sm:text-sm font-semibold text-[#3C2015]">
+                          Date of Birth
+                        </label>
+                        <div className="relative mt-1.5">
+                          <input
+                            type="text"
+                            name="DOB"
+                            value={formData.DOB}
+                            onChange={handleChange}
+                            placeholder="DD/MM/YYYY"
+                            className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                          />
+                          <CalendarDays
+                            size={16}
+                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#B59A78]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="text-xs sm:text-sm font-semibold text-[#3C2015]">
+                          Gender
+                        </label>
+                        <select
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleChange}
+                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                        >
+                          <option value="" disabled>
+                            Select Gender
+                          </option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-3 pt-4 border-t border-[#F0E2CC]">
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="flex h-11 flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg bg-[#2D3A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition disabled:opacity-60"
+                    >
+                      {saving && <Loader2 size={16} className="animate-spin" />}
+                      Save Changes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={fetchProfileDetails}
+                      className="flex h-11 flex-1 sm:flex-none items-center justify-center rounded-lg border border-[#F0E2CC] px-6 text-sm font-bold text-[#3C2015] hover:bg-[#FFF8EF] transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
