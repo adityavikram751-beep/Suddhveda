@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import {
     Package,
     Truck,
@@ -14,6 +15,9 @@ import {
     Lock,
     ChevronRight,
     CalendarDays,
+    Menu,
+    X,
+    ArrowLeft,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -46,70 +50,123 @@ function SecurityRow({
     );
 }
 
-export default function EditProfilePage() {
+// ---------- Reusable Sidebar Content (used in desktop aside + mobile drawer) ----------
+function SidebarContent() {
     return (
-        <section className="min-h-screen bg-[#FFF8EF] py-8 md:py-12">
-            <div className="mx-auto max-w-[1480px] -mt-4 px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+        <div className="space-y-4 w-full">
+            {/* Profile Card */}
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
+                <div className="flex flex-col items-center text-center gap-2">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                        RS
+                    </div>
+                    <p className="font-serif text-lg font-bold text-[#3C2015]">
+                        Rahul Sharma
+                    </p>
+                    <p className="text-xs text-[#B59A78] break-all">
+                        rahulsharma123@gmail.com
+                    </p>
+                    <Link
+                        href="/account/editprofile"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+                    >
+                        <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
+                        Edit profile
+                    </Link>
+                </div>
+            </div>
 
-                    {/* --- SIDEBAR (Profile + Nav as separate cards) --- */}
-                    <aside className="self-start lg:sticky lg:top-20 w-full space-y-4">
+            {/* Nav + Logout Card */}
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between shadow-sm">
+                <nav className="space-y-1">
+                    {sidebarLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                            <Link
+                                key={link.label}
+                                href={link.href}
+                                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
+                            >
+                                <Icon size={18} className="shrink-0" />
+                                <span>{link.label}</span>
+                            </Link>
+                        );
+                    })}
+                </nav>
 
-                        {/* Profile Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
-                            <div className="flex flex-col items-center text-center gap-2">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                                    RS
-                                </div>
-                                <p className="font-serif text-lg font-bold text-[#3C2015]">
-                                    Rahul Sharma
-                                </p>
-                                <p className="text-xs text-[#B59A78]">
-                                    rahulsharma123@gmail.com
-                                </p>
-                                <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
-                                    <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-<Link
-href={`/account/editprofile`}
->
-Edit profile
-</Link>                                  </button>
+                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
+                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                        <LogOut size={18} className="shrink-0" />
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function EditProfilePage() {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    return (
+        <section className="min-h-screen bg-[#FFF8EF] pt-6 pb-8 md:py-12">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+
+                {/* Mobile Header Bar - Safe layout */}
+                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <Link href="/account" className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFF8EF] text-[#3C2015] hover:bg-[#F0E2CC] transition">
+                            <ArrowLeft size={18} />
+                        </Link>
+                        <h1 className="font-serif text-base font-bold text-[#3C2015]">Edit Profile</h1>
+                    </div>
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#2D3A1B] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                    >
+                        <Menu size={15} />
+                        Menu
+                    </button>
+                </div>
+
+                {/* Mobile Drawer Overlay */}
+                {mobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <div
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] p-5 shadow-2xl overflow-y-auto flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0E2CC]">
+                                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div onClick={() => setMobileMenuOpen(false)}>
+                                <SidebarContent />
                             </div>
                         </div>
-                        {/* Nav + Logout Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col lg:min-h-[480px]">
-                            <nav className="space-y-1">
-                                {sidebarLinks.map((link) => {
-                                    const Icon = link.icon;
-                                    return (
-                                        <Link
-                                            key={link.label}
-                                            href={link.href}
-                                            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
-                                        >
-                                            <Icon size={18} className="shrink-0" />
-                                            <span>{link.label}</span>
-                                        </Link>
-                                    );
-                                })}
-                            </nav>
+                    </div>
+                )}
 
-                            {/* Divider */}
-                            <div className="mt-48 border-t border-[#F0E2CC]" />
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
 
-                            {/* Logout - right below nav, not pushed to bottom */}
-                            <button className="flex w-full items-center gap-3 rounded-xl px-4 pt-4 pb-1 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
-                                <LogOut size={18} className="shrink-0" />
-                                Logout
-                            </button>
-                        </div>
+                    {/* --- DESKTOP SIDEBAR --- */}
+                    <aside className="hidden lg:block lg:sticky lg:top-20 w-full">
+                        <SidebarContent />
                     </aside>
 
                     {/* --- MAIN CONTENT --- */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 w-full min-w-0">
 
-                        {/* Header */}
-                        <div>
+                        {/* Header - desktop only */}
+                        <div className="hidden lg:block">
                             <h1 className="font-serif text-3xl font-bold text-[#3C2015]">
                                 Edit Profile
                             </h1>
@@ -119,7 +176,7 @@ Edit profile
                         </div>
 
                         {/* Card */}
-                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-6 md:p-8 space-y-8">
+                        <div className="rounded-2xl border border-[#F0E2CC] bg-white p-6 md:p-8 space-y-8 shadow-sm">
 
                             {/* Personal Information */}
                             <div>
@@ -187,7 +244,7 @@ Edit profile
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <div>
                                                 <label className="text-sm font-semibold text-[#3C2015]">
                                                     Date of Birth{" "}
@@ -256,7 +313,7 @@ Edit profile
                             </div>
 
                             {/* Actions */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 pt-2">
                                 <button className="flex h-11 items-center justify-center rounded-lg bg-[#2D3A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition">
                                     Save Changes
                                 </button>
