@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     AUTH_CHANGED_EVENT,
     AuthSession,
@@ -11,10 +11,10 @@ import {
     getInitials,
     getStoredSession,
 } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/auth";
 import {
     CheckCircle2,
     Package,
-    Truck,
     MapPin,
     Heart,
     Settings,
@@ -51,7 +51,20 @@ interface Order {
     statusNote: string;
 }
 
-// ---------- More Orders Data (10 orders) ----------
+// Desktop Header Constants
+const HEADER_HEIGHT = 96;
+const TOP_GAP = 16;
+const HEADER_OFFSET = HEADER_HEIGHT + TOP_GAP;
+const BOTTOM_GAP = 24;
+
+// Helper to get token from cookie
+function getTokenFromCookie(): string | null {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : null;
+}
+
+// ---------- More Orders Data ----------
 const allOrders: Order[] = [
     {
         id: "1",
@@ -255,25 +268,29 @@ function OrderActions({ order }: { order: Order }) {
 }
 
 // ---------- Sidebar Content Component ----------
-function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
+function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; onLogout?: () => void; onLinkClick?: () => void }) {
     const pathname = usePathname();
-    
+
+    const fullName = userData?.fullName || "Rahul Sharma";
+    const email = userData?.email || "Not Provided";
+    const initials = getInitials({ name: fullName, mobile: userData?.mobile || "" });
+
     const handleClick = () => {
         if (onLinkClick) onLinkClick();
     };
 
     return (
         <div className="space-y-4 w-full">
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5">
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                        RS
+                        {initials}
                     </div>
-                    <p className="font-serif text-lg font-bold text-[#3C2015]">
-                        Rahul Sharma
+                    <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
+                        {fullName}
                     </p>
                     <p className="text-xs text-[#B59A78] break-all">
-                        rahulsharma123@gmail.com
+                        {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
                     <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
@@ -282,7 +299,7 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col">
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm flex flex-col justify-between">
                 <nav className="space-y-1">
                     <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
                         <Package size={18} className="shrink-0" />
@@ -314,8 +331,8 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
                         );
                     })}
                 </nav>
-                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
-                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                <div className="mt-8 pt-4 border-t border-[#F0E2CC]">
+                    <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
                         <LogOut size={18} className="shrink-0" />
                         Logout
                     </button>
@@ -326,13 +343,66 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
 }
 
 export default function MyOrdersPage() {
-    const pathname = usePathname();
     const router = useRouter();
     const [session, setSession] = useState<AuthSession | null>(() => getStoredSession());
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const ordersPerPage = 3;
+
+    // Profile details state
+    const [userData, setUserData] = useState({
+        fullName: "",
+        email: "",
+        mobile: "",
+        phone: "",
+    });
+
+    // JS-driven sticky sidebar refs & state
+    const rowRef = useRef<HTMLDivElement>(null);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const [sidebarStyle, setSidebarStyle] = useState<React.CSSProperties>({});
+    const [sidebarPinned, setSidebarPinned] = useState(false);
+    const [placeholderHeight, setPlaceholderHeight] = useState(0);
+
+    // JS-driven "unstick near footer" logic for the mobile fixed bar
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const mobileBarRef = useRef<HTMLDivElement>(null);
+    const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
+        position: "fixed",
+        top: 95,
+        left: 0,
+        right: 0,
+    });
+    const MOBILE_BAR_TOP_OFFSET = 95;
+
+    const fetchProfileDetails = async () => {
+        try {
+            const token = getTokenFromCookie();
+            const res = await fetch(`${API_BASE_URL}/api/users/profile-details`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const user = data.data || data.user || data;
+
+                setUserData({
+                    fullName: user.name || user.full_name || "",
+                    email: user.email || "",
+                    mobile: user.mobile || user.phone || "",
+                    phone: user.mobile || user.phone || "",
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching profile details:", err);
+        }
+    };
 
     useEffect(() => {
         function syncSession() {
@@ -341,6 +411,7 @@ export default function MyOrdersPage() {
 
         window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
         window.addEventListener("storage", syncSession);
+        fetchProfileDetails();
 
         return () => {
             window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
@@ -353,6 +424,124 @@ export default function MyOrdersPage() {
             router.replace("/login");
         }
     }, [router, session]);
+
+    // JS-driven Sticky Sidebar Scroll Handler (Desktop)
+    useEffect(() => {
+        let ticking = false;
+
+        function computeStickyPosition() {
+            const rowEl = rowRef.current;
+            const sidebarEl = sidebarRef.current;
+            if (!rowEl || !sidebarEl) return;
+
+            if (window.innerWidth < 1024) {
+                if (Object.keys(sidebarStyle).length > 0) {
+                    setSidebarStyle({});
+                    setSidebarPinned(false);
+                    setPlaceholderHeight(0);
+                }
+                return;
+            }
+
+            const scrollY = window.scrollY || window.pageYOffset;
+            const rowRect = rowEl.getBoundingClientRect();
+            const rowTopDoc = rowRect.top + scrollY;
+            const rowHeight = rowEl.offsetHeight;
+            const rowBottomDoc = rowTopDoc + rowHeight;
+            const sidebarHeight = sidebarEl.offsetHeight;
+            const sidebarWidth = sidebarEl.offsetWidth;
+
+            const desiredTopDoc = scrollY + HEADER_OFFSET;
+
+            if (desiredTopDoc < rowTopDoc) {
+                setSidebarStyle({});
+                setSidebarPinned(false);
+                setPlaceholderHeight(0);
+            } else if (desiredTopDoc + sidebarHeight + BOTTOM_GAP >= rowBottomDoc) {
+                setSidebarStyle({
+                    position: "absolute",
+                    top: rowHeight - sidebarHeight,
+                    left: 0,
+                    width: sidebarWidth,
+                });
+                setSidebarPinned(true);
+                setPlaceholderHeight(sidebarHeight);
+            } else {
+                setSidebarStyle({
+                    position: "fixed",
+                    top: HEADER_OFFSET,
+                    left: rowRect.left,
+                    width: sidebarWidth,
+                });
+                setSidebarPinned(true);
+                setPlaceholderHeight(sidebarHeight);
+            }
+        }
+
+        function onScrollOrResize() {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    computeStickyPosition();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        computeStickyPosition();
+        window.addEventListener("scroll", onScrollOrResize, { passive: true });
+        window.addEventListener("resize", onScrollOrResize);
+        return () => {
+            window.removeEventListener("scroll", onScrollOrResize);
+            window.removeEventListener("resize", onScrollOrResize);
+        };
+    }, [currentPage, searchTerm, userData]);
+
+    // Unstick the mobile fixed bar once the footer is about to appear
+    useEffect(() => {
+        function handleMobileBarScroll() {
+            const sectionEl = sectionRef.current;
+            const barEl = mobileBarRef.current;
+            if (!sectionEl || !barEl) return;
+
+            if (window.innerWidth >= 1024) {
+                return;
+            }
+
+            const scrollY = window.scrollY || window.pageYOffset;
+            const sectionRect = sectionEl.getBoundingClientRect();
+            const sectionTopDoc = sectionRect.top + scrollY;
+            const sectionHeight = sectionEl.offsetHeight;
+            const sectionBottomDoc = sectionTopDoc + sectionHeight;
+            const barHeight = barEl.offsetHeight;
+
+            const desiredTopDoc = scrollY + MOBILE_BAR_TOP_OFFSET;
+
+            if (desiredTopDoc + barHeight >= sectionBottomDoc) {
+                setMobileBarStyle({
+                    position: "absolute",
+                    top: sectionHeight - barHeight,
+                    left: 0,
+                    right: 0,
+                });
+            } else {
+                setMobileBarStyle({
+                    position: "fixed",
+                    top: MOBILE_BAR_TOP_OFFSET,
+                    left: 0,
+                    right: 0,
+                });
+            }
+        }
+
+        handleMobileBarScroll();
+        window.addEventListener("scroll", handleMobileBarScroll, { passive: true });
+        window.addEventListener("resize", handleMobileBarScroll);
+        return () => {
+            window.removeEventListener("scroll", handleMobileBarScroll);
+            window.removeEventListener("resize", handleMobileBarScroll);
+        };
+    }, []);
 
     function logout() {
         clearSession();
@@ -367,8 +556,6 @@ export default function MyOrdersPage() {
             </section>
         );
     }
-
-    const user = session.user;
 
     // ---------- Filter Orders by Search ----------
     const filteredOrders = allOrders.filter((order) => {
@@ -388,7 +575,6 @@ export default function MyOrdersPage() {
     const endIndex = startIndex + ordersPerPage;
     const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
-    // Reset to page 1 when search changes
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm]);
@@ -399,7 +585,6 @@ export default function MyOrdersPage() {
         }
     };
 
-    // Get visible page numbers
     const getPageNumbers = () => {
         const pages = [];
         const maxVisible = 5;
@@ -431,18 +616,25 @@ export default function MyOrdersPage() {
     };
 
     return (
-        <section className="min-h-screen bg-[#FFF8EF] py-6 sm:py-8 md:py-12">
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
-                
-                {/* Mobile Menu Toggle Bar */}
-                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-32 lg:pt-12">
+            
+            {/* MOBILE FIXED BAR: Fixed top-[95px] to guarantee safe distance under site header */}
+            <div
+                ref={mobileBarRef}
+                style={mobileBarStyle}
+                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-sm"
+            >
+                <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
-                            {getInitials(user)}
+                            {getInitials({ 
+                                name: userData.fullName || session.user.name || "Customer", 
+                                mobile: userData?.mobile || session.user?.mobile || "" 
+                            })}
                         </div>
                         <div>
-                            <p className="font-serif text-sm font-bold text-[#3C2015]">
-                                {user.name || "Shuddhveda Customer"}
+                            <p className="font-serif text-sm font-bold text-[#3C2015] capitalize">
+                                {userData.fullName || session.user.name || "Shuddhveda Customer"}
                             </p>
                             <p className="text-xs text-[#B59A78]">Account Navigation</p>
                         </div>
@@ -455,6 +647,9 @@ export default function MyOrdersPage() {
                         Menu
                     </button>
                 </div>
+            </div>
+
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
 
                 {/* Mobile Drawer */}
                 {mobileMenuOpen && (
@@ -476,22 +671,34 @@ export default function MyOrdersPage() {
                                 </button>
                             </div>
                             <div className="flex-1 overflow-y-auto p-4 pt-2" onClick={() => setMobileMenuOpen(false)}>
-                                <SidebarContent onLinkClick={() => setMobileMenuOpen(false)} />
+                                <SidebarContent userData={userData} onLogout={logout} onLinkClick={() => setMobileMenuOpen(false)} />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Main Grid */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+                {/* Main Layout Grid */}
+                <div ref={rowRef} className="flex flex-col lg:flex-row gap-8 items-start relative">
+
+                    {/* Placeholder */}
+                    {sidebarPinned && (
+                        <div
+                            className="hidden lg:block w-[280px] shrink-0"
+                            style={{ height: placeholderHeight }}
+                        />
+                    )}
 
                     {/* Desktop Sidebar */}
-                    <aside className="hidden lg:block lg:sticky lg:top-20 w-full">
-                        <SidebarContent />
+                    <aside
+                        ref={sidebarRef}
+                        style={sidebarStyle}
+                        className="hidden lg:block w-[280px] shrink-0 z-10 max-h-[calc(100vh-96px-24px)] overflow-y-auto"
+                    >
+                        <SidebarContent userData={userData} onLogout={logout} />
                     </aside>
 
                     {/* --- MAIN CONTENT --- */}
-                    <div className="space-y-6 w-full min-w-0">
+                    <div className="space-y-6 flex-1 w-full min-w-0">
 
                         {/* Header */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -518,13 +725,11 @@ export default function MyOrdersPage() {
                             </div>
                         </div>
 
-                        {/* Filter pill with count */}
+                        {/* Filter pill */}
                         <div className="flex flex-wrap items-center gap-3">
                             <button className="rounded-lg border border-[#2D3A1B] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#2D3A1B]">
                                 All Orders
                             </button>
-                            <span className="text-sm text-[#B59A78]">
-                            </span>
                         </div>
 
                         {/* Order cards */}
@@ -539,7 +744,7 @@ export default function MyOrdersPage() {
                                     return (
                                         <div
                                             key={order.id}
-                                            className="rounded-2xl border border-[#F0E2CC] bg-white p-5 md:p-6"
+                                            className="rounded-2xl border border-[#F0E2CC] bg-white p-5 md:p-6 shadow-sm"
                                         >
                                             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                                                 {/* Product */}

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Package,
-    Truck,
     MapPin,
     Heart,
     Settings,
@@ -19,7 +18,7 @@ import {
     CheckCircle,
     Menu,
 } from "lucide-react";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getInitials } from "@/lib/auth";
 
 type AddressType = "Home" | "Office" | "Other";
 
@@ -48,6 +47,19 @@ const typeIcons: Record<AddressType, typeof Home> = {
     Other: MapPin,
 };
 
+// CHANGE THIS to your actual header's rendered height in pixels.
+const HEADER_HEIGHT = 96;
+const TOP_GAP = 16;
+const HEADER_OFFSET = HEADER_HEIGHT + TOP_GAP;
+const BOTTOM_GAP = 24;
+
+// Helper to get token from cookie
+function getTokenFromCookie(): string | null {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : null;
+}
+
 // ---------- Address Card Component ----------
 function AddressCard({
     address,
@@ -64,7 +76,7 @@ function AddressCard({
 
     return (
         <div className="flex flex-col justify-between rounded-2xl border border-[#F0E2CC] bg-white p-5 sm:p-6 shadow-sm h-full">
-           <div>
+            <div>
                 <div className="flex items-start justify-between">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
                         <TypeIcon size={18} />
@@ -91,7 +103,7 @@ function AddressCard({
                         </p>
                     ))}
                 </div>
-           </div>
+            </div>
 
             <div className="mt-6 flex items-center justify-between gap-2 pt-3 border-t border-[#F0E2CC]/55">
                 <div className="flex items-center gap-3">
@@ -393,49 +405,57 @@ function AddressModal({
 }
 
 // ---------- Sidebar Content Component ----------
-function SidebarContent() {
+function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick?: () => void }) {
+    const fullName = userData?.fullName || "Rahul Sharma";
+    const email = userData?.email || "Not Provided";
+    const initials = getInitials({ name: fullName, mobile: userData?.mobile || "" });
+
+    const handleClick = () => {
+        if (onLinkClick) onLinkClick();
+    };
+
     return (
         <div className="space-y-4 w-full">
-            <div className="rounded-2xl -mt-20 border border-[#F0E2CC] bg-white p-5">
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
-                        RS
+                        {initials}
                     </div>
-                    <p className="font-serif text-lg font-bold text-[#3C2015]">
-                        Rahul Sharma
+                    <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
+                        {fullName}
                     </p>
                     <p className="text-xs text-[#B59A78] break-all">
-                        rahulsharma123@gmail.com
+                        {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
                     <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-                        <Link href="/account/editprofile">Edit profile</Link>
+                        <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
                     </button>
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between">
+            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm flex flex-col justify-between">
                 <nav className="space-y-1">
-                    <Link href="/account" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/account" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
                         <Package size={18} className="shrink-0" />
                         <span>My Orders</span>
                     </Link>
-                  
+
                     <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
                         <MapPin size={18} className="shrink-0" />
                         <span>My Addresses</span>
                         <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
                     </div>
-                    <Link href="/wishlist" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/wishlist" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
                         <Heart size={18} className="shrink-0" />
                         <span>Wishlist</span>
                     </Link>
-                    <Link href="/account/privacy" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/account/privacy" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
                         <Settings size={18} className="shrink-0" />
                         <span>Policy Center</span>
                     </Link>
                 </nav>
-                <div className="mt-48 pt-4 border-t border-[#F0E2CC]">
+                <div className="mt-8 pt-4 border-t border-[#F0E2CC]">
                     <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
                         <LogOut size={18} className="shrink-0" />
                         Logout
@@ -456,6 +476,170 @@ export default function MyAddressesPage() {
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+    // Profile State
+    const [userData, setUserData] = useState({
+        fullName: "",
+        email: "",
+        mobile: "",
+        phone: "",
+    });
+
+    // 1. Profile Details GET API
+    const fetchProfileDetails = async () => {
+        try {
+            const token = getTokenFromCookie();
+            const res = await fetch(`${API_BASE_URL}/api/users/profile-details`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const user = data.data || data.user || data;
+
+                setUserData({
+                    fullName: user.name || user.full_name || "",
+                    email: user.email || "",
+                    mobile: user.mobile || user.phone || "",
+                    phone: user.mobile || user.phone || "",
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching profile details:", err);
+        }
+    };
+
+    // ---- JS-driven sticky sidebar logic ----
+    const rowRef = useRef<HTMLDivElement>(null);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const [sidebarStyle, setSidebarStyle] = useState<React.CSSProperties>({});
+    const [sidebarPinned, setSidebarPinned] = useState(false);
+    const [placeholderHeight, setPlaceholderHeight] = useState(0);
+
+    // ---- JS-driven "unstick near footer" logic for the mobile fixed bar ----
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const mobileBarRef = useRef<HTMLDivElement>(null);
+    const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
+        position: "fixed",
+        top: 95,
+        left: 0,
+        right: 0,
+    });
+    const MOBILE_BAR_TOP_OFFSET = 95;
+
+    useEffect(() => {
+        function handleScroll() {
+            const rowEl = rowRef.current;
+            const sidebarEl = sidebarRef.current;
+            if (!rowEl || !sidebarEl) return;
+
+            if (window.innerWidth < 1024) {
+                if (Object.keys(sidebarStyle).length > 0) {
+                    setSidebarStyle({});
+                    setSidebarPinned(false);
+                    setPlaceholderHeight(0);
+                }
+                return;
+            }
+
+            const scrollY = window.scrollY || window.pageYOffset;
+            const rowRect = rowEl.getBoundingClientRect();
+            const rowTopDoc = rowRect.top + scrollY;
+            const rowHeight = rowEl.offsetHeight;
+            const rowBottomDoc = rowTopDoc + rowHeight;
+            const sidebarHeight = sidebarEl.offsetHeight;
+            const sidebarWidth = sidebarEl.offsetWidth;
+
+            const desiredTopDoc = scrollY + HEADER_OFFSET;
+
+            if (desiredTopDoc < rowTopDoc) {
+                setSidebarStyle({});
+                setSidebarPinned(false);
+                setPlaceholderHeight(0);
+            } else if (desiredTopDoc + sidebarHeight + BOTTOM_GAP >= rowBottomDoc) {
+                setSidebarStyle({
+                    position: "absolute",
+                    top: rowHeight - sidebarHeight,
+                    left: 0,
+                    width: sidebarWidth,
+                });
+                setSidebarPinned(true);
+                setPlaceholderHeight(sidebarHeight);
+            } else {
+                setSidebarStyle({
+                    position: "fixed",
+                    top: HEADER_OFFSET,
+                    left: rowRect.left,
+                    width: sidebarWidth,
+                });
+                setSidebarPinned(true);
+                setPlaceholderHeight(sidebarHeight);
+            }
+        }
+
+        handleScroll();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("resize", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
+    }, [loading, addresses.length]);
+
+    // ---- Unstick the mobile fixed bar once the footer is about to appear ----
+    useEffect(() => {
+        function handleMobileBarScroll() {
+            const sectionEl = sectionRef.current;
+            const barEl = mobileBarRef.current;
+            if (!sectionEl || !barEl) return;
+
+            if (window.innerWidth >= 1024) {
+                return; // bar is hidden on desktop anyway (lg:hidden)
+            }
+
+            const scrollY = window.scrollY || window.pageYOffset;
+            const sectionRect = sectionEl.getBoundingClientRect();
+            const sectionTopDoc = sectionRect.top + scrollY;
+            const sectionHeight = sectionEl.offsetHeight;
+            const sectionBottomDoc = sectionTopDoc + sectionHeight;
+            const barHeight = barEl.offsetHeight;
+
+            const desiredTopDoc = scrollY + MOBILE_BAR_TOP_OFFSET;
+
+            if (desiredTopDoc + barHeight >= sectionBottomDoc) {
+                // Section (and footer right after it) is coming into view —
+                // pin the bar to the bottom of the section so it scrolls
+                // away naturally instead of floating over the footer.
+                setMobileBarStyle({
+                    position: "absolute",
+                    top: sectionHeight - barHeight,
+                    left: 0,
+                    right: 0,
+                });
+            } else {
+                setMobileBarStyle({
+                    position: "fixed",
+                    top: MOBILE_BAR_TOP_OFFSET,
+                    left: 0,
+                    right: 0,
+                });
+            }
+        }
+
+        handleMobileBarScroll();
+        window.addEventListener("scroll", handleMobileBarScroll, { passive: true });
+        window.addEventListener("resize", handleMobileBarScroll);
+        return () => {
+            window.removeEventListener("scroll", handleMobileBarScroll);
+            window.removeEventListener("resize", handleMobileBarScroll);
+        };
+    }, [loading, addresses.length]);
+
+    // 2. Fetch Addresses GET API
     const fetchAddresses = async () => {
         try {
             setLoading(true);
@@ -510,6 +694,7 @@ export default function MyAddressesPage() {
     };
 
     useEffect(() => {
+        fetchProfileDetails();
         fetchAddresses();
     }, []);
 
@@ -640,17 +825,23 @@ export default function MyAddressesPage() {
     );
 
     return (
-        <section className="min-h-screen bg-[#FFF8EF] py-6 sm:py-4 md:py-18">
-            <div className="mx-auto max-w-[1480px]  px-4 sm:px-6 lg:px-8">
-                
-                {/* Mobile Menu Toggle Bar */}
-                <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-4 lg:hidden shadow-sm">
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-32 lg:pt-12">
+
+            {/* MOBILE BAR: fixed while scrolling, unsticks (absolute) once the footer approaches */}
+            <div
+                ref={mobileBarRef}
+                style={mobileBarStyle}
+                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-sm"
+            >
+                <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
-                            RS
+                            {getInitials({ name: userData.fullName || "Customer", mobile: userData.mobile || "" })}
                         </div>
                         <div>
-                            <p className="font-serif text-sm font-bold text-[#3C2015]">Rahul Sharma</p>
+                            <p className="font-serif text-sm font-bold text-[#3C2015] capitalize">
+                                {userData.fullName || "Shuddhveda Customer"}
+                            </p>
                             <p className="text-xs text-[#B59A78]">Account Navigation</p>
                         </div>
                     </div>
@@ -662,43 +853,57 @@ export default function MyAddressesPage() {
                         Menu
                     </button>
                 </div>
+            </div>
+
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
 
                 {/* Mobile Drawer Overlay */}
                 {mobileMenuOpen && (
-                    <div 
-                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+                    <div
+                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
                         onClick={() => setMobileMenuOpen(false)}
                     >
-                        <div 
-                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] p-5 shadow-2xl overflow-y-auto flex flex-col"
+                        <div
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] shadow-2xl overflow-y-auto flex flex-col"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0E2CC]">
+                            <div className="sticky top-0 bg-[#FFF8EF] z-10 flex items-center justify-between p-4 pb-2 border-b border-[#F0E2CC]">
                                 <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
-                                <button 
+                                <button
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
                                 >
                                     <X size={20} />
                                 </button>
                             </div>
-                            <div onClick={() => setMobileMenuOpen(false)}>
-                                <SidebarContent />
+                            <div className="flex-1 overflow-y-auto p-4 pt-2" onClick={() => setMobileMenuOpen(false)}>
+                                <SidebarContent userData={userData} onLinkClick={() => setMobileMenuOpen(false)} />
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Main Grid using items-start and sticky */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start">
+                {/* Main Layout Grid */}
+                <div ref={rowRef} className="flex flex-col lg:flex-row gap-8 items-start relative">
 
-                    {/* Desktop Sidebar - top-40 offset lagaya hai taaki header ke bilkul neeche safe distance par ruke */}
-                    <aside className="hidden lg:block lg:sticky lg:top-40 w-full">
-                        <SidebarContent />
+                    {sidebarPinned && (
+                        <div
+                            className="hidden lg:block w-[280px] shrink-0"
+                            style={{ height: placeholderHeight }}
+                        />
+                    )}
+
+                    {/* JS-driven Sticky Sidebar */}
+                    <aside
+                        ref={sidebarRef}
+                        style={sidebarStyle}
+                        className="hidden lg:block w-[280px] shrink-0 z-10 max-h-[calc(100vh-96px-24px)] overflow-y-auto"
+                    >
+                        <SidebarContent userData={userData} />
                     </aside>
 
                     {/* Main Content */}
-                    <div className="space-y-6 w-full min-w-0">
+                    <div className="space-y-6 flex-1 w-full min-w-0">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3C2015]">
