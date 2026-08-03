@@ -3,7 +3,7 @@ import Header from "@/components/layout/Header";
 import GiftSets from "@/sections/giftsets/page";
 import GiftOccession from"@/sections/giftsets/giftoccesion";
 import CuratedGift from "@/sections/giftsets/curatedgift";
-import GiftSelection from "@/sections/giftsets/giftselection";
+// import GiftSelection from "@/sections/giftsets/giftselection";
 import Movement from "@/sections/giftsets/movement";
 import RealReview from "@/sections/giftsets/realreview";
 
@@ -15,7 +15,7 @@ export default function GiftsetPage() {
       <GiftSets/>
       <GiftOccession/>
       <CuratedGift/>
-      <GiftSelection/>
+      {/* <GiftSelection/> */}
       <Movement/>
       <RealReview/>
         <Footer/>

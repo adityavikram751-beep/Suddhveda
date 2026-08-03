@@ -282,10 +282,9 @@ export default function Cart() {
 
   return (
     <main className="bg-[#FFF8EF] py-10 text-[#2F241C]">
-      <div className="mx-auto max-w-[1410px] px-5">
+      <div className="mx-auto -mt-10 max-w-[1410px] px-5">
         <nav className="mb-6 text-sm text-[#7B8493]">
-          <span className="font-medium text-[#2F241C]">Home</span> &gt;{" "}
-          <span className="font-semibold text-[#2D3A1B]">Cart</span>
+         
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
@@ -295,9 +294,8 @@ export default function Cart() {
               Your Cart <span className="text-[#2D3A1B]">({cartProducts.length})</span>
             </h1>
 
-            <FreeDeliveryBar subtotal={subtotal} />
 
-            <div className="mt-14 hidden grid-cols-[1fr_120px_160px_100px] px-5 text-[15px] font-semibold uppercase tracking-[0.08em] text-[#30303A] md:grid">
+            <div className="mt-12 hidden grid-cols-[1fr_120px_160px_100px] px-5 text-[15px] font-semibold uppercase tracking-[0.08em] text-[#30303A] md:grid">
               <span>Product</span>
               <span>Price</span>
               <span>Quantity</span>
@@ -422,23 +420,7 @@ export function FreeDeliveryBar({ subtotal }: { subtotal: number }) {
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
-  return (
-    <div className="mt-5 rounded-[10px] border border-[#F0DDC4] bg-white px-6 py-5">
-      <p className="text-[13px] text-[#4C5362]">
-        Yay! You are ₹{remaining} away from FREE delivery!
-      </p>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#E8EBEF]">
-        <div
-          className="h-full rounded-full bg-[#2D3A1B] transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <div className="mt-2 flex justify-between text-[11px] text-[#A2AAB7]">
-        <span>₹0</span>
-        <span>₹{freeDeliveryTarget}</span>
-      </div>
-    </div>
-  );
+ 
 }
 
 // ─── Quantity Control ──────────────────────────────────────────────────
@@ -767,7 +749,7 @@ export function OrderSummaryWithCoupons({
       {/* Summary lines */}
       <div className="bg-transparent px-1 w-full box-border">
         <h2 className="text-[20px] font-bold text-[#2F241C]">Order Summary</h2>
-        <div className="mt-4 space-y-3 text-[15px] text-[#6F7786]">
+        <div className="mt-8 space-y-3 text-[15px] text-[#6F7786]">
           <div className="flex justify-between">
             <span>Subtotal ({itemCount} items)</span>
             <strong className="font-semibold text-[#2F241C]">₹{subtotal.toLocaleString("en-IN")}</strong>
@@ -791,13 +773,13 @@ export function OrderSummaryWithCoupons({
       </div>
 
       {/* Coupon Section */}
-      <div className="rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] w-full box-border">
+      <div className=" mt-8 rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] w-full box-border">
         <p className="flex items-center gap-2 text-[15px] font-bold text-[#2F241C]">
           <span className="text-[16px] leading-none">🎟️</span>
           Apply Coupons
         </p>
 
-        <div className="mt-4 space-y-4">
+        <div className="mt-10 space-y-4">
           <div className="flex gap-2">
             <input
               type="text"
