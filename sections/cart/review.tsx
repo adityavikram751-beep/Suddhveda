@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -19,8 +19,7 @@ import {
   ShoppingBag,
   LockKeyhole,
 } from "lucide-react";
-import { useCart } from "@/components/cart/CartProvider";
-import { allProducts } from "@/lib/shop-data";
+import { API_BASE_URL } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -28,49 +27,258 @@ const freeDeliveryTarget = 2000;
 const steps = [
   { id: 1, title: "Address", subtitle: "Add delivery address" },
   { id: 2, title: "Shipping", subtitle: "Choose shipping method" },
-  { id: 3, title: "Payment", subtitle: "Select payment option" },
-  { id: 4, title: "Review", subtitle: "Review & place order" },
+  { id: 3, title: "Review", subtitle: "Review & place order" },
+  { id: 4, title: "Payment", subtitle: "Select payment option" },
 ] as const;
 
-const address = {
-  label: "Home",
-  name: "Rahul Sharma",
-  line: "123, Green Avenue, Near City Park Koramangala, Bengaluru",
-  pincode: "560034",
-  state: "Karnataka, India",
-  phone: "+91 98765 43210",
+type Address = {
+  id: string;
+  label: string;
+  isDefault: boolean;
+  name: string;
+  line: string;
+  city: string;
+  state: string;
+  pincode: string;
+  phone: string;
 };
+
+type LocationData = {
+  phone: string;
+  phone_timing: string;
+  email: string;
+  email_reply_time: string;
+  whatsapp: string;
+  whatsapp_timing: string;
+  map_embed_url: string;
+};
+
+const mapApiAddress = (item: any): Address => ({
+  id: item._id,
+  label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : "Other",
+  isDefault: item.is_default || false,
+  name: item.full_name || "",
+  line: `${item.address_line1 || ""} ${item.address_line2 || ""}`.trim(),
+  city: item.city || "",
+  state: item.state || "",
+  pincode: item.pincode || "",
+  phone: item.phone || "",
+});
 
 export default function ReviewPage() {
   const router = useRouter();
-  const { cartItems } = useCart();
 
-  // ----- FIX: Safely extract quantity from cartItems -----
-  const cartProducts = allProducts
-    .filter((product) => {
-      const item = cartItems[product.id];
-      return item && item.quantity > 0;
-    })
-    .map((product) => {
-      const item = cartItems[product.id];
-      return { ...product, quantity: item ? item.quantity : 0 };
-    });
+  // ---------- Real cart data ----------
+  const [cartProducts, setCartProducts] = useState<any[]>([]);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string>("");
+  const [cartLoading, setCartLoading] = useState(true);
+  const [cartError, setCartError] = useState<string | null>(null);
 
-  const visibleProducts =
-    cartProducts.length > 0
-      ? cartProducts
-      : allProducts.slice(0, 2).map((product) => ({ ...product, quantity: 1 }));
+  // ---------- Real address ----------
+  const [address, setAddress] = useState<Address | null>(null);
+  const [addressLoading, setAddressLoading] = useState(true);
 
-  const subtotal = visibleProducts.reduce(
-    (sum, product) => sum + product.price * product.quantity,
-    0
-  );
-  const saved = visibleProducts.reduce(
-    (sum, product) =>
-      sum + Math.max(product.oldPrice - product.price, 0) * product.quantity,
-    0
-  );
-  const total = subtotal;
+  // ---------- Real shipping (from Shipping page) ----------
+  const [deliveryCharge, setDeliveryCharge] = useState<number>(0);
+  const [deliveryLabel, setDeliveryLabel] = useState<string>("Standard Shipping");
+  const [deliveryDescription, setDeliveryDescription] = useState<string>("Delivery in 3-5 business days");
+
+  // ---------- Real payment method (from Payment page) ----------
+  const [paymentLabel, setPaymentLabel] = useState<string>("Cash on Delivery (COD)");
+  const [codCharge, setCodCharge] = useState<number>(0);
+
+  // ---------- Location (Need Help) ----------
+  const [location, setLocation] = useState<LocationData | null>(null);
+
+  useEffect(() => {
+    // Coupon
+    if (typeof window !== "undefined") {
+      const storedCoupon = localStorage.getItem("applied_coupon");
+      if (storedCoupon) {
+        try {
+          const parsed = JSON.parse(storedCoupon);
+          if (parsed?.discount) setCouponDiscount(parsed.discount);
+          if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+        } catch (e) {
+          console.error("Error parsing saved coupon", e);
+        }
+      }
+
+      // Shipping method chosen on Shipping page
+      const storedShipping = localStorage.getItem("selected_shipping");
+      if (storedShipping) {
+        try {
+          const parsed = JSON.parse(storedShipping);
+          setDeliveryCharge(Number(parsed?.price) || 0);
+          setDeliveryLabel(parsed?.label || "Standard Shipping");
+          setDeliveryDescription(
+            parsed?.id === "express"
+              ? "Delivery in 1-2 business days"
+              : parsed?.id === "priority"
+              ? "Delivery by tomorrow"
+              : "Delivery in 3-5 business days"
+          );
+        } catch (e) {
+          console.error("Error parsing saved shipping method", e);
+        }
+      }
+
+      // Payment method chosen on Payment page
+      const storedPayment = localStorage.getItem("selected_payment");
+      if (storedPayment) {
+        try {
+          const parsed = JSON.parse(storedPayment);
+          setPaymentLabel(parsed?.label || "Cash on Delivery (COD)");
+          setCodCharge(Number(parsed?.codCharge) || 0);
+        } catch (e) {
+          console.error("Error parsing saved payment method", e);
+        }
+      }
+    }
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      setCartLoading(true);
+      setCartError(null);
+      const res = await fetch(`${API_BASE_URL}/api/cart`, {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        setCartError("Please log in to view your cart.");
+        setCartProducts([]);
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const rawDiscount =
+        data.couponDiscount ?? data.discountAmount ?? data.discount ?? data.data?.discountAmount ?? 0;
+      const apiDiscount = typeof rawDiscount === "string" ? parseFloat(rawDiscount) || 0 : rawDiscount;
+      const apiCode = data.appliedCoupon?.code || data.couponCode || "";
+
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("applied_coupon");
+        if (!stored && apiDiscount > 0) {
+          setCouponDiscount(apiDiscount);
+          setAppliedCouponCode(apiCode);
+        }
+      }
+
+      const items = data.items || [];
+      const products: any[] = [];
+      items.forEach((item: any) => {
+        if (item.type === "NORMAL" && item.product) {
+          const product = item.product;
+          const variant = product.variant || {};
+          products.push({
+            id: product._id || item.cartItemId,
+            cartItemId: item.cartItemId || item._id,
+            title: product.product_name || "Honey",
+            weight: variant.weight ? `${variant.weight}g` : "",
+            price: variant.price || 0,
+            quantity: item.quantity || 1,
+            image: product.image?.image_url || "/placeholder.png",
+            oldPrice: variant.mrp || 0,
+          });
+        } else if (item.type === "CUSTOM") {
+          const giftBox = item.giftBox || {};
+          products.push({
+            id: item.giftCartItemId || item._id,
+            cartItemId: item.giftCartItemId || item._id,
+            title: `🎁 ${giftBox.name || "Gift Box"}`,
+            weight: `${item.totalWeight || 0}g`,
+            price: item.totalAmount || 0,
+            quantity: item.quantity || 1,
+            image: giftBox.image || "/placeholder.png",
+            oldPrice: 0,
+          });
+        }
+      });
+      setCartProducts(products);
+    } catch (err: any) {
+      console.error("Error fetching cart:", err);
+      setCartError(err.message || "Failed to load cart");
+      setCartProducts([]);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  const fetchAddress = async () => {
+    try {
+      setAddressLoading(true);
+      const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        setAddress(null);
+        return;
+      }
+      const data = await res.json();
+      const items = data.data || [];
+      const list: Address[] = items.map((item: any): Address => mapApiAddress(item));
+
+      // 🔥 Use the exact address the user picked on the Checkout page,
+      // not just whichever one happens to be marked default.
+      const storedId =
+        typeof window !== "undefined" ? localStorage.getItem("selected_address_id") : null;
+      const selected = storedId ? list.find((a) => a.id === storedId) : null;
+
+      if (selected) {
+        setAddress(selected);
+      } else if (list.length > 0) {
+        const defaultAddr = list.find((a) => a.isDefault) || list[0];
+        setAddress(defaultAddr);
+      } else {
+        setAddress(null);
+      }
+    } catch (err) {
+      console.error("Error fetching address:", err);
+      setAddress(null);
+    } finally {
+      setAddressLoading(false);
+    }
+  };
+
+  const fetchLocation = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/location/all`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const loc = data.data || data;
+        setLocation({
+          phone: loc.phone || "+91 98765 43210",
+          phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 7PM",
+          email: loc.email || "connect@honeyveda.in",
+          email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
+          whatsapp: loc.whatsapp || "",
+          whatsapp_timing: loc.whatsapp_timing || "",
+          map_embed_url: loc.map_embed_url || "",
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching location:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+    fetchAddress();
+    fetchLocation();
+  }, []);
+
+  // ---------- Computed totals (real data) ----------
+  const subtotal = cartProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
+  const saved = cartProducts.reduce((sum, p) => {
+    const perUnitSaving = Math.max((p.oldPrice || 0) - p.price, 0);
+    const cappedPerUnit = Math.min(perUnitSaving, p.price || perUnitSaving);
+    return sum + cappedPerUnit * p.quantity;
+  }, 0);
+  const total = Math.max(subtotal + deliveryCharge - couponDiscount + codCharge, 0);
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
@@ -79,7 +287,7 @@ export default function ReviewPage() {
   };
 
   const handlePlaceOrder = () => {
-    router.push("/payment");
+    router.push("/order-confirmation");
   };
 
   return (
@@ -110,8 +318,8 @@ export default function ReviewPage() {
             <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-3 py-4 shadow-sm md:px-4">
               <div className="flex items-center justify-between gap-2">
                 {steps.map((step, index) => {
-                  const isDone = step.id < 4;
-                  const isActive = step.id === 4;
+                  const isDone = step.id < 3;
+                  const isActive = step.id === 3;
 
                   return (
                     <div key={step.id} className="flex min-w-0 flex-1 items-center">
@@ -155,7 +363,10 @@ export default function ReviewPage() {
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <h2 className="text-[20px] font-bold text-[#2D3A1B]">Delivery Details</h2>
-                <button className="flex items-center gap-1 text-[13px] text-[#D18500]">
+                <button
+                  onClick={() => router.push("/checkout")}
+                  className="flex items-center gap-1 text-[13px] text-[#D18500]"
+                >
                   <Edit3 size={14} /> Edit
                 </button>
               </div>
@@ -164,22 +375,33 @@ export default function ReviewPage() {
                 <div className="flex items-start gap-4">
                   <Home size={20} className="mt-1 text-[#3A2418]" />
                   <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-[16px] font-bold text-[#3A2418]">{address.label}</p>
-                      <span className="rounded bg-[#F2F4F7] px-2 py-1 text-[10px] text-[#8A94A6]">
-                        DEFAULT
-                      </span>
-                    </div>
-                    <p className="mt-3 text-[15px] leading-7 text-[#686F7C]">
-                      {address.name}
-                      <br />
-                      {address.line}
-                      <br />- {address.pincode}
-                      <br />
-                      {address.state}
-                      <br />
-                      {address.phone}
-                    </p>
+                    {addressLoading ? (
+                      <p className="text-[14px] text-[#B59A78]">Loading address...</p>
+                    ) : address ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[16px] font-bold text-[#3A2418]">{address.label}</p>
+                          {address.isDefault && (
+                            <span className="rounded bg-[#F2F4F7] px-2 py-1 text-[10px] text-[#8A94A6]">
+                              DEFAULT
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-3 text-[15px] leading-7 text-[#686F7C]">
+                          {address.name}
+                          <br />
+                          {address.line}
+                          <br />
+                          {address.city} - {address.pincode}
+                          <br />
+                          {address.state}
+                          <br />
+                          {address.phone}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-[14px] text-[#B59A78]">No address found.</p>
+                    )}
                   </div>
                 </div>
 
@@ -187,10 +409,11 @@ export default function ReviewPage() {
                   <Truck size={20} className="mt-1 text-[#3A2418]" />
                   <div>
                     <p className="text-[16px] font-bold text-[#3A2418]">Shipping Method</p>
-                    <p className="mt-3 text-[15px] text-[#3A2418]">Standard Shipping (FREE)</p>
-                    <p className="mt-1 text-[15px] text-[#686F7C]">
-                      Delivery in 3-5 business days
+                    <p className="mt-3 text-[15px] text-[#3A2418]">
+                      {deliveryLabel}
+                      {deliveryCharge === 0 ? " (FREE)" : ` (₹${deliveryCharge})`}
                     </p>
+                    <p className="mt-1 text-[15px] text-[#686F7C]">{deliveryDescription}</p>
                   </div>
                 </div>
 
@@ -198,8 +421,7 @@ export default function ReviewPage() {
                   <CreditCard size={20} className="mt-1 text-[#3A2418]" />
                   <div>
                     <p className="text-[16px] font-bold text-[#3A2418]">Payment Method</p>
-                    <p className="mt-3 text-[15px] font-semibold text-[#3A2418]">UPI ▪</p>
-                    <p className="mt-1 text-[15px] text-[#686F7C]">shudhveda@icici</p>
+                    <p className="mt-3 text-[15px] font-semibold text-[#3A2418]">{paymentLabel}</p>
                   </div>
                 </div>
               </div>
@@ -209,47 +431,58 @@ export default function ReviewPage() {
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <h2 className="text-[20px] font-bold text-[#2D3A1B]">
-                  Items in Your Order ({visibleProducts.length})
+                  Items in Your Order ({cartProducts.length})
                 </h2>
-                <button className="flex items-center gap-1 text-[13px] text-[#D18500]">
+                <button
+                  onClick={() => router.push("/shop")}
+                  className="flex items-center gap-1 text-[13px] text-[#D18500]"
+                >
                   <Edit3 size={14} /> Add Product
                 </button>
               </div>
 
-              <div className="mt-8 space-y-8">
-                {visibleProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="grid items-center gap-4 border-b border-[#F4F1ED] pb-8 last:border-b-0 md:grid-cols-[112px_1fr_120px_120px_120px]"
-                  >
-                    <div className="relative h-[86px] w-[86px] overflow-hidden rounded-md bg-[#FFF3D5]">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        fill
-                        className="object-contain p-2"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-[18px] font-bold text-[#2D3A1B]">{product.title}</p>
-                      <p className="mt-1 text-[15px] font-medium text-[#7B8493]">
-                        {product.weight.split(" - ")[0]} • Raw &amp; Unfiltered
-                      </p>
-                      <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#E5F9EA] px-3 py-1 text-[11px] font-bold text-[#149447]">
-                        <CheckCircle2 size={12} fill="#149447" className="text-white" />
-                        100% Raw &amp; Unfiltered
+              {cartLoading ? (
+                <p className="mt-8 text-center text-[#B59A78]">Loading items...</p>
+              ) : cartError ? (
+                <p className="mt-8 text-center text-red-600">{cartError}</p>
+              ) : cartProducts.length === 0 ? (
+                <p className="mt-8 text-center text-[#9AA3AF]">Your cart is empty.</p>
+              ) : (
+                <div className="mt-8 space-y-8">
+                  {cartProducts.map((product) => (
+                    <div
+                      key={product.cartItemId || product.id}
+                      className="grid items-center gap-4 border-b border-[#F4F1ED] pb-8 last:border-b-0 md:grid-cols-[112px_1fr_120px_120px_120px]"
+                    >
+                      <div className="relative h-[86px] w-[86px] overflow-hidden rounded-md bg-[#FFF3D5]">
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          fill
+                          className="object-contain p-2"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-[18px] font-bold text-[#2D3A1B]">{product.title}</p>
+                        <p className="mt-1 text-[15px] font-medium text-[#7B8493]">
+                          {product.weight || "Selected weight"} • Raw &amp; Unfiltered
+                        </p>
+                        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#E5F9EA] px-3 py-1 text-[11px] font-bold text-[#149447]">
+                          <CheckCircle2 size={12} fill="#149447" className="text-white" />
+                          100% Raw &amp; Unfiltered
+                        </span>
+                      </div>
+                      <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price}</p>
+                      <span className="flex h-8 w-[96px] items-center justify-center rounded bg-[#FBFCFD] text-[15px] font-semibold text-[#2F3033] shadow-sm">
+                        Qty: {product.quantity}
                       </span>
+                      <p className="text-right text-[20px] font-bold text-[#2D3A1B]">
+                        ₹{product.price * product.quantity}
+                      </p>
                     </div>
-                    <p className="text-[20px] font-bold text-[#2D3A1B]">₹{product.price}</p>
-                    <span className="flex h-8 w-[96px] items-center justify-center rounded bg-[#FBFCFD] text-[15px] font-semibold text-[#2F3033] shadow-sm">
-                      Qty: {product.quantity}
-                    </span>
-                    <p className="text-right text-[20px] font-bold text-[#2D3A1B]">
-                      ₹{product.price * product.quantity}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-4 flex flex-col gap-3 rounded-md border border-[#BFDDB4] bg-[#EDF8E7] px-5 py-3 text-[12px] font-semibold text-[#0F6B33] sm:flex-row sm:items-center sm:justify-between">
                 <span className="inline-flex items-center gap-3">
@@ -272,7 +505,7 @@ export default function ReviewPage() {
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-[220px]"
+                className="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-auto sm:min-w-[220px]"
               >
                 <ArrowLeft size={18} />
                 Back to Shipping
@@ -280,7 +513,7 @@ export default function ReviewPage() {
               <button
                 type="button"
                 onClick={handlePlaceOrder}
-                className="flex h-14 w-full items-center justify-center gap-3 rounded-md bg-[#E17C00] px-8 text-[20px] font-bold text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#C96F00] sm:w-[340px]"
+                className="flex h-14 w-full items-center justify-center gap-3 whitespace-nowrap rounded-md bg-[#E17C00] px-8 text-[20px] font-bold text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#C96F00] sm:w-[340px]"
               >
                 <ShoppingBag size={20} />
                 Place Order
@@ -296,33 +529,41 @@ export default function ReviewPage() {
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-[20px] mt-2 font-bold">Order Summary</h2>
                 <span className="text-[12px] text-[#9AA3AF]">
-                  {visibleProducts.length} Items
+                  {cartProducts.length} Items
                 </span>
               </div>
 
               {/* Product List */}
-              <div className="mt-6 max-h-[280px] space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
-                {visibleProducts.map((product) => (
-                  <div key={product.id} className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        fill
-                        className="object-contain p-1.5"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[14px] font-semibold">{product.title}</p>
-                      <p className="text-[11px] text-[#9AA3AF]">
-                        {product.weight.split(" - ")[0]} - Raw &amp; Unfiltered
-                      </p>
-                      <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
-                    </div>
-                    <p className="text-[14px] font-bold">₹{product.price}</p>
-                  </div>
-                ))}
-              </div>
+              {cartLoading ? (
+                <p className="mt-6 text-center text-[#B59A78]">Loading...</p>
+              ) : (
+                <div className="mt-6 max-h-[280px] space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
+                  {cartProducts.length === 0 ? (
+                    <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
+                  ) : (
+                    cartProducts.map((product) => (
+                      <div key={product.cartItemId || product.id} className="flex items-center gap-3">
+                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
+                          <Image
+                            src={product.image}
+                            alt={product.title}
+                            fill
+                            className="object-contain p-1.5"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[14px] font-semibold">{product.title}</p>
+                          <p className="text-[11px] text-[#9AA3AF]">
+                            {product.weight || "Selected weight"} - Raw &amp; Unfiltered
+                          </p>
+                          <p className="text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
+                        </div>
+                        <p className="text-[14px] font-bold">₹{product.price * product.quantity}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
 
               {/* Totals */}
               <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
@@ -333,17 +574,27 @@ export default function ReviewPage() {
                   </strong>
                 </div>
                 <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <strong className="text-[#0BA445]">FREE</strong>
+                  <span>Delivery Charge ({deliveryLabel})</span>
+                  <strong className={deliveryCharge === 0 ? "text-[#0BA445]" : "text-[#2D3A1B]"}>
+                    ₹{deliveryCharge.toLocaleString("en-IN")}
+                  </strong>
                 </div>
                 <div className="flex justify-between">
                   <span>You Save</span>
-                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
+                  <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
                 </div>
-                <div className="flex justify-between">
-                  <span>Coupon Applied</span>
-                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
-                </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-[#0BA445] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
+                    <span>Coupon Discount {appliedCouponCode ? `(${appliedCouponCode})` : ""}</span>
+                    <span>- ₹{couponDiscount.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
+                {codCharge > 0 && (
+                  <div className="flex justify-between text-[#D18500] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
+                    <span>COD Charge</span>
+                    <span>+ ₹{codCharge.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
               </div>
 
               {/* Total */}
@@ -360,7 +611,7 @@ export default function ReviewPage() {
               {/* Savings & Free delivery progress */}
               <div className="mt-14 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
                 <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
-                  <ShieldCheck size={16} /> You&apos;re saving ₹{saved} on this order!
+                  <ShieldCheck size={16} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
                 </p>
                 {remaining > 0 && (
                   <>
@@ -408,13 +659,16 @@ export default function ReviewPage() {
                     <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
                     <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
                       <p className="flex items-center gap-2">
-                        <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
+                        <Phone size={16} className="text-[#2D3A1B]" />
+                        {location?.phone || "+91 98765 43210"}
                       </p>
                       <p className="flex items-center gap-2">
-                        <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
+                        <Mail size={16} className="text-[#2D3A1B]" />
+                        {location?.email || "connect@honeyveda.in"}
                       </p>
                       <p className="flex items-center gap-2">
-                        <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
+                        <Clock size={16} className="text-[#2D3A1B]" />
+                        {location?.phone_timing || "Mon - Sat : 9AM - 7PM"}
                       </p>
                     </div>
                     <div className="absolute bottom-0 right-0 opacity-100">

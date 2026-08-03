@@ -29,6 +29,7 @@ const navItems = [
   { title: "Gift Sets", href: "/giftsets" },
   { title: "About Us", href: "/about" },
   { title: "Contact", href: "/contact" },
+  { title: "Subcribe", href: "/subscribe" },
 ];
 
 export default function Header() {
