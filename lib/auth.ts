@@ -52,6 +52,32 @@ export function clearSession() {
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
 
+export async function ensureValidSession(): Promise<AuthSession | null> {
+  if (typeof window === "undefined") return null;
+
+  const storedSession = getStoredSession();
+  if (!storedSession) return null;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/profile-details`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      clearSession();
+      return null;
+    }
+
+    return storedSession;
+  } catch {
+    return storedSession;
+  }
+}
+
 export async function logout() {
   try {
     // Ask backend to clear the httpOnly cookie too (it must expose this route)

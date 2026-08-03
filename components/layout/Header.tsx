@@ -9,6 +9,7 @@ import {
   AUTH_CHANGED_EVENT,
   AuthSession,
   clearSession,
+  ensureValidSession,
   getStoredSession,
   API_BASE_URL,
 } from "@/lib/auth";
@@ -42,17 +43,15 @@ export default function Header() {
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const headerWrapperRef = useRef<HTMLDivElement>(null);
 
-  // ✅ FIX: Fetch wishlist count from dedicated API
+  // ✅ Fetch wishlist count with 401 Session Expiry Check
   const fetchWishlistCount = async () => {
     try {
       const sessionData = getStoredSession();
       if (!sessionData) {
-        console.log("🔴 No session, wishlist count = 0");
         setWishlistCount(0);
         return;
       }
 
-      console.log("🟢 Fetching wishlist count...");
       const res = await fetch(`${API_BASE_URL}/api/wishlist/product-count`, {
         method: "GET",
         credentials: "include",
@@ -61,11 +60,12 @@ export default function Header() {
         },
       });
 
-      console.log("📡 Wishlist API Status:", res.status);
-
+      // 🔴 AGAR COOKIE EXPIRE HO GAYI HOGI TOH BACKEND 401 DEGA -> SESSION CLEAR KAR DO
       if (res.status === 401) {
-        console.log("🔴 Wishlist API 401 - Unauthorized");
+        clearSession();
+        setSession(null);
         setWishlistCount(0);
+        setCartCount(0);
         return;
       }
 
@@ -74,42 +74,29 @@ export default function Header() {
       }
 
       const data = await res.json();
-      console.log("📦 Wishlist API Full Response:", JSON.stringify(data, null, 2));
-
-      // ✅ Try all possible paths
       let count = 0;
       if (data?.data?.count !== undefined) {
         count = data.data.count;
-        console.log("✅ Found in data.count:", count);
       } else if (data?.count !== undefined) {
         count = data.count;
-        console.log("✅ Found in root.count:", count);
       } else if (data?.data?.total !== undefined) {
         count = data.data.total;
-        console.log("✅ Found in data.total:", count);
       } else if (data?.total !== undefined) {
         count = data.total;
-        console.log("✅ Found in root.total:", count);
       } else if (data?.data?.totalItems !== undefined) {
         count = data.data.totalItems;
-        console.log("✅ Found in data.totalItems:", count);
       } else if (data?.totalItems !== undefined) {
         count = data.totalItems;
-        console.log("✅ Found in root.totalItems:", count);
       } else {
-        console.log("❌ No count found in response, checking all keys:", Object.keys(data));
-        // Try to find any number field
         for (const key of Object.keys(data)) {
           if (typeof data[key] === 'number') {
             count = data[key];
-            console.log(`✅ Found number in key "${key}":`, count);
             break;
           }
           if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
             for (const subKey of Object.keys(data[key])) {
               if (typeof data[key][subKey] === 'number') {
                 count = data[key][subKey];
-                console.log(`✅ Found number in ${key}.${subKey}:`, count);
                 break;
               }
             }
@@ -117,26 +104,21 @@ export default function Header() {
         }
       }
 
-      console.log("🎯 Final wishlist count:", count);
       setWishlistCount(count);
-      
     } catch (error) {
-      console.error("❌ Error fetching wishlist count:", error);
       setWishlistCount(0);
     }
   };
 
-  // ✅ NEW: Fetch cart count from dedicated API
+  // ✅ Fetch cart count with 401 Session Expiry Check
   const fetchCartCount = async () => {
     try {
       const sessionData = getStoredSession();
       if (!sessionData) {
-        console.log("🔴 No session, cart count = 0");
         setCartCount(0);
         return;
       }
 
-      console.log("🟢 Fetching cart count...");
       const res = await fetch(`${API_BASE_URL}/api/cart/count`, {
         method: "GET",
         credentials: "include",
@@ -145,10 +127,11 @@ export default function Header() {
         },
       });
 
-      console.log("📡 Cart API Status:", res.status);
-
+      // 🔴 AGAR COOKIE EXPIRE HO GAYI HOGI TOH BACKEND 401 DEGA -> SESSION CLEAR KAR DO
       if (res.status === 401) {
-        console.log("🔴 Cart API 401 - Unauthorized");
+        clearSession();
+        setSession(null);
+        setWishlistCount(0);
         setCartCount(0);
         return;
       }
@@ -158,42 +141,29 @@ export default function Header() {
       }
 
       const data = await res.json();
-      console.log("📦 Cart API Full Response:", JSON.stringify(data, null, 2));
-
-      // ✅ Try all possible paths
       let count = 0;
       if (data?.data?.count !== undefined) {
         count = data.data.count;
-        console.log("✅ Found in data.count:", count);
       } else if (data?.count !== undefined) {
         count = data.count;
-        console.log("✅ Found in root.count:", count);
       } else if (data?.data?.totalItems !== undefined) {
         count = data.data.totalItems;
-        console.log("✅ Found in data.totalItems:", count);
       } else if (data?.totalItems !== undefined) {
         count = data.totalItems;
-        console.log("✅ Found in root.totalItems:", count);
       } else if (data?.data?.total !== undefined) {
         count = data.data.total;
-        console.log("✅ Found in data.total:", count);
       } else if (data?.total !== undefined) {
         count = data.total;
-        console.log("✅ Found in root.total:", count);
       } else {
-        console.log("❌ No count found in response, checking all keys:", Object.keys(data));
-        // Try to find any number field
         for (const key of Object.keys(data)) {
           if (typeof data[key] === 'number') {
             count = data[key];
-            console.log(`✅ Found number in key "${key}":`, count);
             break;
           }
           if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
             for (const subKey of Object.keys(data[key])) {
               if (typeof data[key][subKey] === 'number') {
                 count = data[key][subKey];
-                console.log(`✅ Found number in ${key}.${subKey}:`, count);
                 break;
               }
             }
@@ -201,11 +171,8 @@ export default function Header() {
         }
       }
 
-      console.log("🎯 Final cart count:", count);
       setCartCount(count);
-      
     } catch (error) {
-      console.error("❌ Error fetching cart count:", error);
       setCartCount(0);
     }
   };
@@ -252,8 +219,8 @@ export default function Header() {
   };
 
   useEffect(() => {
-    function syncSession() {
-      const sessionData = getStoredSession();
+    async function syncSession() {
+      const sessionData = await ensureValidSession();
       setSession(sessionData);
       if (sessionData) {
         fetchWishlistCount();
@@ -273,10 +240,8 @@ export default function Header() {
       }
     }
 
-    // ✅ Handle wishlist update event
     const handleWishlistUpdate = (event: Event) => {
       const customEvent = event as CustomEvent;
-      console.log("📢 Wishlist update event:", customEvent.detail);
       if (customEvent.detail?.count !== undefined) {
         setWishlistCount(customEvent.detail.count);
       } else {
@@ -284,10 +249,8 @@ export default function Header() {
       }
     };
 
-    // ✅ Handle cart update event
     const handleCartUpdate = (event: Event) => {
       const customEvent = event as CustomEvent;
-      console.log("📢 Cart update event:", customEvent.detail);
       if (customEvent.detail?.count !== undefined) {
         setCartCount(customEvent.detail.count);
       } else {
@@ -313,7 +276,6 @@ export default function Header() {
     };
   }, []);
 
-  // ✅ Refetch when pathname changes
   useEffect(() => {
     const sessionData = getStoredSession();
     if (sessionData) {
@@ -325,7 +287,6 @@ export default function Header() {
     }
   }, [pathname]);
 
-  // ✅ Refetch when session changes
   useEffect(() => {
     if (session) {
       fetchWishlistCount();
@@ -336,7 +297,6 @@ export default function Header() {
     }
   }, [session]);
 
-  // Header padding effect
   useEffect(() => {
     function updatePadding() {
       if (headerWrapperRef.current) {
@@ -366,9 +326,6 @@ export default function Header() {
     }
     setAccountOpen((value) => !value);
   }
-
-  // 🔍 Debug: Log current counts on render
-  console.log("🔴 Current state - Wishlist:", wishlistCount, "Cart:", cartCount);
 
   return (
     <div ref={headerWrapperRef} className="fixed top-0 left-0 w-full z-40">
@@ -444,7 +401,6 @@ export default function Header() {
               className="relative text-[#7A3F10] hover:text-[#D89B00] transition"
             >
               <FiHeart size={22} />
-              {/* 🔍 Debug: Show count in data attribute */}
               <span data-wishlist-count={wishlistCount} />
               {wishlistCount > 0 ? (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
@@ -492,7 +448,6 @@ export default function Header() {
               )}
             </div>
 
-            {/* ✅ Cart button with dedicated count API */}
             <button
               type="button"
               onClick={openCart}
@@ -500,7 +455,6 @@ export default function Header() {
               aria-label="Open cart"
             >
               <FiShoppingCart size={22} />
-              {/* 🔍 Debug: Show count in data attribute */}
               <span data-cart-count={cartCount} />
               {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
