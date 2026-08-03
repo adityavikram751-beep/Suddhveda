@@ -232,7 +232,7 @@ export default function TestimonialsAndBulkGifting() {
         </section>
       )}
 
-      {/* ========== BULK GIFTING SECTION (Always Visible — even with zero reviews) ========== */}
+      {/* ========== BULK GIFTING SECTION (Always Visible — even with zero reviews) ==========
       <section className="relative bg-white pb-12 sm:pb-16 md:pb-20 overflow-x-hidden">
         <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-6">
           <div className="bg-[#011D02] px-4 py-8 sm:px-8 sm:py-12 md:px-14 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 items-center">
@@ -321,7 +321,7 @@ export default function TestimonialsAndBulkGifting() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }
