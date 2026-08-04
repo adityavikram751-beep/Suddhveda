@@ -48,7 +48,6 @@ type LocationData = {
   map_embed_url: string;
 };
 
-// Map API address to UI address
 const mapApiAddress = (item: any): Address => ({
   id: item._id,
   label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : "Other",
@@ -68,15 +67,14 @@ export default function Checkout() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [activeStep] = useState<number>(1);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // 🔥 Form data – initially empty
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
     pincode: "",
     locality: "",
     address: "",
-    landmark: "",
     city: "",
     state: "",
     deliveryInstructions: "",
@@ -84,11 +82,12 @@ export default function Checkout() {
   const [isPincodeVerified, setIsPincodeVerified] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
 
-  // ---------- ref for scrolling to form ----------
   const formRef = useRef<HTMLDivElement>(null);
-
-  // ---------- Location (for Need Help) ----------
   const [location, setLocation] = useState<LocationData | null>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const fetchLocation = async () => {
     try {
@@ -113,16 +112,53 @@ export default function Checkout() {
     }
   };
 
-  // ---------- Cart & Coupon Data ----------
   const [cartProducts, setCartProducts] = useState<any[]>([]);
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [appliedCouponCode, setAppliedCouponCode] = useState<string>("");
   const [cartLoading, setCartLoading] = useState(true);
   const [cartError, setCartError] = useState<string | null>(null);
 
-  // Coupon from localStorage
+  const mapCartItemsToProducts = (items: Record<string, any>) =>
+    Object.values(items).map((item: any) => {
+      if (item.type === "NORMAL") {
+        return {
+          id: item.cartItemId,
+          cartItemId: item.cartItemId,
+          variantId: item.variantId || "",
+          title: item.productName || item.title || "Honey",
+          weight: item.weight || "",
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+          image: item.image || "/placeholder.png",
+          oldPrice: item.oldPrice || 0,
+          type: item.type,
+        };
+      }
+
+      return {
+        id: item.cartItemId,
+        cartItemId: item.cartItemId,
+        variantId: "",
+        title: item.productName || item.title || `🎁 Gift Box`,
+        weight: item.weight || "",
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        image: item.image || "/placeholder.png",
+        oldPrice: 0,
+        type: item.type,
+      };
+    });
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    const productsFromContext = mapCartItemsToProducts(cartItems);
+    if (productsFromContext.length > 0) {
+      setCartProducts(productsFromContext);
+      setCartLoading(false);
+    }
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (isMounted && typeof window !== "undefined") {
       const stored = localStorage.getItem("applied_coupon");
       if (stored) {
         try {
@@ -134,11 +170,13 @@ export default function Checkout() {
         }
       }
     }
-  }, []);
+  }, [isMounted]);
 
   const fetchCart = async () => {
     try {
-      setCartLoading(true);
+      if (cartProducts.length === 0) {
+        setCartLoading(true);
+      }
       setCartError(null);
       const res = await fetch(`${API_BASE_URL}/api/cart`, {
         credentials: "include",
@@ -155,7 +193,7 @@ export default function Checkout() {
       const apiDiscount = typeof rawDiscount === "string" ? parseFloat(rawDiscount) || 0 : rawDiscount;
       const apiCode = data.appliedCoupon?.code || data.couponCode || "";
 
-      if (typeof window !== "undefined") {
+      if (isMounted && typeof window !== "undefined") {
         const stored = localStorage.getItem("applied_coupon");
         if (!stored && apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
@@ -163,7 +201,9 @@ export default function Checkout() {
         }
       }
 
-      const items = data.items || [];
+      const items = Array.isArray(data)
+        ? data
+        : data.items || data.data?.items || (Array.isArray(data.data) ? data.data : []) || [];
       const products: any[] = [];
       items.forEach((item: any) => {
         if (item.type === "NORMAL" && item.product) {
@@ -197,20 +237,24 @@ export default function Checkout() {
           });
         }
       });
-      setCartProducts(products);
+      if (products.length > 0) {
+        setCartProducts(products);
+      }
     } catch (err: any) {
       console.error("Error fetching cart:", err);
-      setCartError(err.message || "Failed to load cart");
-      setCartProducts([]);
+      if (cartProducts.length === 0) {
+        setCartError(err.message || "Failed to load cart");
+      }
     } finally {
       setCartLoading(false);
     }
   };
 
-  // ---------- Addresses ----------
   const fetchAddresses = async () => {
     try {
-      setLoading(true);
+      if (addresses.length === 0) {
+        setLoading(true);
+      }
       const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
         credentials: "include",
       });
@@ -223,31 +267,36 @@ export default function Checkout() {
       const items = data.data || [];
       const list: Address[] = items.map((item: any): Address => mapApiAddress(item));
       setAddresses(list);
-      
-      // 🔥 No auto-population – form remains empty
-      // Only set selected address ID for UI highlighting, but don't fill form
-      if (list.length > 0) {
+
+      const storedId = isMounted && typeof window !== "undefined" ? localStorage.getItem("selected_address_id") : null;
+      const restored = storedId ? list.find((a: Address) => a.id === storedId) : null;
+
+      if (restored) {
+        setSelectedAddressId(restored.id);
+      } else if (list.length > 0) {
         const defaultAddr = list.find((a: Address) => a.isDefault) || list[0];
         setSelectedAddressId(defaultAddr.id);
-        // ❌ DO NOT populate form – we want it empty initially
+        if (isMounted && typeof window !== "undefined") {
+          localStorage.setItem("selected_address_id", defaultAddr.id);
+        }
       } else {
         setSelectedAddressId("");
       }
     } catch (err) {
       console.error("Error fetching addresses:", err);
-      setAddresses([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCart();
-    fetchAddresses();
-    fetchLocation();
-  }, []);
+    if (isMounted) {
+      fetchCart();
+      fetchAddresses();
+      fetchLocation();
+    }
+  }, [isMounted]);
 
-  // ---------- Save Address API ----------
   const saveAddressToAPI = async (addressData: any, isEdit: boolean, addressId?: string) => {
     const payload = {
       full_name: addressData.fullName,
@@ -280,7 +329,6 @@ export default function Checkout() {
     return res.json();
   };
 
-  // ---------- Form handlers ----------
   const populateForm = (address: Address) => {
     setFormData({
       fullName: address.name || "",
@@ -288,25 +336,24 @@ export default function Checkout() {
       pincode: address.pincode || "",
       locality: address.line.split(",")[0] || "",
       address: address.line || "",
-      landmark: "",
       city: address.city || "",
       state: address.state || "",
       deliveryInstructions: "",
     });
   };
 
-  // 🔥 Edit: populate form with address data and scroll to form
   const handleEditAddress = (address: Address) => {
     populateForm(address);
     setEditingAddressId(address.id);
     setSelectedAddressId(address.id);
-    // scroll to form
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_address_id", address.id);
+    }
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
   };
 
-  // 🔥 Add New: clear all fields, set editing mode to null, and scroll to form
   const handleAddNew = () => {
     setFormData({
       fullName: "",
@@ -314,29 +361,22 @@ export default function Checkout() {
       pincode: "",
       locality: "",
       address: "",
-      landmark: "",
       city: "",
       state: "",
       deliveryInstructions: "",
     });
     setEditingAddressId(null);
     setIsPincodeVerified(false);
-    // deselect any address
     setSelectedAddressId("");
-    // scroll to form
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
   };
 
-  // 🔥 Select an existing address: populate form with that address
   const handleSelectAddress = (id: string) => {
     setSelectedAddressId(id);
-    setEditingAddressId(null);
-    const addr = addresses.find((a) => a.id === id);
-    if (addr) {
-      populateForm(addr);
-      // Optionally scroll to form? Not necessary but can be added.
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_address_id", id);
     }
   };
 
@@ -347,8 +387,8 @@ export default function Checkout() {
     }
 
     try {
-      const isEdit = !!editingAddressId;
-      await saveAddressToAPI(
+      const isEdit = editingAddressId !== null;
+      const result = await saveAddressToAPI(
         {
           ...formData,
           address_type: "home",
@@ -357,7 +397,31 @@ export default function Checkout() {
         isEdit,
         editingAddressId || undefined
       );
+
+      const savedId = result?.data?._id || result?._id || editingAddressId;
+      if (typeof window !== "undefined" && savedId) {
+        localStorage.setItem("selected_address_id", savedId);
+      }
+
       await fetchAddresses();
+      
+      setFormData({
+        fullName: "",
+        phone: "",
+        pincode: "",
+        locality: "",
+        address: "",
+        city: "",
+        state: "",
+        deliveryInstructions: "",
+      });
+      setEditingAddressId(null);
+      setIsPincodeVerified(false);
+
+      if (savedId) {
+        setSelectedAddressId(savedId);
+      }
+
       router.push("/shipping");
     } catch (err: any) {
       alert(err.message);
@@ -372,7 +436,6 @@ export default function Checkout() {
     }
   };
 
-  // ---------- Computed totals ----------
   const subtotal = cartProducts.reduce(
     (sum, product) => sum + product.price * product.quantity,
     0
@@ -384,20 +447,21 @@ export default function Checkout() {
   );
 
   const isEditing = editingAddressId !== null;
-  const getButtonLabel = () => (isEditing ? "Update Address & Continue" : "Add Your Address");
+  const getButtonLabel = () => (isEditing ? "Update Address & Continue" : "Add Address & Continue");
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-6 sm:py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-4 sm:px-5">
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-start">
+        {/* 🔥 FIXED - items-stretch se dono side equal height */}
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-stretch">
           
-          {/* Left Side - Scrollable */}
           <div 
-            className="max-h-[calc(100vh-80px)] overflow-y-auto pr-1 sm:pr-2"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
+            className="max-h-[calc(100vh-80px)] overflow-y-auto pr-1 sm:pr-2 space-y-6 sm:space-y-8"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             <style jsx>{`
               div::-webkit-scrollbar {
@@ -408,7 +472,14 @@ export default function Checkout() {
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
 
-            {/* DeliveryAddressForm with ref */}
+            <SavedAddresses
+              addresses={addresses}
+              selectedId={selectedAddressId}
+              onSelect={handleSelectAddress}
+              onAddNew={handleAddNew}
+              onEdit={handleEditAddress}
+            />
+
             <DeliveryAddressForm
               ref={formRef}
               formData={formData}
@@ -419,42 +490,31 @@ export default function Checkout() {
               buttonLabel={getButtonLabel()}
               isEditing={isEditing}
             />
-
-            {loading ? (
-              <div className="mt-6 sm:mt-8 text-center py-8 sm:py-10 text-[#B59A78]">Loading addresses...</div>
-            ) : (
-              <SavedAddresses
-                addresses={addresses}
-                selectedId={selectedAddressId}
-                onSelect={handleSelectAddress}
-                onAddNew={handleAddNew}
-                onEdit={handleEditAddress}
-              />
-            )}
             
             <div className="h-6 sm:h-8" />
           </div>
 
-          {/* Right Side - Fixed */}
-          <aside className="sticky top-6 flex flex-col self-start">
-            {cartLoading ? (
-              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 sm:p-8 text-center text-[#B59A78]">
-                Loading cart...
-              </div>
-            ) : cartError ? (
-              <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 sm:p-8 text-center text-red-600">
-                {cartError}
-              </div>
-            ) : (
-              <CheckoutOrderSummary
-                products={cartProducts}
-                subtotal={subtotal}
-                saved={saved}
-                couponDiscount={couponDiscount}
-                couponCode={appliedCouponCode}
-                location={location}
-              />
-            )}
+          {/* 🔥 FIXED - self-stretch se full height */}
+          <aside className="sticky top-6 flex flex-col self-stretch">
+            <CheckoutOrderSummary
+              products={cartProducts}
+              subtotal={subtotal}
+              saved={saved}
+              couponDiscount={couponDiscount}
+              couponCode={appliedCouponCode}
+              location={location}
+              selectedAddressId={selectedAddressId}
+              onProceedDirectly={() => {
+                if (!selectedAddressId) {
+                  alert("Please select a delivery address first.");
+                  return;
+                }
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("selected_address_id", selectedAddressId);
+                }
+                router.push("/shipping");
+              }}
+            />
           </aside>
         </div>
       </div>
@@ -462,11 +522,9 @@ export default function Checkout() {
   );
 }
 
-// ─── Subcomponents ──────────────────────────────────────────────────────
-
 function CheckoutHeader() {
   return (
-    <div className="relative">
+    <div className="relative mb-2 sm:mb-4">
       <h1 className="font-serif text-[26px] sm:text-[34px] font-bold">Checkout</h1>
       <p className="mt-1 text-[13px] sm:text-[14px] text-[#7B8493]">
         Almost there! Just a few more details to get your pure honey.
@@ -484,7 +542,7 @@ function CheckoutHeader() {
 
 function Stepper({ activeStep }: { activeStep: number }) {
   return (
-    <div className="mt-6 sm:mt-8 rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
+    <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm mb-2 sm:mb-4">
       <div className="flex items-center justify-between gap-1 sm:gap-2">
         {steps.map((step) => {
           const isDone = step.id < activeStep;
@@ -505,11 +563,7 @@ function Stepper({ activeStep }: { activeStep: number }) {
                 </span>
                 <span
                   className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
-                    isDone
-                      ? "bg-[#77AE61]"
-                      : isActive
-                      ? "bg-[#D18500]"
-                      : "bg-[#F0DDC8]"
+                    isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
                   }`}
                 />
                 <div className="min-w-0">
@@ -537,8 +591,6 @@ function Stepper({ activeStep }: { activeStep: number }) {
     </div>
   );
 }
-
-// ─── DeliveryAddressForm with forwardRef ─────────────────────────────
 
 type DeliveryAddressFormProps = {
   formData: any;
@@ -568,8 +620,10 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
     };
 
     return (
-      <div ref={ref} className="mt-6 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
-        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Delivery Address</h2>
+      <div ref={ref} className="rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
+        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">
+          {isEditing ? "Edit Delivery Address" : "Or Add a New Address"}
+        </h2>
         <div className="mt-5 sm:mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
           <FormField
             label="Full Name"
@@ -619,14 +673,6 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
             />
           </div>
           <FormField
-            label="Landmark"
-            optional
-            placeholder="E.g. Near post office, school, etc."
-            name="landmark"
-            value={formData.landmark}
-            onChange={handleChange}
-          />
-          <FormField
             label="City / Town"
             required
             placeholder="Enter city or town"
@@ -643,20 +689,7 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
             onChange={handleChange}
             as="select"
           />
-          <FormField
-            label="Delivery Instructions"
-            optional
-            placeholder="Any special instructions for delivery"
-            name="deliveryInstructions"
-            value={formData.deliveryInstructions}
-            onChange={handleChange}
-          />
         </div>
-
-        <label className="mt-4 sm:mt-5 flex items-center gap-2 text-[12px] sm:text-[13px] text-[#4C5362]">
-          <input type="checkbox" className="h-4 w-4 rounded border-[#D3D8DF]" />
-          Save this address for faster checkout next time
-        </label>
 
         <div className="mt-5 sm:mt-6 flex justify-end">
           <button
@@ -672,30 +705,15 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
     );
   }
 );
-
 DeliveryAddressForm.displayName = "DeliveryAddressForm";
 
-// ─── FormField ────────────────────────────────────────────────────────
-
-function FormField({
-  label,
-  required,
-  optional,
-  placeholder,
-  name,
-  value,
-  onChange,
-  action,
-  as = "input",
-}: any) {
+function FormField({ label, required, optional, placeholder, name, value, onChange, action, as = "input" }: any) {
   return (
     <div>
       <label className="mb-1 block text-[12px] sm:text-[13px] font-semibold text-[#2F241C]">
         {label}
         {required && <span className="text-red-500">*</span>}
-        {optional && (
-          <span className="ml-1 text-[10px] sm:text-[11px] font-normal text-[#9AA3AF]">(Optional)</span>
-        )}
+        {optional && <span className="ml-1 text-[10px] sm:text-[11px] font-normal text-[#9AA3AF]">(Optional)</span>}
       </label>
       <div className="flex gap-2">
         {as === "select" ? (
@@ -739,33 +757,19 @@ function FormField({
   );
 }
 
-// ─── SavedAddresses ──────────────────────────────────────────────────
-
-function SavedAddresses({
-  addresses,
-  selectedId,
-  onSelect,
-  onAddNew,
-  onEdit,
-}: {
-  addresses: Address[];
-  selectedId: string;
-  onSelect: (id: string) => void;
-  onAddNew: () => void;
-  onEdit: (address: Address) => void;
-}) {
+function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: any) {
   if (addresses.length === 0) {
     return (
-      <div className="mt-6 sm:mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7 text-center text-[#B59A78]">
-        No saved addresses. Click "Add New" to add one.
+      <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7 text-center text-[#B59A78]">
+        No saved addresses. Please fill the form below to add one.
       </div>
     );
   }
 
   return (
-    <div className="mt-6 sm:mt-8 rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
+    <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Saved Addresses</h2>
+        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Select Saved Address</h2>
         <button
           type="button"
           onClick={onAddNew}
@@ -783,7 +787,7 @@ function SavedAddresses({
               onClick={() => onSelect(address.id)}
               className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${
                 isSelected
-                  ? "border-[#2D3A1B] bg-[#FFF8EF]"
+                  ? "border-[#2D3A1B] bg-[#FFF8EF] shadow-sm ring-1 ring-[#2D3A1B]"
                   : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
               }`}
             >
@@ -791,9 +795,7 @@ function SavedAddresses({
                 <span className="flex items-center gap-2 text-[13px] sm:text-[14px] font-bold">
                   <span
                     className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 ${
-                      isSelected
-                        ? "border-[#2D3A1B] bg-[#2D3A1B]"
-                        : "border-[#CBD2DB] bg-white"
+                      isSelected ? "border-[#2D3A1B] bg-[#2D3A1B]" : "border-[#CBD2DB] bg-white"
                     }`}
                   />
                   {address.label}
@@ -801,18 +803,16 @@ function SavedAddresses({
                     <span className="text-[10px] sm:text-[11px] font-normal text-[#2D3A1B]">(Default)</span>
                   )}
                 </span>
-                {isSelected && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(address);
-                    }}
-                    className="text-[11px] sm:text-[12px] font-semibold text-[#2D3A1B] hover:underline"
-                  >
-                    ✎ Edit
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(address);
+                  }}
+                  className="text-[11px] sm:text-[12px] font-semibold text-[#2D3A1B] hover:underline"
+                >
+                  ✎ Edit
+                </button>
               </div>
               <p className="mt-2 sm:mt-3 text-[12px] sm:text-[13px] leading-relaxed text-[#4C5362]">
                 {address.name}
@@ -833,110 +833,72 @@ function SavedAddresses({
   );
 }
 
-// ─── Order Summary ──────────────────────────────────────────────────
-
-type CheckoutProduct = {
-  id: number | string;
-  cartItemId?: string;
-  variantId?: string;
-  title: string;
-  weight: string;
-  price: number;
-  quantity: number;
-  image: string;
-  oldPrice?: number;
-  type?: string;
-};
-
-function CheckoutOrderSummary({
-  products,
-  subtotal,
-  saved,
-  couponDiscount = 0,
-  couponCode = "",
-  location,
-}: {
-  products: CheckoutProduct[];
-  subtotal: number;
-  saved: number;
-  couponDiscount?: number;
-  couponCode?: string;
-  location: LocationData | null;
-}) {
+function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, couponCode = "", location, selectedAddressId, onProceedDirectly }: any) {
   const finalTotal = Math.max(subtotal - couponDiscount, 0);
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
-  const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
   return (
-    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6">
-      
+    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6 h-full">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-[18px] sm:text-[20px] font-bold">Order Summary</h2>
         <span className="text-[11px] sm:text-[12px] text-[#9AA3AF]">{products.length} Items</span>
       </div>
 
-      <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+      {/* Items with scroll - exactly 2 visible, scrollbar hidden */}
+      <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4 max-h-[90px] sm:max-h-[115px] overflow-y-auto scrollbar-hide">
         {products.length === 0 ? (
           <p className="text-center text-[#9AA3AF]">Your cart is empty.</p>
         ) : (
-          products.map((product, index) => {
-            // ✅ Unique key
-            const uniqueKey = [
-              product.cartItemId || '',
-              product.id || '',
-              product.variantId || '',
-              product.type || 'normal',
-              index,
-              Date.now()
-            ].filter(Boolean).join('-');
-            
-            return (
-              <div key={uniqueKey} className="flex items-center gap-2 sm:gap-3">
-                <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                  <Image
-                    src={product.image}
-                    alt={product.title}
-                    fill
-                    className="object-contain p-1.5"
-                    sizes="(max-width: 640px) 48px, 56px"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>
-                  <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">
-                    {product.weight || "Selected weight"} 
-                  </p>
-                  <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
-                </div>
-                <p className="text-[13px] sm:text-[14px] font-bold shrink-0">₹{product.price * product.quantity}</p>
+          products.map((product: any, index: number) => (
+            <div key={index} className="flex items-center gap-2 sm:gap-3">
+              <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
+                <Image src={product.image} alt={product.title} fill className="object-contain p-1.5" />
               </div>
-            );
-          })
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>
+                <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">{product.weight || "Weight"}</p>
+                <p className="text-[10px] sm:text-[11px] text-[#9AA3AF]">Qty: {product.quantity}</p>
+              </div>
+              <p className="text-[13px] sm:text-[14px] font-bold shrink-0">₹{product.price * product.quantity}</p>
+            </div>
+          ))
         )}
       </div>
 
+      {/* Pricing */}
       <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3 border-t border-[#EEF1F4] pt-3 sm:pt-4 text-[12px] sm:text-[13px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
         </div>
         <div className="flex justify-between">
-          <span>Shipping</span>
-          <strong className="text-[#0BA445]">FREE</strong>
-        </div>
-        <div className="flex justify-between">
           <span>You Save</span>
           <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
         </div>
-
         {couponDiscount > 0 && (
-          <div className="flex justify-between text-[#0BA445] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
-            <span>Coupon Discount {couponCode ? `(${couponCode})` : ""}</span>
-            <span>- ₹{couponDiscount.toLocaleString("en-IN")}</span>
+          <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0BA445] text-white text-[10px] font-bold">✓</span>
+                <span className="text-[12px] font-bold text-[#187A37]">Coupon Applied</span>
+              </div>
+              <span className="text-[13px] font-bold text-[#0BA445]">- ₹{couponDiscount.toLocaleString("en-IN")}</span>
+            </div>
+            {couponCode && (
+              <div className="mt-1.5 flex flex-wrap gap-1">
+                {couponCode.split(',').map((code: string, i: number) => (
+                  <span key={i} className="inline-block rounded-md bg-white px-2 py-0.5 text-[10px] font-semibold text-[#187A37] border border-[#D7F3D9]">
+                    {code.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
+      {/* Total */}
       <div className="mt-3 sm:mt-4 flex items-end justify-between border-t border-[#EEF1F4] pt-3 sm:pt-4">
         <div>
           <p className="text-[18px] sm:text-[21px] font-bold">Total</p>
@@ -945,44 +907,34 @@ function CheckoutOrderSummary({
         <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
       </div>
 
-      <div className="mt-3 sm:mt-4 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">
-        <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
-          <ShieldCheck size={14} className="sm:w-[16px] sm:h-[16px]" /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
-        </p>
-        {remaining > 0 && (
-          <>
-            <p className="mt-1.5 sm:mt-2 text-[11px] sm:text-[12px] text-[#4C5362]">
-              Add items worth ₹{remaining} more to get FREE delivery!
-            </p>
-            <div className="mt-1.5 sm:mt-2 h-1.5 overflow-hidden rounded-full bg-[#DDEFE0]">
-              <div
-                className="h-full rounded-full bg-[#0BA445]"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="mt-1 flex justify-between text-[9px] sm:text-[10px] text-[#9AA3AF]">
-              <span>₹0</span>
-              <span>₹{freeDeliveryTarget}</span>
-            </div>
-          </>
+      {/* Button + Saving Badge + Need Help - neeche attach */}
+      <div className="mt-auto space-y-3 sm:space-y-4 pb-4">
+        {selectedAddressId && (
+          <button
+            type="button"
+            onClick={onProceedDirectly}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#D18500] text-[14px] font-bold text-white shadow-md hover:bg-[#B97100] transition"
+          >
+            Proceed with Selected Address <ArrowRight size={16} />
+          </button>
         )}
-      </div>
 
-      <div className="relative mt-3 sm:mt-4">
-        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
-        <div className="mt-2 sm:mt-3 space-y-1.5 sm:space-y-2 text-[14px] sm:text-[15px] text-[#6F7786]">
-          <p className="flex items-center gap-2">
-            <Phone size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
-            {location?.phone || "+91 98765 43210"}
+        <div className="rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">
+          <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
+            <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
           </p>
-          <p className="flex items-center gap-2">
-            <Mail size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
-            {location?.email || "connect@honeyveda.in"}
-          </p>
-          <p className="flex items-center gap-2">
-            <Clock size={14} className="sm:w-[16px] sm:h-[16px] text-[#2D3A1B]" />
-            {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
-          </p>
+          {remaining > 0 && (
+            <p className="mt-1.5 text-[11px] text-[#4C5362]"></p>
+          )}
+        </div>
+
+        <div>
+          <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
+          <div className="mt-2 sm:mt-3 space-y-1.5 text-[14px] text-[#6F7786]">
+            <p className="flex items-center gap-2"><Phone size={14} /> {location?.phone || "+91 98765 43210"}</p>
+            <p className="flex items-center gap-2"><Mail size={14} /> {location?.email || "connect@honeyveda.in"}</p>
+            <p className="flex items-center gap-2"><Clock size={14} /> {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}</p>
+          </div>
         </div>
       </div>
     </div>

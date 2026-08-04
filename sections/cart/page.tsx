@@ -25,7 +25,6 @@ import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 
-const freeDeliveryTarget = 2000;
 
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
@@ -322,7 +321,11 @@ export default function Cart() {
                             <span>Total</span>
                         </div>
 
-                        <div className="mt-4 space-y-5">
+                        {/* 👇 SCROLL FIX: max-h-[350px] shows exactly ~2 cards, rest
+                            scroll inside this box. Scrollbar is hidden (still scrollable
+                            via mouse wheel / touch) via the webkit/ms/firefox rules below.
+                            UI/styling of the cards themselves is untouched. */}
+                        <div className="mt-4 space-y-5 max-h-[350px] overflow-y-auto pr-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
                                 <div className="rounded bg-white px-5 py-10 text-center text-[#8E623A]">
                                     Loading cart...
@@ -438,8 +441,6 @@ export default function Cart() {
 // ─── Free Delivery Bar ──────────────────────────────────────────────────
 
 export function FreeDeliveryBar({ subtotal }: { subtotal: number }) {
-    const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
-    const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
     // Empty return to fix the component
     return null;
@@ -769,25 +770,14 @@ export function OrderSummaryWithCoupons({
     const total = Math.max(subtotal - totalDiscount, 0);
 
     return (
-        <div className="w-full rounded-2xl bg-white shadow-[0_4px_24px_rgba(60,40,20,0.06)] border border-[#F0E4D4] overflow-hidden box-border">
+        <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6">
             {/* Header */}
-            <div className="px-6 py-5 border-b border-[#F5EEE3] bg-gradient-to-r from-[#FAF7F0] to-white">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-[18px] font-bold text-[#2F241C] flex items-center gap-2">
-                        <span className="text-[#B97B00]">🛒</span> Order Summary
-                        <span className="ml-1 rounded-full bg-[#FFF3DF] px-2.5 py-0.5 text-[11px] font-medium text-[#B97B00]">
-                            {itemCount} items
-                        </span>
-                    </h2>
-                    <div className="flex items-center gap-1 text-[12px] text-[#9B8B76]">
-                        <ShieldCheck size={14} className="text-[#149447]" />
-                        <span>Secure</span>
-                    </div>
-                </div>
+            <div className="flex items-center justify-between">
+                <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#2F241C]">Order Summary</h2>
+                <span className="text-[11px] sm:text-[12px] text-[#9AA3AF]">{itemCount} items</span>
             </div>
 
-            {/* Body */}
-            <div className="px-6 py-5 space-y-5">
+            <div className="mt-3 sm:mt-4 space-y-5">
                 {/* Price breakdown */}
                 <div className="space-y-2.5 text-[14px]">
                     <div className="flex justify-between py-1">
@@ -801,39 +791,48 @@ export function OrderSummaryWithCoupons({
                         </div>
                     )}
                     {totalDiscount > 0 && (
-                        <div className="flex justify-between py-1 border-t border-dashed border-[#E5E8ED] pt-2.5">
-                            <span className="text-[#6F7786] flex items-center gap-1.5">
-                                <Tag size={13} className="text-[#0BA445]" />
-                                Coupon Discount
-                                <span className="rounded-full bg-[#E7F9EA] px-2 py-0.5 text-[10px] font-bold text-[#0BA445]">
-                                    {appliedCoupons.length}
-                                </span>
-                            </span>
-                            <span className="font-bold text-[#0BA445]">- ₹{totalDiscount.toLocaleString("en-IN")}</span>
+                        <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0BA445] text-white text-[10px] font-bold">✓</span>
+                                    <span className="text-[12px] font-bold text-[#187A37]">Coupon Applied</span>
+                                </div>
+                                <span className="text-[13px] font-bold text-[#0BA445]">- ₹{totalDiscount.toLocaleString("en-IN")}</span>
+                            </div>
+                            {appliedCoupons.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                    {appliedCoupons.map((coupon) => (
+                                        <span
+                                            key={coupon.code}
+                                            className="inline-flex rounded-md bg-white px-2 py-0.5 text-[10px] font-semibold text-[#187A37] border border-[#D7F3D9]"
+                                        >
+                                            {coupon.code}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-[#F0E4D4]"></div>
+                <div className="border-t border-[#EEF1F4]"></div>
 
-                {/* Total */}
-                <div className="flex items-end justify-between">
+                <div className="flex items-end justify-between border-t border-[#EEF1F4] pt-4">
                     <div>
-                        <p className="text-[15px] font-bold text-[#2F241C]">Total</p>
-                        <p className="text-[10px] text-[#9AA3AF]">Inclusive of all taxes</p>
+                        <p className="text-[18px] sm:text-[21px] font-bold text-[#2F241C]">Total</p>
+                        <p className="text-[9px] sm:text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                     </div>
-                    <p className="font-serif text-[26px] font-bold text-[#2F241C]">
+                    <p className="font-serif text-[24px] sm:text-[28px] font-bold text-[#2F241C]">
                         ₹{total.toLocaleString("en-IN")}
                     </p>
                 </div>
             </div>
 
             {/* Coupon Section - Toggleable, natural height up to a max, then scrolls */}
-            <div className="border-t border-[#F5EEE3]">
+            <div className="mt-4 border-t border-[#F5EEE3]">
                 <button
                     type="button"
-                    className="flex w-full items-center justify-between px-6 py-3.5 text-[13px] font-semibold text-[#6F7786] hover:bg-[#FAF7F0] transition-colors"
+                    className="flex w-full items-center justify-between px-4 py-3.5 text-[13px] font-semibold text-[#6F7786] hover:bg-[#FAF7F0] transition-colors"
                 >
                     <span className="flex items-center gap-2">
                         <Gift size={15} className="text-[#B97B00]" />
@@ -1016,7 +1015,7 @@ export function OrderSummaryWithCoupons({
                 <div className="mt-4 flex items-center justify-center gap-6 text-[10px] text-[#9B8B76]">
                     <span className="flex items-center gap-1.5">
                         <Truck size={13} className="text-[#B97B00]" />
-                        Free delivery above ₹2000
+                        Free delivery 
                     </span>
                     <span className="flex items-center gap-1.5">
                         <ShieldCheck size={13} className="text-[#149447]" />
