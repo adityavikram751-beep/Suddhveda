@@ -109,7 +109,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       const data = await authFetch(`${API_BASE_URL}/api/cart`);
-      const items = data.items || [];
+      const items = Array.isArray(data)
+        ? data
+        : data.items || data.data || [];
 
       const newCartItems: Record<string, CartItemDetail> = {};
 
@@ -128,23 +130,33 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const product = item.product;
-        const variant = product?.variant;
-        if (!product || !variant) return;
+        // Support multiple API shapes:
+        // - product._id / variant._id (old)
+        // - product.productId / variant.variantId (new)
+        const product = item.product || {};
+        const variant = item.variant || product.variant || {};
 
-        const cartItemId = item.cartItemId;
+        const cartItemId = item.cartItemId || item._id || String(Math.random());
+
+        const productId = product._id || product.productId || product.id || "";
+        const variantId = variant._id || variant.variantId || variant.id || "";
+        const productName = product.product_name || product.productName || product.name || "Product";
+        const image = product.image?.image_url || product.image?.url || "/placeholder.png";
+        const price = variant.price ?? variant.pricing ?? 0;
+        const oldPrice = variant.mrp ?? variant.oldPrice ?? undefined;
+        const weight = variant.weight ? `${variant.weight}${variant.unit || "g"}` : "";
 
         newCartItems[cartItemId] = {
           type: "NORMAL",
           cartItemId,
-          productId: product._id,
-          variantId: variant._id,
-          productName: product.product_name,
-          image: product.image?.image_url || "/placeholder.png",
-          price: variant.price || 0,
-          oldPrice: variant.mrp || undefined,
-          weight: `${variant.weight || 0}${variant.unit || "g"}`,
-          quantity: item.quantity,
+          productId,
+          variantId,
+          productName,
+          image,
+          price,
+          oldPrice,
+          weight,
+          quantity: item.quantity || 1,
         };
       });
 
@@ -544,28 +556,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                 </div>
               ))}
 
-              <div className="rounded bg-[#FCEBDD] px-4 py-3">
-                <p className="flex items-center gap-2 text-[12px] font-bold text-[#2D3A1B]">
-                  <Tag size={14} className="text-[#9A5A05]" />
-                  Yay! You saved ₹{saved} on this order
-                </p>
-                <p className="mt-3 text-[11px] text-[#7E6A56]">
-                  Add items worth ₹{Math.max(1400 - subtotal, 0)} more to get
-                  FREE delivery!
-                </p>
-                <div className="mt-3 h-[6px] overflow-hidden rounded-full bg-white">
-                  <div
-                    className="h-full rounded-full bg-[#2D3A1B]"
-                    style={{ width: `${Math.min((subtotal / 1400) * 100, 100)}%` }}
-                  />
-                </div>
-                <div className="mt-2 flex justify-between text-[10px] text-[#7E6A56]">
-                  <span>₹0</span>
-                  <span className="flex items-center gap-1">
-                    <Truck size={11} /> ₹400
-                  </span>
-                </div>
-              </div>
+              
             </div>
           )}
         </div>
