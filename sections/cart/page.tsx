@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
     Lock,
     Minus,
@@ -76,6 +76,21 @@ export default function Cart() {
     } = useCart();
 
     const cartProducts = Object.values(cartItems);
+    const asideRef = useRef<HTMLElement | null>(null);
+    const [isFooterVisible, setIsFooterVisible] = useState(false);
+
+    // Observe footer and toggle sticky behavior for the sidebar
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const footer = document.querySelector('footer');
+        if (!footer) return;
+        const obs = new IntersectionObserver((entries) => {
+            const e = entries[0];
+            setIsFooterVisible(!!(e && (e.isIntersecting || e.intersectionRatio > 0)));
+        }, { threshold: 0 });
+        obs.observe(footer);
+        return () => obs.disconnect();
+    }, []);
 
     const subtotal = cartProducts.reduce(
         (sum, product) => sum + product.price * product.quantity,
@@ -396,7 +411,8 @@ export default function Cart() {
                     </section>
 
                     {/* RIGHT SIDEBAR */}
-                    <aside className="w-full space-y-8 box-border lg:max-w-[420px] lg:sticky lg:bottom-10 self-end">
+                    {/* Right sidebar: sticky on desktop, but unstick when footer appears */}
+                    <aside className={`w-full space-y-8 box-border lg:max-w-[420px] ${isFooterVisible ? 'lg:static' : 'lg:sticky lg:top-16'} self-end`}>
                         <OrderSummaryWithCoupons
                             subtotal={subtotal}
                             saved={saved}
