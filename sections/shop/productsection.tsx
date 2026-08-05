@@ -447,9 +447,10 @@ export default function ShopPage() {
   return (
     <main className="min-h-screen bg-white text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
-      <div className="mx-auto max-w-[1490px] px-4 py-8 pb-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-20 sm:px-6 lg:px-8">
         
-        <div className="lg:hidden mb-6 flex items-center justify-between">
+        {/* Mobile Filter Button + Results Count */}
+        <div className="lg:hidden mb-2 flex items-center justify-between">
           <button
             onClick={() => setIsFilterOpen(true)}
             className="flex items-center gap-2 rounded-md border border-[#2D3A1B] px-4 py-2 text-[13px] font-semibold text-[#2D3A1B] bg-white shadow-sm"
@@ -462,6 +463,7 @@ export default function ShopPage() {
           </span>
         </div>
 
+        {/* Mobile Filter Drawer */}
         {isFilterOpen && (
           <div className="fixed inset-0 z-50 flex lg:hidden">
             <div className="fixed inset-0 bg-black/50" onClick={() => setIsFilterOpen(false)} />
@@ -471,29 +473,28 @@ export default function ShopPage() {
           </div>
         )}
 
-        <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
-          <aside className="hidden lg:block lg:sticky lg:top-8 lg:self-start">
+        <div className="grid h-full gap-4 lg:grid-cols-[280px_1fr]">
+          <aside className="hidden lg:block sticky top-20 self-start">
             {filterContent}
             {promoBannerComponent}
           </aside>
 
-          <section>
-            <div className="hidden lg:flex flex-wrap items-end justify-between gap-4">
+          {/* Main Products Section - Scrollbar hidden */}
+          <section className="h-[calc(100vh--490px)] overflow-y-auto pr-2 no-scrollbar">
+            {/* 🔥 HEADING - Minimized gap */}
+            <div className="sticky top-0 z-20 bg-white pb-1 flex flex-wrap items-end justify-between gap-2">
               <div>
-                <h1 className="font-['Playfair_Display'] text-[30px] font-normal leading-[36px] tracking-normal text-[#1E392A]">
+                <h1 className="font-['Playfair_Display'] text-[28px] font-normal leading-[34px] tracking-normal text-[#1E392A]">
                   {activeCategoryName}
                 </h1>
-                <p className="mt-1 text-[14px] text-[#697386]">
+                <p className="mt-0.5 text-[13px] text-[#697386]">
                   Explore our range of natural honey variants.
                 </p>
               </div>
-
-              <span className="text-[13px] text-[#A6ADB8]">
-                Showing {filteredProducts.length} of {products.length} results
-              </span>
             </div>
 
-            <div className="mt-2 lg:mt-4 flex flex-wrap items-center gap-2">
+            {/* Filter Chips - Minimized gap */}
+            <div className="sticky top-[58px] z-20 bg-white py-2 mt-0 flex flex-wrap items-center gap-1.5">
               <Chip label={activeCategoryName} />
               {appliedFilters.search && <Chip label={`Search: ${appliedFilters.search}`} />}
               {appliedFilters.weights.map((weight) => (
@@ -507,10 +508,10 @@ export default function ShopPage() {
               )}
             </div>
 
-            {error && <p className="mt-4 text-[13px] text-red-600">{error}</p>}
+            {error && <p className="mt-2 text-[13px] text-red-600">{error}</p>}
 
-            {/* 🟢 2 cards per row on mobile/tablet, stacking vertically downwards; 3 cards on desktop */}
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+            {/* 🟢 Products Grid - Minimal gap */}
+            <div className="mt-1 grid grid-cols-2 gap-2 sm:gap-3 lg:gap-3 items-stretch lg:grid-cols-3">
               {filteredProducts.map((item) => {
                 const productId = getProductId(item);
                 const variants = getProductVariants(item);
@@ -518,37 +519,39 @@ export default function ShopPage() {
                 const product = normalizeProduct(item, selectedVariantId);
 
                 return (
-                  <div key={productId} className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-                    <ProductCardShop
-                      badge={product.badge}
-                      image={product.image}
-                      title={product.title}
-                      subtitle={product.subtitle}
-                      weight={product.weight}
-                      price={product.price}
-                      oldPrice={product.oldPrice}
-                      rating={product.rating}
-                      reviews={product.reviews}
-                      quantity={0}
-                      variants={variants}
-                      selectedVariantId={selectedVariantId}
-                      onVariantSelect={(variantId) =>
-                        setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
-                      }
-                      isWishlisted={wishlistIds.includes(productId)}
-                      onToggleWishlist={() => handleToggleWishlist(productId)}
-                      onAddToCart={() => handleAddToCart(item)}
-                      onIncrement={() => {}}
-                      onDecrement={() => {}}
-                      onOpenDetails={() => router.push(`/shop/products/${productId}`)}
-                    />
+                  <div key={productId} className="flex flex-col h-full transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
+                    <div className="flex flex-col h-full w-full [&>div]:h-full [&>div]:flex [&>div]:flex-col [&>div]:justify-between">
+                      <ProductCardShop
+                        badge={product.badge}
+                        image={product.image}
+                        title={product.title}
+                        subtitle={product.subtitle}
+                        weight={product.weight}
+                        price={product.price}
+                        oldPrice={product.oldPrice}
+                        rating={product.rating}
+                        reviews={product.reviews}
+                        quantity={0}
+                        variants={variants}
+                        selectedVariantId={selectedVariantId}
+                        onVariantSelect={(variantId) =>
+                          setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
+                        }
+                        isWishlisted={wishlistIds.includes(productId)}
+                        onToggleWishlist={() => handleToggleWishlist(productId)}
+                        onAddToCart={() => handleAddToCart(item)}
+                        onIncrement={() => {}}
+                        onDecrement={() => {}}
+                        onOpenDetails={() => router.push(`/shop/products/${productId}`)}
+                      />
+                    </div>
                   </div>
                 );
               })}
             </div>
 
             {filteredProducts.length === 0 && (
-              <div className="mt-16 flex flex-col items-center justify-center gap-3 text-center text-[#697386]">
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-[#697386]">
                 <ShoppingCart size={32} className="text-[#2D3A1B]" />
                 <p>No honey matches your filters right now.</p>
                 <button type="button" onClick={clearFilters} className="text-[13px] font-semibold text-[#2D3A1B] underline">
@@ -565,6 +568,17 @@ export default function ShopPage() {
           {toastMessage}
         </div>
       )}
+      
+      {/* 🟢 CSS to hide scrollbar */}
+      <style jsx>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </main>
   );
 }
@@ -593,7 +607,7 @@ function FilterSection({
 
 function Chip({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF3E4] px-3 py-1 text-[12px] font-medium text-[#1E392A]">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF3E4] px-2.5 py-0.5 text-[11px] font-medium text-[#1E392A]">
       {label}
     </span>
   );

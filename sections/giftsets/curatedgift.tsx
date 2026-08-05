@@ -60,7 +60,13 @@ export default function FeaturedCollection() {
         });
         if (!res.ok) throw new Error("Failed to fetch products");
         const list = getProductsFromResponse(await res.json());
-        setProducts(list.slice(0, 8));
+
+        const giftBoxProducts = list.filter(
+          (product) => product.product_type === "gift_box"
+        );
+        
+        setProducts(giftBoxProducts.slice(0, 8));
+        
         setTimeout(checkScroll, 0);
       } catch (error) {
         console.error("Error loading featured products:", error);
@@ -104,6 +110,31 @@ export default function FeaturedCollection() {
       behavior: "smooth",
     });
   };
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+  
+    if (!container || products.length === 0) return;
+  
+    const interval = setInterval(() => {
+      if (isDragging) return;
+  
+      const maxScroll = container.scrollWidth - container.clientWidth;
+  
+      if (container.scrollLeft >= maxScroll - 5) {
+        container.scrollTo({
+          left: 0,
+          behavior: "smooth",
+        });
+      } else {
+        container.scrollBy({
+          left: container.clientWidth,
+                    behavior: "smooth",
+        });
+      }
+    }, 2500);
+  
+    return () => clearInterval(interval);
+  }, [products, isDragging]);
 
   const handleMouseDown = (event: React.MouseEvent) => {
     const container = scrollContainerRef.current;
@@ -214,8 +245,8 @@ export default function FeaturedCollection() {
 
   return (
     <section className="relative overflow-hidden bg-[#FDF1E3] py-16 md:py-20">
-      <div className="mx-auto max-w-[1400px] px-6">
-        <div className="mb-10 flex items-end justify-between">
+<div className="mx-auto max-w-[1400px] px-4 lg:px-6">
+          <div className="mb-10 flex items-end justify-between">
           <div>
             <p className="text-[13px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
               OUR FEATURED COLLECTION
@@ -227,7 +258,7 @@ export default function FeaturedCollection() {
         </div>
 
         <div className="relative">
-          {/* Desktop Left/Right Arrows */}
+          {/* Desktop Left/Right Arrows
           {showLeftArrow && (
             <button
               type="button"
@@ -246,7 +277,7 @@ export default function FeaturedCollection() {
             >
               <ChevronRight size={24} className="text-[#2D3A1B]" />
             </button>
-          )}
+          )} */}
 
           {loading ? (
             <div className="flex min-h-[360px] items-center justify-center text-[#2D3A1B]">
@@ -255,12 +286,8 @@ export default function FeaturedCollection() {
           ) : (
             <div
               ref={scrollContainerRef}
-              className="scrollbar-hide grid grid-cols-2 lg:flex lg:cursor-grab gap-4 sm:gap-6 lg:gap-8 lg:overflow-x-auto lg:scroll-smooth pb-2"
-              style={{ scrollBehavior: "smooth" }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
+              className="scrollbar-hide flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-4 lg:gap-6 px-2 lg:px-0"
+                           onMouseLeave={handleMouseUp}
             >
               {products.map((product) => {
                 const productId = getProductId(product);
@@ -274,15 +301,15 @@ export default function FeaturedCollection() {
                   <article
                     key={productId}
                     onClick={() => router.push(`/shop/products/${productId}`)}
-                    className="w-full lg:w-[320px] flex-shrink-0 cursor-pointer rounded-lg border border-[#E6D6C5] bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-                  >
+                    
+                    className="basis-[100%] sm:basis-[48%] lg:basis-[calc((100%-72px)/4)] snap-start shrink-0 cursor-pointer rounded-lg border border-[#E6D6C5] bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"             >
                     <div className="relative h-[150px] sm:h-[200px] overflow-hidden rounded-lg bg-[#F9F0E5] p-3">
-                      <Image
-                        src={getPrimaryImage(product)}
-                        alt={getProductName(product)}
-                        fill
-                        className="object-cover p-3"
-                      />
+                    <Image
+  src={getPrimaryImage(product)}
+  alt={getProductName(product)}
+  fill
+  className="object-contain p-3"
+/>
                       <span className="absolute left-2 top-2 sm:left-3 sm:top-3 rounded bg-[#0E2A17] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
                         {getCategoryName(product)}
                       </span>
