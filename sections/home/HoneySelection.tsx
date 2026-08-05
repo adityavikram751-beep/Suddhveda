@@ -5,17 +5,27 @@ import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
+import {
+  type ApiProduct,
+  getCategoryName,
+  getPrimaryImage,
+  getProductId,
+  getProductName,
+  getProductVariants,
+  getProductsFromResponse,
+  getVariantId,
+  getVariantLabel,
+  normalizeProduct,
+} from "@/lib/api-products";
 
 // ---------- Main Component ----------
 export default function HoneySelection() {
   const router = useRouter();
-  const { cartItems, updateQuantity } = useCart();
-  const [products, setProducts] = useState<any[]>([]);
+  const { updateQuantity } = useCart();
+  const [products, setProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
-  
-  // Wishlist state
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -29,37 +39,46 @@ export default function HoneySelection() {
       if (res.ok) {
         const data = await res.json();
         const wishlistProducts = data?.data?.products || [];
-        const ids = wishlistProducts.map((item: any) => item.productId?._id || item.productId || item._id);
+        const ids = wishlistProducts.map((item: any) => {
+          if (item.productId && typeof item.productId === "object") {
+            return item.productId._id;
+          }
+          return item.productId || item._id;
+        }).filter(Boolean).map(String);
         setWishlistIds(ids);
-        
-        window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-          detail: { count: ids.length } 
-        }));
+        window.dispatchEvent(
+          new CustomEvent("wishlist-count-update", { detail: { count: ids.length } })
+        );
       }
     } catch (err) {
       console.error("Error fetching wishlist:", err);
     }
   };
 
-  // ---------- Fetch Products ----------
-  useEffect(() => {
-    fetchProducts();
-    fetchWishlist();
-  }, []);
-
+  // ---------- Fetch Products (using helper) ----------
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE_URL}/api/products`);
+      const res = await fetch(`${API_BASE_URL}/api/products`, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to fetch products");
       const result = await res.json();
-      setProducts(result.data || []);
+      // ✅ Use helper to get array of ApiProduct
+      const productList = getProductsFromResponse(result);
+      console.log("✅ Products loaded:", productList.length); // debug
+      setProducts(productList);
     } catch (err) {
       console.error("Error loading products:", err);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchWishlist();
+  }, []);
 
   // ---------- Auto Slide for Mobile / Tablet (< 1024px) ----------
   useEffect(() => {
@@ -68,7 +87,7 @@ export default function HoneySelection() {
     let currentIndex = 0;
     const interval = setInterval(() => {
       if (window.innerWidth < 1024 && sliderRef.current) {
-        const maxLen = Math.min(products.length, 8);
+        const maxLen = products.length; // ab saare dikhenge
         currentIndex = (currentIndex + 1) % maxLen;
         const cardWidth = sliderRef.current.offsetWidth;
         sliderRef.current.scrollTo({
@@ -76,7 +95,7 @@ export default function HoneySelection() {
           behavior: "smooth",
         });
       }
-    }, 3500); // Har 3.5 seconds mein automatic slide hoga
+    }, 3500);
 
     return () => clearInterval(interval);
   }, [products]);
@@ -89,81 +108,91 @@ export default function HoneySelection() {
     }));
   };
 
-  const getSelectedVariant = (product: any) => {
-    const variants = product.variantDocumentId || [];
-    const variantId = selectedVariants[product._id];
-    if (variantId) {
-      return variants.find((v: any) => v._id === variantId);
-    }
-    return variants[0];
+  const getSelectedVariantId = (product: ApiProduct) => {
+    const productId = getProductId(product);
+    const variants = getProductVariants(product);
+    return selectedVariants[productId] || getVariantId(variants[0]);
   };
 
   // ---------- Add to Cart ----------
-  const handleAddToCart = async (product: any) => {
-    const variant = getSelectedVariant(product);
-    if (!variant) return;
+  const handleAddToCart = async (product: ApiProduct) => {
+    const productId = getProductId(product);
+    const variantId = getSelectedVariantId(product);
+    if (!variantId) return;
 
     try {
-      setActionLoading(product._id);
-      await fetch(`${API_BASE_URL}/api/cart/add`, {
+      setActionLoading(productId);
+      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: product._id,
-          selectedWeight: variant._id,
+          productId,
+          selectedWeight: variantId,
           quantity: 1,
         }),
       });
+
+      if (res.status === 401) {
+        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      if (!res.ok) throw new Error("Failed to add to cart");
+
+      // Update cart context
+      updateQuantity(productId, variantId, 1);
     } catch (err) {
-      console.error("Error in Add to Cart API:", err);
+      console.error("Error in Add to Cart:", err);
     } finally {
       setActionLoading(null);
     }
   };
 
-  const dummyHandler = () => {};
-
   // ---------- Wishlist Toggle ----------
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
+    const prevIds = wishlistIds;
+    const nextIds = isWishlisted
+      ? wishlistIds.filter((id) => id !== productId)
+      : [...wishlistIds, productId];
+
+    // Optimistic update
+    setWishlistIds(nextIds);
+    window.dispatchEvent(
+      new CustomEvent("wishlist-count-update", { detail: { count: nextIds.length } })
+    );
 
     try {
-      if (isWishlisted) {
-        const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
-          method: "DELETE",
+      const res = await fetch(
+        `${API_BASE_URL}/api/wishlist/${isWishlisted ? "remove" : "add"}/${productId}`,
+        {
+          method: isWishlisted ? "DELETE" : "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-        });
-
-        if (res.ok) {
-          const newCount = wishlistIds.length - 1;
-          setWishlistIds((prev) => prev.filter((id) => id !== productId));
-          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-            detail: { count: newCount } 
-          }));
         }
-      } else {
-        const res = await fetch(`${API_BASE_URL}/api/wishlist/add/${productId}`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
+      );
 
-        if (res.ok) {
-          const newCount = wishlistIds.length + 1;
-          setWishlistIds((prev) => [...prev, productId]);
-          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-            detail: { count: newCount } 
-          }));
-        }
+      if (res.status === 401) {
+        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
+      if (!res.ok && !(isWishlisted && res.status === 404)) {
+        throw new Error("Wishlist update failed");
       }
     } catch (err) {
       console.error("Error toggling wishlist:", err);
+      // Revert on error
+      setWishlistIds(prevIds);
+      window.dispatchEvent(
+        new CustomEvent("wishlist-count-update", { detail: { count: prevIds.length } })
+      );
     }
   };
+
+  // Dummy functions for ProductCardShop (not used in this context)
+  const dummyHandler = () => {};
 
   // ---------- Render ----------
   return (
@@ -185,61 +214,64 @@ export default function HoneySelection() {
           </div>
         ) : (
           <div className="relative">
-            
-            {/* Mobile: 1 Card per view automatic slider | Desktop: 4-Column Grid */}
             <div
               ref={sliderRef}
               className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
             >
-              {products.slice(0, 8).map((product: any) => {
-                const variants = product.variantDocumentId || [];
-                const selectedVariant = getSelectedVariant(product);
-                const primaryImage =
-                  product.imageDocumentId?.find((img: any) => img.is_primary)
-                    ?.image_url || product.imageDocumentId?.[0]?.image_url || "";
-
-                const price = selectedVariant?.price ?? 0;
-                const oldPrice = selectedVariant?.mrp ?? 0;
-                const weightStr = `${selectedVariant?.weight || ""}${selectedVariant?.unit || ""}`;
+              {/* ✅ Saare products dikhenge – slice hata diya */}
+              {products.map((product) => {
+                const productId = getProductId(product);
+                const variants = getProductVariants(product);
+                const selectedVariantId = getSelectedVariantId(product);
+                const normalized = normalizeProduct(product, selectedVariantId);
 
                 return (
                   <div
-                    key={product._id}
+                    key={productId}
                     className="w-full min-w-full lg:min-w-0 snap-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center"
                   >
                     <div className="w-full max-w-[340px] lg:max-w-none">
                       <ProductCardShop
-                        badge={product.categoryId?.category_name || "Honey"}
-                        image={primaryImage}
-                        title={product.product_name}
-                        subtitle={product.floral_source}
-                        weight={weightStr}
-                        price={price}
-                        oldPrice={oldPrice}
-                        rating={product.average_rating}
-                        reviews={product.total_reviews}
+                        badge={normalized.badge || "Honey"}
+                        image={normalized.image}
+                        title={normalized.title}
+                        subtitle={normalized.subtitle}
+                        weight={normalized.weight}
+                        price={normalized.price}
+                        oldPrice={normalized.oldPrice}
+                        rating={normalized.rating}
+                        reviews={normalized.reviews}
                         quantity={0}
                         variants={variants}
-                        selectedVariantId={selectedVariants[product._id] || variants[0]?._id}
+                        selectedVariantId={selectedVariantId}
                         onVariantSelect={(variantId: string) =>
-                          handleVariantSelect(product._id, variantId)
+                          handleVariantSelect(productId, variantId)
                         }
                         onAddToCart={() => handleAddToCart(product)}
                         onIncrement={dummyHandler}
                         onDecrement={dummyHandler}
-                        onToggleWishlist={() => handleToggleWishlist(product._id)}
-                        isWishlisted={wishlistIds.includes(product._id)}
-                        onOpenDetails={() => router.push(`/shop/products/${product._id}`)}
+                        onToggleWishlist={() => handleToggleWishlist(productId)}
+                        isWishlisted={wishlistIds.includes(productId)}
+                        onOpenDetails={() => router.push(`/shop/products/${productId}`)}
                       />
                     </div>
                   </div>
                 );
               })}
             </div>
-
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .scrollbar-none::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-none {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 }

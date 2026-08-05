@@ -12,7 +12,7 @@ export default async function ProductPage({
   const { id } = await params;
 
   // Direct environment variable (Server side par crash nahi hoga)
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sltwdpp8-3000.inc1.devtunnels.ms";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://suddhvedha-honey-backend.onrender.com";
 
   let product: ApiProduct | null = null;
   let recommendations: ApiProduct[] = [];
