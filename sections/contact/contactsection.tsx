@@ -37,6 +37,7 @@ interface FormData {
 export default function ContactSection() {
   const [locationData, setLocationData] = useState<LocationData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMapActive, setIsMapActive] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -102,7 +103,6 @@ export default function ContactSection() {
           type: "success",
           message: "Your enquiry has been sent successfully!",
         });
-        // Reset form
         setFormData({
           name: "",
           email: "",
@@ -128,71 +128,60 @@ export default function ContactSection() {
 
   // Format full address
   const getFullAddress = () => {
-    if (!locationData) return "";
+    if (!locationData) return "Whitefield, Bengaluru, Karnataka 560066";
     const { address } = locationData;
     return `${address.line1}, ${address.line2}, ${address.city}, ${address.state} ${address.pincode}`;
   };
 
   // Format address for display in cards
   const getShortAddress = () => {
-    if (!locationData) return "";
+    if (!locationData) return "Whitefield, Bengaluru, KA – 560066";
     const { address } = locationData;
     return `${address.line1}, ${address.line2}, ${address.city}, ${address.state} – ${address.pincode}`;
   };
 
-  // Google Maps directions link
+  // Google Maps directions / open link
   const getDirectionsLink = () => {
-    if (!locationData) return "#";
+    if (!locationData) return "https://www.google.com/maps";
     const { address } = locationData;
     const fullAddress = `${address.line1} ${address.line2} ${address.city} ${address.state} ${address.pincode}`;
-    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
   };
 
-  // Convert map URL to embeddable format
+  // Convert map URL to embeddable format safely
   const getEmbedMapUrl = () => {
-    if (!locationData?.map_embed_url) return null;
+    if (!locationData?.map_embed_url) {
+      const query = getFullAddress();
+      return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
+    }
     
     const url = locationData.map_embed_url;
+
+    if (url.includes('<iframe')) {
+      const match = url.match(/src="([^"]+)"/);
+      if (match && match[1]) return match[1];
+    }
     
-    // If it's already an embed URL, return as is
     if (url.includes('maps/embed') || url.includes('maps/dir')) {
       return url;
     }
     
-    // If it's a Google Maps share link (maps.app.goo.gl)
-    if (url.includes('maps.app.goo.gl')) {
-      // Extract the place ID or coordinates from the URL if possible
-      // For now, use the address to generate a proper embed URL
+    if (url.includes('maps.app.goo.gl') || url.includes('google.com/maps')) {
       const { address } = locationData;
-      const query = `${address.line1} ${address.line2} ${address.city} ${address.state}`;
-      return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
-    }
-    
-    // If it's a regular Google Maps URL, try to extract the place ID
-    if (url.includes('google.com/maps')) {
-      // Try to extract coordinates or place ID
-      const coordsMatch = url.match(/@([-\d.]+),([-\d.]+)/);
-      if (coordsMatch) {
-        const lat = coordsMatch[1];
-        const lng = coordsMatch[2];
-        return `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${lat},${lng}&zoom=15`;
-      }
-      
-      // If we have a place ID
-      const placeMatch = url.match(/place\/([^/]+)/);
-      if (placeMatch) {
-        return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(placeMatch[1])}`;
+      if (address) {
+        const query = `${address.line1} ${address.line2} ${address.city} ${address.state}`;
+        return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
       }
     }
     
-    // Fallback: use address
-    const { address } = locationData;
-    const query = `${address.line1} ${address.line2} ${address.city} ${address.state}`;
-    return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
+    return url;
   };
 
-  // Get the embed URL
   const embedMapUrl = getEmbedMapUrl();
+
+  const phoneNumber = locationData?.phone || "+911234567890";
+  const emailAddress = locationData?.email || "hello@shuddhadeva.com";
+  const whatsappNumber = locationData?.whatsapp || "+919876543210";
 
   return (
     <section className="bg-[#FAF6F0] pb-10 lg:pb-14 relative overflow-hidden">
@@ -330,98 +319,114 @@ export default function ContactSection() {
           </div>
         </div>
 
-        {/* CONTACT CARDS - single row of 4, icon on top, text below */}
+        {/* CONTACT CARDS - Clickable & Uniform */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-10 lg:mt-14">
+          
           {/* Call Us */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-3 border border-transparent hover:border-[#D49313] shadow-sm transition-colors">
-            <div className="w-11 h-11 rounded-full bg-[#FAF3E7] flex items-center justify-center text-[#D49313] flex-shrink-0">
+          <a 
+            href={`tel:${phoneNumber.replace(/\s+/g, '')}`}
+            className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-transparent hover:border-[#D49313] shadow-sm transition-all cursor-pointer group overflow-hidden"
+          >
+            <div className="w-11 h-11 rounded-full bg-[#FAF3E7] flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:scale-105 transition-transform">
               <FiPhone size={18} />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full overflow-hidden">
               <span className="font-bold text-[16px] text-[#2D3A1B]">Call Us</span>
-              <span className="text-[14px] text-[#2D3A1B] font-medium">
-                {loading ? "Loading..." : locationData?.phone || "+91 123 456 7890"}
+              <span className="text-[13px] sm:text-[14px] text-[#2D3A1B] font-medium truncate">
+                {loading ? "Loading..." : phoneNumber}
               </span>
-              <span className="text-[12px] text-[#A69C8F]">
+              <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
                 {loading ? "..." : locationData?.phone_timing || "Mon – Sat: 9AM – 6PM"}
               </span>
             </div>
-          </div>
+          </a>
 
           {/* Email Us */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-3 border border-transparent hover:border-[#D49313] shadow-sm transition-colors">
-            <div className="w-11 h-11 rounded-full bg-white border border-[#E8E1D8] flex items-center justify-center flex-shrink-0">
+          <a 
+            href={`mailto:${emailAddress}`}
+            className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-transparent hover:border-[#D49313] shadow-sm transition-all cursor-pointer group overflow-hidden"
+          >
+            <div className="w-11 h-11 rounded-full bg-white border border-[#E8E1D8] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
               <FiMail size={18} className="text-[#EA4335]" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full overflow-hidden">
               <span className="font-bold text-[16px] text-[#2D3A1B]">Email Us</span>
-              <span className="text-[14px] text-[#2D3A1B] font-medium">
-                {loading ? "Loading..." : locationData?.email || "hello@shuddhadeva.com"}
+              <span className="text-[12px] sm:text-[13px] text-[#2D3A1B] font-medium break-all line-clamp-1">
+                {loading ? "Loading..." : emailAddress}
               </span>
-              <span className="text-[12px] text-[#A69C8F]">
+              <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
                 {loading ? "..." : locationData?.email_reply_time || "We reply within 24 hrs"}
               </span>
             </div>
-          </div>
+          </a>
 
           {/* WhatsApp Us */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-3 border border-transparent hover:border-[#D49313] shadow-sm transition-colors">
-            <div className="w-11 h-11 rounded-full bg-[#25D366] flex items-center justify-center text-white flex-shrink-0">
+          <a 
+            href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-transparent hover:border-[#D49313] shadow-sm transition-all cursor-pointer group overflow-hidden"
+          >
+            <div className="w-11 h-11 rounded-full bg-[#25D366] flex items-center justify-center text-white flex-shrink-0 group-hover:scale-105 transition-transform">
               <FaWhatsapp size={18} />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full overflow-hidden">
               <span className="font-bold text-[16px] text-[#2D3A1B]">WhatsApp Us</span>
-              <span className="text-[14px] text-[#2D3A1B] font-medium">
-                {loading ? "Loading..." : locationData?.whatsapp || "+91 987 654 3210"}
+              <span className="text-[13px] sm:text-[14px] text-[#2D3A1B] font-medium truncate">
+                {loading ? "Loading..." : whatsappNumber}
               </span>
-              <span className="text-[12px] text-[#A69C8F]">
+              <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
                 {loading ? "..." : locationData?.whatsapp_timing || "Mon – Sat: 9AM – 6PM"}
               </span>
             </div>
-          </div>
+          </a>
 
           {/* Visit Our Studio */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col items-start gap-3 border border-transparent hover:border-[#D49313] shadow-sm transition-colors">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-transparent hover:border-[#D49313] shadow-sm transition-colors overflow-hidden">
             <div className="w-11 h-11 rounded-full bg-[#FAF3E7] flex items-center justify-center text-[#D49313] flex-shrink-0">
               <FiMapPin size={18} />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full overflow-hidden">
               <span className="font-bold text-[16px] text-[#2D3A1B]">Visit Our Studio</span>
-              <span className="text-[13px] text-[#2D3A1B] font-medium leading-snug">
+              <span className="text-[11px] sm:text-[12px] text-[#2D3A1B] font-medium leading-snug line-clamp-2">
                 {loading ? "Loading..." : getShortAddress() || "123, Green Hive Road, Whitefield, Bengaluru, KA – 560066"}
               </span>
-              {/* GET DIRECTIONS button - made clickable on mobile with relative z-index */}
               <a
                 href={getDirectionsLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[13px] text-[#D49313] font-semibold mt-0.5 relative z-10 inline-block"
-                onClick={(e) => {
-                  // Ensure it opens even on mobile
-                  if (!getDirectionsLink() || getDirectionsLink() === '#') {
-                    e.preventDefault();
-                  }
-                }}
+                className="text-[12px] sm:text-[13px] text-[#D49313] font-semibold mt-0.5 relative z-10 inline-block truncate"
               >
                 GET DIRECTIONS →
               </a>
             </div>
           </div>
+
         </div>
 
-        {/* FULL WIDTH MAP */}
-        <div className="relative mt-10 lg:mt-12 rounded-2xl overflow-hidden bg-[#EFE9DD] w-full">
-          {/* Map container with responsive height */}
-          <div className="relative w-full" style={{ paddingBottom: '56.25%', minHeight: '300px' }}>
+        {/* FULL WIDTH EMBEDDED MAP */}
+        <div className="relative mt-10 lg:mt-12 rounded-2xl overflow-hidden bg-[#EFE9DD] w-full shadow-sm">
+          
+          {!isMapActive && (
+            <div 
+              onClick={() => setIsMapActive(true)}
+              className="absolute inset-0 z-30 bg-black/10 flex items-center justify-center cursor-pointer lg:hidden backdrop-blur-[1px]"
+            >
+              <div className="bg-white text-[#2D3A1B] text-[13px] font-semibold px-5 py-2.5 rounded-full shadow-md border border-[#E8E1D8]">
+                Tap to explore map
+              </div>
+            </div>
+          )}
+
+          <div className="relative w-full" style={{ paddingBottom: '56.25%', minHeight: '350px' }}>
             {embedMapUrl ? (
               <iframe
                 title="Shuddha Veda location map"
                 src={embedMapUrl}
-                className="absolute inset-0 w-full h-full border-0"
+                className={`absolute inset-0 w-full h-full border-0 transition-all ${!isMapActive ? 'lg:pointer-events-auto pointer-events-none' : 'pointer-events-auto'}`}
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-[#EFE9DD]">
@@ -430,36 +435,17 @@ export default function ContactSection() {
             )}
           </div>
 
-          {/* Bee icon + soft glow marker over the pin location */}
-          <div className="hidden sm:flex absolute left-[52%] top-[38%] items-center gap-2 z-10 pointer-events-none select-none">
-            <div className="w-16 h-8 rounded-full bg-[#D49313]/25 blur-md" />
-            <svg
-              viewBox="0 0 32 32"
-              className="absolute -translate-x-[70%] -translate-y-1/2 w-7 h-7 drop-shadow-sm"
-              fill="none"
-            >
-              <ellipse cx="16" cy="17" rx="8" ry="9" fill="#C98A1E" />
-              <path d="M8 13C8 13 12 15 16 15C20 15 24 13 24 13" stroke="#2D2210" strokeWidth="1.3" />
-              <path d="M9 18C9 18 12.5 19.5 16 19.5C19.5 19.5 23 18 23 18" stroke="#2D2210" strokeWidth="1.3" />
-              <ellipse cx="16" cy="8" rx="3.2" ry="3" fill="#2D2210" />
-              <path d="M20 8C25 4 29 6 27 11C25 15 20 12 20 8Z" fill="#F4E9D8" fillOpacity="0.75" />
-              <path d="M12 8C7 4 3 6 5 11C7 15 12 12 12 8Z" fill="#F4E9D8" fillOpacity="0.75" />
-              <path d="M11 6.5C11.5 5 13 4.2 14 5" stroke="#2D2210" strokeWidth="1" strokeLinecap="round" />
-              <path d="M21 6.5C20.5 5 19 4.2 18 5" stroke="#2D2210" strokeWidth="1" strokeLinecap="round" />
-            </svg>
-          </div>
-
-          {/* Find Us strip - bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4 sm:py-5 text-center z-20">
+          <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4 sm:py-5 text-center z-20 border-t border-[#E8E1D8]">
             <h3 className="font-serif text-[#2D3A1B] text-[20px] sm:text-[22px]">Find Us</h3>
-            <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1">
+            <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1 px-4 truncate">
               {loading ? "Loading..." : getFullAddress() || "Shuddha Veda Studio, 4A, Sri Sai Enclave, ECC Road, Whitefield, Bengaluru, Karnataka 560066"}
             </p>
-            <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1">
-              Phone: {loading ? "..." : locationData?.phone || "+91 98765 43210"} &nbsp;|&nbsp; Email: {loading ? "..." : locationData?.email || "hello@shuddhadeva.com"} &nbsp;|&nbsp; Instagram: @shuddhadeva
+            <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1 px-4 truncate">
+              Phone: {loading ? "..." : phoneNumber} &nbsp;|&nbsp; Email: {loading ? "..." : emailAddress} &nbsp;|&nbsp; Instagram: @shuddhadeva
             </p>
           </div>
         </div>
+
       </div>
     </section>
   );
