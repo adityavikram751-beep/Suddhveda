@@ -232,7 +232,7 @@ export default function HoneySelection() {
                   >
                     <div className="w-full max-w-[340px] lg:max-w-none">
                       <ProductCardShop
-                        badge={normalized.badge || "Honey"}
+                        badge={normalized.badge}
                         image={normalized.image}
                         title={normalized.title}
                         subtitle={normalized.subtitle}

@@ -15,7 +15,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
-import { getProductImages, getProductVariants } from "@/lib/api-products";
+import { getCategoryName, getProductImages, getProductVariants } from "@/lib/api-products";
 import { Playfair_Display, Inter } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -629,7 +629,7 @@ export default function ProductDetailPage({
 
             {/* Source Info */}
             <p className="text-[13px] text-[#6F6F6F] font-normal italic pt-1 max-w-xl">
-              {product.floral_source} | Raw & Pure | No Heat | No Chemicals
+              {getCategoryName(product)}
             </p>
 
             {/* Tasting Notes */}
@@ -734,10 +734,10 @@ export default function ProductDetailPage({
                 return (
                   <ProductCardShop
                     key={item._id || item.id}
-                    badge={item.categoryId?.category_name || "Honey"}
+                    badge={getCategoryName(item)}
                     image={primaryImage}
                     title={item.product_name}
-                    subtitle={item.floral_source}
+                    subtitle={getCategoryName(item)}
                     weight={weightStr}
                     price={recVariant?.price ?? 0}
                     oldPrice={recVariant?.mrp ?? 0}

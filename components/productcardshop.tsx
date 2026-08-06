@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 
 type Variant = {
@@ -58,6 +59,13 @@ export default function ProductCardShop({
   onAddToWishlist,
   onToggleWishlist,
 }: ProductCardShopProps) {
+  const fallbackImage = "/honneycart.png";
+  const initialImageSrc = image && image.trim() !== "" ? image : fallbackImage;
+  const [imageSrc, setImageSrc] = useState(initialImageSrc);
+
+  useEffect(() => {
+    setImageSrc(image && image.trim() !== "" ? image : fallbackImage);
+  }, [image]);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -77,9 +85,6 @@ export default function ProductCardShop({
   const getVariantId = (v: Variant) => v._id || v.id || "";
 
   const isSelected = (variantId: string) => variantId === selectedVariantId;
-
-  // ✅ FIX 1: Fallback image if `image` is empty
-  const imageSrc = image && image.trim() !== "" ? image : "/placeholder.png";
 
   return (
     <div className="flex flex-col rounded-lg border border-[#F0E4D0] bg-white p-4 shadow-sm">
@@ -101,18 +106,8 @@ export default function ProductCardShop({
           alt={title || "Product"}
           fill
           className="object-contain p-3"
-          onError={(e) => {
-            // if fallback fails, show plain grey background
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
+          onError={() => setImageSrc(fallbackImage)}
         />
-
-        {/* If image is empty, show fallback text */}
-        {(!image || image.trim() === "") && (
-          <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-500 text-sm">
-            No Image
-          </div>
-        )}
       </button>
 
       {/* Text */}

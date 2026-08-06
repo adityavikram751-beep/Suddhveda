@@ -320,7 +320,7 @@ export default function FeaturedCollection() {
                         {getProductName(product)}
                       </h3>
                       <p className="mt-1 text-[12px] sm:text-[13px] text-[#8F979C]">
-                        {product?.floral_source || normalized.subtitle || "Pure Honey"}
+                        {getCategoryName(product)}
                       </p>
 
                       <div className="mt-2 text-[15px] sm:text-[17px] font-bold text-[#003327]">

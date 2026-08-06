@@ -76,6 +76,7 @@ export default function Cart() {
 
     const cartProducts = Object.values(cartItems);
     const asideRef = useRef<HTMLElement | null>(null);
+    const recommendationScrollerRefs = useRef<Array<HTMLDivElement | null>>([]);
     const [isFooterVisible, setIsFooterVisible] = useState(false);
 
     // Observe footer and toggle sticky behavior for the sidebar
@@ -108,6 +109,9 @@ export default function Cart() {
         _id: string;
         product_name: string;
         brand?: string;
+        categoryId?: { category_name?: string };
+        category?: { category_name?: string } | string;
+        categoryName?: string;
         image?: { image_url?: string };
         imageDocumentId?: { image_url?: string; is_primary?: boolean }[];
         variantDocumentId?: { _id: string; weight: number; price: number; mrp?: number; unit?: string }[];
@@ -132,12 +136,34 @@ export default function Cart() {
                 const data = await authFetch(`${API_BASE_URL}/api/products`);
                 const list: ApiProduct[] =
                     data.data || data.products || data.items || (Array.isArray(data) ? data : []);
-                setRecommendations(list.slice(0, 3));
+                setRecommendations(list);
             } catch (err) {
                 console.error("Failed to fetch products:", err);
             }
         })();
     }, []);
+
+    useEffect(() => {
+        if (recommendations.length <= 1) return;
+
+        const timer = window.setInterval(() => {
+            recommendationScrollerRefs.current.forEach((scroller) => {
+                if (!scroller || scroller.offsetParent === null) return;
+
+                const firstCard = scroller.querySelector<HTMLElement>("[data-recommendation-card]");
+                const gap = 24;
+                const step = firstCard ? firstCard.offsetWidth + gap : scroller.clientWidth;
+                const isAtEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 8;
+
+                scroller.scrollTo({
+                    left: isAtEnd ? 0 : scroller.scrollLeft + step,
+                    behavior: "smooth",
+                });
+            });
+        }, 3000);
+
+        return () => window.clearInterval(timer);
+    }, [recommendations.length]);
 
     // Fetch wishlist
     useEffect(() => {
@@ -246,10 +272,15 @@ export default function Cart() {
     // 👇 Reusable "You May Also Like" block — rendered once for desktop (original spot)
     // and once for mobile (bottom of page, above footer). Uses the SAME shared state above,
     // so no duplicate fetching happens even though it's rendered twice.
-    const renderRecommendations = () => (
+    const renderRecommendations = (scrollerIndex: number) => (
         <>
             <h2 className="text-[22px] font-semibold">You May Also Like</h2>
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div
+                ref={(node) => {
+                    recommendationScrollerRefs.current[scrollerIndex] = node;
+                }}
+                className="mt-6 flex w-full max-w-full gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
                 {recommendations.map((item) => {
                     const variants = item.variantDocumentId || [];
                     const selectedVariantId =
@@ -260,15 +291,25 @@ export default function Cart() {
 
                     const primaryImage =
                         item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
+                        item.imageDocumentId?.find((img) => img.image_url)?.image_url ||
                         item.image?.image_url ||
                         "/placeholder.png";
+                    const categoryName =
+                        item.categoryId?.category_name ||
+                        (typeof item.category === "string" ? item.category : item.category?.category_name) ||
+                        item.categoryName;
 
                     return (
-                        <div key={item._id} className="h-full">
+                        <div
+                            key={item._id}
+                            data-recommendation-card
+                            className="h-full shrink-0 basis-full snap-start sm:basis-[calc((100%_-_1.5rem)/2)] lg:basis-[calc((100%_-_3rem)/3)]"
+                        >
                             <ProductCardShop
+                                badge={categoryName}
                                 image={primaryImage}
                                 title={item.product_name}
-                                subtitle={item.brand || "SudhVeda Honey"}
+                                subtitle={categoryName}
                                 weight={
                                     currentVariant ?
                                     `${currentVariant.weight}${currentVariant.unit || "g"}` :
@@ -306,9 +347,9 @@ export default function Cart() {
 
                 </nav>
 
-                <div className="grid gap-8 lg:grid-cols-[1fr_420px] items-start">
+                <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] items-start">
                     {/* LEFT SECTION */}
-                    <section>
+                    <section className="min-w-0">
                         <h1 className="text-[34px] font-bold">
                             Your Cart <span className="text-[#2D3A1B]">({cartProducts.length})</span>
                         </h1>
@@ -353,6 +394,11 @@ export default function Cart() {
                                                 <h2 className="text-[16px] sm:text-[17px] font-bold leading-snug text-[#2F241C]">
                                                     {product.productName}
                                                 </h2>
+                                                {product.type === "NORMAL" && product.categoryName && (
+                                                    <p className="text-[12.5px] text-[#9B8B76]">
+                                                        {product.categoryName}
+                                                    </p>
+                                                )}
                                                 <p className="text-[12.5px] text-[#9B8B76]">
                                                     {product.type === "NORMAL" ?
                                                         product.weight :
@@ -409,7 +455,7 @@ export default function Cart() {
 
                         {/* Desktop-only: "You May Also Like" stays exactly where it was (under cart items) */}
                         <div className="hidden lg:block mt-8">
-                            {renderRecommendations()}
+                            {renderRecommendations(0)}
                         </div>
                     </section>
 
@@ -430,7 +476,7 @@ export default function Cart() {
 
                 {/* Mobile-only: "You May Also Like" + "Need Help" pushed to the very bottom, above the footer */}
                 <div className="lg:hidden mt-10 space-y-10">
-                    {renderRecommendations()}
+                    {renderRecommendations(1)}
                     <HelpPanel location={location} loading={locationLoading} />
                 </div>
             </div>

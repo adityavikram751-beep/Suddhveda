@@ -52,7 +52,7 @@ export function getCategoryName(product: ApiProduct): string {
     product?.category?.category_name ||
     product?.category_name ||
     product?.category ||
-    "Honey"
+    ""
   );
 }
 
@@ -132,7 +132,7 @@ export function normalizeProduct(
     badge: getCategoryName(product),
     image: getPrimaryImage(product),
     title: getProductName(product),
-    subtitle: product?.floral_source || product?.subtitle || product?.description || "",
+    subtitle: getCategoryName(product),
     weight: getVariantLabel(selectedVariant),
     price,
     oldPrice,

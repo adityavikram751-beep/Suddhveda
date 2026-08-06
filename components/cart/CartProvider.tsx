@@ -24,6 +24,7 @@ import {
   type ReactNode,
 } from "react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCategoryName } from "@/lib/api-products";
 
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
@@ -60,6 +61,7 @@ type CartItemDetail =
       productId: string;
       variantId: string;
       productName: string;
+      categoryName?: string;
       image: string;
       price: number;
       oldPrice?: number;
@@ -141,6 +143,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         const productId = product._id || product.productId || product.id || "";
         const variantId = variant._id || variant.variantId || variant.id || "";
         const productName = product.product_name || product.productName || product.name || "Product";
+        const categoryName = getCategoryName(product);
         const image = product.image?.image_url || product.image?.url || "/placeholder.png";
         const price = variant.price ?? variant.pricing ?? 0;
         const oldPrice = variant.mrp ?? variant.oldPrice ?? undefined;
@@ -152,6 +155,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           productId,
           variantId,
           productName,
+          categoryName,
           image,
           price,
           oldPrice,
@@ -508,6 +512,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                     <h3 className="truncate text-[14px] font-bold leading-5 text-[#1F1A16]">
                       {product.productName}
                     </h3>
+                    {product.type === "NORMAL" && product.categoryName && (
+                      <p className="truncate text-[11px] text-[#6F6258]">
+                        {product.categoryName}
+                      </p>
+                    )}
                     <p className="text-[11px] text-[#6F6258]">
                       {product.type === "NORMAL"
                         ? product.weight || "Selected weight"
