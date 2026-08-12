@@ -6,10 +6,10 @@ export default function Hero() {
   return (
     <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px]">
       <div className="max-w-[1440px] -m-2 mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0">
-        
+
         {/* Mobile & Tablet Layout (< 1024px): Center aligned text and buttons, image at bottom */}
         <div className="flex flex-col lg:hidden items-center text-center space-y-6">
-          
+
           {/* Badge */}
           <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[13px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
             <span>🍯</span>
@@ -32,25 +32,42 @@ export default function Hero() {
             Ethically sourced, raw and unprocessed honey crafted by nature and delivered fresh from trusted beekeepers to your home.
           </p>
 
-          {/* Features Row */}
-          <div className="flex items-center justify-center gap-6 sm:gap-10 pt-2 w-full">
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50">
-                <TbLeaf size={20} />
+          {/* Features Row - 4 Circles matching Desktop */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-4 pt-2 w-full max-w-[500px]">
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+                100%
               </div>
-              <span className="text-[12px] font-bold text-[#593102]">100% <span className="block font-normal text-[#8D7F73]">Natural</span></span>
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+                100% Pure<br />&amp; Raw
+              </span>
             </div>
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50 text-xs font-bold">
+
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
                 LAB
               </div>
-              <span className="text-[12px] font-bold text-[#593102]">Lab <span className="block font-normal text-[#8D7F73]">Tested</span></span>
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+                Lab Tested<br />For Purity
+              </span>
             </div>
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50 text-xs font-bold">
-                📦
+
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+                NO
               </div>
-              <span className="text-[12px] font-bold text-[#593102]">Free <span className="block font-normal text-[#8D7F73]">Shipping</span></span>
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+                No Added Sugar<br />Or Preservatives
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center text-center gap-1.5">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+                SEC
+              </div>
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+                Secure &amp; Sustainable<br />Packaging
+              </span>
             </div>
           </div>
 
@@ -78,39 +95,27 @@ export default function Hero() {
             />
 
             {/* Floating Cards (Top-Left Positioned) */}
-            <div className="absolute left-2 sm:left-4 top-8 flex flex-col gap-2.5 z-20">
+            <div className="absolute left-2 sm:left-4 top-8 flex flex-col gap-3 z-20">
               
               {/* Card 1 */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[135px] py-2 px-3 flex items-center gap-2 text-left">
-                <div className="text-[#B37B1B]">
-                  <TbLeaf size={18} />
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[155px] py-2.5 px-3.5 flex items-center gap-2.5 text-left">
+                <div className="text-[#B37B1B] shrink-0">
+                  <TbLeaf size={22} />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold text-[#593102] text-[12px]">No Added</span>
-                  <span className="text-[#8D7F73] text-[10px]">Sugar</span>
+                  <span className="font-bold text-[#593102] text-[14px]">No Added</span>
+                  <span className="text-[#8D7F73] text-[11px]">Sugar</span>
                 </div>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[135px] py-2 px-3 flex items-center gap-2 text-left">
-                <div className="w-6 h-6 flex items-center justify-center shrink-0">
-                  <Image src="/pinhead_honeycomb.png" alt="Raw" width={24} height={24} className="object-contain" />
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[155px] py-2.5 px-3.5 flex items-center gap-2.5 text-left">
+                <div className="w-7 h-7 flex items-center justify-center shrink-0">
+                  <Image src="/pinhead_honeycomb.png" alt="Raw & Filtered" width={28} height={28} className="object-contain" />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold text-[#593102] text-[12px]">Raw &</span>
-                  <span className="text-[#8D7F73] text-[10px]">Unfiltered</span>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[135px] py-2 px-3 flex items-center gap-2 text-left">
-                <div className="text-[#D49313] text-sm">★</div>
-                <div className="flex flex-col leading-tight">
-                  <div className="flex items-center gap-1">
-                    <span className="font-bold text-[#593102] text-[12px]">4.9</span>
-                    <span className="text-[#D49313] text-[9px]">★</span>
-                  </div>
-                  <span className="text-[#8D7F73] text-[10px]">Rating</span>
+                  <span className="font-bold text-[#593102] text-[14px]">Raw &amp;</span>
+                  <span className="text-[#8D7F73] text-[11px]">Filtered</span>
                 </div>
               </div>
 
@@ -121,7 +126,7 @@ export default function Hero() {
 
         {/* Desktop Layout (>= 1024px): 2-Column Grid */}
         <div className="hidden lg:grid grid-cols-2 gap-4 items-center min-h-[650px]">
-          
+
           {/* LEFT CONTENT */}
           <div className="flex flex-col items-start">
             <div className="inline-flex items-center gap-x-2 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[14px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
@@ -207,38 +212,27 @@ export default function Hero() {
               />
 
               {/* Floating Cards Container */}
-              <div className="absolute right-[-40px] top-[18%] -translate-y-1/2 flex flex-col gap-3 z-20">
-                
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                  <div className="text-[#B37B1B]">
-                    <TbLeaf size={24} className="stroke-[1.5]" />
+              <div className="absolute right-[-30px] top-[18%] -translate-y-1/2 flex flex-col gap-3.5 z-20">
+
+                {/* Card 1 */}
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_10px_30px_rgba(89,49,2,0.06)] border border-[#F2ECE4] w-[175px] py-3.5 px-4 flex items-center gap-3.5">
+                  <div className="text-[#B37B1B] shrink-0">
+                    <TbLeaf size={28} className="stroke-[1.5]" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[#593102] text-[14px] leading-tight">No Added</span>
-                    <span className="text-[#8D7F73] text-[12px]">Sugar</span>
+                    <span className="font-bold text-[#593102] text-[16px] leading-tight">No Added</span>
+                    <span className="text-[#8D7F73] text-[13px]">Sugar</span>
                   </div>
                 </div>
 
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                  <div className="text-[#B37B1B] text-xl">
-                    <div className="flex items-center justify-center w-8 h-8">
-                      <Image src="/pinhead_honeycomb.png" alt="Raw & Unfiltered" width={34} height={34} className="object-contain" />
-                    </div>
+                {/* Card 2 */}
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_10px_30px_rgba(89,49,2,0.06)] border border-[#F2ECE4] w-[175px] py-3.5 px-4 flex items-center gap-3.5">
+                  <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                    <Image src="/pinhead_honeycomb.png" alt="Raw & Filtered" width={36} height={36} className="object-contain" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[#593102] text-[14px] leading-tight">Raw &</span>
-                    <span className="text-[#8D7F73] text-[12px]">Unfiltered</span>
-                  </div>
-                </div>
-
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#F2ECE4] w-[155px] py-3 px-4 flex items-center gap-3">
-                  <div className="text-[#D49313] text-lg">★</div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold text-[#593102] text-[14px] leading-none">4.9</span>
-                      <span className="text-[#D49313] text-[10px]">★</span>
-                    </div>
-                    <span className="text-[#8D7F73] text-[12px] mt-0.5">Rating</span>
+                    <span className="font-bold text-[#593102] text-[16px] leading-tight">Raw &amp;</span>
+                    <span className="text-[#8D7F73] text-[13px]">Filtered</span>
                   </div>
                 </div>
 

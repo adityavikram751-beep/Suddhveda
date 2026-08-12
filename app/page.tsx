@@ -8,25 +8,23 @@ import ImpactSection from "@/sections/home/ImpactSection";
 import GiftSetSection from "@/sections/home/GiftSetSection";
 import HoneyProcessSection from "@/sections/home/HoneyProcessSection";
 import HappyCustomersSection from "@/sections/home/HappyCustomersSection";
-import TouchSection from "@/sections/home/TouchSection"
 import Footer from "@/components/layout/Footer";
 
 
 export default function Home() {
   return (
     <>
-    
+
       <Header />
       <Hero />
       <FeaturesBar />
       <HoneySelection />
       <ImpactSection />
-      <UpcomingProduct/>
+      <UpcomingProduct />
       <GiftSetSection />
       <HoneyProcessSection />
       <HappyCustomersSection />
-      <TouchSection />
-      <Footer/>
+      <Footer />
     </>
   );
 }

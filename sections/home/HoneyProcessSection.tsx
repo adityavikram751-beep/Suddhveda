@@ -3,22 +3,25 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiChevronRight } from "react-icons/fi";
+import { Play, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
 type Recipe = {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   image: string;
+  video_url?: string;
+  thumbnail_url?: string;
+  duration?: number;
   slug?: string;
 };
 
 export default function HealthyIdeas() {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{ title: string; video_url: string } | null>(null);
 
   const category = "healthy"; // or dynamic if needed
 
@@ -27,29 +30,40 @@ export default function HealthyIdeas() {
       try {
         setLoading(true);
         setError(null);
-        
-        const response = await fetch(
-          `${API_BASE_URL}/api/benefits/all-benefits/${category}`
-        );
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status}`);
+        // Fetch benefits category first
+        let response = await fetch(`${API_BASE_URL}/api/benefits/all-benefits/benefits`);
+        let data = response.ok ? await response.json() : null;
+
+        let allData = (data && data.success && Array.isArray(data.data)) ? data.data : [];
+
+        // Also fetch healthy category to get all video items
+        try {
+          const healthyRes = await fetch(`${API_BASE_URL}/api/benefits/all-benefits/healthy`);
+          if (healthyRes.ok) {
+            const healthyData = await healthyRes.json();
+            if (healthyData.success && Array.isArray(healthyData.data)) {
+              allData = [...allData, ...healthyData.data];
+            }
+          }
+        } catch (e) {
+          console.warn("Healthy category fetch fallback warning", e);
         }
 
-        const data = await response.json();
-
-        if (data.success) {
-          // Map API response to our Recipe type
-          const mappedRecipes = data.data.map((item: any) => ({
+        if (allData.length > 0) {
+          const mappedRecipes = allData.map((item: any) => ({
             _id: item._id,
             title: item.title,
-            description: item.description,
-            image: item.image,
+            description: item.description || "",
+            video_url: item.video_url || item.videoUrl || item.video || "",
+            thumbnail_url: item.thumbnail_url || item.thumbnailUrl || item.image || "",
+            image: item.thumbnail_url || item.thumbnailUrl || item.image || "/placeholder-image.png",
+            duration: item.duration,
             slug: item.title.toLowerCase().replace(/\s+/g, "-"),
           }));
           setRecipes(mappedRecipes);
         } else {
-          throw new Error(data.message || "Failed to fetch benefits");
+          setRecipes([]);
         }
       } catch (err) {
         console.error("Error fetching benefits:", err);
@@ -60,7 +74,7 @@ export default function HealthyIdeas() {
     };
 
     fetchBenefits();
-  }, [category]);
+  }, []);
 
   // Loading state
   if (loading) {
@@ -69,11 +83,8 @@ export default function HealthyIdeas() {
         <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
-              <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
+              <h2 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
                 Recipes &amp; Wellness
-              </span>
-              <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
-                Healthy Ideas with Honey
               </h2>
             </div>
             <Link
@@ -87,18 +98,8 @@ export default function HealthyIdeas() {
             {[1, 2, 3, 4].map((_, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl overflow-hidden border border-[#F2ECE4] h-[340px] sm:h-[360px] animate-pulse"
-              >
-                <div className="w-full h-[150px] sm:h-[170px] bg-gray-200"></div>
-                <div className="p-5 space-y-3">
-                  <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-                  </div>
-                </div>
-              </div>
+                className="bg-gray-200 rounded-2xl h-[280px] sm:h-[310px] lg:h-[330px] animate-pulse"
+              />
             ))}
           </div>
         </div>
@@ -132,11 +133,8 @@ export default function HealthyIdeas() {
         <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
-              <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
+              <h2 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
                 Recipes &amp; Wellness
-              </span>
-              <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
-                Healthy Ideas with Honey
               </h2>
             </div>
             <Link
@@ -147,7 +145,7 @@ export default function HealthyIdeas() {
             </Link>
           </div>
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No benefits found</p>
+            <p className="text-gray-500 text-lg">No recipes found</p>
           </div>
         </div>
       </section>
@@ -160,11 +158,8 @@ export default function HealthyIdeas() {
         {/* Heading row */}
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
-            <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
+            <h2 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
               Recipes &amp; Wellness
-            </span>
-            <h2 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
-              Healthy Ideas with Honey
             </h2>
           </div>
 
@@ -179,63 +174,56 @@ export default function HealthyIdeas() {
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 mt-6 md:mt-8">
           {recipes.map((recipe) => {
-            const isExpanded = expandedId === recipe._id;
-            const truncatedDescription =
-              recipe.description.length > 120
-                ? recipe.description.slice(0, 120) + "..."
-                : recipe.description;
+            const hasVideo = Boolean(recipe.video_url);
 
             return (
               <div
                 key={recipe._id}
-                className="bg-white rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.07)] transition-shadow duration-300 group flex flex-col h-[340px] sm:h-[360px]"
+                onClick={() => {
+                  if (hasVideo && recipe.video_url) {
+                    setSelectedVideo({ title: recipe.title, video_url: recipe.video_url });
+                  }
+                }}
+                className="relative rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[280px] sm:h-[310px] lg:h-[330px] cursor-pointer"
               >
-                {/* Image */}
-                <div className="relative w-full h-[150px] sm:h-[170px] overflow-hidden flex-shrink-0 bg-gray-100">
+                {hasVideo ? (
+                  <div className="relative w-full h-full">
+                    {/* Video Layer - Plays continuously */}
+                    <video
+                      src={recipe.video_url}
+                      poster={recipe.thumbnail_url || recipe.image}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                    />
+
+                    {/* Play Icon Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                      <div className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg">
+                        <Play size={20} className="ml-0.5 text-[#593102] fill-[#593102]" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <Image
-                    src={recipe.image}
+                    src={recipe.image || "/placeholder-image.png"}
                     alt={recipe.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
-                      // Fallback image if API image fails
                       const target = e.target as HTMLImageElement;
                       target.src = "/placeholder-image.png";
                     }}
                   />
-                </div>
+                )}
 
-                {/* Content */}
-                <div className="p-5 flex flex-col flex-1 min-h-0">
-                  <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#593102] leading-tight flex-shrink-0 line-clamp-2">
+                {/* Title Overlay On Top of Image/Video */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6 pointer-events-none z-20">
+                  <h3 className="font-bold text-[18px] sm:text-[20px] text-white leading-snug drop-shadow-md">
                     {recipe.title}
                   </h3>
-
-                  <p
-                    className={`no-scrollbar mt-2 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6] overflow-y-auto flex-1 min-h-0 pr-1 ${
-                      !isExpanded ? "line-clamp-3" : ""
-                    }`}
-                  >
-                    {isExpanded ? recipe.description : truncatedDescription}
-                  </p>
-
-                  {recipe.description.length > 120 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedId(isExpanded ? null : recipe._id)
-                      }
-                      className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#593102] hover:text-[#D49313] transition-colors flex-shrink-0"
-                    >
-                      {isExpanded ? "Show Less" : "Read More"}
-                      <FiChevronRight
-                        size={16}
-                        className={`transition-transform duration-200 ${
-                          isExpanded ? "rotate-90" : ""
-                        }`}
-                      />
-                    </button>
-                  )}
                 </div>
               </div>
             );

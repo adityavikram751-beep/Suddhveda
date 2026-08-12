@@ -184,7 +184,7 @@ export default function HappyCustomersSection() {
                     sm:w-[calc(50%-10px)] // Tablet: 2 cards
                     md:w-[calc(33.333%-14px)] // Small Desktop: 3 cards
                     lg:w-[calc(25%-15px)] // Large Desktop: 4 cards
-                    h-[330px] sm:h-[320px] lg:h-[335px] // <<<--- Sligthly Reduced height for performance and aesthetic
+                    h-[400px] sm:h-[420px] lg:h-[440px]
                     overflow-hidden
                     rounded-[16px]
                     border
@@ -198,49 +198,26 @@ export default function HappyCustomersSection() {
                     hover:-translate-y-1
                   "
                 >
-                  {/* --- PROGRESSIVE LOADING LOGIC --- */}
+                  {/* --- VIDEO LAYER (Continuous Autoplay + Modal Click) --- */}
                   {item.videoUrl ? (
                     <div className="relative w-full h-full">
-                       {/* 1. Base Layer: Thumbnail (instant load) */}
-                        <Image
-                          src={item.thumbnail || `/api/placeholder/400/600?text=${item.name}`}
-                          alt={`Thumbnail for ${item.name}`}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          className="object-cover transition-opacity duration-500 group-hover:opacity-90"
-                          priority={false} // Don't prioritize loading thumbnails, let them load as needed
-                        />
-
-                        {/* 2. Top Layer: Video (Lazy Loaded) */}
-                        <video
-                           ref={(el) => {
-                            if (el) {
-                              videoRefs.current.set(item.id, el);
-                            } else {
-                              videoRefs.current.delete(item.id);
-                            }
-                          }}
-                          data-video-id={item.id}
-                          poster={item.thumbnail || undefined}
-                          loop
-                          muted
-                          playsInline
-                          preload="none" // <<<--- CRITICAL: Don't load anything until Intersection Observer says so
-                          onPlay={() => handleVideoPlayStart(item.id)}
-                          onPause={() => handleVideoPause(item.id)}
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                          // We will manually set the `src` attribute once it's about to be seen to save bandwidth
-                          onLoadStart={(e) => {
-                            // This ensures src is set only when needed (Intersection Observer handles this logic)
-                            // If src is already set, do nothing
-                            if((e.target as HTMLVideoElement).src) return;
-                             (e.target as HTMLVideoElement).src = item.videoUrl;
-                          }}
-                        />
+                      <video
+                        src={item.videoUrl}
+                        poster={item.thumbnail || undefined}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
                   ) : (
-                     // Fallback if no video URL exists
-                    <Image src={item.thumbnail || `/api/placeholder/400/600?text=${item.name}`} alt={item.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <Image
+                      src={item.thumbnail || `/api/placeholder/400/600?text=${item.name}`}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   )}
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />

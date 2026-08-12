@@ -48,6 +48,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [shopMenuOpen, setShopMenuOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [apiProducts, setApiProducts] = useState<any[]>([]);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
@@ -453,28 +454,39 @@ export default function Header() {
                       />
                     </Link>
 
-                    {/* 🟢 Shop Mega Menu Dropdown */}
+                    {/* 🟢 Premium Shop Mega Menu Popup UI */}
                     {shopMenuOpen && (
                       <div
-                        className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[940px] max-w-[95vw] z-50 transition-all duration-300"
+                        className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[960px] max-w-[95vw] z-50 transition-all duration-300 animate-in fade-in slide-in-from-top-2"
                         onMouseEnter={() => setShopMenuOpen(true)}
                       >
-                        <div className="bg-[#FAF5EE] rounded-2xl border border-[#E5DACB] shadow-2xl p-8">
-                          <Link
-                            href="/shop"
-                            onClick={() => setShopMenuOpen(false)}
-                            className="font-serif text-[24px] font-bold text-[#2C221E] hover:text-[#593102] tracking-tight block mb-6 transition-colors"
-                          >
-                            Shop All Honey
-                          </Link>
+                        <div className="relative overflow-hidden rounded-3xl border border-[#E8DED1] bg-[#FFFDF9] p-8 sm:p-10 shadow-[0_30px_70px_-15px_rgba(89,49,2,0.18)]">
+                          {/* Top Golden Brand Accent Bar */}
+                          <div className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-[#D89B00] via-[#593102] to-[#D89B00]" />
 
-                          <div className="grid grid-cols-12 gap-8 items-start">
+                          {/* Top Header Title & View All Link */}
+                          <div className="mb-6 flex items-center justify-between border-b border-[#F0E4D0] pb-4">
+                            <Link
+                              href="/shop"
+                              onClick={() => setShopMenuOpen(false)}
+                              className="group flex items-center gap-3"
+                            >
+                              <span className="font-serif text-[26px] font-bold text-[#593102] group-hover:text-[#C98715] transition-colors">
+                                Shop All Honey
+                              </span>
+                              <span className="text-[13px] font-semibold text-[#8C6239] group-hover:text-[#593102] group-hover:translate-x-1 transition-all flex items-center gap-1">
+                                View Full Collection &rarr;
+                              </span>
+                            </Link>
+                          </div>
+
+                          <div className="grid grid-cols-12 gap-8 items-stretch">
                             {/* Multi-Flora Column */}
                             <div className="col-span-3">
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-3 border-b border-[#E6DCCB] pb-1">
+                              <span className="mb-4 inline-block rounded-full bg-[#F5ECDF] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#8C6239]">
                                 Multi-Flora
                               </span>
-                              <div className="flex flex-col gap-2.5">
+                              <div className="flex flex-col gap-3">
                                 {multiFloraProducts.length > 0 ? (
                                   multiFloraProducts.map((p) => {
                                     const id = getProductId(p);
@@ -484,9 +496,12 @@ export default function Header() {
                                         key={id || name}
                                         href={`/shop/products/${id}`}
                                         onClick={() => setShopMenuOpen(false)}
-                                        className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                        className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
                                       >
-                                        {name}
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00] group-hover/item:scale-150 transition-transform" />
+                                        <span className="group-hover/item:translate-x-1 transition-transform">
+                                          {name}
+                                        </span>
                                       </Link>
                                     );
                                   })
@@ -494,20 +509,21 @@ export default function Header() {
                                   <Link
                                     href="/shop"
                                     onClick={() => setShopMenuOpen(false)}
-                                    className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                    className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
                                   >
-                                    Himalayan Forest Honey
+                                    <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00]" />
+                                    <span>Himalayan Forest Honey</span>
                                   </Link>
                                 )}
                               </div>
                             </div>
 
                             {/* Mono-Flora Column */}
-                            <div className="col-span-5">
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-3 border-b border-[#E6DCCB] pb-1">
+                            <div className="col-span-5 border-l border-[#F0E4D0] pl-6">
+                              <span className="mb-4 inline-block rounded-full bg-[#F5ECDF] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#8C6239]">
                                 Mono-Flora
                               </span>
-                              <div className="grid grid-cols-2 gap-y-2.5 gap-x-4">
+                              <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                                 {monoFloraProducts.length > 0 ? (
                                   monoFloraProducts.map((p) => {
                                     const id = getProductId(p);
@@ -517,9 +533,12 @@ export default function Header() {
                                         key={id || name}
                                         href={`/shop/products/${id}`}
                                         onClick={() => setShopMenuOpen(false)}
-                                        className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                        className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
                                       >
-                                        {name}
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00] group-hover/item:scale-150 transition-transform shrink-0" />
+                                        <span className="group-hover/item:translate-x-1 transition-transform line-clamp-1">
+                                          {name}
+                                        </span>
                                       </Link>
                                     );
                                   })
@@ -536,14 +555,22 @@ export default function Header() {
                               </div>
                             </div>
 
-                            {/* Honey Jars Decorative Column */}
-                            <div className="col-span-4 flex items-center justify-center p-2 bg-[#F5ECDF] rounded-xl relative overflow-hidden h-[180px]">
-                              <Image
-                                src="/Upcoming.png"
-                                alt="ShuddhVeda Honey Jars"
-                                fill
-                                className="object-contain p-2"
-                              />
+                            {/* Featured Honey Jars Spotlight Box */}
+                            <div className="col-span-4 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-[#F6EDE2] to-[#EBE0CE] p-4 border border-[#E5DACB] shadow-inner relative overflow-hidden group/card">
+                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#593102] bg-white/80 backdrop-blur-xs px-2.5 py-0.5 rounded-full w-fit">
+                                100% Raw & Organic
+                              </span>
+                              <div className="relative h-[130px] w-full my-2">
+                                <Image
+                                  src="/Upcoming.png"
+                                  alt="ShuddhVeda Pure Honey Jars"
+                                  fill
+                                  className="object-contain transition-transform duration-500 group-hover/card:scale-105"
+                                />
+                              </div>
+                              <span className="text-[12px] font-bold text-[#593102] text-center block">
+                                Directly From Natural Hives 🍯
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -646,23 +673,146 @@ export default function Header() {
 
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ${
-            open ? "max-h-[450px]" : "max-h-0"
+            open ? "max-h-[800px]" : "max-h-0"
           }`}
         >
-          <div className="bg-white border-t border-[#EFE7DF]">
+          <div className="bg-[#FAF5EE] border-t border-[#EFE7DF] px-4 py-2">
             {navItems.map((item) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
                   : pathname === item.href || pathname?.startsWith(`${item.href}/`);
 
+              if (item.title === "Shop") {
+                return (
+                  <div key={item.title} className="border-b border-[#E8DED1]">
+                    <div className="flex items-center justify-between py-3.5 px-2">
+                      <Link
+                        href="/shop"
+                        onClick={() => setOpen(false)}
+                        className={`text-[16px] font-bold ${
+                          isActive ? "text-[#D89B00]" : "text-[#593102]"
+                        }`}
+                      >
+                        Shop
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setMobileShopOpen((prev) => !prev)}
+                        className="p-2.5 text-[#593102] hover:text-[#D89B00] cursor-pointer"
+                        aria-label="Toggle Shop mobile menu"
+                      >
+                        <FiChevronDown
+                          size={18}
+                          className={`transition-transform duration-200 ${
+                            mobileShopOpen ? "rotate-180 text-[#D89B00]" : ""
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Expandable Mobile Submenu */}
+                    {mobileShopOpen && (
+                      <div className="pb-4 pl-3 pr-2 space-y-3 bg-[#FFFDF9] rounded-xl p-3.5 mb-2 border border-[#E8DED1]">
+                        <Link
+                          href="/shop"
+                          onClick={() => {
+                            setOpen(false);
+                            setMobileShopOpen(false);
+                          }}
+                          className="block text-[14px] font-bold text-[#593102] underline"
+                        >
+                          Shop All Honey &rarr;
+                        </Link>
+
+                        {/* Multi Flora */}
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-1.5 border-b border-[#E8DED1] pb-0.5">
+                            Multi-Flora
+                          </span>
+                          <div className="pl-1 space-y-2 mt-1">
+                            {multiFloraProducts.length > 0 ? (
+                              multiFloraProducts.map((p) => {
+                                const id = getProductId(p);
+                                const name = getProductName(p);
+                                return (
+                                  <Link
+                                    key={id || name}
+                                    href={`/shop/products/${id}`}
+                                    onClick={() => {
+                                      setOpen(false);
+                                      setMobileShopOpen(false);
+                                    }}
+                                    className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
+                                  >
+                                    • {name}
+                                  </Link>
+                                );
+                              })
+                            ) : (
+                              <Link
+                                href="/shop"
+                                onClick={() => {
+                                  setOpen(false);
+                                  setMobileShopOpen(false);
+                                }}
+                                className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
+                              >
+                                • Himalayan Forest Honey
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Mono Flora */}
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-1.5 border-b border-[#E8DED1] pb-0.5">
+                            Mono-Flora
+                          </span>
+                          <div className="pl-1 grid grid-cols-1 gap-2 mt-1">
+                            {monoFloraProducts.length > 0 ? (
+                              monoFloraProducts.map((p) => {
+                                const id = getProductId(p);
+                                const name = getProductName(p);
+                                return (
+                                  <Link
+                                    key={id || name}
+                                    href={`/shop/products/${id}`}
+                                    onClick={() => {
+                                      setOpen(false);
+                                      setMobileShopOpen(false);
+                                    }}
+                                    className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
+                                  >
+                                    • {name}
+                                  </Link>
+                                );
+                              })
+                            ) : (
+                              <>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Ajwain Honey</Link>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Lychee Honey</Link>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Fennel Honey</Link>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Jamun Honey</Link>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Mustard Honey</Link>
+                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Eucalyptus Honey</Link>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.title}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`relative flex items-center justify-between px-6 py-4 border-b border-[#F1ECE6] font-medium ${
-                    isActive ? "text-[#D89B00]" : "text-[#7A3F10]"
+                  className={`relative flex items-center justify-between px-2 py-3.5 border-b border-[#E8DED1] text-[16px] font-semibold ${
+                    isActive ? "text-[#D89B00]" : "text-[#593102]"
                   }`}
                 >
                   {item.title}
