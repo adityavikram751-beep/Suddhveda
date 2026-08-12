@@ -70,7 +70,7 @@ export default function OurValues() {
             <span className="text-[#D49313] text-[13px]  font-semibold tracking-[0.15em] uppercase">
               Our Values
             </span>
-            <h2 className="mt-4 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight">
+            <h2 className="mt-4 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#593102] leading-tight">
               What Drives Everything We Do
             </h2>
 
@@ -84,7 +84,7 @@ export default function OurValues() {
                       <Icon size={18} strokeWidth={1.6} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[17px] text-[#2D3A1B]">
+                      <h3 className="font-semibold text-[17px] text-[#593102]">
                         {item.title}
                       </h3>
                       <p className="text-[14.5px] text-[#8D7F73] mt-1.5 leading-[1.6]">

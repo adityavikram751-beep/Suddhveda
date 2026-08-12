@@ -144,7 +144,7 @@ export default function HappyCustomersSection() {
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 z-20">
         <div className="text-center">
-          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-semibold text-[#2D3A1B] leading-tight">Happy Customers</h2>
+          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-semibold text-[#593102] leading-tight">Happy Customers</h2>
           <p className="mt-2 sm:mt-3 text-[14px] sm:text-[16px] md:text-[18px] text-[#A98F78] max-w-[700px] mx-auto">
             Trusted By thousand of families who choose Purity, taste, and quality everyday
           </p>
@@ -154,15 +154,15 @@ export default function HappyCustomersSection() {
                 <Star key={star} size={20} fill="#F59E0B" color="#F59E0B" className="text-[#F59E0B] w-[18px] sm:w-[20px] md:w-[24px] h-auto" />
               ))}
             </div>
-            <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#2D3A1B] ml-1 sm:ml-2">4.9</span>
-            <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#2D3A1B] ml-2 sm:ml-3">loved by</span>
+            <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#593102] ml-1 sm:ml-2">4.9</span>
+            <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#593102] ml-2 sm:ml-3">loved by</span>
             <span className="text-[#A98F78] text-[14px] sm:text-[16px] md:text-[18px] ml-1 sm:ml-2">20,000+ Customers</span>
           </div>
         </div>
 
         {loading ? (
           <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
-            <Loader2 size={36} className="text-[#2D3A1B] animate-spin" />
+            <Loader2 size={36} className="text-[#593102] animate-spin" />
             <p className="text-[15px] text-[#A98F78]">Loading customer videos...</p>
           </div>
         ) : videos.length === 0 ? (
@@ -246,7 +246,7 @@ export default function HappyCustomersSection() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
                   <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                     <div className="w-[44px] h-[44px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white shadow-lg">
-                      <Play size={18} className="ml-0.5 text-[#2D3A1B] fill-[#2D3A1B]" />
+                      <Play size={18} className="ml-0.5 text-[#593102] fill-[#593102]" />
                     </div>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none">

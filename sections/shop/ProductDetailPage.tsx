@@ -16,16 +16,6 @@ import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 import { getCategoryName, getProductImages, getProductVariants } from "@/lib/api-products";
-import { Playfair_Display, Inter } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-});
 
 const accordionSections = [
   {
@@ -386,7 +376,7 @@ export default function ProductDetailPage({
   if (!product) return null;
 
   return (
-    <main className={`bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 ${inter.className}`}>
+    <main className="bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans">
       <div className="max-w-[1350px] mx-auto px-4 py-6">
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_1fr] gap-6 lg:gap-8">
@@ -446,7 +436,7 @@ export default function ProductDetailPage({
           {/* PRODUCT DETAILS */}
           <div className="space-y-6 relative bg-white">
             <div className="flex justify-between items-start w-full gap-4">
-              <h1 className={`${playfair.className} text-[28px] sm:text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal`}>
+              <h1 className="font-serif text-[28px] sm:text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal">
                 {product.product_name}
               </h1>
               <div className="flex items-center gap-3 mt-1 sm:mt-3 shrink-0">
@@ -684,7 +674,7 @@ export default function ProductDetailPage({
                       >
                         <span className="flex items-center gap-3.5 text-gray-800">
                           <Icon size={20} className="text-[#D08722] stroke-[1.5]" />
-                          <span className={`${playfair.className} text-[20px] sm:text-[24px] tracking-wide text-gray-700`}>
+                          <span className="font-serif text-[20px] sm:text-[24px] tracking-wide text-gray-700">
                             {section.title}
                           </span>
                         </span>
@@ -717,7 +707,7 @@ export default function ProductDetailPage({
         {/* RECOMMENDATIONS SECTION */}
         {recommendations.length > 0 && (
           <section className="mt-16">
-            <h2 className={`mb-9 text-[28px] sm:text-[32px] font-bold text-[#2F241C] ${playfair.className}`}>
+            <h2 className="font-serif mb-9 text-[28px] sm:text-[32px] font-bold text-[#2F241C]">
               Recommendation
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

@@ -192,7 +192,7 @@ export default function ContactSection() {
           {/* LEFT - Form Card */}
           <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10">
             <p className="text-[#D49313] italic font-serif text-[17px] sm:text-[18px]">We'd love to</p>
-            <h2 className="text-[26px] sm:text-[32px] font-serif text-[#2D3A1B] mt-1 mb-6">Hear From You</h2>
+            <h2 className="text-[26px] sm:text-[32px] font-serif text-[#593102] mt-1 mb-6">Hear From You</h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
@@ -202,7 +202,7 @@ export default function ContactSection() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
               />
               <input
                 type="email"
@@ -211,7 +211,7 @@ export default function ContactSection() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
               />
 
               <div className="grid grid-cols-2 gap-4">
@@ -221,7 +221,7 @@ export default function ContactSection() {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="appearance-none w-full h-[50px] sm:h-[52px] px-4 pr-9 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] focus:outline-none focus:border-[#D49313] transition-colors"
+                    className="appearance-none w-full h-[50px] sm:h-[52px] px-4 pr-9 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#593102] focus:outline-none focus:border-[#D49313] transition-colors"
                   >
                     <option value="" disabled>Subject</option>
                     <option value="general">General Inquiry</option>
@@ -241,7 +241,7 @@ export default function ContactSection() {
                   value={formData.mobile}
                   onChange={handleInputChange}
                   required
-                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                 />
               </div>
 
@@ -252,7 +252,7 @@ export default function ContactSection() {
                 value={formData.message}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#2D3A1B] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-[#E8E1D8] bg-[#FAF9F7] text-[14px] text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors resize-none"
               />
 
               {/* Submit Status Messages */}
@@ -331,8 +331,8 @@ export default function ContactSection() {
               <FiPhone size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-bold text-[16px] text-[#2D3A1B]">Call Us</span>
-              <span className="text-[13px] sm:text-[14px] text-[#2D3A1B] font-medium truncate">
+              <span className="font-bold text-[16px] text-[#593102]">Call Us</span>
+              <span className="text-[13px] sm:text-[14px] text-[#593102] font-medium truncate">
                 {loading ? "Loading..." : phoneNumber}
               </span>
               <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
@@ -350,8 +350,8 @@ export default function ContactSection() {
               <FiMail size={18} className="text-[#EA4335]" />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-bold text-[16px] text-[#2D3A1B]">Email Us</span>
-              <span className="text-[12px] sm:text-[13px] text-[#2D3A1B] font-medium break-all line-clamp-1">
+              <span className="font-bold text-[16px] text-[#593102]">Email Us</span>
+              <span className="text-[12px] sm:text-[13px] text-[#593102] font-medium break-all line-clamp-1">
                 {loading ? "Loading..." : emailAddress}
               </span>
               <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
@@ -371,8 +371,8 @@ export default function ContactSection() {
               <FaWhatsapp size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-bold text-[16px] text-[#2D3A1B]">WhatsApp Us</span>
-              <span className="text-[13px] sm:text-[14px] text-[#2D3A1B] font-medium truncate">
+              <span className="font-bold text-[16px] text-[#593102]">WhatsApp Us</span>
+              <span className="text-[13px] sm:text-[14px] text-[#593102] font-medium truncate">
                 {loading ? "Loading..." : whatsappNumber}
               </span>
               <span className="text-[11px] sm:text-[12px] text-[#A69C8F] truncate mt-0.5">
@@ -387,8 +387,8 @@ export default function ContactSection() {
               <FiMapPin size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-bold text-[16px] text-[#2D3A1B]">Visit Our Studio</span>
-              <span className="text-[11px] sm:text-[12px] text-[#2D3A1B] font-medium leading-snug line-clamp-2">
+              <span className="font-bold text-[16px] text-[#593102]">Visit Our Studio</span>
+              <span className="text-[11px] sm:text-[12px] text-[#593102] font-medium leading-snug line-clamp-2">
                 {loading ? "Loading..." : getShortAddress() || "123, Green Hive Road, Whitefield, Bengaluru, KA – 560066"}
               </span>
               <a
@@ -412,7 +412,7 @@ export default function ContactSection() {
               onClick={() => setIsMapActive(true)}
               className="absolute inset-0 z-30 bg-black/10 flex items-center justify-center cursor-pointer lg:hidden backdrop-blur-[1px]"
             >
-              <div className="bg-white text-[#2D3A1B] text-[13px] font-semibold px-5 py-2.5 rounded-full shadow-md border border-[#E8E1D8]">
+              <div className="bg-white text-[#593102] text-[13px] font-semibold px-5 py-2.5 rounded-full shadow-md border border-[#E8E1D8]">
                 Tap to explore map
               </div>
             </div>
@@ -436,7 +436,7 @@ export default function ContactSection() {
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4 sm:py-5 text-center z-20 border-t border-[#E8E1D8]">
-            <h3 className="font-serif text-[#2D3A1B] text-[20px] sm:text-[22px]">Find Us</h3>
+            <h3 className="font-serif text-[#593102] text-[20px] sm:text-[22px]">Find Us</h3>
             <p className="text-[12px] sm:text-[13px] text-[#8D7F73] mt-1 px-4 truncate">
               {loading ? "Loading..." : getFullAddress() || "Shuddha Veda Studio, 4A, Sri Sai Enclave, ECC Road, Whitefield, Bengaluru, Karnataka 560066"}
             </p>

@@ -117,7 +117,7 @@ export default function GiftSetSection() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B] leading-tight">
+                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102] leading-tight">
                       {feature.title}
                     </span>
                     <span className="text-[#8D7F73] text-[12px] sm:text-[13px] mt-0.5">
@@ -136,12 +136,12 @@ export default function GiftSetSection() {
           <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
             {/* Heading */}
             <div className="text-center">
-              <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#2D3A1B]">
+              <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#593102]">
                 FAQs
               </h2>
               <div className="flex items-center justify-center gap-3 mt-4">
-                <div className="w-12 md:w-16 h-px bg-[#2D3A1B]" />
-                <span className="text-[#2D3A1B]">✦</span>
+                <div className="w-12 md:w-16 h-px bg-[#593102]" />
+                <span className="text-[#593102]">✦</span>
                 <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function GiftSetSection() {
                     onClick={() => toggleFaq(faq.id)}
                     className="w-full flex items-center justify-between gap-4 text-left"
                   >
-                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B]">
+                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102]">
                       {faq.question}
                     </span>
                     <FiChevronDown

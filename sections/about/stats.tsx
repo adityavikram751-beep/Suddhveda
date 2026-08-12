@@ -54,7 +54,7 @@ export default function Stats() {
 
                 {/* Text */}
                 <div className="flex flex-col items-center lg:items-start">
-                  <h3 className="font-serif text-[24px] sm:text-[24px] leading-none text-[#2D3A1B]">
+                  <h3 className="font-serif text-[24px] sm:text-[24px] leading-none text-[#593102]">
                     {item.value}
                   </h3>
                   <p className="mt-2 text-[12px] tracking-[0.08em] uppercase text-[#8E8277] whitespace-nowrap">

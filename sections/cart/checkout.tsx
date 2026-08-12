@@ -721,7 +721,7 @@ function FormField({ label, required, optional, placeholder, name, value, onChan
             name={name}
             value={value}
             onChange={onChange}
-            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none focus:border-[#2D3A1B]"
+            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] bg-white px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none focus:border-[#593102]"
           >
             <option value="">{placeholder}</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -737,7 +737,7 @@ function FormField({ label, required, optional, placeholder, name, value, onChan
             value={value}
             onChange={onChange}
             placeholder={placeholder}
-            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#2D3A1B]"
+            className="h-10 sm:h-11 w-full rounded-lg border border-[#E3E6EB] px-3 text-[12px] sm:text-[13px] text-[#2F241C] outline-none placeholder:text-[#B5BBC5] focus:border-[#593102]"
           />
         )}
         {action && (
@@ -773,7 +773,7 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
         <button
           type="button"
           onClick={onAddNew}
-          className="text-[12px] sm:text-[13px] font-semibold text-[#2D3A1B] hover:underline"
+          className="text-[12px] sm:text-[13px] font-semibold text-[#593102] hover:underline"
         >
           + Add New
         </button>
@@ -787,7 +787,7 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
               onClick={() => onSelect(address.id)}
               className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${
                 isSelected
-                  ? "border-[#2D3A1B] bg-[#FFF8EF] shadow-sm ring-1 ring-[#2D3A1B]"
+                  ? "border-[#593102] bg-[#FFF8EF] shadow-sm ring-1 ring-[#593102]"
                   : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
               }`}
             >
@@ -795,12 +795,12 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
                 <span className="flex items-center gap-2 text-[13px] sm:text-[14px] font-bold">
                   <span
                     className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 ${
-                      isSelected ? "border-[#2D3A1B] bg-[#2D3A1B]" : "border-[#CBD2DB] bg-white"
+                      isSelected ? "border-[#593102] bg-[#593102]" : "border-[#CBD2DB] bg-white"
                     }`}
                   />
                   {address.label}
                   {address.isDefault && (
-                    <span className="text-[10px] sm:text-[11px] font-normal text-[#2D3A1B]">(Default)</span>
+                    <span className="text-[10px] sm:text-[11px] font-normal text-[#593102]">(Default)</span>
                   )}
                 </span>
                 <button
@@ -809,7 +809,7 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
                     e.stopPropagation();
                     onEdit(address);
                   }}
-                  className="text-[11px] sm:text-[12px] font-semibold text-[#2D3A1B] hover:underline"
+                  className="text-[11px] sm:text-[12px] font-semibold text-[#593102] hover:underline"
                 >
                   ✎ Edit
                 </button>
@@ -870,7 +870,7 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
       <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3 border-t border-[#EEF1F4] pt-3 sm:pt-4 text-[12px] sm:text-[13px] text-[#6F7786]">
         <div className="flex justify-between">
           <span>Subtotal</span>
-          <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
+          <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
         </div>
         <div className="flex justify-between">
           <span>You Save</span>

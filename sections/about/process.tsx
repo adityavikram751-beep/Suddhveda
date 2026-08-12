@@ -44,7 +44,7 @@ export default function BeekeepingProcess() {
           <span className="text-[#D49313] text-[13px] font-semibold tracking-[0.15em] uppercase">
             Our Beekeeping Process
           </span>
-          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#2D3A1B] leading-tight inline-flex items-center justify-center gap-2 flex-wrap">
+          <h2 className="mt-3 text-[30px] sm:text-[36px] md:text-[38px] font-serif text-[#593102] leading-tight inline-flex items-center justify-center gap-2 flex-wrap">
             Crafted with Care, From Hive to Home
             <Image
               src="/MOVE TO VISIT.png"
@@ -81,7 +81,7 @@ export default function BeekeepingProcess() {
                     />
                   </div>
 
-                  <h3 className="mt-4 font-semibold text-[13px] tracking-wide text-[#2D3A1B] uppercase">
+                  <h3 className="mt-4 font-semibold text-[13px] tracking-wide text-[#593102] uppercase">
                     {step.title}
                   </h3>
                   <p className="mt-1 text-[12px] leading-[1.5] text-[#8D7F73]">
@@ -116,7 +116,7 @@ export default function BeekeepingProcess() {
                   <div className="absolute left-[calc(50%+36px)] right-0 border-t border-dashed border-[#D49313]" />
                 </div>
 
-                <h3 className="mt-4 font-semibold text-[14px] tracking-wide text-[#2D3A1B] uppercase">
+                <h3 className="mt-4 font-semibold text-[14px] tracking-wide text-[#593102] uppercase">
                   {step.title}
                 </h3>
                 <p className="mt-1 text-[13px] leading-[1.5] text-[#8D7F73] px-4">

@@ -66,10 +66,10 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FFF8EF]">
         <div className="text-center">
-          <h2 className="text-2xl font-serif text-[#2D3A1B]">Product not found</h2>
+          <h2 className="text-2xl font-serif text-[#593102]">Product not found</h2>
           <button
             onClick={() => window.history.back()}
-            className="mt-4 text-[#2D3A1B] underline"
+            className="mt-4 text-[#593102] underline"
           >
             Go Back
           </button>
@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
           <span className="mx-2">/</span>
           <span>Shop</span>
           <span className="mx-2">/</span>
-          <span className="text-[#2D3A1B]">{product.name}</span>
+          <span className="text-[#593102]">{product.name}</span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
@@ -101,7 +101,7 @@ export default function ProductDetailPage() {
                 className="object-cover"
               />
               {product.badge && (
-                <span className="absolute top-4 left-4 bg-[#2D3A1B] text-white text-[11px] font-semibold px-4 py-1.5 rounded-full">
+                <span className="absolute top-4 left-4 bg-[#593102] text-white text-[11px] font-semibold px-4 py-1.5 rounded-full">
                   {product.badge}
                 </span>
               )}
@@ -124,12 +124,12 @@ export default function ProductDetailPage() {
             {/* Title & Price */}
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-[32px] font-serif text-[#2D3A1B]">
+                <h1 className="text-[32px] font-serif text-[#593102]">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3 mt-2">
                   <div className="flex items-center gap-1">
-                    <Star size={18} className="fill-[#2D3A1B] text-[#2D3A1B]" />
+                    <Star size={18} className="fill-[#593102] text-[#593102]" />
                     <span className="font-medium">{product.rating}</span>
                   </div>
                   <span className="text-[#8D7F73] text-sm">
@@ -138,7 +138,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[28px] font-bold text-[#2D3A1B]">
+                <span className="text-[28px] font-bold text-[#593102]">
                   ₹{product.price}
                 </span>
                 {product.originalPrice && (
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
 
             {/* Delivery Details */}
             <div className="mt-6 p-4 bg-white rounded-xl border border-[#E6D2B8]/30">
-              <div className="flex items-center gap-2 text-[14px] font-medium text-[#2D3A1B]">
+              <div className="flex items-center gap-2 text-[14px] font-medium text-[#593102]">
                 <Truck size={18} />
                 Delivery Details
               </div>
@@ -170,9 +170,9 @@ export default function ProductDetailPage() {
                   placeholder="Enter your pincode"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-[#E6D2B8] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]"
+                  className="flex-1 px-3 py-2 border border-[#E6D2B8] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#593102]"
                 />
-                <button className="px-6 py-2 bg-[#2D3A1B] text-white rounded-lg text-sm font-semibold hover:bg-[#C48912] transition-colors">
+                <button className="px-6 py-2 bg-[#593102] text-white rounded-lg text-sm font-semibold hover:bg-[#C48912] transition-colors">
                   Check
                 </button>
               </div>
@@ -180,7 +180,7 @@ export default function ProductDetailPage() {
 
             {/* Weight Options */}
             <div className="mt-6">
-              <h3 className="text-[14px] font-semibold text-[#2D3A1B] mb-3">Weight</h3>
+              <h3 className="text-[14px] font-semibold text-[#593102] mb-3">Weight</h3>
               <div className="flex flex-wrap gap-3">
                 {product.weight.map((w) => (
                   <button
@@ -188,8 +188,8 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedWeight(w)}
                     className={`px-4 py-2 rounded-lg border transition-all ${
                       selectedWeight === w
-                        ? "border-[#2D3A1B] bg-[#2D3A1B]/10 text-[#2D3A1B] font-semibold"
-                        : "border-[#E6D2B8] hover:border-[#2D3A1B]"
+                        ? "border-[#593102] bg-[#593102]/10 text-[#593102] font-semibold"
+                        : "border-[#E6D2B8] hover:border-[#593102]"
                     }`}
                   >
                     <div className="text-[14px]">{w}</div>
@@ -221,14 +221,14 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <button className="flex-1 bg-[#2D3A1B] text-white py-3 rounded-lg font-semibold hover:bg-[#C48912] transition-colors flex items-center justify-center gap-2">
+              <button className="flex-1 bg-[#593102] text-white py-3 rounded-lg font-semibold hover:bg-[#C48912] transition-colors flex items-center justify-center gap-2">
                 <ShoppingBag size={18} />
                 Add to Cart
               </button>
             </div>
 
             {/* Buy It Now */}
-            <button className="w-full mt-3 py-3 rounded-lg border-2 border-[#2D3A1B] text-[#2D3A1B] font-semibold hover:bg-[#2D3A1B] hover:text-white transition-colors">
+            <button className="w-full mt-3 py-3 rounded-lg border-2 border-[#593102] text-[#593102] font-semibold hover:bg-[#593102] hover:text-white transition-colors">
               Buy It Now
             </button>
 
@@ -246,7 +246,7 @@ export default function ProductDetailPage() {
                   {["Description", "Nutritional Info", "Product Details", "Benefits", "Ecosystem"].map((tab) => (
                     <button
                       key={tab}
-                      className="pb-3 text-[13px] font-medium text-[#6F665F] hover:text-[#2D3A1B] border-b-2 border-transparent hover:border-[#2D3A1B] transition-colors"
+                      className="pb-3 text-[13px] font-medium text-[#6F665F] hover:text-[#593102] border-b-2 border-transparent hover:border-[#593102] transition-colors"
                     >
                       {tab}
                     </button>

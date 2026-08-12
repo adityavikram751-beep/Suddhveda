@@ -163,10 +163,10 @@
 //         <section className="relative bg-white py-12 sm:py-16 md:py-20 ">
 //           <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-6">
 //             <div className="text-center mb-8 sm:mb-10">
-//               <p className="text-[11px] sm:text-[12px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
+//               <p className="text-[11px] sm:text-[12px] font-semibold tracking-[0.15em] text-[#593102]">
 //                 CUSTOMER MOMENTS
 //               </p>
-//               <h2 className="text-[26px] sm:text-[32px] md:text-[40px] font-serif text-[#2D3A1B] mt-2">
+//               <h2 className="text-[26px] sm:text-[32px] md:text-[40px] font-serif text-[#593102] mt-2">
 //                 Real Stories, Real Happiness
 //               </h2>
 //             </div>
@@ -197,7 +197,7 @@
 //                           <div className="mb-4 sm:mb-5">
 //                             <StarRating rating={review.rating || 5} />
 //                           </div>
-//                           <p className="font-serif italic text-[#14361E] text-[15px] sm:text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
+//                           <p className="font-serif italic text-[#593102] text-[15px] sm:text-[16px] leading-[1.6] flex-1 line-clamp-5 overflow-hidden">
 //                             &ldquo;{review.text}&rdquo;
 //                           </p>
 //                           <div className="flex items-center gap-3 mt-5 sm:mt-6">
@@ -258,7 +258,7 @@
 //               </ul>
 //             </div>
 
-//             <div className="bg-[#2D3A1B] rounded-2xl p-5 sm:p-6 md:p-7">
+//             <div className="bg-[#593102] rounded-2xl p-5 sm:p-6 md:p-7">
 //               <h3 className="text-[20px] sm:text-[22px] font-serif text-white mb-4 sm:mb-5">
 //                 Get a Custom Quote
 //               </h3>
@@ -283,22 +283,22 @@
 //                   <select
 //                     value={expectedQuantity}
 //                     onChange={(e) => setExpectedQuantity(e.target.value)}
-//                     className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-4 py-3 sm:px-6 sm:py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#2D3A1B]"
+//                     className="w-full appearance-none bg-white/10 border border-white/20 rounded-xl px-4 py-3 sm:px-6 sm:py-4 text-[14px] text-white focus:outline-none focus:border-[#F0C77E] cursor-pointer [&>option]:text-[#593102]"
 //                     required
 //                   >
-//                     <option value="" className="text-[#2D3A1B]">
+//                     <option value="" className="text-[#593102]">
 //                       Expected Quantity (e.g. 50-100)
 //                     </option>
-//                     <option value="50-100" className="text-[#2D3A1B]">
+//                     <option value="50-100" className="text-[#593102]">
 //                       50-100
 //                     </option>
-//                     <option value="100-250" className="text-[#2D3A1B]">
+//                     <option value="100-250" className="text-[#593102]">
 //                       100-250
 //                     </option>
-//                     <option value="250-500" className="text-[#2D3A1B]">
+//                     <option value="250-500" className="text-[#593102]">
 //                       250-500
 //                     </option>
-//                     <option value="500+" className="text-[#2D3A1B]">
+//                     <option value="500+" className="text-[#593102]">
 //                       500+
 //                     </option>
 //                   </select>
@@ -313,7 +313,7 @@
 //                 <button
 //                   type="submit"
 //                   disabled={isSubmitting}
-//                   className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#2D3A1B] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1 disabled:opacity-70 disabled:cursor-not-allowed"
+//                   className="w-full bg-[#F0C77E] hover:bg-[#E8B966] text-[#593102] text-[13px] font-semibold tracking-[0.08em] py-3.5 rounded-xl transition-colors mt-1 disabled:opacity-70 disabled:cursor-not-allowed"
 //                 >
 //                   {isSubmitting ? "SENDING..." : "REQUEST QUOTE"}
 //                 </button>
@@ -444,7 +444,7 @@ export default function TestimonialsAndBulkGifting() {
               <p className="text-[11px] sm:text-[12px] font-semibold tracking-[0.15em] text-[#A87400]">
                 CUSTOMER MOMENTS
               </p>
-              <h2 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif text-[#2D3A1B] mt-2">
+              <h2 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif text-[#593102] mt-2">
                 Real Stories, Real Happiness
               </h2>
             </div>
@@ -473,7 +473,7 @@ export default function TestimonialsAndBulkGifting() {
                             <div className="mb-4">
                               <StarRating rating={review.rating || 5} />
                             </div>
-                            <p className="font-serif italic text-[#14361E] text-[15px] sm:text-[16px] leading-[1.6] line-clamp-4 overflow-hidden">
+                            <p className="font-serif italic text-[#593102] text-[15px] sm:text-[16px] leading-[1.6] line-clamp-4 overflow-hidden">
                               &ldquo;{review.text}&rdquo;
                             </p>
                           </div>

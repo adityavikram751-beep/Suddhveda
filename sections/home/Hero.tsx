@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import { FiGift, FiPackage } from "react-icons/fi";
 import { TbLeaf } from "react-icons/tb";
 
@@ -21,7 +21,7 @@ export default function Hero() {
           </div>
 
           {/* Heading */}
-          <h1 className="text-[34px] sm:text-[42px] leading-[1.15] font-serif text-[#2D3A1B] tracking-tight font-normal">
+          <h1 className="text-[34px] sm:text-[42px] leading-[1.15] font-serif text-[#593102] tracking-tight font-normal">
             Experience Nature&apos;s Purest Honey,
             <br />
             <span className="text-[#D49313]">Straight From The Hive</span>
@@ -35,22 +35,22 @@ export default function Hero() {
           {/* Features Row */}
           <div className="flex items-center justify-center gap-6 sm:gap-10 pt-2 w-full">
             <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/50">
+              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50">
                 <TbLeaf size={20} />
               </div>
-              <span className="text-[12px] font-bold text-[#2D3A1B]">100% <span className="block font-normal text-[#8D7F73]">Natural</span></span>
+              <span className="text-[12px] font-bold text-[#593102]">100% <span className="block font-normal text-[#8D7F73]">Natural</span></span>
             </div>
             <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/50 text-xs font-bold">
+              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50 text-xs font-bold">
                 LAB
               </div>
-              <span className="text-[12px] font-bold text-[#2D3A1B]">Lab <span className="block font-normal text-[#8D7F73]">Tested</span></span>
+              <span className="text-[12px] font-bold text-[#593102]">Lab <span className="block font-normal text-[#8D7F73]">Tested</span></span>
             </div>
             <div className="flex flex-col items-center gap-1.5">
-              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/50 text-xs font-bold">
+              <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/50 text-xs font-bold">
                 📦
               </div>
-              <span className="text-[12px] font-bold text-[#2D3A1B]">Free <span className="block font-normal text-[#8D7F73]">Shipping</span></span>
+              <span className="text-[12px] font-bold text-[#593102]">Free <span className="block font-normal text-[#8D7F73]">Shipping</span></span>
             </div>
           </div>
 
@@ -86,7 +86,7 @@ export default function Hero() {
                   <TbLeaf size={18} />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold text-[#2D3A1B] text-[12px]">No Added</span>
+                  <span className="font-bold text-[#593102] text-[12px]">No Added</span>
                   <span className="text-[#8D7F73] text-[10px]">Sugar</span>
                 </div>
               </div>
@@ -97,7 +97,7 @@ export default function Hero() {
                   <Image src="/pinhead_honeycomb.png" alt="Raw" width={24} height={24} className="object-contain" />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold text-[#2D3A1B] text-[12px]">Raw &</span>
+                  <span className="font-bold text-[#593102] text-[12px]">Raw &</span>
                   <span className="text-[#8D7F73] text-[10px]">Unfiltered</span>
                 </div>
               </div>
@@ -107,7 +107,7 @@ export default function Hero() {
                 <div className="text-[#D49313] text-sm">★</div>
                 <div className="flex flex-col leading-tight">
                   <div className="flex items-center gap-1">
-                    <span className="font-bold text-[#2D3A1B] text-[12px]">4.9</span>
+                    <span className="font-bold text-[#593102] text-[12px]">4.9</span>
                     <span className="text-[#D49313] text-[9px]">★</span>
                   </div>
                   <span className="text-[#8D7F73] text-[10px]">Rating</span>
@@ -133,13 +133,13 @@ export default function Hero() {
               <span>Unprocessed</span>
             </div>
 
-            <h1 className="mt-6 text-[62px] leading-[1.12] font-serif text-[#2D3A1B] tracking-tight font-normal">
+            <h1 className="mt-6 text-[62px] leading-[1.12] font-serif text-[#593102] tracking-tight font-normal">
               Nature&apos;s Purity.
               <br />
               Delivered <span className="text-[#D49313]">Honestly.</span>
             </h1>
 
-            <p className="mt-6 text-[18px] font-semibold text-[#2D3A1B]">
+            <p className="mt-6 text-[18px] font-semibold text-[#593102]">
               Raw Natural, Unfiltered
             </p>
 
@@ -147,36 +147,36 @@ export default function Hero() {
               Experience the true goodness of honey, just as nature intended.
             </p>
 
-            <div className="grid grid-cols-4 gap-x-8 mt-16 w-full max-w-[480px]">
-              <div className="flex flex-col items-start gap-2">
-                <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 text-[11px] font-bold">
+            <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-14 w-full max-w-[540px]">
+              <div className="flex flex-col items-center text-center gap-2.5">
+                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
                   100%
                 </div>
-                <span className="text-[#2D3A1B] text-[12px] leading-tight">
+                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
                   100% Pure<br />& Raw
                 </span>
               </div>
-              <div className="flex flex-col items-start gap-2">
-                <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 text-[11px] font-bold">
+              <div className="flex flex-col items-center text-center gap-2.5">
+                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
                   LAB
                 </div>
-                <span className="text-[#2D3A1B] text-[12px] leading-tight">
+                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
                   Lab Tested<br />For Purity
                 </span>
               </div>
-              <div className="flex flex-col items-start gap-2">
-                <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 text-[11px] font-bold">
+              <div className="flex flex-col items-center text-center gap-2.5">
+                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
                   NO
                 </div>
-                <span className="text-[#2D3A1B] text-[12px] leading-tight">
+                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
                   No Added Sugar<br />Or Preservatives
                 </span>
               </div>
-              <div className="flex flex-col items-start gap-2">
-                <div className="w-12 h-12 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#2D3A1B] bg-white/40 text-[11px] font-bold">
+              <div className="flex flex-col items-center text-center gap-2.5">
+                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
                   SEC
                 </div>
-                <span className="text-[#2D3A1B] text-[12px] leading-tight">
+                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
                   Secure & Sustainable<br />Packaging
                 </span>
               </div>
@@ -214,7 +214,7 @@ export default function Hero() {
                     <TbLeaf size={24} className="stroke-[1.5]" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[#2D3A1B] text-[14px] leading-tight">No Added</span>
+                    <span className="font-semibold text-[#593102] text-[14px] leading-tight">No Added</span>
                     <span className="text-[#8D7F73] text-[12px]">Sugar</span>
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export default function Hero() {
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[#2D3A1B] text-[14px] leading-tight">Raw &</span>
+                    <span className="font-semibold text-[#593102] text-[14px] leading-tight">Raw &</span>
                     <span className="text-[#8D7F73] text-[12px]">Unfiltered</span>
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export default function Hero() {
                   <div className="text-[#D49313] text-lg">★</div>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1">
-                      <span className="font-semibold text-[#2D3A1B] text-[14px] leading-none">4.9</span>
+                      <span className="font-semibold text-[#593102] text-[14px] leading-none">4.9</span>
                       <span className="text-[#D49313] text-[10px]">★</span>
                     </div>
                     <span className="text-[#8D7F73] text-[12px] mt-0.5">Rating</span>

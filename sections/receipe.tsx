@@ -179,7 +179,7 @@ export default function RecipesPage() {
               <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
                 Recipes &amp; Wellness
               </span>
-              <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
+              <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
                 Healthy Ideas with Honey
               </h1>
             </div>
@@ -217,7 +217,7 @@ export default function RecipesPage() {
               <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
                 Recipes &amp; Wellness
               </span>
-              <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
+              <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
                 Healthy Ideas with Honey
               </h1>
             </div>
@@ -250,7 +250,7 @@ export default function RecipesPage() {
             <span className="text-[#D49313] text-[12px] sm:text-[13px] font-semibold tracking-[0.15em] uppercase">
               Recipes &amp; Wellness
             </span>
-            <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#2D3A1B] leading-tight">
+            <h1 className="mt-2 text-[28px] sm:text-[34px] md:text-[40px] font-serif text-[#593102] leading-tight">
               Healthy Ideas with Honey
             </h1>
             {/* Dynamic Category Name */}
@@ -303,7 +303,7 @@ export default function RecipesPage() {
 
                   {/* Content */}
                   <div className="p-5 flex flex-col flex-1 min-h-0">
-                    <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#2D3A1B] leading-tight flex-shrink-0 line-clamp-2">
+                    <h3 className="font-semibold text-[16px] sm:text-[17px] text-[#593102] leading-tight flex-shrink-0 line-clamp-2">
                       {recipe.title}
                     </h3>
 
@@ -321,7 +321,7 @@ export default function RecipesPage() {
                         onClick={() =>
                           setExpandedId(isExpanded ? null : recipe._id)
                         }
-                        className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#2D3A1B] hover:text-[#D49313] transition-colors flex-shrink-0"
+                        className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[13px] font-semibold tracking-[0.1em] uppercase text-[#593102] hover:text-[#D49313] transition-colors flex-shrink-0"
                       >
                         {isExpanded ? "Show Less" : "Read More"}
                         <FiChevronRight
@@ -355,7 +355,7 @@ export default function RecipesPage() {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B] leading-tight">
+                  <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102] leading-tight">
                     {feature.title}
                   </span>
                   <span className="text-[#8D7F73] text-[12px] sm:text-[13px] mt-0.5">
@@ -373,12 +373,12 @@ export default function RecipesPage() {
         <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
           {/* Heading */}
           <div className="text-center">
-            <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#2D3A1B]">
+            <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#593102]">
               FAQs
             </h2>
             <div className="flex items-center justify-center gap-3 mt-4">
-              <div className="w-12 md:w-16 h-px bg-[#2D3A1B]" />
-              <span className="text-[#2D3A1B]">✦</span>
+              <div className="w-12 md:w-16 h-px bg-[#593102]" />
+              <span className="text-[#593102]">✦</span>
               <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
             </div>
           </div>
@@ -428,7 +428,7 @@ function FaqItem({ faq }: { faq: Faq }) {
         onClick={() => setOpen((prev) => !prev)}
         className="w-full flex items-center justify-between gap-4 text-left"
       >
-        <span className="font-semibold text-[14px] sm:text-[15px] text-[#2D3A1B]">
+        <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102]">
           {faq.question}
         </span>
         <FiChevronDown

@@ -65,7 +65,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
       {/* Profile Card */}
       <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
         <div className="flex flex-col items-center text-center gap-2">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
             {initials}
           </div>
           <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -77,7 +77,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
           <Link
             href="/account/editprofile"
             onClick={handleClick}
-            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline"
           >
             <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
             Edit profile
@@ -95,7 +95,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                 key={link.label}
                 href={link.href}
                 onClick={handleClick}
-                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
+                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors"
               >
                 <Icon size={18} className="shrink-0" />
                 <span>{link.label}</span>
@@ -363,7 +363,7 @@ export default function EditProfilePage() {
       >
         <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#593102]">
               {initials}
             </div>
             <div>
@@ -375,7 +375,7 @@ export default function EditProfilePage() {
           </div>
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+            className="flex h-10 items-center gap-2 rounded-xl bg-[#593102] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
           >
             <Menu size={16} />
             Menu
@@ -447,7 +447,7 @@ export default function EditProfilePage() {
             {/* Form Card */}
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 sm:p-6 md:p-8 shadow-sm">
               {loading ? (
-                <div className="flex h-64 items-center justify-center text-[#2D3A1B]">
+                <div className="flex h-64 items-center justify-center text-[#593102]">
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               ) : (
@@ -515,7 +515,7 @@ export default function EditProfilePage() {
                           value={formData.email}
                           onChange={handleChange}
                           placeholder="Enter email address"
-                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                         />
                       </div>
 
@@ -530,7 +530,7 @@ export default function EditProfilePage() {
                             value={formData.DOB}
                             onChange={handleChange}
                             placeholder="DD/MM/YYYY"
-                            className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                            className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 pr-9 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                           />
                           <CalendarDays
                             size={16}
@@ -547,7 +547,7 @@ export default function EditProfilePage() {
                           name="gender"
                           value={formData.gender}
                           onChange={handleChange}
-                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                          className="mt-1.5 h-11 w-full rounded-lg border border-[#F0E2CC] bg-white px-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                         >
                           <option value="" disabled>
                             Select Gender
@@ -565,7 +565,7 @@ export default function EditProfilePage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex h-11 flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg bg-[#2D3A1B] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition disabled:opacity-60"
+                      className="flex h-11 flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg bg-[#593102] px-6 text-sm font-bold text-white hover:bg-[#C98715] transition disabled:opacity-60"
                     >
                       {saving && <Loader2 size={16} className="animate-spin" />}
                       Save Changes

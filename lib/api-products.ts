@@ -127,12 +127,33 @@ export function normalizeProduct(
   const price = Number(selectedVariant.price ?? product?.price ?? 0);
   const oldPrice = Number(selectedVariant.mrp ?? product?.mrp ?? price);
 
+  const tasteProfile =
+    product?.taste_profile ||
+    product?.taste ||
+    product?.floral_source ||
+    product?.flavor ||
+    "";
+
+  const shortDescription =
+    product?.short_description ||
+    product?.description ||
+    product?.benefits ||
+    product?.subtitle ||
+    "";
+
+  const badge =
+    oldPrice > price
+      ? "Sale"
+      : product?.badge || getCategoryName(product) || "Sale";
+
   return {
     id: getProductId(product),
-    badge: getCategoryName(product),
+    badge,
     image: getPrimaryImage(product),
     title: getProductName(product),
     subtitle: getCategoryName(product),
+    tasteProfile,
+    shortDescription,
     weight: getVariantLabel(selectedVariant),
     price,
     oldPrice,

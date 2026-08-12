@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -41,6 +41,7 @@ const defaultFilters: ProductFilters = {
 export default function ShopPage() {
   const { updateQuantity } = useCart();
   const router = useRouter();
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const [allProducts, setAllProducts] = useState<ApiProduct[]>([]);
   const [products, setProducts] = useState<ApiProduct[]>([]);
@@ -210,6 +211,16 @@ export default function ShopPage() {
       setProducts(list);
       setAppliedFilters(nextAppliedFilters);
       setIsFilterOpen(false);
+
+      // If user applied a specific filter (e.g. category, search, weight), open the product detail page directly
+      if (list && list.length > 0 && (selectedCategorySlug || query || selectedWeights.length > 0)) {
+        const targetProduct = list[0];
+        const targetId = getProductId(targetProduct);
+        if (targetId) {
+          router.push(`/shop/products/${targetId}`);
+          return;
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch filtered products");
     } finally {
@@ -315,7 +326,7 @@ export default function ShopPage() {
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white">
-        <Loader2 className="h-10 w-10 animate-spin text-[#2D3A1B]" />
+        <Loader2 className="h-10 w-10 animate-spin text-[#593102]" />
       </main>
     );
   }
@@ -324,7 +335,7 @@ export default function ShopPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-white text-center">
         <p className="text-red-600">Error: {error}</p>
-        <button onClick={fetchProducts} className="rounded bg-[#2D3A1B] px-5 py-2 text-white">
+        <button onClick={fetchProducts} className="rounded bg-[#593102] px-5 py-2 text-white">
           Try Again
         </button>
       </main>
@@ -335,7 +346,7 @@ export default function ShopPage() {
     categoryOptions.find((category) => category.slug === appliedFilters.categorySlug)?.name || "All Honeys";
 
   const promoBannerComponent = (
-    <div className="mt-6 overflow-hidden rounded-[14px] bg-[#1F3A2A] px-5 pb-5 pt-6 text-center text-white">
+    <div className="mt-6 overflow-hidden rounded-[14px] bg-[#593102] px-5 pb-5 pt-6 text-center text-white">
       <h3 className="font-serif text-[22px] font-medium leading-tight">
         Pure Honey.
         <br />
@@ -353,13 +364,13 @@ export default function ShopPage() {
   const filterContent = (
     <div className="rounded-lg bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between lg:hidden pb-4 mb-2 border-b border-[#F0E4D0]">
-        <h2 className="font-['Playfair_Display'] text-[18px] font-bold text-[#2D3A1B]">Filters</h2>
+        <h2 className="font-['Playfair_Display'] text-[18px] font-bold text-[#593102]">Filters</h2>
         <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black">
           <X size={20} />
         </button>
       </div>
 
-      <h2 className="hidden lg:block font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#2D3A1B]">
+      <h2 className="hidden lg:block font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#593102]">
         Filter By
       </h2>
 
@@ -370,7 +381,7 @@ export default function ShopPage() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search Honey"
-            className="h-10 w-full rounded border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#2D3A1B]"
+            className="h-10 w-full rounded border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#593102]"
           />
         </div>
       </FilterSection>
@@ -381,7 +392,7 @@ export default function ShopPage() {
             type="radio"
             checked={!selectedCategorySlug}
             onChange={() => setSelectedCategorySlug("")}
-            className="h-4 w-4 accent-[#2D3A1B]"
+            className="h-4 w-4 accent-[#593102]"
           />
           All Honeys ({allProducts.length})
         </label>
@@ -391,7 +402,7 @@ export default function ShopPage() {
               type="radio"
               checked={selectedCategorySlug === category.slug}
               onChange={() => setSelectedCategorySlug(category.slug)}
-              className="h-4 w-4 accent-[#2D3A1B]"
+              className="h-4 w-4 accent-[#593102]"
             />
             {category.name}
           </label>
@@ -405,7 +416,7 @@ export default function ShopPage() {
               type="checkbox"
               checked={selectedWeights.includes(weight)}
               onChange={() => toggleWeight(weight)}
-              className="h-4 w-4 accent-[#2D3A1B]"
+              className="h-4 w-4 accent-[#593102]"
             />
             {weight}
           </label>
@@ -423,7 +434,7 @@ export default function ShopPage() {
           max={MAX_PRICE}
           value={priceRange}
           onChange={(event) => setPriceRange(Number(event.target.value))}
-          className="mt-2 w-full accent-[#2D3A1B]"
+          className="mt-2 w-full accent-[#593102]"
         />
       </FilterSection>
 
@@ -431,7 +442,7 @@ export default function ShopPage() {
         type="button"
         onClick={applyFilters}
         disabled={filterLoading}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded bg-[#593102] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#C98715] disabled:opacity-60 cursor-pointer"
       >
         {filterLoading && <Loader2 size={15} className="animate-spin" />}
         Apply Filter
@@ -444,74 +455,42 @@ export default function ShopPage() {
     </div>
   );
 
+  const scrollLeft = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: -340, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: 340, behavior: "smooth" });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
       <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-20 sm:px-6 lg:px-8">
         
-        {/* Mobile Filter Button + Results Count */}
-        <div className="lg:hidden mb-2 flex items-center justify-between">
-          <button
-            onClick={() => setIsFilterOpen(true)}
-            className="flex items-center gap-2 rounded-md border border-[#2D3A1B] px-4 py-2 text-[13px] font-semibold text-[#2D3A1B] bg-white shadow-sm"
-          >
-            <SlidersHorizontal size={16} />
-            Filter Products
-          </button>
-          <span className="text-[13px] text-[#A6ADB8]">
-            {filteredProducts.length} Results
-          </span>
+        {/* Page Heading (Centered & Refined) */}
+        <div className="mb-10 text-center mx-auto max-w-[760px] px-4">
+          <h1 className="font-['Playfair_Display'] text-[34px] sm:text-[44px] font-normal leading-tight text-[#593102]">
+            Discover Pure Honey Collections
+          </h1>
+          <p className="mt-2 text-[15px] sm:text-[16px] text-[#697386]">
+            Ethically harvested, 100% raw and unprocessed honey straight from natural hives.
+          </p>
         </div>
 
-        {/* Mobile Filter Drawer */}
-        {isFilterOpen && (
-          <div className="fixed inset-0 z-50 flex lg:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setIsFilterOpen(false)} />
-            <div className="relative ml-auto h-full w-[300px] max-w-full overflow-y-auto bg-white p-4 shadow-xl z-10">
-              {filterContent}
-            </div>
-          </div>
-        )}
+        {/* Full-width Products Carousel / Grid Section */}
+        <section className="w-full">
+          {error && <p className="mb-4 text-[13px] text-red-600">{error}</p>}
 
-        <div className="grid h-full gap-4 lg:grid-cols-[280px_1fr]">
-          <aside className="hidden lg:block sticky top-20 self-start">
-            {filterContent}
-            {promoBannerComponent}
-          </aside>
-
-          {/* Main Products Section - Scrollbar hidden */}
-          <section className="h-[calc(100vh--490px)] overflow-y-auto pr-2 no-scrollbar">
-            {/* 🔥 HEADING - Minimized gap */}
-            <div className="sticky top-0 z-20 bg-white pb-1 flex flex-wrap items-end justify-between gap-2">
-              <div>
-                <h1 className="font-['Playfair_Display'] text-[28px] font-normal leading-[34px] tracking-normal text-[#1E392A]">
-                  {activeCategoryName}
-                </h1>
-                <p className="mt-0.5 text-[13px] text-[#697386]">
-                  Explore our range of natural honey variants.
-                </p>
-              </div>
-            </div>
-
-            {/* Filter Chips - Minimized gap */}
-            <div className="sticky top-[58px] z-20 bg-white py-2 mt-0 flex flex-wrap items-center gap-1.5">
-              <Chip label={activeCategoryName} />
-              {appliedFilters.search && <Chip label={`Search: ${appliedFilters.search}`} />}
-              {appliedFilters.weights.map((weight) => (
-                <Chip key={weight} label={weight} />
-              ))}
-              {appliedFilters.price < MAX_PRICE && <Chip label={`Rs. ${appliedFilters.price}`} />}
-              {(appliedFilters.categorySlug || appliedFilters.weights.length > 0 || appliedFilters.price < MAX_PRICE || appliedFilters.search) && (
-                <button type="button" onClick={clearFilters} className="text-[12px] font-medium text-[#697386] underline hover:text-[#2D3A1B]">
-                  Clear all
-                </button>
-              )}
-            </div>
-
-            {error && <p className="mt-2 text-[13px] text-red-600">{error}</p>}
-
-            {/* 🟢 Products Grid - Minimal gap */}
-            <div className="mt-1 grid grid-cols-2 gap-2 sm:gap-3 lg:gap-3 items-stretch lg:grid-cols-3">
+          {/* 🟢 Products Slider (4 Cards per view + Smooth Scroll) */}
+          <div
+            ref={sliderRef}
+            className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-6 pb-4 px-1 scroll-smooth"
+          >
               {filteredProducts.map((item) => {
                 const productId = getProductId(item);
                 const variants = getProductVariants(item);
@@ -519,32 +498,33 @@ export default function ShopPage() {
                 const product = normalizeProduct(item, selectedVariantId);
 
                 return (
-                  <div key={productId} className="flex flex-col h-full transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg">
-                    <div className="flex flex-col h-full w-full [&>div]:h-full [&>div]:flex [&>div]:flex-col [&>div]:justify-between">
-                      <ProductCardShop
-                        badge={product.badge}
-                        image={product.image}
-                        title={product.title}
-                        subtitle={product.subtitle}
-                        weight={product.weight}
-                        price={product.price}
-                        oldPrice={product.oldPrice}
-                        rating={product.rating}
-                        reviews={product.reviews}
-                        quantity={0}
-                        variants={variants}
-                        selectedVariantId={selectedVariantId}
-                        onVariantSelect={(variantId) =>
-                          setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
-                        }
-                        isWishlisted={wishlistIds.includes(productId)}
-                        onToggleWishlist={() => handleToggleWishlist(productId)}
-                        onAddToCart={() => handleAddToCart(item)}
-                        onIncrement={() => {}}
-                        onDecrement={() => {}}
-                        onOpenDetails={() => router.push(`/shop/products/${productId}`)}
-                      />
-                    </div>
+                  <div key={productId} className="w-full min-w-[280px] sm:min-w-[300px] lg:min-w-0 snap-center flex-shrink-0 flex flex-col h-full">
+                    <ProductCardShop
+                      badge={product.badge}
+                      image={product.image}
+                      title={product.title}
+                      subtitle={product.subtitle}
+                      category={product.category}
+                      tasteProfile={product.tasteProfile}
+                      shortDescription={product.shortDescription}
+                      weight={product.weight}
+                      price={product.price}
+                      oldPrice={product.oldPrice}
+                      rating={product.rating}
+                      reviews={product.reviews}
+                      quantity={0}
+                      variants={variants}
+                      selectedVariantId={selectedVariantId}
+                      onVariantSelect={(variantId) =>
+                        setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
+                      }
+                      isWishlisted={wishlistIds.includes(productId)}
+                      onToggleWishlist={() => handleToggleWishlist(productId)}
+                      onAddToCart={() => handleAddToCart(item)}
+                      onIncrement={() => {}}
+                      onDecrement={() => {}}
+                      onOpenDetails={() => router.push(`/shop/products/${productId}`)}
+                    />
                   </div>
                 );
               })}
@@ -552,19 +532,18 @@ export default function ShopPage() {
 
             {filteredProducts.length === 0 && (
               <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-[#697386]">
-                <ShoppingCart size={32} className="text-[#2D3A1B]" />
+                <ShoppingCart size={32} className="text-[#593102]" />
                 <p>No honey matches your filters right now.</p>
-                <button type="button" onClick={clearFilters} className="text-[13px] font-semibold text-[#2D3A1B] underline">
+                <button type="button" onClick={clearFilters} className="text-[13px] font-semibold text-[#593102] underline cursor-pointer">
                   Clear filters
                 </button>
               </div>
             )}
           </section>
-        </div>
       </div>
 
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#2D3A1B] px-6 py-3 text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#593102] px-6 py-3 text-white shadow-lg">
           {toastMessage}
         </div>
       )}
@@ -607,7 +586,7 @@ function FilterSection({
 
 function Chip({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF3E4] px-2.5 py-0.5 text-[11px] font-medium text-[#1E392A]">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF3E4] px-2.5 py-0.5 text-[11px] font-medium text-[#593102]">
       {label}
     </span>
   );

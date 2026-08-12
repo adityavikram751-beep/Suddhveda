@@ -274,7 +274,7 @@ function LoginForm() {
                     setError("");
                     setMessage("");
                   }}
-                  className="mx-auto mt-5 flex items-center gap-2 text-sm font-bold text-[#2D3A1B] hover:underline"
+                  className="mx-auto mt-5 flex items-center gap-2 text-sm font-bold text-[#593102] hover:underline"
                 >
                   <ArrowLeft size={16} />
                   Change mobile number

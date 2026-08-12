@@ -215,7 +215,7 @@
 //   }
 
 //   return (
-//     <section className="relative overflow-hidden bg-[#FFFCF8] py-16 text-[#2D3A1B]">
+//     <section className="relative overflow-hidden bg-[#FFFCF8] py-16 text-[#593102]">
 //       <Image
 //         src="/contact.png"
 //         alt=""
@@ -236,7 +236,7 @@
 //           <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#A77710]">
 //             MAKE IT PERSONAL
 //           </p>
-//           <h2 className="mt-1 flex items-center justify-center gap-3 font-serif text-[32px] md:text-[42px] text-[#2D3A1B]">
+//           <h2 className="mt-1 flex items-center justify-center gap-3 font-serif text-[32px] md:text-[42px] text-[#593102]">
 //             <span>Build Your Own Gift Box</span>
 //             <Image src="/customer2.png" alt="" width={28} height={28} />
 //           </h2>
@@ -289,7 +289,7 @@
 //                           <Gift className="h-8 w-8 text-[#B9791A]" />
 //                         )}
 //                       </div>
-//                       <span className="mt-2.5 text-center text-[11px] font-bold tracking-wide uppercase text-[#2D3A1B]">
+//                       <span className="mt-2.5 text-center text-[11px] font-bold tracking-wide uppercase text-[#593102]">
 //                         {name}
 //                       </span>
 //                       <span className="text-[10px] text-[#8C8073]">
@@ -425,7 +425,7 @@
 //           {/* RIGHT COLUMN — PREVIEW & SUMMARY */}
 //           <div className="sticky top-10">
 //             <div className="rounded-2xl border border-[#F0E6D8] bg-white p-6 shadow-lg">
-//               <h3 className="flex items-center gap-2 font-serif text-[20px] text-[#2D3A1B] pb-3 border-b border-[#F0E6D8]">
+//               <h3 className="flex items-center gap-2 font-serif text-[20px] text-[#593102] pb-3 border-b border-[#F0E6D8]">
 //                 <ShoppingBag size={20} className="text-[#B9791A]" />
 //                 Preview Your Gift
 //               </h3>
@@ -435,7 +435,7 @@
 //                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C8073]">
 //                     BOX SIZE
 //                   </p>
-//                   <p className="font-semibold text-[#2D3A1B]">
+//                   <p className="font-semibold text-[#593102]">
 //                     {currentBox?.title || currentBox?.box_name || "Custom Box"} ({maxCapacity} Jars)
 //                   </p>
 //                 </div>
@@ -456,7 +456,7 @@
 //                         const price = variant?.price ?? p.price ?? 0;
 
 //                         return (
-//                           <div key={p._id} className="flex justify-between text-[#2D3A1B]">
+//                           <div key={p._id} className="flex justify-between text-[#593102]">
 //                             <span className="truncate pr-2">
 //                               • {p.product_name || p.title} {weightStr ? `(${weightStr})` : ""}
 //                             </span>
@@ -473,7 +473,7 @@
 //                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C8073]">
 //                     TOTAL WEIGHT
 //                   </p>
-//                   <p className="font-medium text-[#2D3A1B]">
+//                   <p className="font-medium text-[#593102]">
 //                     {selectedProducts.reduce((sum, p) => {
 //                       const variants = p.variantDocumentId || p.variants || [];
 //                       const selectedVariantId = selectedWeightMap[p._id];
@@ -488,7 +488,7 @@
 //                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C8073]">
 //                     GREETING CARD
 //                   </p>
-//                   <p className="font-medium text-[#2D3A1B]">
+//                   <p className="font-medium text-[#593102]">
 //                     {selectedCardMessage === "Custom Note" ? customNote || "Custom Note" : selectedCardMessage}
 //                   </p>
 //                 </div>
@@ -511,12 +511,12 @@
 
 //               <div className="flex items-center justify-between rounded-xl bg-[#FFF8EF] p-4">
 //                 <div>
-//                   <p className="text-[11px] font-bold uppercase tracking-wider text-[#2D3A1B]">
+//                   <p className="text-[11px] font-bold uppercase tracking-wider text-[#593102]">
 //                     TOTAL PRICE
 //                   </p>
 //                   <p className="text-[10px] text-[#8C8073]">(Inclusive of all taxes)</p>
 //                 </div>
-//                 <p className="text-[22px] font-extrabold text-[#2D3A1B]">
+//                 <p className="text-[22px] font-extrabold text-[#593102]">
 //                   ₹{totalPrice.toLocaleString("en-IN")}
 //                 </p>
 //               </div>
@@ -577,7 +577,7 @@
 //               PREMIUM BY NATURE
 //             </p>
 
-//             <h2 className="mt-2 font-serif text-[42px] leading-[1.1] text-[#14361E] md:text-[52px]">
+//             <h2 className="mt-2 font-serif text-[42px] leading-[1.1] text-[#593102] md:text-[52px]">
 //               Every Gift is Packed with Love
 //             </h2>
 
@@ -619,10 +619,10 @@
 // function StepHeading({ number, title }: { number: number; title: string }) {
 //   return (
 //     <div className="flex items-center gap-3">
-//       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1F2B1B] text-[12px] font-bold text-white">
+//       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#593102] text-[12px] font-bold text-white">
 //         {number}
 //       </span>
-//       <h3 className="font-serif text-[18px] text-[#2D3A1B]">{title}</h3>
+//       <h3 className="font-serif text-[18px] text-[#593102]">{title}</h3>
 //     </div>
 //   );
 // }
@@ -640,7 +640,7 @@
 //     <div className="flex items-start gap-3">
 //       <span className="mt-0.5 shrink-0 text-[#B9791A]">{icon}</span>
 //       <div>
-//         <p className="text-[14px] font-bold leading-tight text-[#2D3A1B]">
+//         <p className="text-[14px] font-bold leading-tight text-[#593102]">
 //           {title}
 //         </p>
 //         <p className="mt-1 text-[12px] leading-snug text-[#6F665F]">

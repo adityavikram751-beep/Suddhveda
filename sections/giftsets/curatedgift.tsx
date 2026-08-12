@@ -248,10 +248,10 @@ export default function FeaturedCollection() {
 <div className="mx-auto max-w-[1400px] px-4 lg:px-6">
           <div className="mb-10 flex items-end justify-between">
           <div>
-            <p className="text-[13px] font-semibold tracking-[0.15em] text-[#2D3A1B]">
+            <p className="text-[13px] font-semibold tracking-[0.15em] text-[#593102]">
               OUR FEATURED COLLECTION
             </p>
-            <h2 className="mt-2 font-serif text-[30px] text-[#1E392A] md:text-[36px]">
+            <h2 className="mt-2 font-serif text-[30px] text-[#593102] md:text-[36px]">
               Thoughtfully Curated Honey Picks
             </h2>
           </div>
@@ -265,7 +265,7 @@ export default function FeaturedCollection() {
               onClick={() => scroll("left")}
               className="absolute left-0 top-1/2 z-10 hidden lg:flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             >
-              <ChevronLeft size={24} className="text-[#2D3A1B]" />
+              <ChevronLeft size={24} className="text-[#593102]" />
             </button>
           )}
 
@@ -275,12 +275,12 @@ export default function FeaturedCollection() {
               onClick={() => scroll("right")}
               className="absolute right-0 top-1/2 z-10 hidden lg:flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#E6D2B8]/30 bg-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
             >
-              <ChevronRight size={24} className="text-[#2D3A1B]" />
+              <ChevronRight size={24} className="text-[#593102]" />
             </button>
           )} */}
 
           {loading ? (
-            <div className="flex min-h-[360px] items-center justify-center text-[#2D3A1B]">
+            <div className="flex min-h-[360px] items-center justify-center text-[#593102]">
               <Loader2 className="h-9 w-9 animate-spin" />
             </div>
           ) : (
@@ -310,20 +310,20 @@ export default function FeaturedCollection() {
   fill
   className="object-contain p-3"
 />
-                      <span className="absolute left-2 top-2 sm:left-3 sm:top-3 rounded bg-[#0E2A17] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
+                      <span className="absolute left-2 top-2 sm:left-3 sm:top-3 rounded bg-[#593102] px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase text-white">
                         {getCategoryName(product)}
                       </span>
                     </div>
 
                     <div className="pt-3 text-center">
-                      <h3 className="font-serif text-[15px] sm:text-[18px] leading-tight text-[#003327] line-clamp-1">
+                      <h3 className="font-serif text-[15px] sm:text-[18px] leading-tight text-[#593102] line-clamp-1">
                         {getProductName(product)}
                       </h3>
                       <p className="mt-1 text-[12px] sm:text-[13px] text-[#8F979C]">
                         {getCategoryName(product)}
                       </p>
 
-                      <div className="mt-2 text-[15px] sm:text-[17px] font-bold text-[#003327]">
+                      <div className="mt-2 text-[15px] sm:text-[17px] font-bold text-[#593102]">
                         Rs. {selectedVariant?.price ?? normalized.price}
                         {selectedVariant?.mrp ? (
                           <>
@@ -348,8 +348,8 @@ export default function FeaturedCollection() {
                                 }}
                                 className={`min-w-[46px] sm:min-w-[54px] rounded border px-2 sm:px-3 py-1 text-[10px] sm:text-[11px] transition-colors ${
                                   selected
-                                    ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
-                                    : "border-[#E2E6EA] bg-white text-[#2F3A45] hover:border-[#2D3A1B]"
+                                    ? "border-[#593102] bg-[#593102] text-white"
+                                    : "border-[#E2E6EA] bg-white text-[#2F3A45] hover:border-[#593102]"
                                 }`}
                               >
                                 {getVariantLabel(variant)}
@@ -367,7 +367,7 @@ export default function FeaturedCollection() {
                             event.stopPropagation();
                             handleAddToCart(product);
                           }}
-                          className="h-[38px] sm:h-[42px] flex-1 rounded bg-[#2D3A1B] text-[11px] sm:text-[13px] font-bold uppercase text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
+                          className="h-[38px] sm:h-[42px] flex-1 rounded bg-[#593102] text-[11px] sm:text-[13px] font-bold uppercase text-white transition-colors hover:bg-[#C98715] disabled:opacity-60"
                         >
                           {actionLoading === productId ? "Adding..." : "Add to Cart"}
                         </button>
@@ -379,7 +379,7 @@ export default function FeaturedCollection() {
                             handleToggleWishlist(productId);
                           }}
                           aria-label="Wishlist"
-                          className="flex h-[38px] w-[38px] sm:h-[42px] sm:w-[42px] items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] transition-colors hover:bg-[#2D3A1B]/10 shrink-0"
+                          className="flex h-[38px] w-[38px] sm:h-[42px] sm:w-[42px] items-center justify-center rounded border border-[#593102] text-[#593102] transition-colors hover:bg-[#593102]/10 shrink-0"
                         >
                           <Heart
                             size={18}
@@ -401,7 +401,7 @@ export default function FeaturedCollection() {
       </div>
 
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#2D3A1B] px-6 py-3 text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#593102] px-6 py-3 text-white shadow-lg">
           {toastMessage}
         </div>
       )}

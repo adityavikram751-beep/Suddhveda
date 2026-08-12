@@ -62,7 +62,7 @@ export default function FaqSection() {
         onClick={() => toggle(index)}
       >
         <div className="flex items-center justify-between gap-4">
-          <h3 className="text-[15px] sm:text-[16px] font-semibold text-[#2D3A1B]">
+          <h3 className="text-[15px] sm:text-[16px] font-semibold text-[#593102]">
             {faq.question}
           </h3>
           <FiChevronDown
@@ -96,7 +96,7 @@ export default function FaqSection() {
           <p className="text-[#D49313] tracking-[2px] text-[13px] font-medium uppercase">
             Faqs
           </p>
-          <h2 className="font-serif text-[#2D3A1B] text-[28px] sm:text-[34px] mt-2">
+          <h2 className="font-serif text-[#593102] text-[28px] sm:text-[34px] mt-2">
             Quick Answers for You
           </h2>
           <div className="w-14 h-[2px] bg-[#D49313] mx-auto mt-3" />

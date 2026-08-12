@@ -110,7 +110,7 @@ export default function ProductListing({
                   setPriceMax(2000);
                   setSelectedRatings([]);
                 }}
-                className="text-[12px] font-semibold text-[#2D3A1B] hover:underline"
+                className="text-[12px] font-semibold text-[#593102] hover:underline"
               >
                 Clear All
               </button>
@@ -131,7 +131,7 @@ export default function ProductListing({
                     type="checkbox"
                     checked={selectedCategory === category}
                     onChange={() => setSelectedCategory(category)}
-                    className="h-4 w-4 accent-[#2D3A1B]"
+                    className="h-4 w-4 accent-[#593102]"
                   />
                   {category}
                   <span className="text-[11px] text-[#9F8266]">
@@ -154,7 +154,7 @@ export default function ProductListing({
                 step="50"
                 value={priceMax}
                 onChange={(e) => setPriceMax(Number(e.target.value))}
-                className="w-full accent-[#2D3A1B]"
+                className="w-full accent-[#593102]"
               />
               <div className="mt-2 flex justify-between text-[12px] font-semibold">
                 <span>₹0</span>
@@ -177,7 +177,7 @@ export default function ProductListing({
                     type="checkbox"
                     checked={selectedRatings.includes(label)}
                     onChange={() => toggleRating(label)}
-                    className="h-4 w-4 accent-[#2D3A1B]"
+                    className="h-4 w-4 accent-[#593102]"
                   />
                   {label}
                 </label>
@@ -195,7 +195,7 @@ export default function ProductListing({
                   key={label}
                   className="flex items-center gap-3 text-[14px] text-[#6B4A31]"
                 >
-                  <input type="checkbox" className="h-4 w-4 accent-[#2D3A1B]" />
+                  <input type="checkbox" className="h-4 w-4 accent-[#593102]" />
                   {label}
                 </label>
               ))}
@@ -208,14 +208,14 @@ export default function ProductListing({
               onToggle={() => toggleFilterBlock("availability")}
             >
               <label className="flex items-center gap-3 text-[14px] text-[#6B4A31]">
-                <input type="checkbox" className="h-4 w-4 accent-[#2D3A1B]" />
+                <input type="checkbox" className="h-4 w-4 accent-[#593102]" />
                 Include out of stock (18)
               </label>
             </FilterBlock>
 
             <button
               type="button"
-              className="w-full rounded bg-[#2D3A1B] py-4 text-[14px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#C98715]"
+              className="w-full rounded bg-[#593102] py-4 text-[14px] font-bold uppercase tracking-[0.08em] text-white hover:bg-[#C98715]"
             >
               Apply
             </button>
@@ -226,11 +226,11 @@ export default function ProductListing({
         <section>
           {/* Breadcrumb */}
           <div className="mb-5 flex items-center gap-2 text-[13px] text-[#8E623A]">
-            <Link href="/" className="hover:text-[#2D3A1B]">Home</Link>
+            <Link href="/" className="hover:text-[#593102]">Home</Link>
             <ChevronRight size={14} />
-            <Link href="/shop" className="hover:text-[#2D3A1B]">Shop</Link>
+            <Link href="/shop" className="hover:text-[#593102]">Shop</Link>
             <ChevronRight size={14} />
-            <span className="font-semibold text-[#2D3A1B]">{selectedCategory}</span>
+            <span className="font-semibold text-[#593102]">{selectedCategory}</span>
           </div>
 
           <h1 className="font-serif text-[42px] font-bold leading-tight text-[#5B260E]">
@@ -245,11 +245,11 @@ export default function ProductListing({
                 placeholder="Search the product here"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-[8px] border border-[#D9B88D] bg-white py-4 pl-12 pr-4 text-[15px] text-[#2D3A1B] outline-none placeholder:text-[#B59A78] focus:ring-2 focus:ring-[#2D3A1B]"
+                className="w-full rounded-[8px] border border-[#D9B88D] bg-white py-4 pl-12 pr-4 text-[15px] text-[#593102] outline-none placeholder:text-[#B59A78] focus:ring-2 focus:ring-[#593102]"
               />
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#B59A78]" />
             </div>
-            <button className="hidden rounded bg-[#2D3A1B] px-12 py-4 text-[14px] font-bold uppercase tracking-[0.14em] text-white hover:bg-[#C98715] sm:block">
+            <button className="hidden rounded bg-[#593102] px-12 py-4 text-[14px] font-bold uppercase tracking-[0.14em] text-white hover:bg-[#C98715] sm:block">
               Search
             </button>
           </div>
@@ -265,8 +265,8 @@ export default function ProductListing({
                   onClick={() => setSelectedCategory(category)}
                   className={`flex items-center gap-2 whitespace-nowrap rounded-[10px] border px-5 py-3 text-[14px] font-semibold transition-all ${
                     selectedCategory === category
-                      ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
-                      : "border-[#D9B88D] bg-white text-[#2D3A1B] hover:border-[#2D3A1B]"
+                      ? "border-[#593102] bg-[#593102] text-white"
+                      : "border-[#D9B88D] bg-white text-[#593102] hover:border-[#593102]"
                   }`}
                 >
                   <Icon size={15} />
@@ -313,15 +313,15 @@ export default function ProductListing({
                 key={page}
                 className={`h-9 w-9 rounded-[10px] border text-[14px] font-semibold ${
                   page === "1"
-                    ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
-                    : "border-[#D9B88D] bg-white text-[#2D3A1B]"
+                    ? "border-[#593102] bg-[#593102] text-white"
+                    : "border-[#D9B88D] bg-white text-[#593102]"
                 }`}
               >
                 {page}
               </button>
             ))}
             <span className="px-1 text-[#8E623A]">...</span>
-            <button className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#D9B88D] bg-white text-[#2D3A1B]">
+            <button className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#D9B88D] bg-white text-[#593102]">
               <ChevronRight size={16} />
             </button>
           </div>

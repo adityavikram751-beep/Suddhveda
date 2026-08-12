@@ -79,7 +79,7 @@ export default function ImpactSection() {
                   border-b-transparent
                   border-l-[14px]
                   sm:border-l-[16px]
-                  border-l-[#2D3A1B]
+                  border-l-[#593102]
                   ml-1
                 "
               />
@@ -94,7 +94,7 @@ export default function ImpactSection() {
               sm:text-[13px]
               font-semibold
               tracking-[0.08em]
-              text-[#2D3A1B]
+              text-[#593102]
               uppercase
               "
             >
@@ -110,7 +110,7 @@ export default function ImpactSection() {
               lg:text-[42px]
               font-serif
               leading-[1.15]
-              text-[#233821]
+              text-[#593102]
               "
             >
               Rooted in Tradition.
@@ -157,9 +157,9 @@ export default function ImpactSection() {
               "
             >
               <div className="flex items-center justify-start gap-3">
-                <FiUser size={22} className="text-[#2D3A1B] shrink-0" />
+                <FiUser size={22} className="text-[#593102] shrink-0" />
                 <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#233821] leading-none">
+                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#593102] leading-none">
                     20,000+
                   </h3>
                   <p className="mt-1 text-[11px] sm:text-[12px] tracking-[0.05em] text-[#8A8A8A] uppercase">
@@ -169,9 +169,9 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center justify-start gap-3">
-                <GiBee size={22} className="text-[#2D3A1B] shrink-0" />
+                <GiBee size={22} className="text-[#593102] shrink-0" />
                 <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#233821] leading-none">
+                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#593102] leading-none">
                     7M+
                   </h3>
                   <p className="mt-1 text-[11px] sm:text-[12px] tracking-[0.05em] text-[#8A8A8A] uppercase">
@@ -181,9 +181,9 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center justify-start gap-3">
-                <FiBox size={22} className="text-[#2D3A1B] shrink-0" />
+                <FiBox size={22} className="text-[#593102] shrink-0" />
                 <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#233821] leading-none">
+                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#593102] leading-none">
                     1,250+
                   </h3>
                   <p className="mt-1 text-[11px] sm:text-[12px] tracking-[0.05em] text-[#8A8A8A] uppercase">
@@ -193,9 +193,9 @@ export default function ImpactSection() {
               </div>
 
               <div className="flex items-center justify-start gap-3">
-                <FiDroplet size={22} className="text-[#2D3A1B] shrink-0" />
+                <FiDroplet size={22} className="text-[#593102] shrink-0" />
                 <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#233821] leading-none">
+                  <h3 className="text-[20px] sm:text-[24px] font-bold text-[#593102] leading-none">
                     99.9%
                   </h3>
                   <p className="mt-1 text-[11px] sm:text-[12px] tracking-[0.05em] text-[#8A8A8A] uppercase">
@@ -212,8 +212,8 @@ export default function ImpactSection() {
               className="
               mt-7
               sm:mt-9
-              bg-[#233821]
-              hover:bg-[#1a2b18]
+              bg-[#593102]
+              hover:bg-[#593102]
               transition-colors
               text-white
               text-[13px]

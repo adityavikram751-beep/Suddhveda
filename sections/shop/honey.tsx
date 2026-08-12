@@ -15,7 +15,7 @@ export default function ShopHero() {
             <div>
               {/* Breadcrumb */}
               <div className="flex items-center gap-2 text-[14px] text-[#8D7F73]">
-                <Link href="/" className="hover:text-[#2D3A1B] transition-colors">
+                <Link href="/" className="hover:text-[#593102] transition-colors">
                   Home
                 </Link>
                 <ChevronRight size={14} className="text-[#B37B1B]" />
@@ -23,7 +23,7 @@ export default function ShopHero() {
               </div>
 
               {/* Heading */}
-              <h1 className="mt-4 font-serif text-[36px] sm:text-[44px] lg:text-[54px] leading-[1.15] text-[#2D3A1B] tracking-tight">
+              <h1 className="mt-4 font-serif text-[36px] sm:text-[44px] lg:text-[54px] leading-[1.15] text-[#593102] tracking-tight">
                 Shop Pure <span className="text-[#D49313]">Honey</span>
               </h1>
 
@@ -60,7 +60,7 @@ export default function ShopHero() {
                     <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
                     <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
                   </div>
-                  <button className="bg-white/90 text-[#2D3A1B] text-[10px] font-medium px-2.5 py-1 rounded">
+                  <button className="bg-white/90 text-[#593102] text-[10px] font-medium px-2.5 py-1 rounded">
                     Contact Us
                   </button>
                 </div>
@@ -81,7 +81,7 @@ export default function ShopHero() {
                 <Zap size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#593102]">
                   100% Pure & Raw
                 </span>
                 <span className="text-[13px] text-[#8D7F73]">
@@ -96,7 +96,7 @@ export default function ShopHero() {
                 <BadgeCheck size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#593102]">
                   Lab Tested
                 </span>
                 <span className="text-[13px] text-[#8D7F73]">
@@ -111,7 +111,7 @@ export default function ShopHero() {
                 <Tag size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#593102]">
                   No Added Sugar
                 </span>
                 <span className="text-[13px] text-[#8D7F73]">
@@ -126,7 +126,7 @@ export default function ShopHero() {
                 <Package size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#2D3A1B]">
+                <span className="text-[15px] font-semibold text-[#593102]">
                   Secure Packaging
                 </span>
                 <span className="text-[13px] text-[#8D7F73]">

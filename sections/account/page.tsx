@@ -210,13 +210,13 @@ function OrderActions({ order }: { order: Order }) {
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href="/trackorder"
-                    className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                    className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition"
                 >
                     Track Order
                 </Link>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
                 >
                     View Details
                 </Link>
@@ -230,16 +230,16 @@ function OrderActions({ order }: { order: Order }) {
     if (order.status === "Delivered") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <button className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition">
+                <button className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition">
                     Buy Again
                 </button>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
                 >
                     View Details
                 </Link>
-                <button className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
+                <button className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition">
                     Write Review
                 </button>
             </div>
@@ -250,17 +250,17 @@ function OrderActions({ order }: { order: Order }) {
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
                 href="/trackorder"
-                className="flex h-9 items-center justify-center rounded-lg bg-[#2D3A1B] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition"
             >
                 Track Shipment
             </Link>
             <Link
                 href={`/account/orders/${order.orderId}`}
-                className="flex h-9 items-center justify-center rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
             >
                 View Details
             </Link>
-            <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-[#2D3A1B] text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition">
+            <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition">
                 Download Invoice
             </button>
         </div>
@@ -283,7 +283,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
         <div className="space-y-4 w-full">
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -292,7 +292,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                     <p className="text-xs text-[#B59A78] break-all">
                         {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
-                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
+                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
                     </button>
@@ -301,10 +301,10 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
 
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm flex flex-col justify-between">
                 <nav className="space-y-1">
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#593102]">
                         <Package size={18} className="shrink-0" />
                         <span>My Orders</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                     </div>
                     {sidebarLinks.map((link) => {
                         const Icon = link.icon;
@@ -317,15 +317,15 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
                                     ${isActive
-                                        ? "bg-[#FFF2D8] text-[#2D3A1B]"
-                                        : "text-[#2D3A1B] hover:bg-[#FFF8EF]"
+                                        ? "bg-[#FFF2D8] text-[#593102]"
+                                        : "text-[#593102] hover:bg-[#FFF8EF]"
                                     }
                                 `}
                             >
                                 <Icon size={18} className="shrink-0" />
                                 <span>{link.label}</span>
                                 {isActive && (
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                                 )}
                             </Link>
                         );
@@ -626,7 +626,7 @@ export default function MyOrdersPage() {
             >
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#593102]">
                             {getInitials({ 
                                 name: userData.fullName || session.user.name || "Customer", 
                                 mobile: userData?.mobile || session.user?.mobile || "" 
@@ -641,7 +641,7 @@ export default function MyOrdersPage() {
                     </div>
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                        className="flex h-10 items-center gap-2 rounded-xl bg-[#593102] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
                     >
                         <Menu size={16} />
                         Menu
@@ -716,7 +716,7 @@ export default function MyOrdersPage() {
                                     placeholder="Search Order ID or Product Name..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
+                                    className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40"
                                 />
                                 <Search
                                     size={18}
@@ -727,7 +727,7 @@ export default function MyOrdersPage() {
 
                         {/* Filter pill */}
                         <div className="flex flex-wrap items-center gap-3">
-                            <button className="rounded-lg border border-[#2D3A1B] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#2D3A1B]">
+                            <button className="rounded-lg border border-[#593102] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#593102]">
                                 All Orders
                             </button>
                         </div>
@@ -826,7 +826,7 @@ export default function MyOrdersPage() {
                                             onClick={() => goToPage(page as number)}
                                             className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold transition ${
                                                 page === currentPage
-                                                    ? "bg-[#2D3A1B] text-white"
+                                                    ? "bg-[#593102] text-white"
                                                     : "border border-[#F0E2CC] text-[#3C2015] hover:bg-[#FFF8EF]"
                                             }`}
                                         >

@@ -57,15 +57,15 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[linear-gradient(180deg,#0a1f12_0%,#1f6b3a_50%,#050f09_100%)] text-white block">
+    <footer className="bg-[#593102] text-white block">
       <div className="max-w-[1445px] mx-auto px-6 sm:px-8 py-12">
-        
+
         {/* ================= MOBILE & TABLET LAYOUT (Centered Stack) ================= */}
         <div className="flex flex-col items-center text-center lg:hidden space-y-10">
-          
+
           {/* Logo & Brand */}
           <div className="flex flex-col items-center">
-            <div className="w-16 h-16 rounded-lg bg-[#2D3A1B] flex items-center justify-center overflow-hidden p-1.5 shadow-md">
+            <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5 shadow-md">
               <Image
                 src="/yellow logo.png"
                 alt="ShuddhVedahoney Logo"
@@ -77,7 +77,7 @@ export default function Footer() {
             <h2 className="text-[22px] font-semibold mt-3">
               ShuddhVedaHoney
             </h2>
-            
+
             {/* 4 Social Media Icons */}
             <div className="flex items-center justify-center gap-3 mt-4">
               <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
@@ -97,7 +97,7 @@ export default function Footer() {
 
           {/* Links Grid for Mobile / Tablet (Properly Aligned & Centered) */}
           <div className="grid grid-cols-2 gap-x-8 sm:gap-x-14 gap-y-8 w-full max-w-lg px-4 justify-items-center text-left">
-            
+
             {/* Quick Links */}
             <div className="w-full max-w-[150px]">
               <h3 className="text-[16px] font-semibold text-center sm:text-left">Quick Links</h3>
@@ -148,15 +148,15 @@ export default function Footer() {
           </div>
 
           {/* Bottom Footer for Mobile */}
-          <div className="w-full border-t border-[#2e4b36] pt-6 flex flex-col items-center gap-3 text-center">
+          <div className="w-full border-t border-white/15 pt-6 flex flex-col items-center gap-3 text-center">
             <p className="text-[13px] text-[#D9C8BA]">
               © {new Date().getFullYear()} Shuddhveda. All rights reserved. Made with 🍯 in India.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
               <span>FSSAI Licensed</span>
-              <span className="text-[#4e7359]">•</span>
+              <span className="text-[#c29665]">•</span>
               <span>ISO Certified</span>
-              <span className="text-[#4e7359]">•</span>
+              <span className="text-[#c29665]">•</span>
               <span>100% Natural</span>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function Footer() {
           {/* ================= Logo ================= */}
           <div>
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-lg bg-[#2D3A1B] flex items-center justify-center overflow-hidden p-1.5">
+              <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5">
                 <Image
                   src="/yellow logo.png"
                   alt="ShuddhVeda Logo"
@@ -209,23 +209,23 @@ export default function Footer() {
             </h3>
             <ul className="mt-5 space-y-3">
               <li>
-                <Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
+                <Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   All Honey
                 </Link>
               </li>
               <li>
-                <Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
+                <Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   My Account
                 </Link>
               </li>
               <li>
-                <Link href="/b2b" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
-                  B2B Order
+                <Link href="/" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Policies & Information
                 </Link>
               </li>
               <li>
-                <Link href="/bulk-gifting" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
-                  Bulk Gifting
+                <Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Products
                 </Link>
               </li>
             </ul>
@@ -234,27 +234,42 @@ export default function Footer() {
           {/* ================= Products ================= */}
           <div>
             <h3 className="text-[16px] font-semibold">
-              Products
+              Products Information
             </h3>
             <ul className="mt-5 space-y-3">
               <li>
-                <Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
+                <Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
+                <Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
-                  Our Process
+                <Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/blogs" className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors">
-                  Blogs
+                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Return Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Shipping & Delivery Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Cancellation/Refund Policy
                 </Link>
               </li>
             </ul>
@@ -269,10 +284,10 @@ export default function Footer() {
             <div className="mt-5 space-y-3">
               {/* Phone 1 */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#2D3A1B]" />
+                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
                 <a
                   href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`}
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
                 </a>
@@ -280,10 +295,10 @@ export default function Footer() {
 
               {/* Phone 2 / WhatsApp */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#2D3A1B]" />
+                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
                 <a
                   href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`}
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
                 </a>
@@ -291,10 +306,10 @@ export default function Footer() {
 
               {/* Email */}
               <div className="flex items-start gap-3">
-                <Mail size={15} className="mt-1 text-[#2D3A1B]" />
+                <Mail size={15} className="mt-1 text-[#E2D2C4]" />
                 <a
                   href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@shuddhveda.in"}`}
-                  className="text-[14px] text-[#E2D2C4] hover:text-[#2D3A1B] transition-colors"
+                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.email || "connect@shuddhveda.in"}
                 </a>
@@ -302,7 +317,7 @@ export default function Footer() {
 
               {/* Address */}
               <div className="flex items-start gap-3">
-                <MapPin size={16} className="mt-1 text-[#2D3A1B] shrink-0" />
+                <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <p className="text-[13px] leading-5 text-[#E2D2C4]">
                   {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
                 </p>
@@ -313,16 +328,16 @@ export default function Footer() {
         </div>
 
         {/* ================= Desktop Bottom Footer ================= */}
-        <div className="hidden lg:flex mt-10 border-t border-[#2e4b36] pt-6 items-center justify-between">
+        <div className="hidden lg:flex mt-10 border-t border-white/15 pt-6 items-center justify-between">
           <p className="text-[13px] text-[#D9C8BA]">
             © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with 🍯 in India.
           </p>
 
           <div className="flex items-center gap-2 text-[13px] text-[#D9C8BA]">
             <span>FSSAI Licensed</span>
-            <span className="text-[#4e7359]">•</span>
+            <span className="text-[#c29665]">•</span>
             <span>ISO Certified</span>
-            <span className="text-[#4e7359]">•</span>
+            <span className="text-[#c29665]">•</span>
             <span>100% Natural</span>
           </div>
         </div>

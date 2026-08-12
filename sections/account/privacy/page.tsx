@@ -88,7 +88,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
             {/* Profile Card */}
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -100,7 +100,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     <Link
                         href="/account/editprofile"
                         onClick={handleClick}
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         Edit profile
@@ -118,7 +118,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                                 key={link.label}
                                 href={link.href}
                                 onClick={handleClick}
-                                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors"
+                                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors"
                             >
                                 <Icon size={18} className="shrink-0" />
                                 <span>{link.label}</span>
@@ -127,10 +127,10 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     })}
 
                     {/* Policy Center - active */}
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#593102]">
                         <Settings size={18} className="shrink-0" />
                         <span>Policy Center</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                     </div>
                 </nav>
 
@@ -335,7 +335,7 @@ export default function PolicyCenterPage() {
             >
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#593102]">
                             {getInitials(formData.fullName)}
                         </div>
                         <div>
@@ -347,7 +347,7 @@ export default function PolicyCenterPage() {
                     </div>
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                        className="flex h-10 items-center gap-2 rounded-xl bg-[#593102] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
                     >
                         <Menu size={16} />
                         Menu
@@ -426,20 +426,20 @@ export default function PolicyCenterPage() {
                                     <Link
                                         key={policy.title}
                                         href={policy.href}
-                                        className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8 rounded-2xl border border-[#F0E2CC] bg-white p-6 sm:p-9 hover:border-[#2D3A1B] hover:shadow-lg transition-all duration-300 group"
+                                        className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8 rounded-2xl border border-[#F0E2CC] bg-white p-6 sm:p-9 hover:border-[#593102] hover:shadow-lg transition-all duration-300 group"
                                     >
-                                        <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-[#2D3A1B] group-hover:scale-105 transition-transform duration-300">
+                                        <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-[#593102] group-hover:scale-105 transition-transform duration-300">
                                             <Icon size={32} />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#3C2015] group-hover:text-[#2D3A1B] transition-colors break-words">
+                                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#3C2015] group-hover:text-[#593102] transition-colors break-words">
                                                 {policy.title}
                                             </h3>
                                             <p className="mt-1.5 sm:mt-2 text-sm sm:text-base text-[#8A7460] leading-relaxed break-words">
                                                 {policy.description}
                                             </p>
                                         </div>
-                                        <ChevronRight size={24} className="hidden sm:block shrink-0 text-[#2D3A1B] group-hover:translate-x-1 transition-transform duration-300" />
+                                        <ChevronRight size={24} className="hidden sm:block shrink-0 text-[#593102] group-hover:translate-x-1 transition-transform duration-300" />
                                     </Link>
                                 );
                             })}

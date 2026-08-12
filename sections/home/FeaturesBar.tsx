@@ -27,7 +27,7 @@ const features = [
 
 export default function FeaturesBar() {
   return (
-    <section className="bg-[#FAF6F0] lg:bg-[#303F24] border-t border-[#EEE5DA] lg:border-t-0 border-b border-[#F1DEC7] lg:border-b-0 border-b-[0.5px]">
+    <section className="bg-[#FAF6F0] lg:bg-[#593102] border-t border-[#EEE5DA] lg:border-t-0 border-b border-[#F1DEC7] lg:border-b-0 border-b-[0.5px]">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((item, index) => (
@@ -97,7 +97,7 @@ export default function FeaturesBar() {
                     lg:text-[18px]
                     font-semibold
                     leading-tight
-                    text-[#2D3A1B]
+                    text-[#593102]
                     lg:text-white
                   "
                 >

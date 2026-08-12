@@ -351,7 +351,7 @@ export default function Cart() {
                     {/* LEFT SECTION */}
                     <section className="min-w-0">
                         <h1 className="text-[34px] font-bold">
-                            Your Cart <span className="text-[#2D3A1B]">({cartProducts.length})</span>
+                            Your Cart <span className="text-[#593102]">({cartProducts.length})</span>
                         </h1>
 
 
@@ -444,7 +444,7 @@ export default function Cart() {
 
                                         <div className="flex items-center justify-between border-t border-[#F5EEE3] pt-3 md:border-t-0 md:pt-0 md:block">
                                             <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Total</span>
-                                            <p className="text-[19px] sm:text-[20px] font-bold text-[#2D3A1B]">
+                                            <p className="text-[19px] sm:text-[20px] font-bold text-[#593102]">
                                                 ₹{product.price * product.quantity}
                                             </p>
                                         </div>
@@ -948,7 +948,7 @@ export function OrderSummaryWithCoupons({
                                                     >
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="inline-block rounded-lg border border-dashed border-[#2D3A1B]/30 bg-[#FFF8EF] px-2 py-0.5 text-[10px] font-bold text-[#B97B00]">
+                                                                <span className="inline-block rounded-lg border border-dashed border-[#593102]/30 bg-[#FFF8EF] px-2 py-0.5 text-[10px] font-bold text-[#B97B00]">
                                                                     {coupon.code}
                                                                 </span>
                                                                 {coupon.discountPercentage && coupon.discountPercentage > 0 ? (
@@ -988,7 +988,7 @@ export function OrderSummaryWithCoupons({
                                                             <button
                                                                 onClick={() => applyCoupon(coupon.code)}
                                                                 disabled={couponLoading}
-                                                                className="ml-2 shrink-0 rounded-lg border border-[#2D3A1B]/30 px-2.5 py-0.5 text-[9px] font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] hover:border-[#B97B00] transition-colors cursor-pointer bg-white"
+                                                                className="ml-2 shrink-0 rounded-lg border border-[#593102]/30 px-2.5 py-0.5 text-[9px] font-bold text-[#593102] hover:bg-[#FFF8EF] hover:border-[#B97B00] transition-colors cursor-pointer bg-white"
                                                             >
                                                                 Apply
                                                             </button>
@@ -1101,19 +1101,19 @@ function HelpPanel({
                 <h2 className="text-[18px] font-bold text-[#2F241C]">Need help?</h2>
                 <div className="space-y-2 text-[14px] text-[#6F7786]">
                     <p className="flex items-center gap-3">
-                        <Phone size={16} className="text-[#2D3A1B] shrink-0" />
+                        <Phone size={16} className="text-[#593102] shrink-0" />
                         <span className="font-medium text-[#2F241C] whitespace-nowrap">
                             {loading ? "Loading..." : location?.phone || "+91 98765 43210"}
                         </span>
                     </p>
                     <p className="flex items-center gap-3">
-                        <Mail size={16} className="text-[#2D3A1B] shrink-0" />
+                        <Mail size={16} className="text-[#593102] shrink-0" />
                         <span className="font-medium text-[#2F241C] break-all">
                             {loading ? "Loading..." : location?.email || "connect@honeyveda.in"}
                         </span>
                     </p>
                     <p className="flex items-center gap-3">
-                        <Clock size={16} className="text-[#2D3A1B] shrink-0" />
+                        <Clock size={16} className="text-[#593102] shrink-0" />
                         <span className="font-medium text-[#2F241C] whitespace-nowrap">
                             {loading ? "Loading..." : location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
                         </span>

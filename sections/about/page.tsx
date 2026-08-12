@@ -18,7 +18,7 @@ export default function Hero() {
             </span>
 
             {/* Heading */}
-            <h1 className="mt-2 text-[38px] sm:text-[52px] md:text-[60px] lg:text-[68px] leading-[1.18] font-serif text-[#2D3A1B] tracking-tight font-normal">
+            <h1 className="mt-2 text-[38px] sm:text-[52px] md:text-[60px] lg:text-[68px] leading-[1.18] font-serif text-[#593102] tracking-tight font-normal">
               Rooted in Nature.
               <br />
               <span className="italic text-[#D49313]">Driven by Purpose.</span>
@@ -39,7 +39,7 @@ export default function Hero() {
                   <FiBox size={16} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#2D3A1B]">100%</span>
+                  <span className="font-bold text-[14px] text-[#593102]">100%</span>
                   <span className="text-[#8D7F73] text-[12.5px]">Pure &amp; Natural</span>
                 </div>
               </div>
@@ -50,7 +50,7 @@ export default function Hero() {
                   <FiDollarSign size={16} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#2D3A1B]">Ethically</span>
+                  <span className="font-bold text-[14px] text-[#593102]">Ethically</span>
                   <span className="text-[#8D7F73] text-[12.5px]">Sourced</span>
                 </div>
               </div>
@@ -61,7 +61,7 @@ export default function Hero() {
                   <FiHeart size={16} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#2D3A1B]">Sustainable</span>
+                  <span className="font-bold text-[14px] text-[#593102]">Sustainable</span>
                   <span className="text-[#8D7F73] text-[12.5px]">Beekeeping</span>
                 </div>
               </div>

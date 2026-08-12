@@ -329,7 +329,7 @@ export default function ReviewPage() {
           <section className="flex flex-col gap-7">
             {/* Header */}
             <header className="relative pr-28">
-              <h1 className="font-serif text-[42px] font-bold leading-none text-[#2D3A1B] md:text-[48px]">
+              <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                 Review &amp; Place Order
               </h1>
               <p className="mt-4 text-[16px] text-[#5D6778]">
@@ -399,7 +399,7 @@ export default function ReviewPage() {
             {/* Delivery Details */}
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-[20px] font-bold text-[#2D3A1B]">Delivery Details</h2>
+                <h2 className="text-[20px] font-bold text-[#593102]">Delivery Details</h2>
                 <button
                   onClick={() => router.push("/checkout")}
                   className="flex items-center gap-1 text-[13px] text-[#D18500]"
@@ -542,7 +542,7 @@ export default function ReviewPage() {
               <div className="mt-4 space-y-3 border-t border-[#EEF1F4] pt-4 text-[12px] sm:text-[13px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
+                  <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>

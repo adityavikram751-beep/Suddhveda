@@ -266,7 +266,7 @@ export default function PaymentPage() {
         <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
           <section className="flex h-full flex-col gap-8">
             <header className="relative pr-28">
-              <h1 className="font-serif text-[42px] font-bold leading-none text-[#2D3A1B] md:text-[48px]">
+              <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                 Shipping
               </h1>
               <p className="mt-4 text-[16px] text-[#5D6778] md:text-[18px]">
@@ -363,7 +363,7 @@ export default function PaymentPage() {
                           {method.icon}
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[16px] font-bold text-[#2D3A1B]">
+                          <span className="block text-[16px] font-bold text-[#593102]">
                             {method.label}
                           </span>
                           <span className="mt-1 block text-[14px] text-[#6F7786]">
@@ -453,7 +453,7 @@ export default function PaymentPage() {
                 <div className="mt-4 space-y-3 border-t border-[#EEF1F4] pt-4 text-[12px] sm:text-[13px] text-[#6F7786]">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <strong className="text-[#2D3A1B]">₹{subtotal.toLocaleString("en-IN")}</strong>
+                    <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
                   </div>
                   <div className="flex justify-between">
                     <span>You Save</span>

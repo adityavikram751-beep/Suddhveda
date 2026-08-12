@@ -420,7 +420,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               <Check size={22} />
             </div>
             <div>
-              <h3 className="text-[20px] font-bold text-[#2D3A1B]">
+              <h3 className="text-[20px] font-bold text-[#593102]">
                 {toastProduct.title} ({toastProduct.weight})
               </h3>
               <p className="mt-1 text-[16px] text-[#6D7280]">added to your cart!</p>
@@ -431,14 +431,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                     setIsCartOpen(true);
                     setToastProduct(null);
                   }}
-                  className="rounded-lg border border-[#2D3A1B] px-5 py-2 text-[15px] font-bold text-[#2D3A1B] hover:bg-[#FFF2D8]"
+                  className="rounded-lg border border-[#593102] px-5 py-2 text-[15px] font-bold text-[#593102] hover:bg-[#FFF2D8]"
                 >
                   View Cart
                 </button>
                 <button
                   type="button"
                   onClick={() => setToastProduct(null)}
-                  className="px-2 py-2 text-[15px] font-bold text-[#9AA1AF] hover:text-[#2D3A1B]"
+                  className="px-2 py-2 text-[15px] font-bold text-[#9AA1AF] hover:text-[#593102]"
                 >
                   Continue Shopping
                 </button>
@@ -472,7 +472,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => setIsCartOpen(false)}
-            className="text-[#3C2015] hover:text-[#2D3A1B]"
+            className="text-[#3C2015] hover:text-[#593102]"
           >
             <X size={22} />
           </button>
@@ -483,9 +483,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             <div className="flex flex-col items-center justify-center py-12">
               {/* ✅ Simple dots loading instead of spinner */}
               <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse" />
-                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse delay-150" />
-                <div className="h-3 w-3 rounded-full bg-[#2D3A1B] animate-pulse delay-300" />
+                <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse" />
+                <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse delay-150" />
+                <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse delay-300" />
               </div>
               <p className="mt-4 text-[14px] text-[#8E623A]">Loading your cart...</p>
             </div>
@@ -530,7 +530,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                     <button
                       type="button"
                       onClick={() => removeItem(product.cartItemId)}
-                      className="text-[#5B3A20] hover:text-[#2D3A1B]"
+                      className="text-[#5B3A20] hover:text-[#593102]"
                     >
                       <Trash2 size={14} />
                     </button>

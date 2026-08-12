@@ -18,6 +18,9 @@ export type ProductCardShopProps = {
   image: string;
   title: string;
   subtitle?: string;
+  category?: string;
+  tasteProfile?: string;
+  shortDescription?: string;
   weight?: string;
   price: number;
   oldPrice?: number;
@@ -44,6 +47,9 @@ export default function ProductCardShop({
   image,
   title,
   subtitle,
+  category,
+  tasteProfile,
+  shortDescription,
   weight,
   price,
   oldPrice,
@@ -83,124 +89,117 @@ export default function ProductCardShop({
 
   const getVariantLabel = (v: Variant) => `${v.weight}${v.unit}`;
   const getVariantId = (v: Variant) => v._id || v.id || "";
-
   const isSelected = (variantId: string) => variantId === selectedVariantId;
 
+  const displayTaste = tasteProfile || subtitle || "";
+  const displayDesc = shortDescription && shortDescription !== subtitle ? shortDescription : "";
+
   return (
-    <div className="flex flex-col rounded-lg border border-[#F0E4D0] bg-white p-4 shadow-sm">
-      {/* Image */}
+    <div
+      onClick={onOpenDetails}
+      className="flex flex-col h-full w-full max-w-[340px] mx-auto rounded-[22px] border border-[#F2ECE4] bg-[#FAF5EE] p-5 shadow-sm hover:shadow-xl hover:-translate-y-2.5 transition-all duration-300 relative group cursor-pointer"
+    >
+      {/* Wishlist Button (Top Left) */}
       <button
         type="button"
-        onClick={onOpenDetails}
-        className="relative h-[200px] w-full overflow-hidden rounded-lg bg-[#FBF3E3]"
+        onClick={handleWishlistClick}
+        aria-label="Wishlist"
+        className="absolute left-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[#593102] hover:bg-white transition-colors cursor-pointer shadow-sm"
       >
-        {badge && (
-          <span className="absolute left-3 top-3 z-10 rounded bg-[#1F2B1B] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+        <Heart
+          size={16}
+          className={
+            isWishlisted
+              ? "fill-[#FF6F3C] text-[#FF6F3C]"
+              : "text-[#7C6E63] hover:text-[#593102]"
+          }
+        />
+      </button>
+
+      {/* Dynamic Badge (Top Right) */}
+      {badge && (
+        <div className="absolute right-4 top-4 z-20">
+          <span className="rounded-full bg-[#1E1E1E] px-3 py-0.5 text-[10px] sm:text-[11px] font-semibold text-white shadow-sm uppercase tracking-wide">
             {badge}
           </span>
-        )}
+        </div>
+      )}
 
-        {/* ✅ FIX 2: alt text */}
+      {/* Dynamic Product Image */}
+      <div className="relative h-[200px] sm:h-[210px] w-full overflow-hidden rounded-xl bg-transparent shrink-0 pt-2">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-3"
+          className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
           onError={() => setImageSrc(fallbackImage)}
         />
-      </button>
-
-      {/* Text */}
-      <div className="mt-4 text-center">
-        <button type="button" onClick={onOpenDetails}>
-          <h3 className="font-serif text-[19px] text-[#1E392A] hover:underline">
-            {title}
-          </h3>
-        </button>
-        {subtitle && (
-          <p className="mt-1 text-[13px] text-[#9A9A9A]">{subtitle}</p>
-        )}
-
-        <div className="mt-2 text-[16px] font-bold text-[#1E392A]">
-          ₹{price}
-          {oldPrice ? (
-            <>
-              {" "}
-              <span className="mx-0.5 font-normal text-[#9A9A9A]">—</span>{" "}
-              ₹{oldPrice}
-            </>
-          ) : null}
-        </div>
-
-        {/* Interactive Weight Options */}
-        {variants.length > 0 && (
-          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-            {variants.map((variant, index) => {
-              const variantId = getVariantId(variant);
-              // ✅ FIX 3: Unique key – use id or fallback to index
-              const uniqueKey = variantId || `variant-${index}`;
-              const selected = isSelected(variantId);
-              return (
-                <button
-                  key={uniqueKey}
-                  type="button"
-                  onClick={(e) => handleVariantClick(variantId, e)}
-                  className={`rounded border px-3 py-1.5 text-[12px] transition-colors ${
-                    selected
-                      ? "border-[#2D3A1B] bg-[#2D3A1B] text-white"
-                      : "border-[#E4E8EE] text-[#4E4E4E] hover:border-[#2D3A1B] hover:bg-[#2D3A1B]/10"
-                  }`}
-                >
-                  {getVariantLabel(variant)}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Show selected weight text if no variants */}
-        {variants.length === 0 && weight && (
-          <div className="mt-3 text-[13px] text-[#4E4E4E]">{weight}</div>
-        )}
       </div>
 
-      {/* Add to cart & Wishlist row */}
-      <div className="mt-4 flex items-center gap-2">
-        {quantity > 0 ? (
-          <div className="flex flex-1 items-center justify-between rounded bg-[#2D3A1B] px-4 py-3 text-white">
-            <button type="button" onClick={onDecrement} aria-label="Decrease quantity">
-              <Minus size={16} />
-            </button>
-            <span className="text-[13px] font-bold">{quantity}</span>
-            <button type="button" onClick={onIncrement} aria-label="Increase quantity">
-              <Plus size={16} />
-            </button>
+      {/* Text Content & Details */}
+      <div className="mt-4 flex flex-col flex-1 justify-between text-center">
+        <div>
+          {/* Dynamic Title */}
+          <h3 className="font-serif text-[17px] sm:text-[18px] font-medium text-[#2C221E] group-hover:text-[#593102] transition-colors leading-snug">
+            {title}
+          </h3>
+
+          {/* Dynamic Category Name */}
+          {(category || subtitle) && (
+            <div className="mt-1.5 text-[13px] font-medium text-[#9E826B]">
+              {category || subtitle}
+            </div>
+          )}
+
+          {/* Dynamic Price Row */}
+          <div className="mt-2.5 text-[15px] sm:text-[16px] font-medium text-[#2C221E] flex items-center justify-center gap-1.5">
+            {oldPrice && oldPrice > price ? (
+              <span className="line-through text-[#9E826B] font-normal text-[14px]">
+                ₹{oldPrice}
+              </span>
+            ) : null}
+            <span>From ₹{price}</span>
           </div>
-        ) : (
+
+          {/* Dynamic Weight Variants */}
+          {variants.length > 0 && (
+            <div className="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
+              {variants.map((variant, index) => {
+                const variantId = getVariantId(variant);
+                const uniqueKey = variantId || `variant-${index}`;
+                const selected = isSelected(variantId);
+                return (
+                  <button
+                    key={uniqueKey}
+                    type="button"
+                    onClick={(e) => handleVariantClick(variantId, e)}
+                    className={`rounded-md border px-3 py-0.5 text-[11px] font-medium transition-all cursor-pointer ${
+                      selected
+                        ? "border-[#4A2E12] bg-[#4A2E12] text-white shadow-sm"
+                        : "border-[#E5DBCB] bg-white text-[#5C4033] hover:border-[#4A2E12]"
+                    }`}
+                  >
+                    {getVariantLabel(variant)}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Buy Now Button */}
+        <div className="mt-4">
           <button
             type="button"
-            onClick={onAddToCart}
-            className="flex-1 rounded bg-[#2D3A1B] py-3 text-[13px] font-bold uppercase tracking-wide text-white hover:bg-[#C98715] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDetails();
+            }}
+            className="w-full h-[44px] rounded-xl bg-[#F2542D] hover:bg-[#D9431E] text-white font-bold text-[14px] tracking-wide shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            Add to Cart
+            Buy Now
           </button>
-        )}
-
-        <button
-          type="button"
-          onClick={handleWishlistClick}
-          aria-label="Wishlist"
-          className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded border border-[#2D3A1B] text-[#2D3A1B] hover:bg-[#2D3A1B]/10 transition-colors cursor-pointer"
-        >
-          <Heart
-            size={18}
-            className={
-              isWishlisted
-                ? "fill-[#FF6F3C] text-[#FF6F3C]"
-                : "text-[#2D3A1B]"
-            }
-          />
-        </button>
+        </div>
       </div>
     </div>
   );

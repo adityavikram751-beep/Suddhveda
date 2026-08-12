@@ -97,7 +97,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
             {/* Profile Card */}
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -109,7 +109,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     <Link
                         href="/account/editprofile"
                         onClick={handleClick}
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         Edit profile
@@ -127,7 +127,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                                 key={link.label}
                                 href={link.href}
                                 onClick={handleClick}
-                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#2D3A1B] transition-all duration-200"
+                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] hover:text-[#593102] transition-all duration-200"
                             >
                                 <Icon size={20} className="shrink-0" />
                                 <span>{link.label}</span>
@@ -136,10 +136,10 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     })}
 
                     {/* Policy Center - active */}
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#2D3A1B]">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#593102]">
                         <Settings size={20} className="shrink-0" />
                         <span>Policy Center</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                     </div>
                 </nav>
 
@@ -351,7 +351,7 @@ export default function PrivacyPolicyPage() {
                     </div>
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#2D3A1B] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#593102] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
                     >
                         <Menu size={15} />
                         Menu
@@ -414,13 +414,13 @@ export default function PrivacyPolicyPage() {
 
                         {/* Breadcrumb - desktop only */}
                         <div className="hidden lg:flex items-center gap-2 text-sm text-[#B59A78]">
-                            <Link href="/" className="hover:text-[#2D3A1B] transition-colors">Home</Link>
+                            <Link href="/" className="hover:text-[#593102] transition-colors">Home</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account" className="hover:text-[#2D3A1B] transition-colors">My Account</Link>
+                            <Link href="/account" className="hover:text-[#593102] transition-colors">My Account</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account/privacy" className="hover:text-[#2D3A1B] transition-colors">Policy Center</Link>
+                            <Link href="/account/privacy" className="hover:text-[#593102] transition-colors">Policy Center</Link>
                             <ChevronRight size={14} />
-                            <span className="font-semibold text-[#2D3A1B]">Privacy Policy</span>
+                            <span className="font-semibold text-[#593102]">Privacy Policy</span>
                         </div>
 
                         {/* Header - desktop only */}
@@ -440,7 +440,7 @@ export default function PrivacyPolicyPage() {
                                 return (
                                     <div key={section.number}>
                                         <div className="flex items-start gap-3">
-                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#593102]">
                                                 <Icon size={16} />
                                             </div>
                                             <div className="flex-1">
@@ -460,7 +460,7 @@ export default function PrivacyPolicyPage() {
                             {/* Contact Us */}
                             <div>
                                 <div className="flex items-start gap-3">
-                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#593102]">
                                         <Phone size={16} />
                                     </div>
                                     <div className="flex-1">

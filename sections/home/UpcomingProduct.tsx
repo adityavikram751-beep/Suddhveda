@@ -192,7 +192,7 @@ export default function UpcomingProduct() {
                 href={banner.pre_order_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 w-full max-w-[240px] bg-[#233821] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[15px] uppercase tracking-wider cursor-pointer"
+                className="mt-6 w-full max-w-[240px] bg-[#593102] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[15px] uppercase tracking-wider cursor-pointer"
               >
                 Pre-Order Now
               </a>
@@ -263,7 +263,7 @@ export default function UpcomingProduct() {
                   href={banner.pre_order_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 w-full block bg-[#233821] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[14px] uppercase tracking-wider cursor-pointer"
+                  className="mt-5 w-full block bg-[#593102] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[14px] uppercase tracking-wider cursor-pointer"
                 >
                   Pre-Order Now
                 </a>

@@ -77,7 +77,7 @@ export default function Hero() {
             {/* Heading */}
             <h1 className="mt-8 lg:mt-12 font-serif text-[#3A2C24] leading-[1.05] text-[36px] sm:text-[48px] lg:text-[76px] tracking-[-0.03em]">
               Let&apos;s Start a{" "}
-              <span className="italic text-[#4D6840]">
+              <span className="italic text-[#593102]">
                 Sweet
               </span>
               <br />

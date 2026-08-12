@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/components/cart/CartProvider";
 import {
@@ -13,6 +13,12 @@ import {
   getStoredSession,
   API_BASE_URL,
 } from "@/lib/auth";
+import {
+  getProductsFromResponse,
+  getProductId,
+  getProductName,
+  getCategoryName,
+} from "@/lib/api-products";
 import {
   FiHeart,
   FiUser,
@@ -41,8 +47,48 @@ export default function Header() {
   const { openCart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
+  const [shopMenuOpen, setShopMenuOpen] = useState(false);
+  const [apiProducts, setApiProducts] = useState<any[]>([]);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const shopMenuRef = useRef<HTMLDivElement>(null);
   const headerWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadShopProducts() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/products`, { credentials: "include" });
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = getProductsFromResponse(data);
+        if (list && list.length > 0) {
+          setApiProducts(list);
+        }
+      } catch (err) {
+        console.error("Error fetching mega menu products:", err);
+      }
+    }
+    loadShopProducts();
+  }, []);
+
+  const { multiFloraProducts, monoFloraProducts } = useMemo(() => {
+    const multi: any[] = [];
+    const mono: any[] = [];
+
+    apiProducts.forEach((product) => {
+      const name = getProductName(product).toLowerCase();
+      const cat = getCategoryName(product).toLowerCase();
+      if (name.includes("himalayan") || name.includes("forest") || cat.includes("multi")) {
+        multi.push(product);
+      } else {
+        mono.push(product);
+      }
+    });
+
+    return {
+      multiFloraProducts: multi,
+      monoFloraProducts: mono.length > 0 ? mono : apiProducts,
+    };
+  }, [apiProducts]);
 
   // ✅ Fetch wishlist count with 401 Session Expiry Check
   const fetchWishlistCount = async () => {
@@ -239,6 +285,12 @@ export default function Header() {
       ) {
         setAccountOpen(false);
       }
+      if (
+        shopMenuRef.current &&
+        !shopMenuRef.current.contains(event.target as Node)
+      ) {
+        setShopMenuOpen(false);
+      }
     }
 
     const handleWishlistUpdate = (event: Event) => {
@@ -375,6 +427,132 @@ export default function Header() {
                   ? pathname === "/"
                   : pathname === item.href || pathname?.startsWith(`${item.href}/`);
 
+              if (item.title === "Shop") {
+                return (
+                  <div
+                    key={item.title}
+                    ref={shopMenuRef}
+                    className="relative group py-2"
+                    onMouseEnter={() => setShopMenuOpen(true)}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={() => setShopMenuOpen((prev) => !prev)}
+                      className={`relative flex items-center gap-1 text-[16px] font-medium transition-all duration-300 ${
+                        isActive
+                          ? "text-[#D89B00]"
+                          : "text-[#7A3F10] hover:text-[#D89B00]"
+                      }`}
+                    >
+                      {item.title}
+                      <FiChevronDown size={14} className={`transition-transform duration-200 ${shopMenuOpen ? "rotate-180 text-[#D89B00]" : ""}`} />
+                      <span
+                        className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${
+                          isActive ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </Link>
+
+                    {/* 🟢 Shop Mega Menu Dropdown */}
+                    {shopMenuOpen && (
+                      <div
+                        className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[940px] max-w-[95vw] z-50 transition-all duration-300"
+                        onMouseEnter={() => setShopMenuOpen(true)}
+                      >
+                        <div className="bg-[#FAF5EE] rounded-2xl border border-[#E5DACB] shadow-2xl p-8">
+                          <Link
+                            href="/shop"
+                            onClick={() => setShopMenuOpen(false)}
+                            className="font-serif text-[24px] font-bold text-[#2C221E] hover:text-[#593102] tracking-tight block mb-6 transition-colors"
+                          >
+                            Shop All Honey
+                          </Link>
+
+                          <div className="grid grid-cols-12 gap-8 items-start">
+                            {/* Multi-Flora Column */}
+                            <div className="col-span-3">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-3 border-b border-[#E6DCCB] pb-1">
+                                Multi-Flora
+                              </span>
+                              <div className="flex flex-col gap-2.5">
+                                {multiFloraProducts.length > 0 ? (
+                                  multiFloraProducts.map((p) => {
+                                    const id = getProductId(p);
+                                    const name = getProductName(p);
+                                    return (
+                                      <Link
+                                        key={id || name}
+                                        href={`/shop/products/${id}`}
+                                        onClick={() => setShopMenuOpen(false)}
+                                        className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                      >
+                                        {name}
+                                      </Link>
+                                    );
+                                  })
+                                ) : (
+                                  <Link
+                                    href="/shop"
+                                    onClick={() => setShopMenuOpen(false)}
+                                    className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                  >
+                                    Himalayan Forest Honey
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Mono-Flora Column */}
+                            <div className="col-span-5">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-3 border-b border-[#E6DCCB] pb-1">
+                                Mono-Flora
+                              </span>
+                              <div className="grid grid-cols-2 gap-y-2.5 gap-x-4">
+                                {monoFloraProducts.length > 0 ? (
+                                  monoFloraProducts.map((p) => {
+                                    const id = getProductId(p);
+                                    const name = getProductName(p);
+                                    return (
+                                      <Link
+                                        key={id || name}
+                                        href={`/shop/products/${id}`}
+                                        onClick={() => setShopMenuOpen(false)}
+                                        className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-colors leading-snug block"
+                                      >
+                                        {name}
+                                      </Link>
+                                    );
+                                  })
+                                ) : (
+                                  <>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Ajwain Honey</Link>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Lychee Honey</Link>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Fennel Honey</Link>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Jamun Honey</Link>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Mustard Honey</Link>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Eucalyptus Honey</Link>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Honey Jars Decorative Column */}
+                            <div className="col-span-4 flex items-center justify-center p-2 bg-[#F5ECDF] rounded-xl relative overflow-hidden h-[180px]">
+                              <Image
+                                src="/Upcoming.png"
+                                alt="ShuddhVeda Honey Jars"
+                                fill
+                                className="object-contain p-2"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.title}
@@ -432,7 +610,7 @@ export default function Header() {
                   <Link
                     href="/account"
                     onClick={() => setAccountOpen(false)}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#2D3A1B] hover:bg-[#FFF8EF]"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-[#593102] hover:bg-[#FFF8EF]"
                   >
                     <FiUser size={16} />
                     Account
@@ -458,7 +636,7 @@ export default function Header() {
               <FiShoppingCart size={22} />
               <span data-cart-count={cartCount} />
               {cartCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#2D3A1B] px-1.5 text-[11px] font-bold text-white">
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#593102] px-1.5 text-[11px] font-bold text-white">
                   {cartCount}
                 </span>
               )}
@@ -500,7 +678,7 @@ export default function Header() {
                 <Link
                   href="/account"
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-between py-2 text-sm font-semibold text-[#2D3A1B]"
+                  className="flex items-center justify-between py-2 text-sm font-semibold text-[#593102]"
                 >
                   Account
                   <FiUser size={18} />

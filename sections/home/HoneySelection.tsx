@@ -236,6 +236,9 @@ export default function HoneySelection() {
                         image={normalized.image}
                         title={normalized.title}
                         subtitle={normalized.subtitle}
+                        category={normalized.category}
+                        tasteProfile={normalized.tasteProfile}
+                        shortDescription={normalized.shortDescription}
                         weight={normalized.weight}
                         price={normalized.price}
                         oldPrice={normalized.oldPrice}

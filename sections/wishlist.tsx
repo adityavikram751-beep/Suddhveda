@@ -325,7 +325,7 @@ export default function WishlistPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[14px] text-[#B59A78] mb-4">
             <span className="font-medium">{wishlistItems.length} Items</span>
             <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
-              <button onClick={shareWishlist} className="flex items-center gap-1.5 text-[#2D3A1B] hover:text-[#2D3A1B] transition-colors cursor-pointer">
+              <button onClick={shareWishlist} className="flex items-center gap-1.5 text-[#593102] hover:text-[#593102] transition-colors cursor-pointer">
                 <ArrowUpRight size={15} /> Share Wishlist
               </button>
               <button onClick={clearAll} className="flex items-center gap-1.5 text-[#B59A78] hover:text-red-500 transition-colors cursor-pointer">
@@ -336,13 +336,13 @@ export default function WishlistPage() {
 
           {loading ? (
             <div className="py-16 sm:py-20 text-center flex flex-col items-center justify-center gap-3">
-              <Loader2 size={32} className="text-[#2D3A1B] animate-spin" />
+              <Loader2 size={32} className="text-[#593102] animate-spin" />
               <p className="text-[15px] text-[#B59A78]">Loading your wishlist...</p>
             </div>
           ) : apiError ? (
             <div className="py-16 sm:py-20 text-center">
               <p className="text-[16px] text-red-500 mb-4">{apiError}</p>
-              <button onClick={fetchWishlist} className="inline-block mt-4 text-[15px] font-semibold text-[#2D3A1B] hover:underline cursor-pointer">
+              <button onClick={fetchWishlist} className="inline-block mt-4 text-[15px] font-semibold text-[#593102] hover:underline cursor-pointer">
                 Try Again
               </button>
             </div>
@@ -350,7 +350,7 @@ export default function WishlistPage() {
             <div className="py-16 sm:py-20 text-center">
               <Heart size={40} className="mx-auto text-[#E7D8C2] mb-4" />
               <p className="text-[16px] text-[#B59A78]">Your wishlist is empty.</p>
-              <Link href="/shop" className="inline-block mt-4 text-[15px] font-semibold text-[#2D3A1B] hover:underline">
+              <Link href="/shop" className="inline-block mt-4 text-[15px] font-semibold text-[#593102] hover:underline">
                 Continue Shopping
               </Link>
             </div>
@@ -469,7 +469,7 @@ export default function WishlistPage() {
                         <button
                           onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
                           disabled={actionLoading === item.productId}
-                          className="shrink-0 flex items-center justify-center gap-2 border border-[#2D3A1B] text-[#2D3A1B] text-[14px] font-semibold px-6 py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="shrink-0 flex items-center justify-center gap-2 border border-[#593102] text-[#593102] text-[14px] font-semibold px-6 py-3 rounded-xl hover:bg-[#FFF8EF] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {actionLoading === item.productId ? (
                             <Loader2 size={16} className="animate-spin" />
@@ -498,10 +498,10 @@ export default function WishlistPage() {
             <Image src="/wishlist1.png" alt="Refer and earn" width={110} height={110} className="shrink-0 w-20 h-20 sm:w-[110px] sm:h-[110px] object-contain" />
             <div>
               <p className="text-[17px] sm:text-[19px] font-bold text-[#3C2015]">Refer &amp; Earn Rewards!</p>
-              <p className="text-[13px] sm:text-[15px] text-[#2D3A1B] mt-1 sm:mt-1.5">
-                Refer your friends and get <span className="text-[#2D3A1B] font-semibold">10% off</span> on their first order.
+              <p className="text-[13px] sm:text-[15px] text-[#593102] mt-1 sm:mt-1.5">
+                Refer your friends and get <span className="text-[#593102] font-semibold">10% off</span> on their first order.
               </p>
-              <button onClick={referNow} className="mt-3 sm:mt-4 bg-[#2D3A1B] hover:bg-[#C98715] text-white text-[14px] sm:text-[15px] font-semibold px-6 sm:px-7 py-2.5 sm:py-3 rounded-xl transition-colors cursor-pointer w-full sm:w-auto">
+              <button onClick={referNow} className="mt-3 sm:mt-4 bg-[#593102] hover:bg-[#C98715] text-white text-[14px] sm:text-[15px] font-semibold px-6 sm:px-7 py-2.5 sm:py-3 rounded-xl transition-colors cursor-pointer w-full sm:w-auto">
                 Refer Now
               </button>
             </div>

@@ -78,7 +78,7 @@ function AddressCard({
         <div className="flex flex-col justify-between rounded-2xl border border-[#F0E2CC] bg-white p-5 sm:p-6 shadow-sm h-full">
             <div>
                 <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#593102]">
                         <TypeIcon size={18} />
                     </div>
                     {address.isDefault && (
@@ -109,7 +109,7 @@ function AddressCard({
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => onEdit(address)}
-                        className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#2D3A1B] transition"
+                        className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#593102] transition"
                     >
                         <Pencil size={13} />
                         Edit
@@ -125,14 +125,14 @@ function AddressCard({
 
                 <div>
                     {address.isDefault ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#2D3A1B]/10 px-3 py-1.5 text-xs font-bold text-[#2D3A1B]">
-                            <CheckCircle size={14} className="text-[#2D3A1B]" />
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#593102]/10 px-3 py-1.5 text-xs font-bold text-[#593102]">
+                            <CheckCircle size={14} className="text-[#593102]" />
                             Default Address
                         </span>
                     ) : (
                         <button
                             onClick={() => onSetDefault(address.id)}
-                            className="flex h-8 items-center justify-center rounded-lg border border-[#2D3A1B] px-3 text-xs font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                            className="flex h-8 items-center justify-center rounded-lg border border-[#593102] px-3 text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
                         >
                             Set Default
                         </button>
@@ -147,7 +147,7 @@ function AddressCard({
 function AddNewAddressCard({ onAdd }: { onAdd: () => void }) {
     return (
         <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E7D3AE] bg-[#FFF8EF] p-6 text-center h-full min-h-[260px]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#593102]">
                 <Plus size={22} />
             </div>
             <h3 className="mt-4 font-serif text-lg font-bold text-[#3C2015]">
@@ -158,7 +158,7 @@ function AddNewAddressCard({ onAdd }: { onAdd: () => void }) {
             </p>
             <button
                 onClick={onAdd}
-                className="mt-5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#2D3A1B] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition"
+                className="mt-5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#593102] px-4 text-xs font-bold text-white hover:bg-[#C98715] transition"
             >
                 <Plus size={14} />
                 Add Address
@@ -259,7 +259,7 @@ function AddressModal({
             >
                 <div className="flex items-center justify-between border-b border-[#F0E2CC] px-4 sm:px-6 py-4 sm:py-5 bg-[#FFFCF8] rounded-t-3xl shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#2D3A1B]">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBE4B8] text-[#593102]">
                             <MapPin size={20} />
                         </div>
                         <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#3C2015]">
@@ -285,7 +285,7 @@ function AddressModal({
                                 onChange={(e) =>
                                     setForm({ ...form, type: e.target.value as AddressType })
                                 }
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                             >
                                 <option value="Home">🏠 Home</option>
                                 <option value="Office">💼 Office</option>
@@ -300,7 +300,7 @@ function AddressModal({
                                 type="text"
                                 value={form.label}
                                 onChange={(e) => setForm({ ...form, label: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                                 placeholder="My Home"
                                 required
                             />
@@ -316,7 +316,7 @@ function AddressModal({
                                 type="text"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                                 placeholder="John Doe"
                                 required
                             />
@@ -329,7 +329,7 @@ function AddressModal({
                                 type="tel"
                                 value={form.phone}
                                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                                 placeholder="+91 98765 43210"
                                 required
                             />
@@ -347,7 +347,7 @@ function AddressModal({
                                     value={line}
                                     onChange={(e) => handleLineChange(idx, e.target.value)}
                                     placeholder={`Line ${idx + 1}`}
-                                    className="flex-1 rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40 transition"
+                                    className="flex-1 rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                                 />
                                 {form.lines.length > 2 && (
                                     <button
@@ -363,7 +363,7 @@ function AddressModal({
                         <button
                             type="button"
                             onClick={addLine}
-                            className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-[#2D3A1B] hover:text-[#C98715] transition"
+                            className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-[#593102] hover:text-[#C98715] transition"
                         >
                             <Plus size={16} />
                             Add line
@@ -376,7 +376,7 @@ function AddressModal({
                             id="default-address"
                             checked={form.isDefault}
                             onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
-                            className="h-5 w-5 rounded border-[#D4C5B2] text-[#2D3A1B] focus:ring-2 focus:ring-[#2D3A1B]/40 accent-[#2D3A1B] cursor-pointer"
+                            className="h-5 w-5 rounded border-[#D4C5B2] text-[#593102] focus:ring-2 focus:ring-[#593102]/40 accent-[#593102] cursor-pointer"
                         />
                         <label htmlFor="default-address" className="text-sm font-medium text-[#3C2015] cursor-pointer">
                             Set as default
@@ -393,7 +393,7 @@ function AddressModal({
                         </button>
                         <button
                             type="submit"
-                            className="w-full sm:w-auto flex-1 rounded-xl bg-[#2D3A1B] px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-[#C98715] transition"
+                            className="w-full sm:w-auto flex-1 rounded-xl bg-[#593102] px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-[#C98715] transition"
                         >
                             {initialData ? "Update" : "Save"}
                         </button>
@@ -418,7 +418,7 @@ function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick
         <div className="space-y-4 w-full">
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -427,7 +427,7 @@ function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick
                     <p className="text-xs text-[#B59A78] break-all">
                         {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
-                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline">
+                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
                     </button>
@@ -436,21 +436,21 @@ function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick
 
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm flex flex-col justify-between">
                 <nav className="space-y-1">
-                    <Link href="/account" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/account" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors">
                         <Package size={18} className="shrink-0" />
                         <span>My Orders</span>
                     </Link>
 
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#2D3A1B]">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#593102]">
                         <MapPin size={18} className="shrink-0" />
                         <span>My Addresses</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                     </div>
-                    <Link href="/wishlist" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/wishlist" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors">
                         <Heart size={18} className="shrink-0" />
                         <span>Wishlist</span>
                     </Link>
-                    <Link href="/account/privacy" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] transition-colors">
+                    <Link href="/account/privacy" onClick={handleClick} className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors">
                         <Settings size={18} className="shrink-0" />
                         <span>Policy Center</span>
                     </Link>
@@ -835,7 +835,7 @@ export default function MyAddressesPage() {
             >
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#2D3A1B]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#593102]">
                             {getInitials({ name: userData.fullName || "Customer", mobile: userData.mobile || "" })}
                         </div>
                         <div>
@@ -847,7 +847,7 @@ export default function MyAddressesPage() {
                     </div>
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-10 items-center gap-2 rounded-xl bg-[#2D3A1B] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                        className="flex h-10 items-center gap-2 rounded-xl bg-[#593102] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
                     >
                         <Menu size={16} />
                         Menu
@@ -920,7 +920,7 @@ export default function MyAddressesPage() {
                                         placeholder="Search address"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-10 pr-4 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#2D3A1B]/40"
+                                        className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-10 pr-4 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40"
                                     />
                                     <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#B59A78]" />
                                 </div>
@@ -929,7 +929,7 @@ export default function MyAddressesPage() {
                                         setEditingAddress(null);
                                         setModalOpen(true);
                                     }}
-                                    className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#2D3A1B] px-4 text-sm font-bold text-white hover:bg-[#C98715] transition"
+                                    className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#593102] px-4 text-sm font-bold text-white hover:bg-[#C98715] transition"
                                 >
                                     <Plus size={16} />
                                     Add New Address

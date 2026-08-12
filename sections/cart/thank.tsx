@@ -216,7 +216,7 @@ export default function OrderConfirmation() {
               <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row sm:justify-between">
                 <Link
                   href="/shop"
-                  className="flex h-12 items-center justify-center gap-2 rounded-lg border border-[#2D3A1B] px-6 text-[14px] font-bold text-[#2D3A1B] hover:bg-[#FFF8EF] transition"
+                  className="flex h-12 items-center justify-center gap-2 rounded-lg border border-[#593102] px-6 text-[14px] font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
                 >
                   <ShoppingCart size={16} />
                   Continue Shopping
@@ -271,7 +271,7 @@ export default function OrderConfirmation() {
               <div className="mt-6 space-y-3 border-t border-[#EEF1F4] pt-5 text-[13px] text-[#6F7786]">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <strong className="text-[#2D3A1B]">
+                  <strong className="text-[#593102]">
                     ₹{subtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
@@ -327,17 +327,17 @@ export default function OrderConfirmation() {
                   {/* Trust Badges */}
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <span className="p-1">
-                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
                       <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
                     </span>
                     <span className="p-1">
-                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">Easy Returns</p>
                       <p className="text-[9px] text-[#9AA3AF]">Hassle-free returns</p>
                     </span>
                     <span className="p-1">
-                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#2D3A1B]" />
+                      <Leaf className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
                       <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
                     </span>
@@ -348,13 +348,13 @@ export default function OrderConfirmation() {
                     <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
                     <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
                       <p className="flex items-center gap-2">
-                        <Phone size={16} className="text-[#2D3A1B]" /> +91 98765 43210
+                        <Phone size={16} className="text-[#593102]" /> +91 98765 43210
                       </p>
                       <p className="flex items-center gap-2">
-                        <Mail size={16} className="text-[#2D3A1B]" /> connect@honeyveda.in
+                        <Mail size={16} className="text-[#593102]" /> connect@honeyveda.in
                       </p>
                       <p className="flex items-center gap-2">
-                        <Clock size={16} className="text-[#2D3A1B]" /> Mon - Sat : 9AM - 7PM
+                        <Clock size={16} className="text-[#593102]" /> Mon - Sat : 9AM - 7PM
                       </p>
                     </div>
                     <div className="absolute bottom-0 right-0 opacity-100">

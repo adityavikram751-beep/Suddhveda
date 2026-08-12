@@ -41,12 +41,12 @@ export default function ProcessSection() {
           {/* LEFT - Steps */}
           <div>
             {/* Label */}
-            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#2D3A1B] uppercase text-center lg:text-left">
+            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#593102] uppercase text-center lg:text-left">
               From Hive to Bottle
             </p>
 
             {/* Heading */}
-            <h2 className="mt-3 text-[28px] sm:text-[34px] lg:text-[36px] font-serif leading-[1.1] text-[#233821] tracking-[-0.02em] text-center lg:text-left lg:whitespace-nowrap">
+            <h2 className="mt-3 text-[28px] sm:text-[34px] lg:text-[36px] font-serif leading-[1.1] text-[#593102] tracking-[-0.02em] text-center lg:text-left lg:whitespace-nowrap">
               Pure Honey, Thoughtfully Crafted
             </h2>
 
@@ -68,19 +68,19 @@ export default function ProcessSection() {
                           bg-[#FBEEDF]
                           flex items-center justify-center
                           transition-all duration-300
-                          group-hover:bg-[#2D3A1B]/10
+                          group-hover:bg-[#593102]/10
                           group-hover:scale-105
                           group-hover:shadow-lg
                         "
                       >
                         <Icon 
                           size={28} 
-                          className="text-[#2D3A1B] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
+                          className="text-[#593102] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" 
                         />
                       </div>
 
                       {/* Title */}
-                      <h4 className="mt-3 text-[15px] md:text-[16px] font-semibold text-[#233821] leading-tight transition-colors duration-300 group-hover:text-[#2D3A1B]">
+                      <h4 className="mt-3 text-[15px] md:text-[16px] font-semibold text-[#593102] leading-tight transition-colors duration-300 group-hover:text-[#593102]">
                         {step.title}
                       </h4>
 
@@ -99,7 +99,7 @@ export default function ProcessSection() {
                         />
                         <ChevronRight
                           size={18}
-                          className="hidden lg:block text-[#D7CBBB] mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#2D3A1B]"
+                          className="hidden lg:block text-[#D7CBBB] mx-2 md:mx-3 shrink-0 transition-colors duration-300 hover:text-[#593102]"
                         />
                       </div>
                     )}
@@ -127,7 +127,7 @@ export default function ProcessSection() {
       </div>
 
       {/* Decorative bottom border */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2D3A1B]/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#593102]/20 to-transparent" />
     </section>
   );
 }

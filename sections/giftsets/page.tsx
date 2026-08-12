@@ -31,7 +31,7 @@ export default function Hero() {
             >
               Celebrate Every Moment
               <br className="hidden sm:inline" />
-              <span className="text-[#3E5C2C]">
+              <span className="text-[#593102]">
                 {" "}with Nature&apos;s Sweetest Gift
               </span>
             </h1>
@@ -74,7 +74,7 @@ export default function Hero() {
 
               {/* Floating badge card */}
               <div className="absolute -bottom-6 left-4 sm:-left-10 max-w-[240px] rounded-xl bg-[#F3ECE0] px-5 py-4 shadow-lg hidden sm:block">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#3E5C2C]">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[#593102]">
                   Limited Edition
                 </p>
                 <p className="mt-1 font-serif text-[17px] font-semibold leading-snug text-[#1E1B16]">

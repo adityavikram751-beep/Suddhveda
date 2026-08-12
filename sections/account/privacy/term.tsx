@@ -132,7 +132,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
             {/* Profile Card */}
             <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#2D3A1B]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
@@ -144,7 +144,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     <Link
                         href="/account/editprofile"
                         onClick={handleClick}
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#2D3A1B] hover:underline"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         Edit profile
@@ -162,7 +162,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                                 key={link.label}
                                 href={link.href}
                                 onClick={handleClick}
-                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#2D3A1B] hover:bg-[#FFF8EF] hover:text-[#2D3A1B] transition-all duration-200"
+                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] hover:text-[#593102] transition-all duration-200"
                             >
                                 <Icon size={20} className="shrink-0" />
                                 <span>{link.label}</span>
@@ -171,10 +171,10 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     })}
 
                     {/* Policy Center - active (parent section) */}
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#2D3A1B]">
+                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-3 text-sm font-medium text-[#593102]">
                         <Settings size={20} className="shrink-0" />
                         <span>Policy Center</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#2D3A1B]" />
+                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
                     </div>
                 </nav>
 
@@ -394,7 +394,7 @@ export default function TermsConditionsPage() {
                     </div>
                     <button
                         onClick={() => setMobileMenuOpen(true)}
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#2D3A1B] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
+                        className="flex h-9 items-center gap-1.5 rounded-xl bg-[#593102] px-3 text-xs font-bold text-white shadow-sm hover:bg-[#C98715] transition"
                     >
                         <Menu size={15} />
                         Menu
@@ -457,13 +457,13 @@ export default function TermsConditionsPage() {
 
                         {/* Breadcrumb - desktop only */}
                         <div className="hidden lg:flex items-center gap-2 text-sm text-[#B59A78]">
-                            <Link href="/" className="hover:text-[#2D3A1B] transition-colors">Home</Link>
+                            <Link href="/" className="hover:text-[#593102] transition-colors">Home</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account" className="hover:text-[#2D3A1B] transition-colors">My Account</Link>
+                            <Link href="/account" className="hover:text-[#593102] transition-colors">My Account</Link>
                             <ChevronRight size={14} />
-                            <Link href="/account/privacy" className="hover:text-[#2D3A1B] transition-colors">Policy Center</Link>
+                            <Link href="/account/privacy" className="hover:text-[#593102] transition-colors">Policy Center</Link>
                             <ChevronRight size={14} />
-                            <span className="font-semibold text-[#2D3A1B]">Terms &amp; Conditions</span>
+                            <span className="font-semibold text-[#593102]">Terms &amp; Conditions</span>
                         </div>
 
                         {/* Header - desktop only */}
@@ -483,12 +483,12 @@ export default function TermsConditionsPage() {
                                 return (
                                     <div key={section.number}>
                                         <div className="flex items-start gap-3">
-                                            <span className="mt-0.5 flex h-6 w-8 shrink-0 items-center justify-center rounded-md bg-[#FBE4B8] text-[11px] font-bold text-[#2D3A1B]">
+                                            <span className="mt-0.5 flex h-6 w-8 shrink-0 items-center justify-center rounded-md bg-[#FBE4B8] text-[11px] font-bold text-[#593102]">
                                                 {section.number}
                                             </span>
                                             <div className="flex-1">
                                                 <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-[#3C2015]">
-                                                    <Icon size={17} className="text-[#2D3A1B]" />
+                                                    <Icon size={17} className="text-[#593102]" />
                                                     {section.title}
                                                 </h2>
                                                 {section.body.map((para, idx) => (
@@ -506,7 +506,7 @@ export default function TermsConditionsPage() {
                                                                 key={idx}
                                                                 className="flex items-start gap-2 text-sm leading-relaxed text-[#5C4A3A]"
                                                             >
-                                                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#2D3A1B]" />
+                                                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#593102]" />
                                                                 {bullet}
                                                             </li>
                                                         ))}
@@ -522,12 +522,12 @@ export default function TermsConditionsPage() {
                             {/* Contact Information */}
                             <div>
                                 <div className="flex items-start gap-3">
-                                    <span className="mt-0.5 flex h-6 w-8 shrink-0 items-center justify-center rounded-md bg-[#FBE4B8] text-[11px] font-bold text-[#2D3A1B]">
+                                    <span className="mt-0.5 flex h-6 w-8 shrink-0 items-center justify-center rounded-md bg-[#FBE4B8] text-[11px] font-bold text-[#593102]">
                                         07
                                     </span>
                                     <div className="flex-1">
                                         <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-[#3C2015]">
-                                            <Phone size={17} className="text-[#2D3A1B]" />
+                                            <Phone size={17} className="text-[#593102]" />
                                             Contact Information
                                         </h2>
                                         <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-10">
