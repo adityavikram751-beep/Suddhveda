@@ -96,19 +96,14 @@ export default function GiftSetSection() {
 
   return (
     <>
-      {/* ===== TOP THIN LINE ===== */}
-
-      <section className="relative overflow-hidden  ">
-       
-       
-
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3]">
         {/* ================= FEATURES STRIP ================= */}
-        <div className="  border-t border-[#00000033] bg-white">
+        <div className="border-t border-b border-[#EADCC9]/60 bg-white/80 backdrop-blur-md">
           <div className="max-w-[1480px] mx-auto w-full px-6 lg:px-16 py-8 md:py-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature) => (
-                <div key={feature.id} className="flex items-center gap-4">
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0">
+                <div key={feature.id} className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md transition-all">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0 border border-[#D49313]/40 shadow-xs">
                     <Image
                       src={feature.image}
                       alt={feature.title}
@@ -117,13 +112,12 @@ export default function GiftSetSection() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102] leading-tight">
+                    <span className="font-serif font-extrabold text-[15px] sm:text-[16px] text-[#593102] leading-tight">
                       {feature.title}
                     </span>
-                    <span className="text-[#8D7F73] text-[12px] sm:text-[13px] mt-0.5">
+                    <span className="text-[#7A6A5C] text-[12px] sm:text-[13px] font-medium mt-1">
                       {feature.description}
                     </span>
-                    
                   </div>
                 </div>
               ))}
@@ -132,41 +126,43 @@ export default function GiftSetSection() {
         </div>
 
         {/* ================= FAQ SECTION ================= */}
-        <div className="bg-white border-t  border-[#00000033]  py-16 md:py-20">
-          <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
+        <div className="py-16 md:py-24 bg-gradient-to-b from-[#FAF6F0] to-[#FDF9F3]">
+          <div className="max-w-[1040px] mx-auto w-full px-6 lg:px-8">
             {/* Heading */}
-            <div className="text-center">
-              <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#593102]">
-                FAQs
+            <div className="text-center flex flex-col items-center">
+              <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-3">
+                FREQUENTLY ASKED QUESTIONS
+              </span>
+              <h2 className="text-[32px] sm:text-[40px] md:text-[46px] font-serif font-extrabold text-[#593102] leading-tight">
+                Got Questions? We Have Answers
               </h2>
-              <div className="flex items-center justify-center gap-3 mt-4">
-                <div className="w-12 md:w-16 h-px bg-[#593102]" />
-                <span className="text-[#593102]">✦</span>
-                <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
-              </div>
+              <div className="w-24 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-4 rounded-full" />
             </div>
 
-            {/* FAQ Grid */}
-            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-2 mt-12">
+            {/* FAQ Accordion Grid */}
+            <div className="grid sm:grid-cols-2 gap-5 mt-10">
               {faqs.map((faq) => (
-                <div key={faq.id} className="border-b border-[#E6D2B8]/60 py-4">
+                <div key={faq.id} className="rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-md p-5 shadow-2xs hover:shadow-md transition-all">
                   <button
+                    type="button"
                     onClick={() => toggleFaq(faq.id)}
-                    className="w-full flex items-center justify-between gap-4 text-left"
+                    className="w-full flex items-center justify-between gap-4 text-left cursor-pointer"
                   >
-                    <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102]">
+                    <span className="font-serif font-extrabold text-[15px] sm:text-[16px] text-[#593102] leading-snug">
                       {faq.question}
                     </span>
-                    <FiChevronDown
-                      size={18}
-                      className={`text-[#D49313] flex-shrink-0 transition-transform duration-300 ${
-                        expandedId === faq.id ? "rotate-180" : ""
-                      }`}
-                    />
+                    <div className="w-8 h-8 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
+                      <FiChevronDown
+                        size={18}
+                        className={`text-[#D49313] transition-transform duration-300 ${
+                          expandedId === faq.id ? "rotate-180" : ""
+                        }`}
+                      />
+                    </div>
                   </button>
 
                   {expandedId === faq.id && (
-                    <p className="mt-3 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6]">
+                    <p className="mt-3 pt-3 border-t border-[#EADCC9]/60 text-[13px] sm:text-[14px] text-[#6E5D4F] leading-[1.65] font-medium">
                       {faq.answer}
                     </p>
                   )}

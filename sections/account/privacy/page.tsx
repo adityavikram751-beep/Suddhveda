@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
     Package,
@@ -75,6 +76,7 @@ function getInitials(fullName: string) {
 
 // ---------- Sidebar Content Component (Shared for Desktop & Mobile Drawer) ----------
 function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?: () => void }) {
+    const pathname = usePathname();
     const fullName = userData?.fullName || "Rahul Sharma";
     const email = userData?.email || "Not Provided";
     const initials = getInitials(fullName);
@@ -86,21 +88,21 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
     return (
         <div className="space-y-4 w-full">
             {/* Profile Card */}
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
+            <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-white shadow-md">
                         {initials}
                     </div>
-                    <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
+                    <p className="font-serif text-lg font-extrabold text-[#593102] capitalize">
                         {fullName}
                     </p>
-                    <p className="text-xs text-[#B59A78] break-all">
+                    <p className="text-xs text-[#6E5D4F] font-medium break-all">
                         {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
                     <Link
                         href="/account/editprofile"
                         onClick={handleClick}
-                        className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline"
+                        className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#D49313] hover:underline cursor-pointer"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         Edit profile
@@ -109,33 +111,35 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
             </div>
 
             {/* Nav + Logout Card */}
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 flex flex-col justify-between shadow-sm">
-                <nav className="space-y-1">
+            <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 flex flex-col justify-between shadow-xs">
+                <nav className="space-y-1.5">
                     {sidebarLinks.map((link) => {
                         const Icon = link.icon;
+                        const isActive = link.href === "/account"
+                            ? pathname === "/account" || pathname === "/account/"
+                            : pathname === link.href || pathname?.startsWith(`${link.href}/`);
                         return (
                             <Link
                                 key={link.label}
                                 href={link.href}
                                 onClick={handleClick}
-                                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-[#593102] hover:bg-[#FFF8EF] transition-colors"
+                                className={`
+                                    relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
+                                    ${isActive
+                                        ? "bg-[#FAF0DC] text-[#593102] font-bold border-l-4 border-[#D49313] shadow-xs"
+                                        : "text-[#593102] hover:bg-[#FAF5EC] hover:text-[#D49313]"
+                                    }
+                                `}
                             >
-                                <Icon size={18} className="shrink-0" />
+                                <Icon size={18} className={`shrink-0 ${isActive ? "text-[#D49313]" : "text-[#8D7F73]"}`} />
                                 <span>{link.label}</span>
                             </Link>
                         );
                     })}
-
-                    {/* Policy Center - active */}
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#593102]">
-                        <Settings size={18} className="shrink-0" />
-                        <span>Policy Center</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
-                    </div>
                 </nav>
 
-                <div className="mt-8 pt-4 border-t border-[#F0E2CC]">
-                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                <div className="mt-8 pt-4 border-t border-[#EADCC9]/60">
+                    <button className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-bold text-red-500 transition-colors hover:bg-red-50 cursor-pointer">
                         <LogOut size={18} className="shrink-0" />
                         Logout
                     </button>
@@ -383,25 +387,10 @@ export default function PolicyCenterPage() {
                     </div>
                 )}
 
-                <div ref={rowRef} className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start relative">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start relative">
 
-                    {/* Placeholder: reserves the column width/height in the grid row
-                        while the real sidebar below is pinned (fixed/absolute) and
-                        therefore removed from normal document flow. Prevents the
-                        main content from jumping. */}
-                    {sidebarPinned && (
-                        <div
-                            className="hidden lg:block w-full"
-                            style={{ height: placeholderHeight }}
-                        />
-                    )}
-
-                    {/* --- DESKTOP SIDEBAR (JS-driven sticky) --- */}
-                    <aside
-                        ref={sidebarRef}
-                        style={sidebarStyle}
-                        className="hidden lg:block w-full max-h-[calc(100vh-96px-24px)] overflow-y-auto"
-                    >
+                    {/* Desktop Sidebar (Pure CSS Sticky - 100% smooth, 0 jitter) */}
+                    <aside className="hidden lg:block w-[280px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
                         <SidebarContent userData={formData} />
                     </aside>
 
@@ -410,10 +399,14 @@ export default function PolicyCenterPage() {
 
                         {/* Header */}
                         <div className="space-y-1">
-                            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#3C2015]">
+                            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
+                                <FileText size={13} className="text-[#D49313]" />
+                                <span>LEGAL &amp; TRUST</span>
+                            </div>
+                            <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#593102]">
                                 Policy Center
                             </h1>
-                            <p className="text-base text-[#B59A78]">
+                            <p className="text-base text-[#6E5D4F] font-medium">
                                 Access all important policies and legal information in one place.
                             </p>
                         </div>
@@ -426,20 +419,20 @@ export default function PolicyCenterPage() {
                                     <Link
                                         key={policy.title}
                                         href={policy.href}
-                                        className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8 rounded-2xl border border-[#F0E2CC] bg-white p-6 sm:p-9 hover:border-[#593102] hover:shadow-lg transition-all duration-300 group"
+                                        className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-8 rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-6 sm:p-9 hover:border-[#D49313] hover:shadow-xl transition-all duration-300 group cursor-pointer"
                                     >
-                                        <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-[#593102] group-hover:scale-105 transition-transform duration-300">
+                                        <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl bg-[#FAF0DC] border border-[#D49313]/40 text-[#D49313] group-hover:bg-gradient-to-r group-hover:from-[#D49313] group-hover:to-[#593102] group-hover:text-white transition-all duration-300 shadow-2xs">
                                             <Icon size={32} />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#3C2015] group-hover:text-[#593102] transition-colors break-words">
+                                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#593102] group-hover:text-[#D49313] transition-colors break-words">
                                                 {policy.title}
                                             </h3>
-                                            <p className="mt-1.5 sm:mt-2 text-sm sm:text-base text-[#8A7460] leading-relaxed break-words">
+                                            <p className="mt-1.5 sm:mt-2 text-sm sm:text-base text-[#6E5D4F] font-medium leading-relaxed break-words">
                                                 {policy.description}
                                             </p>
                                         </div>
-                                        <ChevronRight size={24} className="hidden sm:block shrink-0 text-[#593102] group-hover:translate-x-1 transition-transform duration-300" />
+                                        <ChevronRight size={24} className="hidden sm:block shrink-0 text-[#D49313] group-hover:translate-x-1.5 transition-transform duration-300" />
                                     </Link>
                                 );
                             })}

@@ -420,7 +420,7 @@ export default function CuratedGift() {
   const filledCount = selectedSlots.filter(Boolean).length;
 
   return (
-    <section className="relative bg-gradient-to-b from-[#FDF5E9] via-[#FAF0DC]/50 to-[#FDF5E9] py-16 sm:py-24 md:py-28 transition-colors overflow-hidden">
+    <section id="curated-gift-boxes" className="relative bg-gradient-to-b from-[#FDF5E9] via-[#FAF0DC]/50 to-[#FDF5E9] py-16 sm:py-24 md:py-28 transition-colors overflow-hidden scroll-mt-20">
       {/* Background Decorative Glow Blobs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />

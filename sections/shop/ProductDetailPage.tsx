@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   Info,
   Box,
   Heart,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Share2,
   Play,
 } from "lucide-react";
@@ -28,9 +30,9 @@ const accordionSections = [
   {
     key: "nutrition",
     icon: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#D08722" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[22px] w-[22px]">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        <circle cx="12" cy="11" r="3"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#D49313" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-[22px] w-[22px]">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <circle cx="12" cy="11" r="3" />
       </svg>
     ),
     title: "Nutritional Info",
@@ -69,6 +71,31 @@ export default function ProductDetailPage({
 }) {
   const { cartItems, addToCart, updateQuantity } = useCart();
   const router = useRouter();
+
+  // Recommendations Carousel Ref & Auto-scroll state
+  const recSliderRef = useRef<HTMLDivElement>(null);
+  const [isRecHovered, setIsRecHovered] = useState(false);
+
+  // Recommendations Auto-Scroll (Every 2 seconds, hidden scrollbar, pauses on hover)
+  useEffect(() => {
+    if (!recommendations || recommendations.length === 0 || isRecHovered) return;
+    const interval = setInterval(() => {
+      if (recSliderRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = recSliderRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const cardsVisible = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1;
+        const step = (clientWidth + 24) / cardsVisible;
+
+        if (scrollLeft + step >= maxScroll - 15) {
+          recSliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          recSliderRef.current.scrollBy({ left: step, behavior: "smooth" });
+        }
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [recommendations, isRecHovered]);
 
   const redirectToLogin = () => {
     router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
@@ -157,9 +184,9 @@ export default function ProductDetailPage({
         const products = data?.data?.products || [];
         const ids = products.map((item: any) => item.productId?._id || item.productId || item._id);
         setWishlistIds(ids);
-        
-        window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-          detail: { count: ids.length } 
+
+        window.dispatchEvent(new CustomEvent('wishlist-count-update', {
+          detail: { count: ids.length }
         }));
       }
     } catch (err) {
@@ -274,11 +301,11 @@ export default function ProductDetailPage({
         if (res.ok) {
           const newCount = wishlistIds.length - 1;
           setWishlistIds((prev) => prev.filter((id) => id !== productId));
-          
-          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-            detail: { count: newCount } 
+
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', {
+            detail: { count: newCount }
           }));
-          
+
           showToastMessage("Removed from wishlist ❌", "success");
         }
       } else {
@@ -296,11 +323,11 @@ export default function ProductDetailPage({
         if (res.ok) {
           const newCount = wishlistIds.length + 1;
           setWishlistIds((prev) => [...prev, productId]);
-          
-          window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-            detail: { count: newCount } 
+
+          window.dispatchEvent(new CustomEvent('wishlist-count-update', {
+            detail: { count: newCount }
           }));
-          
+
           showToastMessage("Added to wishlist! ❤️", "success");
         }
       }
@@ -375,156 +402,177 @@ export default function ProductDetailPage({
     });
   };
 
+  const scrollRecLeft = () => {
+    if (recSliderRef.current) {
+      recSliderRef.current.scrollBy({ left: -320, behavior: "smooth" });
+    }
+  };
+
+  const scrollRecRight = () => {
+    if (recSliderRef.current) {
+      recSliderRef.current.scrollBy({ left: 320, behavior: "smooth" });
+    }
+  };
+
   if (!product) return null;
 
   return (
-    <main className="bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans">
-      <div className="max-w-[1350px] mx-auto px-4 py-6">
-        {/* MAIN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-[100px_1fr_1fr] gap-6 lg:gap-8">
-          
-          {/* THUMBNAILS (Desktop vertical column / Mobile horizontal scroll) */}
-          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none">
-            {mediaList.map((item: any) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedMedia(item)}
-                className={`relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded border bg-white transition-colors ${
-                  selectedMedia?.id === item.id
-                    ? "border-[#F1592B]"
-                    : "border-[#EEE7DA] hover:border-[#B8860B]"
-                }`}
-              >
-                <Image
-                  src={item.type === "video" ? item.thumbnail : item.url}
-                  alt={product.product_name || "Thumbnail"}
-                  width={68}
-                  height={68}
-                  className="h-full w-full object-cover"
-                />
-                {item.type === "video" && (
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                    <Play size={16} className="text-white fill-white" />
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
+    <main className="bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth">
+      <div className="max-w-[1350px] mx-auto px-4 py-3 sm:py-4">
+        {/* MAIN GRID - DESKTOP STICKY GALLERY */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
-          {/* MAIN MEDIA DISPLAY */}
-          <div className="bg-[#FFF5E6] rounded-2xl p-4 md:p-8 flex items-center justify-center relative h-[380px] sm:h-[480px] lg:h-[630px] overflow-hidden">
-            {selectedMedia?.type === "video" ? (
-              <video
-                src={selectedMedia.url}
-                controls
-                autoPlay
-                loop
-                muted
-                className="w-full h-full object-contain rounded-2xl"
-              />
-            ) : (
-              selectedMedia?.url && (
-                <Image
-                  src={selectedMedia.url}
-                  alt={product.product_name || "Product Media"}
-                  fill
-                  className="object-cover rounded-2xl"
-                  priority
-                />
-              )
-            )}
-          </div>
+          {/* LEFT MEDIA COLUMN (SMOOTH HARDWARE ACCELERATED STICKY BELOW HEADER) */}
+          <div className="lg:col-span-6 flex flex-col-reverse lg:flex-row gap-4 lg:sticky lg:top-[110px] lg:self-start z-10 will-change-transform transition-all duration-200 ease-out">
 
-          {/* PRODUCT DETAILS */}
-          <div className="space-y-6 relative bg-white">
-            <div className="flex justify-between items-start w-full gap-4">
-              <h1 className="font-serif text-[28px] sm:text-[32px] md:text-[42px] font-medium text-[#1E1E1E] leading-tight tracking-normal">
-                {product.product_name}
-              </h1>
-              <div className="flex items-center gap-3 mt-1 sm:mt-3 shrink-0">
+            {/* THUMBNAILS (Desktop vertical column / Mobile horizontal scroll) */}
+            <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none shrink-0">
+              {mediaList.map((item: any) => (
                 <button
-                  type="button"
-                  onClick={() => handleToggleWishlist(product._id)}
-                  aria-label="Wishlist"
-                  className="transition-colors"
-                >
-                  <Heart
-                    size={24}
-                    className={`stroke-[1.5] transition-colors ${
-                      wishlistIds.includes(product._id)
-                        ? "fill-[#FF6F3C] text-[#FF6F3C]"
-                        : "text-gray-400 hover:text-[#FF6F3C]"
+                  key={item.id}
+                  onClick={() => setSelectedMedia(item)}
+                  className={`relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-2xl border bg-white transition-colors cursor-pointer ${selectedMedia?.id === item.id
+                      ? "border-[#D49313] ring-2 ring-[#D49313]/40"
+                      : "border-[#EADCC9] hover:border-[#D49313]"
                     }`}
-                  />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Share product"
-                  className="text-gray-400 hover:text-[#B8860B] transition-colors"
                 >
-                  <Share2 size={22} className="stroke-[1.5]" />
+                  <Image
+                    src={item.type === "video" ? item.thumbnail : item.url}
+                    alt={product.product_name || "Thumbnail"}
+                    width={68}
+                    height={68}
+                    className="h-full w-full object-cover"
+                  />
+                  {item.type === "video" && (
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <Play size={16} className="text-white fill-white" />
+                    </div>
+                  )}
                 </button>
+              ))}
+            </div>
+
+            {/* MAIN MEDIA DISPLAY */}
+            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-4 md:p-6 flex items-center justify-center relative w-full h-[380px] sm:h-[480px] lg:h-[540px] overflow-hidden shadow-2xs">
+              {selectedMedia?.type === "video" ? (
+                <video
+                  src={selectedMedia.url}
+                  controls
+                  autoPlay
+                  loop
+                  muted
+                  className="w-full h-full object-contain rounded-2xl"
+                />
+              ) : (
+                selectedMedia?.url && (
+                  <Image
+                    src={selectedMedia.url}
+                    alt={product.product_name || "Product Media"}
+                    fill
+                    className="object-contain p-2 rounded-2xl"
+                    priority
+                  />
+                )
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT PRODUCT DETAILS COLUMN */}
+          <div className="lg:col-span-6 space-y-6 relative">
+            {/* Product Category Tag & Title */}
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-3.5 py-1.5 rounded-full shadow-2xs">
+                <span className="text-[12px] font-black text-[#593102] uppercase tracking-wider">
+                  {getCategoryName(product) || "Pure Honey"}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-start w-full gap-4 pt-1">
+                <h1 className="font-serif text-[32px] sm:text-[38px] md:text-[44px] font-extrabold text-[#593102] leading-tight tracking-tight">
+                  {product.product_name}
+                </h1>
+                <div className="flex items-center gap-3 mt-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleToggleWishlist(product._id)}
+                    aria-label="Wishlist"
+                    className="w-10 h-10 rounded-full bg-[#FAF6F0] border border-[#EADCC9] flex items-center justify-center transition-all hover:border-[#D49313]"
+                  >
+                    <Heart
+                      size={20}
+                      className={`transition-colors ${wishlistIds.includes(product._id)
+                          ? "fill-[#D49313] text-[#D49313]"
+                          : "text-gray-400 hover:text-[#D49313]"
+                        }`}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Share product"
+                    className="w-10 h-10 rounded-full bg-[#FAF6F0] border border-[#EADCC9] flex items-center justify-center text-gray-500 hover:text-[#593102] hover:border-[#D49313] transition-all"
+                  >
+                    <Share2 size={18} />
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Reviews & Offer Badge */}
-            <div className="flex justify-between items-center w-full">
-              <span className="text-[14px] text-[#7A7A7A] font-normal tracking-wide">
+            <div className="flex justify-between items-center w-full pt-1">
+              <span className="text-[14px] text-[#7A6A5C] font-medium tracking-wide">
                 Reviews: {product.total_reviews ?? 0}
               </span>
 
-              {/* 🟢 DYNAMIC OFFER BADGE DISPLAY */}
-              <span className="bg-[#FF6F3C] text-white text-[11px] font-bold px-3 py-1.5 rounded tracking-wide uppercase">
+              {/* DYNAMIC OFFER BADGE DISPLAY */}
+              <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] text-white text-[11px] font-black px-3.5 py-1.5 rounded-full tracking-wide uppercase shadow-2xs">
                 {discountPercent > 0 ? `${discountPercent}% OFF` : "OFFER"}
               </span>
             </div>
 
             {/* Price Block */}
-            <div className="space-y-1">
-              <div className="relative inline-flex items-center text-[13px] text-[#9E9E9E] font-normal">
+            <div className="space-y-1 bg-[#FAF6F0]/60 p-4 rounded-2xl border border-[#EADCC9]/80">
+              <div className="relative inline-flex items-center text-[14px] text-[#7A6A5C] font-medium line-through decoration-gray-400">
                 <span>M.R.P ₹{currentMrp}</span>
-                <span className="absolute left-0 right-[-45px] top-1/2 h-[1px] bg-[#9E9E9E]"></span>
               </div>
-              <div className="text-[38px] sm:text-[44px] font-bold text-[#2A2420] leading-none tracking-tight pt-1">
+              <div className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight pt-1">
                 ₹{currentPrice}
               </div>
               {currentSave > 0 && (
-                <div className="text-[14px] font-bold text-[#FF6F3C] tracking-wide">
-                  You Save ₹{currentSave}
+                <div className="text-[14px] font-extrabold text-[#D49313] tracking-wide">
+                  You Save ₹{currentSave} ({discountPercent}% OFF)
                 </div>
               )}
-              <p className="text-[13px] text-[#909090] font-normal mt-1">
-                Taxes included. <span className="underline cursor-pointer decoration-gray-400">Shipping</span> calculated at checkout.
+              <p className="text-[13px] text-[#7A6A5C] font-medium mt-1">
+                Inclusive of all taxes.
               </p>
             </div>
 
             {/* Delivery Details */}
-            <div className="space-y-2">
-              <h3 className="text-[14px] font-bold text-[#3F3F3F] tracking-normal">
-                Delivery Details
+            <div className="space-y-2.5">
+              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+                Check Delivery Availability
               </h3>
-              <div className="flex flex-col sm:flex-row border border-[#E3DCCE] rounded overflow-hidden bg-white max-w-xl">
+              <div className="flex flex-col sm:flex-row border border-[#EADCC9] rounded-2xl overflow-hidden bg-white max-w-xl shadow-2xs">
                 <input
                   type="text"
-                  placeholder="Enter your pincode"
+                  placeholder="Enter 6-digit Pincode"
                   value={pincode}
                   onChange={(e) => {
                     setPincode(e.target.value);
                     if (pincodeStatus.type) setPincodeStatus({ type: null, message: "" });
                   }}
-                  className="flex-1 px-4 py-3 text-[15px] placeholder-gray-400 font-normal focus:outline-none bg-white text-gray-800"
+                  className="flex-1 px-4 py-3 text-[15px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
                 />
                 <button
                   onClick={handleCheckPincode}
-                  className="bg-[#241A14] text-white px-6 sm:px-9 py-3 text-[13px] font-bold hover:bg-black transition-colors tracking-widest uppercase flex-shrink-0"
+                  className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white px-7 py-3 text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
                 >
                   CHECK
                 </button>
               </div>
               {pincodeStatus.type && (
-                <p className={`text-[12px] mt-1 ${
-                  pincodeStatus.type === "success" ? "text-green-600" : "text-red-500"
-                }`}>
+                <p className={`text-[12px] font-bold mt-1 ${pincodeStatus.type === "success" ? "text-emerald-700" : "text-red-600"
+                  }`}>
                   {pincodeStatus.message}
                 </p>
               )}
@@ -533,22 +581,23 @@ export default function ProductDetailPage({
             {/* Weight Selection */}
             {variants.length > 0 && (
               <div className="space-y-3 pt-1">
-                <h3 className="text-[15px] font-medium text-[#3F3F3F] tracking-normal">Weight</h3>
+                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+                  Select Pack Size
+                </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
                   {variants.map((option: any) => (
                     <button
                       key={option._id}
                       onClick={() => setSelectedVariant(option)}
-                      className={`flex flex-col items-center rounded-md border w-[95px] sm:w-[105px] py-3.5 bg-white transition-all ${
-                        selectedVariant?._id === option._id
-                          ? "border-[#FF6F3C] ring-[1px] ring-[#FF6F3C]"
-                          : "border-gray-200 hover:border-gray-400"
-                      }`}
+                      className={`flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 bg-white transition-all cursor-pointer ${selectedVariant?._id === option._id
+                          ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
+                          : "border-[#EADCC9] hover:border-[#D49313]/60"
+                        }`}
                     >
-                      <span className="text-[13px] font-normal text-gray-600">
+                      <span className="text-[13px] font-extrabold text-[#593102]">
                         {option.weight}{option.unit}
                       </span>
-                      <div className="relative my-2 h-[38px] w-[38px] overflow-hidden rounded">
+                      <div className="relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border border-[#EADCC9]">
                         {mediaList[0]?.url && (
                           <Image
                             src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
@@ -558,7 +607,7 @@ export default function ProductDetailPage({
                           />
                         )}
                       </div>
-                      <span className="text-[13px] font-normal text-gray-600">
+                      <span className="text-[13px] font-bold text-[#D49313]">
                         ₹{option.price}
                       </span>
                     </button>
@@ -567,45 +616,45 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* Quantity & Cart Actions (Hidden on mobile since sticky bottom bar handles it) */}
+            {/* Quantity & Cart Actions */}
             <div className="hidden lg:block space-y-4 pt-2">
-              <h3 className="text-[15px] font-medium text-[#3F3F3F] tracking-normal">Quantity</h3>
-              
+              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+
               <div className="flex gap-4 max-w-xl">
                 {/* Quantity Buttons */}
-                <div className="flex items-center border border-gray-200 rounded bg-white w-[180px] h-[56px] px-2">
+                <div className="flex items-center border border-[#EADCC9] rounded-2xl bg-white w-[160px] h-[56px] px-3 shadow-2xs">
                   <button
                     onClick={decrementQty}
-                    className="p-2 text-gray-400 hover:text-gray-600 text-xl font-light"
+                    className="p-2 text-[#593102] hover:text-[#D49313] text-2xl font-semibold cursor-pointer"
                   >
                     −
                   </button>
-                  <span className="flex-1 text-center font-normal text-[15px] text-gray-800">
+                  <span className="flex-1 text-center font-extrabold text-[16px] text-[#593102]">
                     {selectedQty}
                   </span>
                   <button
                     onClick={incrementQty}
-                    className="p-2 text-gray-400 hover:text-gray-600 text-xl font-light"
+                    className="p-2 text-[#593102] hover:text-[#D49313] text-2xl font-semibold cursor-pointer"
                   >
                     +
                   </button>
                 </div>
-                
+
                 {/* Add To Cart Button */}
                 <button
                   disabled={btnLoading}
                   onClick={() => handleAddToCart(false)}
-                  className="flex-1 bg-[#FF6F3C] text-white h-[56px] rounded font-semibold hover:bg-[#D64A20] transition-colors text-[14px] tracking-wider uppercase disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[15px] tracking-wider uppercase disabled:opacity-50 shadow-md hover:shadow-xl cursor-pointer border border-[#FFD700]/30 active:scale-98 flex items-center justify-center gap-2"
                 >
                   {btnLoading ? "ADDING..." : "ADD TO CART"}
                 </button>
               </div>
 
-              {/* Buy It Now Button */}
+              {/* Buy Now Direct Button */}
               <button
                 disabled={btnLoading}
                 onClick={() => handleAddToCart(true)}
-                className="w-full max-w-xl border border-[#FF6F3C] text-[#FF6F3C] h-[54px] rounded font-semibold hover:bg-[#FFF3EE] transition-colors text-[14px] tracking-wider uppercase bg-white block text-center mt-3 disabled:opacity-50"
+                className="w-full max-w-xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] hover:from-[#D49313] hover:to-[#593102] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[15px] tracking-wider uppercase disabled:opacity-50 shadow-md hover:shadow-xl cursor-pointer mt-3 border border-[#D49313]/30 active:scale-98 flex items-center justify-center gap-2"
               >
                 BUY IT NOW
               </button>
@@ -628,28 +677,28 @@ export default function ProductDetailPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 border border-[#E8E2D5] bg-white overflow-hidden max-w-xl rounded-sm">
               <div className="p-4 sm:p-5 sm:border-r border-b border-[#E8E2D5]">
                 <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="9" strokeDasharray="3 3"/></svg>}
+                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="9" strokeDasharray="3 3" /></svg>}
                   label="AROMA"
                   value="Tropical, fruity"
                 />
               </div>
               <div className="p-4 sm:p-5 border-b border-[#E8E2D5]">
                 <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><line x1="5" y1="9" x2="19" y2="15"/><line x1="5" y1="15" x2="19" y2="15"/></svg>}
+                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><line x1="5" y1="9" x2="19" y2="15" /><line x1="5" y1="15" x2="19" y2="15" /></svg>}
                   label="TASTE NOTE"
                   value="Fruity, sweet, tropical"
                 />
               </div>
               <div className="p-4 sm:p-5 sm:border-r border-b sm:border-b-0 border-[#E8E2D5]">
                 <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="8"/></svg>}
+                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="8" /></svg>}
                   label="SWEETNESS"
                   value="Sweetest, rich aftertaste"
                 />
               </div>
               <div className="p-4 sm:p-5">
                 <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><path d="M12 3v3M12 18v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M3 12h3M18 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>}
+                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><path d="M12 3v3M12 18v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M3 12h3M18 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" /></svg>}
                   label="CRYSTALLIZATION"
                   value="Might crystallize"
                 />
@@ -659,31 +708,33 @@ export default function ProductDetailPage({
             {/* Accordions */}
             <div className="pt-6 max-w-xl">
               <div className="w-full text-center mb-6">
-                <a href="#compare" className="text-[20px] sm:text-[24px] font-normal text-black underline underline-offset-8 tracking-wide inline-block">
-                  Compare honey Flora
+                <a href="#compare" className="font-serif text-[20px] sm:text-[24px] font-bold text-[#593102] underline underline-offset-8 decoration-[#D49313] tracking-wide inline-block hover:text-[#D49313] transition-colors">
+                  Compare Honey Flora &amp; Benefits
                 </a>
               </div>
-              
-              <div className="divide-y divide-gray-200 border-t border-gray-200">
+
+              <div className="divide-y divide-[#EADCC9] border-t border-[#EADCC9]">
                 {accordionSections.map((section) => {
                   const Icon = section.icon;
                   const isOpen = openSection === section.key;
                   return (
-                    <div key={section.key} className="py-0.5">
+                    <div key={section.key} className="py-1">
                       <button
                         onClick={() => setOpenSection(isOpen ? null : section.key)}
-                        className="flex w-full items-center justify-between py-4 text-left"
+                        className="flex w-full items-center justify-between py-4 text-left cursor-pointer"
                       >
-                        <span className="flex items-center gap-3.5 text-gray-800">
-                          <Icon size={20} className="text-[#D08722] stroke-[1.5]" />
-                          <span className="font-serif text-[20px] sm:text-[24px] tracking-wide text-gray-700">
+                        <span className="flex items-center gap-3.5">
+                          <div className="w-9 h-9 rounded-xl bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
+                            <Icon size={18} className="text-[#D49313] stroke-[2]" />
+                          </div>
+                          <span className="font-serif text-[18px] sm:text-[22px] font-bold text-[#593102] tracking-tight">
                             {section.title}
                           </span>
                         </span>
-                        {isOpen ? <ChevronUp size={18} className="text-gray-800 shrink-0" /> : <ChevronDown size={18} className="text-gray-400 shrink-0" />}
+                        {isOpen ? <ChevronUp size={20} className="text-[#593102] shrink-0" /> : <ChevronDown size={20} className="text-[#7A6A5C] shrink-0" />}
                       </button>
                       {isOpen && (
-                        <p className="pb-4 pl-9 text-[14px] leading-relaxed text-gray-600 font-normal">
+                        <p className="pb-4 pl-12 text-[14px] leading-relaxed text-[#6E5D4F] font-medium">
                           {section.content}
                         </p>
                       )}
@@ -696,7 +747,7 @@ export default function ProductDetailPage({
         </div>
 
         {/* USES OF HONEY BANNER */}
-        <div className="mt-14 w-full overflow-hidden rounded-xl">
+        <div className="mt-14 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-xl">
           <Image
             src="/idcard.png"
             alt="Uses of Honey"
@@ -706,13 +757,25 @@ export default function ProductDetailPage({
           />
         </div>
 
-        {/* RECOMMENDATIONS SECTION */}
+        {/* RECOMMENDATIONS SECTION - AUTO-SCROLL CAROUSEL */}
         {recommendations.length > 0 && (
           <section className="mt-16">
-            <h2 className="font-serif mb-9 text-[28px] sm:text-[32px] font-bold text-[#2F241C]">
-              Recommendation
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex flex-col items-start mb-8">
+              <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-2">
+                YOU MAY ALSO LIKE
+              </span>
+              <h2 className="font-serif text-[30px] sm:text-[38px] font-extrabold text-[#593102]">
+                Recommended Honey Collections
+              </h2>
+            </div>
+
+            {/* Auto-scroll Slider Container (Hidden Scrollbar) */}
+            <div
+              ref={recSliderRef}
+              onMouseEnter={() => setIsRecHovered(true)}
+              onMouseLeave={() => setIsRecHovered(false)}
+              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pt-3 pb-8 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            >
               {recommendations.map((item: any) => {
                 const recVariants = item.variantDocumentId || [];
                 const selectedVariantId = recSelectedVariants[item._id] || recVariants[0]?._id;
@@ -724,28 +787,32 @@ export default function ProductDetailPage({
                 const weightStr = `${recVariant?.weight ?? ""}${recVariant?.unit ?? ""}`;
 
                 return (
-                  <ProductCardShop
+                  <div
                     key={item._id || item.id}
-                    badge={getCategoryName(item)}
-                    image={primaryImage}
-                    title={item.product_name}
-                    subtitle={getCategoryName(item)}
-                    weight={weightStr}
-                    price={recVariant?.price ?? 0}
-                    oldPrice={recVariant?.mrp ?? 0}
-                    rating={item.average_rating}
-                    reviews={item.total_reviews}
-                    quantity={cartItems[item._id]?.quantity ?? 0}
-                    variants={recVariants}
-                    selectedVariantId={selectedVariantId}
-                    onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}
-                    onAddToCart={() => handleRecommendationCartAction(item)}
-                    onIncrement={() => handleRecommendationCartAction(item)}
-                    onDecrement={() => handleRecommendationCartAction(item)}
-                    onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
-                    onToggleWishlist={() => handleToggleWishlist(item._id)}
-                    isWishlisted={wishlistIds.includes(item._id)}
-                  />
+                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                  >
+                    <ProductCardShop
+                      badge={getCategoryName(item)}
+                      image={primaryImage}
+                      title={item.product_name}
+                      subtitle={getCategoryName(item)}
+                      weight={weightStr}
+                      price={recVariant?.price ?? 0}
+                      oldPrice={recVariant?.mrp ?? 0}
+                      rating={item.average_rating}
+                      reviews={item.total_reviews}
+                      quantity={cartItems[item._id]?.quantity ?? 0}
+                      variants={recVariants}
+                      selectedVariantId={selectedVariantId}
+                      onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}
+                      onAddToCart={() => handleRecommendationCartAction(item)}
+                      onIncrement={() => handleRecommendationCartAction(item)}
+                      onDecrement={() => handleRecommendationCartAction(item)}
+                      onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
+                      onToggleWishlist={() => handleToggleWishlist(item._id)}
+                      isWishlisted={wishlistIds.includes(item._id)}
+                    />
+                  </div>
                 );
               })}
             </div>
@@ -756,30 +823,28 @@ export default function ProductDetailPage({
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in duration-200">
-          <div className={`px-6 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${
-            toastType === "success" ? "bg-green-600" : "bg-red-600"
-          }`}>
-            {toastMessage}
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] border border-[#D49313]/50 px-7 py-3.5 text-white font-extrabold shadow-2xl flex items-center gap-2 text-[14px]">
+            <span>✨</span> {toastMessage}
           </div>
         </div>
       )}
 
       {/* MOBILE STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:p-4 lg:hidden shadow-lg z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EADCC9] p-3.5 lg:hidden shadow-2xl z-50">
         <div className="flex items-center gap-3">
-          <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white">
+          <div className="flex items-center border border-[#EADCC9] rounded-xl overflow-hidden bg-white shadow-2xs">
             <button
               onClick={decrementQty}
-              className="px-3 py-2 hover:bg-gray-50 text-gray-600 font-medium"
+              className="px-3 py-2 hover:bg-gray-50 text-[#593102] font-extrabold text-lg cursor-pointer"
             >
               −
             </button>
-            <span className="px-3 py-2 text-sm font-normal min-w-[30px] text-center">
+            <span className="px-3 py-2 text-sm font-extrabold min-w-[30px] text-center text-[#593102]">
               {selectedQty}
             </span>
             <button
               onClick={incrementQty}
-              className="px-3 py-2 hover:bg-gray-50 text-gray-600 font-medium"
+              className="px-3 py-2 hover:bg-gray-50 text-[#593102] font-extrabold text-lg cursor-pointer"
             >
               +
             </button>
@@ -787,7 +852,7 @@ export default function ProductDetailPage({
           <button
             disabled={btnLoading}
             onClick={() => handleAddToCart(true)}
-            className="flex-1 bg-[#FF6F3C] text-white py-3 rounded font-bold text-sm tracking-wide disabled:opacity-50 text-center"
+            className="flex-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white py-3.5 rounded-2xl font-black text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer border border-[#FFD700]/30 active:scale-98"
           >
             Buy Now · ₹{currentPrice}
           </button>

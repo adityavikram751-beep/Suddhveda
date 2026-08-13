@@ -142,9 +142,7 @@ export function normalizeProduct(
     "";
 
   const badge =
-    oldPrice > price
-      ? "Sale"
-      : product?.badge || getCategoryName(product) || "Sale";
+    getCategoryName(product) || product?.badge || "Pure Honey";
 
   return {
     id: getProductId(product),

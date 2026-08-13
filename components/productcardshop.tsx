@@ -97,17 +97,17 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="flex flex-col h-full w-full max-w-[340px] mx-auto rounded-[22px] border border-[#F2ECE4] bg-[#FAF5EE] p-5 shadow-sm hover:shadow-xl hover:-translate-y-2.5 transition-all duration-300 relative group cursor-pointer"
+      className="relative flex h-full min-h-[470px] w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#EADCC9] bg-white p-5 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-2 hover:border-[#D49313]/60 hover:shadow-lg"
     >
       {/* Wishlist Button (Top Left) */}
       <button
         type="button"
         onClick={handleWishlistClick}
         aria-label="Wishlist"
-        className="absolute left-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[#593102] hover:bg-white transition-colors cursor-pointer shadow-sm"
+        className="absolute left-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
       >
         <Heart
-          size={16}
+          size={18}
           className={
             isWishlisted
               ? "fill-[#FF6F3C] text-[#FF6F3C]"
@@ -119,51 +119,51 @@ export default function ProductCardShop({
       {/* Dynamic Badge (Top Right) */}
       {badge && (
         <div className="absolute right-4 top-4 z-20">
-          <span className="rounded-full bg-[#1E1E1E] px-3 py-0.5 text-[10px] sm:text-[11px] font-semibold text-white shadow-sm uppercase tracking-wide">
+          <span className="rounded-full bg-gradient-to-r from-[#D49313] to-[#8F590A] px-3.5 py-1 text-[11px] font-black text-white shadow-md uppercase tracking-wider">
             {badge}
           </span>
         </div>
       )}
 
       {/* Dynamic Product Image */}
-      <div className="relative h-[200px] sm:h-[210px] w-full overflow-hidden rounded-xl bg-transparent shrink-0 pt-2">
+      <div className="relative h-[220px] sm:h-[240px] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6F0] border border-[#F2ECE4] shrink-0 pt-2 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-108"
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>
 
       {/* Text Content & Details */}
-      <div className="mt-4 flex flex-col flex-1 justify-between text-center">
+      <div className="mt-5 flex flex-col flex-1 justify-between text-center">
         <div>
           {/* Dynamic Title */}
-          <h3 className="font-serif text-[17px] sm:text-[18px] font-medium text-[#2C221E] group-hover:text-[#593102] transition-colors leading-snug">
+          <h3 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#593102] group-hover:text-[#D49313] transition-colors leading-snug">
             {title}
           </h3>
 
           {/* Dynamic Category Name */}
           {(category || subtitle) && (
-            <div className="mt-1.5 text-[13px] font-medium text-[#9E826B]">
+            <div className="mt-1.5 text-[13px] font-semibold text-[#8D7F73]">
               {category || subtitle}
             </div>
           )}
 
           {/* Dynamic Price Row */}
-          <div className="mt-2.5 text-[15px] sm:text-[16px] font-medium text-[#2C221E] flex items-center justify-center gap-1.5">
+          <div className="mt-3 text-[16px] sm:text-[17px] font-bold text-[#593102] flex items-center justify-center gap-2">
             {oldPrice && oldPrice > price ? (
-              <span className="line-through text-[#9E826B] font-normal text-[14px]">
+              <span className="line-through text-[#B09077] font-normal text-[14px]">
                 ₹{oldPrice}
               </span>
             ) : null}
-            <span>From ₹{price}</span>
+            <span className="font-black text-[#593102] text-[18px]">From ₹{price}</span>
           </div>
 
           {/* Dynamic Weight Variants */}
           {variants.length > 0 && (
-            <div className="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
+            <div className="mt-3.5 flex items-center justify-center gap-2 flex-wrap">
               {variants.map((variant, index) => {
                 const variantId = getVariantId(variant);
                 const uniqueKey = variantId || `variant-${index}`;
@@ -173,11 +173,10 @@ export default function ProductCardShop({
                     key={uniqueKey}
                     type="button"
                     onClick={(e) => handleVariantClick(variantId, e)}
-                    className={`rounded-md border px-3 py-0.5 text-[11px] font-medium transition-all cursor-pointer ${
-                      selected
-                        ? "border-[#4A2E12] bg-[#4A2E12] text-white shadow-sm"
-                        : "border-[#E5DBCB] bg-white text-[#5C4033] hover:border-[#4A2E12]"
-                    }`}
+                    className={`rounded-lg border-2 px-3.5 py-1 text-[12px] font-bold transition-all cursor-pointer ${selected
+                        ? "border-[#593102] bg-[#593102] text-white shadow-sm scale-105"
+                        : "border-[#E5DBCB] bg-white text-[#5C4033] hover:border-[#593102]"
+                      }`}
                   >
                     {getVariantLabel(variant)}
                   </button>
@@ -188,14 +187,14 @@ export default function ProductCardShop({
         </div>
 
         {/* Buy Now Button */}
-        <div className="mt-4">
+        <div className="mt-5 flex justify-center">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onOpenDetails();
             }}
-            className="w-full h-[44px] rounded-xl bg-[#F2542D] hover:bg-[#D9431E] text-white font-bold text-[14px] tracking-wide shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="h-[54px] w-[176px] rounded-md bg-[#FA4B1B] text-white font-bold text-[20px] shadow-sm transition-colors hover:bg-[#E64216] cursor-pointer flex items-center justify-center active:scale-98"
           >
             Buy Now
           </button>

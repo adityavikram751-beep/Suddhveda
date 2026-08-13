@@ -154,11 +154,11 @@ export default function UpcomingProduct() {
         {/* ===== DESKTOP: 3-Column Layout ===== */}
         <div className="hidden lg:grid grid-cols-[minmax(0,322px)_minmax(0,1fr)_minmax(0,360px)] gap-8 items-center">
           
-          {/* LEFT – Image */}
+          {/* LEFT – Image Card */}
           <div className="flex justify-center min-w-0">
-            <div className="relative w-full max-w-[320px] min-w-0 rounded-[22px] overflow-hidden bg-white shadow-[0_15px_40px_rgba(0,0,0,0.08)]">
+            <div className="relative w-full max-w-[320px] min-w-0 rounded-[24px] overflow-hidden bg-white shadow-xl border-2 border-[#D49313]/40 group">
               <div className="absolute top-3 left-3 z-20">
-                <span className="bg-[#7DA314] text-white text-[12px] px-4 py-1.5 rounded-lg font-medium">
+                <span className="bg-[#593102] text-[#FFD700] text-[12px] px-4 py-1.5 rounded-full font-extrabold shadow-md border border-[#D49313] tracking-wide uppercase">
                   {banner.title}
                 </span>
               </div>
@@ -170,20 +170,20 @@ export default function UpcomingProduct() {
                 priority
                 quality={100}
                 sizes="(max-width: 1024px) 100vw, 320px"
-                className="w-full h-[320px] object-cover"
+                className="w-full h-[320px] object-cover group-hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>
 
           {/* CENTER – Details + Countdown + Pre-Order Button */}
-          <div className="flex flex-col items-center justify-center text-center bg-white rounded-[18px] border border-[#F3E8DA] px-8 py-6 shadow-sm min-h-[400px] min-w-0">
-            <span className="uppercase tracking-[5px] text-[#D49313] text-[13px] font-semibold">
+          <div className="flex flex-col items-center justify-center text-center bg-white/95 backdrop-blur-md rounded-[24px] border-2 border-[#D49313]/30 px-8 py-7 shadow-xl min-h-[400px] min-w-0">
+            <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/60 px-4 py-1.5 rounded-full shadow-2xs">
               {banner.tag}
             </span>
-            <h2 className="mt-2 text-[38px] lg:text-[42px] font-semibold leading-tight text-[#5A2505] whitespace-pre-line">
+            <h2 className="mt-3 text-[36px] lg:text-[42px] font-serif font-extrabold leading-tight text-[#593102] whitespace-pre-line">
               {banner.product_name}
             </h2>
-            <p className="mt-2 text-[16px] text-[#444]">{banner.subtitle}</p>
+            <p className="mt-2 text-[16px] text-[#6E5D4F] font-medium max-w-[420px] leading-relaxed">{banner.subtitle}</p>
             
             <div className="flex gap-4 mt-5">{renderCountdown(false)}</div>
             
@@ -192,7 +192,7 @@ export default function UpcomingProduct() {
                 href={banner.pre_order_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 w-full max-w-[240px] bg-[#593102] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[15px] uppercase tracking-wider cursor-pointer"
+                className="mt-6 w-full max-w-[260px] bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold py-3.5 px-8 rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-98 text-center text-[15px] uppercase tracking-wider cursor-pointer border border-[#FFD700]/40"
               >
                 Pre-Order Now
               </a>
@@ -200,22 +200,22 @@ export default function UpcomingProduct() {
           </div>
 
           {/* RIGHT – Features with /madhu.png icon */}
-          <div className="relative bg-[#FFF8F0] rounded-[18px] border border-[#F3E8DA] px-8 py-8 min-h-[400px] overflow-hidden min-w-0 flex flex-col justify-center">
-            <h3 className="text-[32px] font-serif text-[#2F241B]">{banner.product_name}</h3>
-            <p className="mt-3 text-[17px] leading-8 text-[#5B4A3D] whitespace-pre-line break-words">
+          <div className="relative bg-[#FFF9F2] rounded-[24px] border-2 border-[#D49313]/30 px-8 py-8 min-h-[400px] overflow-hidden min-w-0 flex flex-col justify-center shadow-xl">
+            <h3 className="text-[30px] font-serif font-extrabold text-[#593102]">{banner.product_name}</h3>
+            <p className="mt-2.5 text-[15px] leading-relaxed text-[#6E5D4F] font-medium whitespace-pre-line break-words">
               {banner.product_description}
             </p>
-            <div className="mt-6 space-y-4">
+            <div className="mt-5 space-y-3.5">
               {banner.features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-4">
+                <div key={i} className="flex items-start gap-3.5">
                   <Image
                     src="/madhu.png"
                     alt=""
                     width={22}
                     height={22}
-                    className="w-[22px] h-auto flex-shrink-0 mt-1"
+                    className="w-[22px] h-auto flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[17px] text-[#2F241B] break-words whitespace-normal">
+                  <span className="text-[16px] font-extrabold text-[#593102] break-words whitespace-normal">
                     {feature}
                   </span>
                 </div>

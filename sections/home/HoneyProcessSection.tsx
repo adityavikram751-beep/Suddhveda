@@ -153,26 +153,30 @@ export default function HealthyIdeas() {
   }
 
   return (
-    <section className="bg-[#FAF6F0] pt-6 pb-14 md:pt-8 md:pb-20">
+    <section className="bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-12 md:py-20 border-t border-b border-[#EADCC9]/60">
       <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16">
+        
         {/* Heading row */}
         <div className="flex items-end justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
-              Recipes &amp; Wellness
+          <div className="flex flex-col items-start">
+            <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
+              RECIPES &amp; WELLNESS
+            </span>
+            <h2 className="mt-3 text-[32px] sm:text-[40px] md:text-[46px] font-serif font-extrabold text-[#593102] leading-tight tracking-tight">
+              Pure Honey Recipes &amp; Wellness
             </h2>
           </div>
 
           <Link
             href="/receipe"
-            className="text-[#593102] text-[13px] sm:text-[14px] font-semibold tracking-wide uppercase border-b-2 border-[#D49313] pb-1 hover:text-[#D49313] transition-colors flex-shrink-0"
+            className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold px-6 py-3 rounded-full text-[13px] uppercase tracking-wider shadow-md hover:shadow-xl transition-all duration-300 border border-[#FFD700]/30 cursor-pointer"
           >
-            View All
+            View All Recipes →
           </Link>
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 mt-6 md:mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mt-8 md:mt-10">
           {recipes.map((recipe) => {
             const hasVideo = Boolean(recipe.video_url);
 
@@ -184,25 +188,33 @@ export default function HealthyIdeas() {
                     setSelectedVideo({ title: recipe.title, video_url: recipe.video_url });
                   }
                 }}
-                className="relative rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[280px] sm:h-[310px] lg:h-[330px] cursor-pointer"
+                className="relative rounded-3xl overflow-hidden border-2 border-[#D49313]/30 shadow-lg hover:shadow-2xl hover:border-[#D49313]/70 transition-all duration-500 group h-[300px] sm:h-[330px] lg:h-[360px] cursor-pointer bg-black"
               >
                 {hasVideo ? (
                   <div className="relative w-full h-full">
-                    {/* Video Layer - Plays continuously */}
+                    {/* Video Layer - Plays continuously when modal is not open */}
                     <video
                       src={recipe.video_url}
                       poster={recipe.thumbnail_url || recipe.image}
-                      autoPlay
+                      autoPlay={!selectedVideo}
                       loop
                       muted
                       playsInline
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                      preload="metadata"
+                      ref={(el) => {
+                        if (el) {
+                          if (selectedVideo) {
+                            el.pause();
+                          }
+                        }
+                      }}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none opacity-90"
                     />
 
                     {/* Play Icon Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                      <div className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg">
-                        <Play size={20} className="ml-0.5 text-[#593102] fill-[#593102]" />
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] border-2 border-[#FFD700]/60 flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-xl">
+                        <Play size={22} className="ml-0.5 text-white fill-white" />
                       </div>
                     </div>
                   </div>
@@ -211,7 +223,7 @@ export default function HealthyIdeas() {
                     src={recipe.image || "/placeholder-image.png"}
                     alt={recipe.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = "/placeholder-image.png";
@@ -220,8 +232,8 @@ export default function HealthyIdeas() {
                 )}
 
                 {/* Title Overlay On Top of Image/Video */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6 pointer-events-none z-20">
-                  <h3 className="font-bold text-[18px] sm:text-[20px] text-white leading-snug drop-shadow-md">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-6 pointer-events-none z-20">
+                  <h3 className="font-serif font-extrabold text-[19px] sm:text-[21px] text-white leading-snug drop-shadow-lg group-hover:text-[#FFD700] transition-colors">
                     {recipe.title}
                   </h3>
                 </div>
@@ -234,29 +246,31 @@ export default function HealthyIdeas() {
       {/* Video Modal Popup */}
       {selectedVideo && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setSelectedVideo(null)}
         >
           <div
-            className="relative w-full max-w-3xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            className="relative w-full max-w-2xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setSelectedVideo(null)}
-              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+              className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer border border-white/20"
             >
               <X size={20} />
             </button>
-            <div className="relative aspect-video w-full">
+            <div className="relative aspect-video w-full max-h-[75vh] bg-black flex items-center justify-center">
               <video
                 src={selectedVideo.video_url}
                 controls
                 autoPlay
+                playsInline
+                preload="auto"
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="p-4 bg-[#1A1A1A] text-white flex items-center justify-between">
+            <div className="p-5 bg-[#1A1A1A] text-white flex items-center justify-between border-t border-white/10">
               <h3 className="font-bold text-lg font-serif">{selectedVideo.title}</h3>
             </div>
           </div>

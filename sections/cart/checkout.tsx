@@ -188,7 +188,7 @@ export default function Checkout() {
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      
+
       const rawDiscount = data.couponDiscount ?? data.discountAmount ?? data.discount ?? data.data?.discountAmount ?? 0;
       const apiDiscount = typeof rawDiscount === "string" ? parseFloat(rawDiscount) || 0 : rawDiscount;
       const apiCode = data.appliedCoupon?.code || data.couponCode || "";
@@ -404,7 +404,7 @@ export default function Checkout() {
       }
 
       await fetchAddresses();
-      
+
       setFormData({
         fullName: "",
         phone: "",
@@ -458,8 +458,8 @@ export default function Checkout() {
       <div className="mx-auto max-w-[1410px] px-4 sm:px-5">
         {/* 🔥 FIXED - items-stretch se dono side equal height */}
         <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-stretch">
-          
-          <div 
+
+          <div
             className="max-h-[calc(100vh-80px)] overflow-y-auto pr-1 sm:pr-2 space-y-6 sm:space-y-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
@@ -468,7 +468,7 @@ export default function Checkout() {
                 display: none;
               }
             `}</style>
-            
+
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
 
@@ -490,7 +490,7 @@ export default function Checkout() {
               buttonLabel={getButtonLabel()}
               isEditing={isEditing}
             />
-            
+
             <div className="h-6 sm:h-8" />
           </div>
 
@@ -551,26 +551,23 @@ function Stepper({ activeStep }: { activeStep: number }) {
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
               <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                 <span
-                  className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${
-                    isDone
+                  className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${isDone
                       ? "border-[#77AE61] bg-white text-[#77AE61]"
                       : isActive
-                      ? "border-[#D18500] bg-[#D18500] text-white"
-                      : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                  }`}
+                        ? "border-[#D18500] bg-[#D18500] text-white"
+                        : "border-[#F0DDC8] bg-white text-[#2F241C]"
+                    }`}
                 >
                   {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
                 <span
-                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
-                    isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
-                  }`}
+                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
+                    }`}
                 />
                 <div className="min-w-0">
                   <p
-                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
-                      isActive ? "text-[#D18500]" : "text-[#2F241C]"
-                    }`}
+                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                      }`}
                   >
                     {step.title}
                   </p>
@@ -695,7 +692,7 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
           <button
             type="button"
             onClick={onSave}
-            className="flex h-11 sm:h-12 items-center gap-2 rounded-lg bg-[#D18500] px-5 sm:px-6 text-[13px] sm:text-[14px] font-bold text-white hover:bg-[#B97100] w-full sm:w-auto justify-center"
+            className="flex h-11 sm:h-12 items-center gap-2 rounded-xl bg-[#EA580C] hover:bg-[#C94717] px-6 text-[14px] font-semibold text-white transition-colors w-full sm:w-auto justify-center cursor-pointer shadow-md"
           >
             {buttonLabel}
             <ArrowRight size={16} />
@@ -744,9 +741,8 @@ function FormField({ label, required, optional, placeholder, name, value, onChan
           <button
             type="button"
             onClick={action.onClick}
-            className={`flex h-10 sm:h-11 shrink-0 items-center gap-1.5 rounded-lg px-4 sm:px-5 text-[12px] sm:text-[13px] font-bold text-white transition-colors ${
-              action.done ? "bg-[#0BA445]" : "bg-[#D18500] hover:bg-[#B97100]"
-            }`}
+            className={`flex h-10 sm:h-11 shrink-0 items-center gap-1.5 rounded-lg px-4 sm:px-5 text-[12px] sm:text-[13px] font-bold text-white transition-colors ${action.done ? "bg-[#0BA445]" : "bg-[#D18500] hover:bg-[#B97100]"
+              }`}
           >
             {action.done && <CheckCircle2 size={14} />}
             {action.done ? "Verified" : action.label}
@@ -785,18 +781,16 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
             <div
               key={address.id}
               onClick={() => onSelect(address.id)}
-              className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${
-                isSelected
+              className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${isSelected
                   ? "border-[#593102] bg-[#FFF8EF] shadow-sm ring-1 ring-[#593102]"
                   : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-[13px] sm:text-[14px] font-bold">
                   <span
-                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 ${
-                      isSelected ? "border-[#593102] bg-[#593102]" : "border-[#CBD2DB] bg-white"
-                    }`}
+                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 ${isSelected ? "border-[#593102] bg-[#593102]" : "border-[#CBD2DB] bg-white"
+                      }`}
                   />
                   {address.label}
                   {address.isDefault && (
@@ -913,7 +907,7 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
           <button
             type="button"
             onClick={onProceedDirectly}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#D18500] text-[14px] font-bold text-white shadow-md hover:bg-[#B97100] transition"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#EA580C] text-[15px] font-semibold text-white shadow-md hover:bg-[#C94717] transition-colors cursor-pointer"
           >
             Proceed with Selected Address <ArrowRight size={16} />
           </button>

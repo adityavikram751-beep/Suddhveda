@@ -397,7 +397,7 @@ export default function Header() {
     <div ref={headerWrapperRef} className="fixed top-0 left-0 w-full z-40">
       <PromoBar />
 
-      <header className="w-full bg-[#FFFCF8] border-b border-[#EFE7DF]">
+      <header className="w-full bg-[#FFFCF8] border-b border-[#EFE7DF] font-sans">
         <div className="relative max-w-[1445px] mx-auto h-[62px] px-4 sm:px-6 lg:px-[52px] flex items-center justify-between">
           <div className="flex items-center z-10">
             <button
@@ -433,7 +433,7 @@ export default function Header() {
             </Link>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-12">
+          <nav className="hidden lg:flex items-center gap-12 font-sans">
             {navItems.map((item) => {
               const isActive =
                 item.href === "/"
@@ -688,7 +688,7 @@ export default function Header() {
             open ? "max-h-[800px]" : "max-h-0"
           }`}
         >
-          <div className="bg-[#FAF5EE] border-t border-[#EFE7DF] px-4 py-2">
+          <div className="bg-[#FAF5EE] border-t border-[#EFE7DF] px-4 py-2 font-sans">
             {navItems.map((item) => {
               const isActive =
                 item.href === "/"

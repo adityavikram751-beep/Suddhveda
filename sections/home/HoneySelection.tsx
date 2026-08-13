@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import { Crown, Sparkles } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -198,15 +199,20 @@ export default function HoneySelection() {
 
   // ---------- Render ----------
   return (
-    <section className="relative mt-2 bg-[#FFF7ED] overflow-hidden pt-2 pb-14">
-      <div className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10 pt-10">
-        <div className="text-center mb-8">
-          <h2 className="text-[34px] md:text-[44px] lg:text-[56px] font-bold leading-tight text-[#2D3A1B]">
-            Nature&apos;s Finest Selection
+    <section className="relative bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] overflow-hidden py-14 border-b border-[#EADCC9]/50">
+      {/* Ambient Gold Radial Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-[#D49313]/8 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-10">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <h2 className="text-[34px] sm:text-[44px] md:text-[54px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
+            Nature&apos;s Finest Honey Selection
           </h2>
-          <p className="mt-2 max-w-[760px] mx-auto text-[#B09077] text-[16px] lg:text-[18px] leading-7 px-4">
-            From wildflower meadows to mustard fields, experience honey in its purest
-            and most authentic form.
+
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3.5 rounded-full" />
+
+          <p className="mt-2 text-[#7A6A5C] text-[15px] sm:text-[17px] leading-relaxed font-medium px-4">
+            Ethically harvested from wildflower meadows and wild forests, experience raw organic honey in its purest, most authentic royal form.
           </p>
         </div>
 
@@ -230,7 +236,7 @@ export default function HoneySelection() {
                 return (
                   <div
                     key={productId}
-                    className="w-full min-w-full lg:min-w-0 snap-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center"
+                    className="w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center"
                   >
                     <div className="w-full max-w-[340px] lg:max-w-none">
                       <ProductCardShop

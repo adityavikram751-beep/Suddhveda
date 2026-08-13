@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Gift, ShoppingBag, Sparkles } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="bg-white overflow-hidden">
+    <section className="bg-white overflow-hidden border-b border-[#EADCC9]/50">
       <div className="max-w-[1400px] mx-auto w-full px-6 lg:px-8 py-12 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-28 items-center">
           
@@ -14,15 +15,15 @@ export default function Hero() {
             
             {/* Gift Collection Subtitle Tag */}
             <div className="flex items-center gap-3 mb-4">
-              <span className="w-8 h-[1px] bg-[#1E1B16]/40 hidden lg:inline-block"></span>
-              <span className="text-[12px] sm:text-[13px] font-semibold uppercase tracking-[2px] text-[#1E1B16]">
+              <span className="w-8 h-[1px] bg-[#D49313] hidden lg:inline-block"></span>
+              <span className="text-[12px] sm:text-[13px] font-extrabold uppercase tracking-[0.2em] text-[#593102]">
                 GIFT COLLECTION
               </span>
             </div>
 
             {/* Heading */}
             <h1
-              className="font-['Playfair_Display'] font-bold text-[#1E1B16]"
+              className="font-serif font-bold text-[#593102]"
               style={{
                 fontSize: "clamp(36px, 5vw, 48px)",
                 lineHeight: "1.2",
@@ -31,30 +32,33 @@ export default function Hero() {
             >
               Celebrate Every Moment
               <br className="hidden sm:inline" />
-              <span className="text-[#593102]">
+              <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent">
                 {" "}with Nature&apos;s Sweetest Gift
               </span>
             </h1>
 
             {/* Description */}
-            <p className="mt-5 text-[15px] sm:text-[16px] leading-[1.7] text-[#6B6259] max-w-[500px]">
+            <p className="mt-5 text-[15px] sm:text-[16px] leading-[1.75] text-[#6E5D4F] font-medium max-w-[500px]">
               Beautifully curated premium honey gift boxes, crafted to make every occasion memorable with organic purity and artisanal essence.
             </p>
 
-            {/* Buttons */}
+            {/* Buttons with Working Links */}
             <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full sm:w-auto">
               <Link
                 href="/shop"
-                className="bg-[#D49313] hover:bg-[#B37B1B] transition-colors text-white h-[48px] w-full sm:w-auto px-8 rounded-xl font-semibold text-[13px] tracking-wide flex items-center justify-center shadow-md"
+                className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[50px] w-full sm:w-auto px-8 rounded-xl font-extrabold text-[13px] tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md hover:shadow-xl transition-all border border-[#FFD700]/30 active:scale-98 cursor-pointer"
               >
-                SHOP THE COLLECTION
+                <ShoppingBag size={17} />
+                <span>SHOP THE COLLECTION</span>
               </Link>
-              <Link
-                href="/customize"
-                className="border border-[#795900] text-[#795900] hover:bg-[#D49313] hover:text-white transition-colors h-[48px] w-full sm:w-auto px-8 rounded-xl font-semibold text-[13px] tracking-wide flex items-center justify-center"
+
+              <a
+                href="#curated-gift-boxes"
+                className="border-2 border-[#D49313] text-[#593102] hover:bg-[#FAF0DC] hover:text-[#593102] transition-all h-[50px] w-full sm:w-auto px-8 rounded-xl font-extrabold text-[13px] tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-xs cursor-pointer active:scale-98"
               >
-                PERSONALIZE YOUR BOX
-              </Link>
+                <Gift size={17} className="text-[#D49313]" />
+                <span>PERSONALIZE YOUR BOX</span>
+              </a>
             </div>
           </div>
 
@@ -62,7 +66,7 @@ export default function Hero() {
           <div className="relative flex justify-center lg:justify-start w-full mt-6 lg:mt-0">
             <div className="relative w-full max-w-[440px]">
               {/* Photo card */}
-              <div className="relative aspect-square w-full overflow-hidden rounded-[24px] shadow-xl lg:rotate-2">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[24px] shadow-xl border-2 border-[#EADCC9]/80 lg:rotate-2">
                 <Image
                   src="/hero.png"
                   alt="ShudhVeda Himalayan Forest Bloom Gift Set"
@@ -73,11 +77,11 @@ export default function Hero() {
               </div>
 
               {/* Floating badge card */}
-              <div className="absolute -bottom-6 left-4 sm:-left-10 max-w-[240px] rounded-xl bg-[#F3ECE0] px-5 py-4 shadow-lg hidden sm:block">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-[#593102]">
-                  Limited Edition
+              <div className="absolute -bottom-6 left-4 sm:-left-10 max-w-[260px] rounded-2xl bg-[#FAF6F0]/95 backdrop-blur-md border border-[#EADCC9] px-5 py-4 shadow-xl hidden sm:block">
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#D49313] flex items-center gap-1.5">
+                  <Sparkles size={13} /> Limited Edition
                 </p>
-                <p className="mt-1 font-serif text-[17px] font-semibold leading-snug text-[#1E1B16]">
+                <p className="mt-1 font-serif text-[17px] font-bold leading-snug text-[#593102]">
                   The Himalayan Forest Bloom Gift Set
                 </p>
               </div>

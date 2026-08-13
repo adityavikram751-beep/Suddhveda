@@ -1,86 +1,97 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FiGift, FiPackage } from "react-icons/fi";
 import { TbLeaf } from "react-icons/tb";
 
 export default function Hero() {
   return (
-    <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px]">
+    <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px] relative">
       <div className="max-w-[1440px] -m-2 mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0">
 
         {/* Mobile & Tablet Layout (< 1024px): Center aligned text and buttons, image at bottom */}
         <div className="flex flex-col lg:hidden items-center text-center space-y-6">
 
-          {/* Badge */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[13px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
-            <span>🍯</span>
+          {/* VIP Royal Badge */}
+          <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-2 border-[#D49313]/60 rounded-full px-5 py-2 text-[#593102] text-[13px] font-black tracking-widest uppercase bg-gradient-to-r from-[#FAF0DC] via-[#FFE3AA] to-[#FAF0DC] shadow-md backdrop-blur-md">
+            <span className="text-[#D49313] text-[15px]">👑</span>
             <span>100% Pure</span>
             <span className="text-[#D49313] font-bold">•</span>
             <span>Raw</span>
             <span className="text-[#D49313] font-bold">•</span>
-            <span>Unprocessed</span>
+            <span>Unprocessed Organic Honey</span>
           </div>
 
           {/* Heading */}
-          <h1 className="text-[34px] sm:text-[42px] leading-[1.15] font-serif text-[#593102] tracking-tight font-normal">
+          <h1 className="text-[36px] sm:text-[44px] leading-[1.14] font-serif text-[#593102] tracking-tight font-bold">
             Experience Nature&apos;s Purest Honey,
             <br />
-            <span className="text-[#D49313]">Straight From The Hive</span>
+            <span className="inline-block pr-3 overflow-visible bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic">
+              Straight From The Royal Hive
+            </span>
           </h1>
 
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto rounded-full" />
+
           {/* Description */}
-          <p className="text-[15px] sm:text-[16px] leading-[1.6] text-[#8D7F73] max-w-[500px] px-2">
-            Ethically sourced, raw and unprocessed honey crafted by nature and delivered fresh from trusted beekeepers to your home.
+          <p className="text-[15px] sm:text-[17px] leading-[1.65] text-[#6E5D4F] max-w-[500px] px-2 font-medium">
+            Ethically harvested, 100% raw and unprocessed organic honey crafted by nature and delivered fresh from trusted beekeepers to your home.
           </p>
 
           {/* Features Row - 4 Circles matching Desktop */}
           <div className="grid grid-cols-4 gap-2 sm:gap-4 pt-2 w-full max-w-[500px]">
             <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
                 100%
               </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
                 100% Pure<br />&amp; Raw
               </span>
             </div>
 
             <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
                 LAB
               </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
                 Lab Tested<br />For Purity
               </span>
             </div>
 
             <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
                 NO
               </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
                 No Added Sugar<br />Or Preservatives
               </span>
             </div>
 
             <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[11px] sm:text-[13px] font-bold shadow-sm shrink-0">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
                 SEC
               </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-medium leading-snug text-center">
-                Secure &amp; Sustainable<br />Packaging
+              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
+                Secure &amp; Safe<br />Packaging
               </span>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex flex-col gap-3.5 w-full max-w-[420px] pt-2">
-            <button className="bg-[#D49313] hover:bg-[#B37B1B] transition-colors text-white h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-semibold text-[15px] shadow-sm cursor-pointer w-full">
-              <FiGift size={18} />
+            <Link
+              href="/shop"
+              className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] transition-all duration-500 text-white h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-black text-[16px] shadow-lg hover:shadow-xl cursor-pointer w-full uppercase tracking-wider border border-[#FFD700]/30 active:scale-98"
+            >
+              <FiGift size={18} className="text-[#FFD700]" />
               Buy Now
-            </button>
-            <button className="border border-[#5C4033] text-[#5C4033] hover:bg-[#5C4033] hover:text-white transition-colors h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-semibold text-[15px] cursor-pointer w-full bg-white/60">
+            </Link>
+            <Link
+              href="/giftsets"
+              className="border-2 border-[#593102] text-[#593102] hover:bg-[#593102] hover:text-white transition-all duration-300 h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-black text-[15px] cursor-pointer w-full bg-white/90 shadow-xs uppercase tracking-wider"
+            >
               <FiPackage size={18} />
               Explore Gift Sets
-            </button>
+            </Link>
           </div>
 
           {/* Image with Floating Cards */}
@@ -128,74 +139,92 @@ export default function Hero() {
         <div className="hidden lg:grid grid-cols-2 gap-4 items-center min-h-[650px]">
 
           {/* LEFT CONTENT */}
-          <div className="flex flex-col items-start">
-            <div className="inline-flex items-center gap-x-2 border border-[#E6D2B8] rounded-full px-4 py-1.5 text-[#B37B1B] text-[14px] font-medium bg-white/40 backdrop-blur-sm shadow-sm">
-              <span>🍯</span>
-              <span>100% Pure</span>
+          <div className="flex flex-col items-start relative z-30 max-w-[600px]">
+            {/* VIP Royal Badge */}
+            <div className="inline-flex items-center gap-x-2 border-2 border-[#D49313]/50 rounded-full px-4.5 py-1.5 text-[#593102] text-[13px] font-extrabold bg-[#FAF0DC]/80 backdrop-blur-sm shadow-2xs">
+              <span className="text-[#D49313] text-[15px]">👑</span>
+              <span>100% PURE</span>
               <span className="text-[#D49313] font-bold">•</span>
-              <span>Raw</span>
+              <span>RAW</span>
               <span className="text-[#D49313] font-bold">•</span>
-              <span>Unprocessed</span>
+              <span>UNPROCESSED ORGANIC HONEY</span>
             </div>
 
-            <h1 className="mt-6 text-[62px] leading-[1.12] font-serif text-[#593102] tracking-tight font-normal">
+            {/* Main Heading */}
+            <h1 className="mt-6 text-[48px] xl:text-[56px] leading-[1.12] font-serif text-[#593102] tracking-tight font-extrabold">
               Nature&apos;s Purity.
               <br />
-              Delivered <span className="text-[#D49313]">Honestly.</span>
+              Delivered{" "}
+              <span className="inline-block pr-4 overflow-visible bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent font-serif italic">
+                Honestly.
+              </span>
             </h1>
 
-            <p className="mt-6 text-[18px] font-semibold text-[#593102]">
-              Raw Natural, Unfiltered
+            {/* Sub-heading */}
+            <p className="mt-5 text-[19px] sm:text-[20px] font-extrabold text-[#593102] tracking-tight">
+              Raw Natural, Filtered Organic Honey
             </p>
 
-            <p className="mt-5 text-[17px] leading-[1.6] text-[#8D7F73] max-w-[540px]">
-              Experience the true goodness of honey, just as nature intended.
+            {/* Description */}
+            <p className="mt-3 text-[17px] leading-[1.7] text-[#6E5D4F] max-w-[530px] font-medium">
+              Experience the true goodness of pure honey, just as nature intended—ethically harvested and delivered fresh with guaranteed royal purity.
             </p>
 
-            <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-14 w-full max-w-[540px]">
-              <div className="flex flex-col items-center text-center gap-2.5">
-                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
+            {/* 4 Feature Circles */}
+            <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-10 w-full max-w-[530px]">
+              <div className="flex flex-col items-center text-center gap-2 group">
+                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
                   100%
                 </div>
-                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
-                  100% Pure<br />& Raw
+                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
+                  100% Pure<br />&amp; Raw
                 </span>
               </div>
-              <div className="flex flex-col items-center text-center gap-2.5">
-                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
+
+              <div className="flex flex-col items-center text-center gap-2 group">
+                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
                   LAB
                 </div>
-                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
+                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
                   Lab Tested<br />For Purity
                 </span>
               </div>
-              <div className="flex flex-col items-center text-center gap-2.5">
-                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
+
+              <div className="flex flex-col items-center text-center gap-2 group">
+                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
                   NO
                 </div>
-                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
+                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
                   No Added Sugar<br />Or Preservatives
                 </span>
               </div>
-              <div className="flex flex-col items-center text-center gap-2.5">
-                <div className="w-16 h-16 rounded-full border border-[#EADCC9] flex items-center justify-center text-[#593102] bg-white/60 text-[13px] font-bold shadow-sm shrink-0">
+
+              <div className="flex flex-col items-center text-center gap-2 group">
+                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
                   SEC
                 </div>
-                <span className="text-[#593102] text-[13px] font-medium leading-snug text-center">
-                  Secure & Sustainable<br />Packaging
+                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
+                  Secure &amp; Safe<br />Packaging
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-row gap-6 mt-16">
-              <button className="bg-[#D49313] hover:bg-[#B37B1B] transition-colors text-white h-[52px] px-10 rounded-xl flex items-center justify-center gap-2.5 font-medium text-[15px] shadow-sm tracking-wide cursor-pointer">
-                <FiGift size={18} />
+            {/* Action Buttons */}
+            <div className="flex flex-row gap-5 mt-10">
+              <Link
+                href="/shop"
+                className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] transition-all duration-500 text-white h-[54px] px-9 rounded-2xl flex items-center justify-center gap-2.5 font-extrabold text-[15px] shadow-lg hover:shadow-xl cursor-pointer border border-[#FFD700]/30 active:scale-98"
+              >
+                <FiGift size={18} className="text-[#FFD700]" />
                 Buy Now
-              </button>
-              <button className="border border-[#5C4033] text-[#5C4033] hover:bg-[#5C4033] hover:text-white transition-colors h-[52px] px-8 rounded-xl flex items-center justify-center gap-2.5 font-medium text-[15px] tracking-wide cursor-pointer">
-                <FiPackage size={16} />
+              </Link>
+              <Link
+                href="/giftsets"
+                className="border-2 border-[#5C4033] text-[#5C4033] hover:bg-[#5C4033] hover:text-white transition-all duration-300 h-[54px] px-8 rounded-2xl flex items-center justify-center gap-2.5 font-extrabold text-[15px] cursor-pointer bg-white/90 shadow-xs"
+              >
+                <FiPackage size={18} />
                 Explore Gift Sets
-              </button>
+              </Link>
             </div>
           </div>
 

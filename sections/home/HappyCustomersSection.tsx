@@ -137,39 +137,50 @@ export default function HappyCustomersSection() {
 
 
   return (
-    <section className="relative overflow-hidden bg-[#FFF8EF] py-8 sm:py-10 lg:py-12">
-      {/* Decorations remain same */}
-      <Image src="/customer2.png" alt="" width={60} height={60} className="absolute left-[64%] top-10 z-10 hidden lg:block pointer-events-none" />
-      <Image src="/customer.png" alt="" width={220} height={200} className="absolute right-0 top-0 z-10 hidden lg:block pointer-events-none" />
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-14 sm:py-20 border-t border-b border-[#EADCC9]/60">
+      {/* Background Ambient Glow */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/5 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Floating Decorative Graphics */}
+      <Image src="/customer2.png" alt="" width={70} height={70} className="absolute left-[62%] top-12 z-10 hidden lg:block pointer-events-none opacity-80" />
+      <Image src="/customer.png" alt="" width={240} height={220} className="absolute right-0 top-0 z-10 hidden lg:block pointer-events-none opacity-85" />
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 z-20">
-        <div className="text-center">
-          <h2 className="text-[28px] sm:text-[34px] md:text-[38px] lg:text-[42px] font-semibold text-[#593102] leading-tight">Happy Customers</h2>
-          <p className="mt-2 sm:mt-3 text-[14px] sm:text-[16px] md:text-[18px] text-[#A98F78] max-w-[700px] mx-auto">
-            Trusted By thousand of families who choose Purity, taste, and quality everyday
+        <div className="text-center flex flex-col items-center">
+          <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
+            TRUST &amp; REVIEWS
+          </span>
+
+          <h2 className="mt-3 text-[34px] sm:text-[42px] lg:text-[48px] font-serif font-extrabold text-[#593102] leading-tight tracking-tight">
+            Happy Customers
+          </h2>
+          
+          <p className="mt-2.5 text-[15px] sm:text-[17px] text-[#6E5D4F] font-medium max-w-[680px] mx-auto leading-relaxed">
+            Trusted by thousands of families who choose 100% purity, natural taste, and uncompromised quality every day.
           </p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-1 sm:gap-2">
-             <div className="flex gap-0.5">
+
+          {/* Rating Showcase Badge */}
+          <div className="mt-4 inline-flex items-center gap-3 bg-white/90 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#D49313]/40 shadow-sm">
+            <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} size={20} fill="#F59E0B" color="#F59E0B" className="text-[#F59E0B] w-[18px] sm:w-[20px] md:w-[24px] h-auto" />
+                <Star key={star} size={18} fill="#F59E0B" color="#F59E0B" className="text-[#F59E0B]" />
               ))}
             </div>
-            <span className="text-[24px] sm:text-[28px] md:text-[34px] font-semibold text-[#593102] ml-1 sm:ml-2">4.9</span>
-            <span className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold text-[#593102] ml-2 sm:ml-3">loved by</span>
-            <span className="text-[#A98F78] text-[14px] sm:text-[16px] md:text-[18px] ml-1 sm:ml-2">20,000+ Customers</span>
+            <span className="text-[20px] font-black text-[#593102] border-l border-[#EADCC9] pl-3">4.9 / 5.0</span>
+            <span className="text-[13px] font-bold text-[#7A6A5C] uppercase tracking-wider hidden sm:inline">• Loved by 20,000+ Families</span>
           </div>
         </div>
 
         {loading ? (
-          <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
-            <Loader2 size={36} className="text-[#593102] animate-spin" />
-            <p className="text-[15px] text-[#A98F78]">Loading customer videos...</p>
+          <div className="py-20 text-center flex flex-col items-center justify-center gap-3">
+            <Loader2 size={40} className="text-[#D49313] animate-spin" />
+            <p className="text-[15px] text-[#6E5D4F] font-semibold">Loading customer stories...</p>
           </div>
         ) : videos.length === 0 ? (
-          <div className="py-12 text-center text-[#A98F78] text-[15px]">No video feedback available right now.</div>
+          <div className="py-16 text-center text-[#6E5D4F] text-[15px] font-medium">No video feedback available right now.</div>
         ) : (
-          <div className="relative mt-8 sm:mt-10 md:mt-14 w-full">
-            <div ref={scrollRef} className="flex items-center gap-5 overflow-x-auto scroll-smooth scrollbar-none py-3 px-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory">
+          <div className="relative mt-10 sm:mt-12 w-full">
+            <div ref={scrollRef} className="flex items-center gap-6 overflow-x-auto scroll-smooth scrollbar-none py-4 px-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory">
               {videos.map((item) => (
                 <div
                   key={item.id}
@@ -180,22 +191,23 @@ export default function HappyCustomersSection() {
                     relative
                     shrink-0
                     snap-start
-                    w-full // Mobile: Full width
-                    sm:w-[calc(50%-10px)] // Tablet: 2 cards
-                    md:w-[calc(33.333%-14px)] // Small Desktop: 3 cards
-                    lg:w-[calc(25%-15px)] // Large Desktop: 4 cards
-                    h-[400px] sm:h-[420px] lg:h-[440px]
+                    w-full
+                    sm:w-[calc(50%-12px)]
+                    md:w-[calc(33.333%-16px)]
+                    lg:w-[calc(25%-18px)]
+                    h-[410px] sm:h-[430px] lg:h-[450px]
                     overflow-hidden
-                    rounded-[16px]
-                    border
-                    border-[#E8D5BA]
-                    bg-[#FDF3E4]
-                    shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+                    rounded-3xl
+                    border-2
+                    border-[#D49313]/30
+                    bg-black
+                    shadow-xl
                     cursor-pointer
                     transition-all
-                    duration-300
-                    hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]
-                    hover:-translate-y-1
+                    duration-500
+                    hover:shadow-2xl
+                    hover:border-[#D49313]/80
+                    hover:-translate-y-1.5
                   "
                 >
                   {/* --- VIDEO LAYER (Continuous Autoplay + Modal Click) --- */}
@@ -204,11 +216,19 @@ export default function HappyCustomersSection() {
                       <video
                         src={item.videoUrl}
                         poster={item.thumbnail || undefined}
-                        autoPlay
+                        autoPlay={!selectedVideo}
                         loop
                         muted
                         playsInline
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        preload="metadata"
+                        ref={(el) => {
+                          if (el) {
+                            if (selectedVideo) {
+                              el.pause();
+                            }
+                          }
+                        }}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
                       />
                     </div>
                   ) : (
@@ -216,19 +236,25 @@ export default function HappyCustomersSection() {
                       src={item.thumbnail || `/api/placeholder/400/600?text=${item.name}`}
                       alt={item.name}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+                  {/* Glowing Golden Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                    <div className="w-[44px] h-[44px] rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white shadow-lg">
-                      <Play size={18} className="ml-0.5 text-[#593102] fill-[#593102]" />
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] border-2 border-[#FFD700]/60 flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-xl">
+                      <Play size={22} className="ml-0.5 text-white fill-white" />
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pointer-events-none">
-                    <h3 className="text-white text-[15px] sm:text-[17px] font-semibold leading-tight truncate">{item.name}</h3>
-                    <p className="text-white/80 text-[11px] sm:text-[12px] mt-0.5">⭐ Verified Buyer</p>
+
+                  {/* Customer Details */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-5 pointer-events-none">
+                    <h3 className="text-white text-[17px] sm:text-[19px] font-serif font-bold leading-tight truncate group-hover:text-[#FFD700] transition-colors">{item.name}</h3>
+                    <div className="flex items-center gap-1.5 mt-1 text-[#FFD700] text-[12px] font-extrabold uppercase tracking-wider">
+                      <span>✓ Verified Buyer</span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -237,21 +263,40 @@ export default function HappyCustomersSection() {
         )}
       </div>
 
-      {/* 🎬 Video Popup Modal (Loads only when clicked, full size) */}
+      {/* 🎬 Video Popup Modal (Smooth Desktop Playback, No GPU Bottleneck) */}
       {selectedVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-[420px] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col">
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200"
+          onClick={() => setSelectedVideo(null)}
+        >
+          <div 
+            className="relative w-full max-w-[360px] sm:max-w-[380px] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between p-4 bg-gradient-to-b from-black/90 to-transparent absolute top-0 left-0 right-0 z-30">
               <div>
-                <h3 className="text-white text-[15px] font-semibold">{selectedVideo.name}</h3>
-                <p className="text-white/70 text-[11px]">⭐ Verified Customer Review</p>
+                <h3 className="text-white text-[15px] font-serif font-bold">{selectedVideo.name}</h3>
+                <p className="text-[#FFD700] text-[11px] font-extrabold uppercase tracking-wider">✓ Verified Customer</p>
               </div>
-              <button onClick={() => setSelectedVideo(null)} className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/20">
+              <button 
+                type="button"
+                onClick={() => setSelectedVideo(null)} 
+                className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
+              >
                 <X size={18} />
               </button>
             </div>
-            <div className="relative w-full aspect-[9/16] bg-black">
-              <video src={selectedVideo.videoUrl} controls autoPlay playsInline className="w-full h-full object-cover" />
+            
+            {/* Modal Video Stream - Object-Contain for Butter-Smooth Decoding */}
+            <div className="relative w-full h-[480px] sm:h-[520px] max-h-[75vh] bg-black flex items-center justify-center">
+              <video 
+                src={selectedVideo.videoUrl} 
+                controls 
+                autoPlay 
+                playsInline 
+                preload="auto"
+                className="w-full h-full object-contain" 
+              />
             </div>
           </div>
         </div>

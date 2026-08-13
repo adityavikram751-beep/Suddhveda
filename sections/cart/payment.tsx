@@ -375,7 +375,7 @@ export default function PaymentPage() {
                                                 {product.title}
                                             </p>
                                             <p className="mt-2 text-[11px] text-[#9AA3AF]">
-                                                {product.weight.split(" - ")[0]} • Raw & Unfiltered
+                                                {product.weight.split(" - ")[0]} • Raw & Filtered
                                             </p>
                                             {/* ✅ Fixed: product.quantity ab number hai */}
                                             <p className="mt-2 text-[12px] text-[#6F7786]">

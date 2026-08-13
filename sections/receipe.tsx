@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, X } from "lucide-react";
+import { Play, X, Sparkles, HelpCircle } from "lucide-react";
 import { FiChevronRight, FiChevronDown } from "react-icons/fi";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -38,25 +38,25 @@ const features: Feature[] = [
     id: 1,
     image: "/process1.png",
     title: "From Nature To Your Home",
-    description: "Sourced from the best beekeepers.",
+    description: "Sourced from the finest sustainable beekeepers.",
   },
   {
     id: 2,
     image: "/honneycart.png",
     title: "Crafted with Care",
-    description: "Handled with care to preserve purity.",
+    description: "Handled gently to preserve natural goodness.",
   },
   {
     id: 3,
     image: "/wishlist.png",
     title: "Packed Hygienically",
-    description: "Sealed to retain freshness and nutrients.",
+    description: "Sealed tight to retain supreme freshness.",
   },
   {
     id: 4,
     image: "/wishlist1.png",
     title: "Delivered Safely",
-    description: "Secure delivery to your doorstep.",
+    description: "Secure packaging delivered to your doorstep.",
   },
 ];
 
@@ -64,42 +64,42 @@ const faqs: Faq[] = [
   {
     id: 1,
     question: "Is Shuddh Veda Honey 100% pure?",
-    answer: "Yes, our honey is 100% pure, raw, and unprocessed with no additives.",
+    answer: "Yes, our honey is 100% pure, raw, and unprocessed with no artificial additives or preservatives.",
   },
   {
     id: 2,
     question: "Is the honey raw or processed?",
-    answer: "Our honey is completely raw and minimally filtered to retain its natural goodness.",
+    answer: "Our honey is completely raw and minimally filtered to retain all natural pollen, enzymes, and nutrients.",
   },
   {
     id: 3,
     question: "Does this honey contain any added sugar?",
-    answer: "No, our honey contains no added sugar or syrups whatsoever.",
+    answer: "No, ShuddhVeda honey contains zero added sugars, C4 syrups, or artificial sweeteners.",
   },
   {
     id: 4,
-    question: "Which honey is best for immunity?",
-    answer: "Our Turmeric Honey Shot and raw natural honey are both excellent for boosting immunity.",
+    question: "Which honey is best for boosting immunity?",
+    answer: "Our Turmeric Honey infusion and raw wild forest honey are both exceptional for boosting natural immunity.",
   },
   {
     id: 5,
-    question: "How should I store honey?",
-    answer: "Store honey in a cool, dry place away from direct sunlight, tightly sealed.",
+    question: "How should I store pure honey?",
+    answer: "Store your honey jar in a cool, dry place away from direct sunlight. Ensure the lid is sealed tightly after use.",
   },
   {
     id: 6,
-    question: "Can honey be given to kids?",
-    answer: "Honey is safe for children above 1 year of age; avoid giving it to infants under 12 months.",
+    question: "Can honey be given to children?",
+    answer: "Pure honey is safe and healthy for children above 1 year of age. Avoid feeding honey to infants under 12 months.",
   },
   {
     id: 7,
-    question: "Why does natural honey crystalize?",
-    answer: "Crystallization is a natural process for raw honey and doesn't affect its quality.",
+    question: "Why does natural raw honey crystallize?",
+    answer: "Crystallization is a natural hallmark of pure raw honey. It indicates raw quality and doesn't compromise taste or nutrition.",
   },
   {
     id: 8,
-    question: "How long does honey last?",
-    answer: "Pure honey has an almost indefinite shelf life when stored properly.",
+    question: "What is the shelf life of ShuddhVeda honey?",
+    answer: "Pure unpasteurized honey has an almost indefinite shelf life when stored in an airtight container.",
   },
 ];
 
@@ -174,7 +174,6 @@ export default function RecipesPage() {
     fetchData();
   }, [activeCategory]);
 
-  // Get display name for category
   const getCategoryDisplayName = () => {
     return activeCategory === "benefits" ? "Benefits" : "Healthy";
   };
@@ -182,12 +181,16 @@ export default function RecipesPage() {
   // ================= LOADING STATE =================
   if (loading) {
     return (
-      <main className="bg-white">
+      <main className="bg-[#FFFDF9]">
         <section className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 pt-12 md:pt-16 pb-16 md:pb-20">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
-                Recipes &amp; Wellness
+              <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
+                <Sparkles size={13} className="text-[#D49313]" />
+                <span>RECIPES &amp; WELLNESS</span>
+              </div>
+              <h1 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif font-extrabold text-[#593102] leading-tight">
+                Recipes &amp; <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent">Wellness</span>
               </h1>
             </div>
           </div>
@@ -195,7 +198,7 @@ export default function RecipesPage() {
             {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
               <div
                 key={index}
-                className="bg-gray-200 rounded-2xl h-[280px] sm:h-[310px] lg:h-[330px] animate-pulse"
+                className="bg-[#FAF5EC] rounded-2xl h-[280px] sm:h-[310px] lg:h-[330px] animate-pulse border border-[#EADCC9]"
               />
             ))}
           </div>
@@ -207,24 +210,24 @@ export default function RecipesPage() {
   // ================= ERROR STATE =================
   if (error) {
     return (
-      <main className="bg-white">
+      <main className="bg-[#FFFDF9]">
         <section className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 pt-12 md:pt-16 pb-16 md:pb-20">
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
-                Recipes &amp; Wellness
+              <h1 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif font-extrabold text-[#593102] leading-tight">
+                Recipes &amp; <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent">Wellness</span>
               </h1>
             </div>
           </div>
           <div className="text-center py-12">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-red-600 text-lg font-semibold mb-2">⚠️ Error</p>
-              <p className="text-red-500 mb-4">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 max-w-md mx-auto shadow-xs">
+              <p className="text-red-600 text-lg font-bold mb-2">⚠️ Unable to Load Recipes</p>
+              <p className="text-red-500 mb-4 text-sm font-medium">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="inline-block px-6 py-2 bg-[#D49313] text-white rounded-lg hover:bg-[#b87d10] transition-colors"
+                className="inline-block px-6 py-2.5 bg-gradient-to-r from-[#D49313] to-[#593102] text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
               >
-                Retry
+                Retry Loading
               </button>
             </div>
           </div>
@@ -235,33 +238,36 @@ export default function RecipesPage() {
 
   // ================= MAIN RENDER =================
   return (
-    <main className="bg-white">
+    <main className="bg-[#FFFDF9]">
       {/* ================= RECIPES HEADER + GRID ================= */}
       <section className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 pt-12 md:pt-16 pb-16 md:pb-20">
         {/* Heading row */}
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-[28px] sm:text-[34px] md:text-[40px] font-serif font-bold text-[#593102] leading-tight">
-              Recipes &amp; Wellness
+            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
+              <Sparkles size={13} className="text-[#D49313]" />
+              <span>RECIPES &amp; WELLNESS</span>
+            </div>
+            <h1 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif font-extrabold text-[#593102] leading-tight">
+              Recipes &amp; <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent">Wellness</span>
             </h1>
-            {/* Dynamic Category Name */}
-            <p className="mt-1 text-[14px] sm:text-[16px] text-[#8D7F73]">
+            <p className="mt-1 text-sm sm:text-base text-[#6E5D4F] font-semibold">
               Showing {getCategoryDisplayName()} Recipes
             </p>
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
-            <span className="text-[#8D7F73] text-[13px] sm:text-[14px]">
+            <span className="text-[#8D7F73] font-bold text-xs sm:text-sm uppercase tracking-wider bg-[#FAF0DC] border border-[#D49313]/30 px-3 py-1 rounded-full">
               Showing {recipes.length} results
             </span>
           </div>
         </div>
 
-        {/* Cards */}
+        {/* Cards Grid */}
         {recipes.length === 0 ? (
-          <div className="text-center py-12 mt-10">
-            <p className="text-gray-500 text-lg">
-              No {activeCategory} recipes found
+          <div className="text-center py-12 mt-10 bg-white rounded-3xl border-2 border-[#EADCC9]/80 shadow-xs">
+            <p className="text-[#6E5D4F] text-lg font-medium">
+              No {activeCategory} recipes found at this time.
             </p>
           </div>
         ) : (
@@ -277,7 +283,7 @@ export default function RecipesPage() {
                       setSelectedVideo({ title: recipe.title, video_url: recipe.video_url });
                     }
                   }}
-                  className="relative rounded-2xl overflow-hidden border border-[#F2ECE4] shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgb(0,0,0,0.12)] transition-all duration-300 group h-[280px] sm:h-[310px] lg:h-[330px] cursor-pointer"
+                  className="relative rounded-3xl overflow-hidden border-2 border-[#EADCC9]/80 shadow-xs hover:shadow-xl hover:border-[#D49313]/60 transition-all duration-300 group h-[280px] sm:h-[310px] lg:h-[330px] cursor-pointer"
                 >
                   {hasVideo ? (
                     <div className="relative w-full h-full">
@@ -294,7 +300,7 @@ export default function RecipesPage() {
 
                       {/* Play Icon Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                        <div className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg">
+                        <div className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-lg border border-[#FFD700]/30">
                           <Play size={20} className="ml-0.5 text-[#593102] fill-[#593102]" />
                         </div>
                       </div>
@@ -313,8 +319,8 @@ export default function RecipesPage() {
                   )}
 
                   {/* Title Overlay On Top of Image/Video */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex items-end p-5 sm:p-6 pointer-events-none z-20">
-                    <h3 className="font-bold text-[18px] sm:text-[20px] text-white leading-snug drop-shadow-md">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex items-end p-5 sm:p-6 pointer-events-none z-20">
+                    <h3 className="font-serif font-extrabold text-[18px] sm:text-[20px] text-white leading-snug drop-shadow-md">
                       {recipe.title}
                     </h3>
                   </div>
@@ -332,7 +338,7 @@ export default function RecipesPage() {
           onClick={() => setSelectedVideo(null)}
         >
           <div
-            className="relative w-full max-w-3xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            className="relative w-full max-w-3xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -358,12 +364,12 @@ export default function RecipesPage() {
       )}
 
       {/* ================= FEATURES STRIP ================= */}
-      <section className="border-t border-b border-[#00000033]">
+      <section className="border-t border-b border-[#EADCC9]/60 bg-[#FAF5EC]/50">
         <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-16 py-8 md:py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
             {features.map((feature) => (
               <div key={feature.id} className="flex items-center gap-4">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-[#EADCC9] shadow-2xs">
                   <Image
                     src={feature.image}
                     alt={feature.title}
@@ -372,10 +378,10 @@ export default function RecipesPage() {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102] leading-tight">
+                  <span className="font-serif font-bold text-[15px] sm:text-[16px] text-[#593102] leading-tight">
                     {feature.title}
                   </span>
-                  <span className="text-[#8D7F73] text-[12px] sm:text-[13px] mt-0.5">
+                  <span className="text-[#6E5D4F] text-[12px] sm:text-[13px] font-medium mt-0.5">
                     {feature.description}
                   </span>
                 </div>
@@ -386,22 +392,26 @@ export default function RecipesPage() {
       </section>
 
       {/* ================= FAQ SECTION ================= */}
-      <section className="bg-[#FFFFFF] py-16 md:py-20">
+      <section className="bg-[#FFFDF9] py-16 md:py-20">
         <div className="max-w-[1000px] mx-auto w-full px-6 lg:px-8">
           {/* Heading */}
           <div className="text-center">
-            <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif text-[#593102]">
-              FAQs
+            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-3">
+              <HelpCircle size={13} className="text-[#D49313]" />
+              <span>FREQUENTLY ASKED QUESTIONS</span>
+            </div>
+            <h2 className="text-[30px] sm:text-[36px] md:text-[42px] font-serif font-extrabold text-[#593102]">
+              Frequently Asked <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent">Questions</span>
             </h2>
             <div className="flex items-center justify-center gap-3 mt-4">
-              <div className="w-12 md:w-16 h-px bg-[#593102]" />
-              <span className="text-[#593102]">✦</span>
-              <div className="w-12 md:w-16 h-px bg-[#E6D2B8]" />
+              <div className="w-12 md:w-16 h-0.5 bg-gradient-to-r from-transparent to-[#D49313]" />
+              <span className="text-[#D49313] text-sm">✦</span>
+              <div className="w-12 md:w-16 h-0.5 bg-gradient-to-l from-transparent to-[#D49313]" />
             </div>
           </div>
 
           {/* FAQ grid */}
-          <div className="grid sm:grid-cols-2 gap-x-10 gap-y-2 mt-12">
+          <div className="grid sm:grid-cols-2 gap-x-10 gap-y-3 mt-12">
             {faqs.map((faq) => (
               <FaqItem key={faq.id} faq={faq} />
             ))}
@@ -409,7 +419,7 @@ export default function RecipesPage() {
         </div>
       </section>
 
-      {/* Hide scrollbar cross-browser while keeping it scrollable */}
+      {/* Custom Styles */}
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -417,18 +427,6 @@ export default function RecipesPage() {
         .no-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
-        }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
         }
       `}</style>
     </main>
@@ -440,24 +438,21 @@ function FaqItem({ faq }: { faq: Faq }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-[#E6D2B8]/60 py-4">
+    <div className="border-b border-[#EADCC9]/70 py-4 transition-all">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between gap-4 text-left"
+        className="w-full flex items-center justify-between gap-4 text-left cursor-pointer group"
       >
-        <span className="font-semibold text-[14px] sm:text-[15px] text-[#593102]">
+        <span className="font-serif font-bold text-[14px] sm:text-[15px] text-[#593102] group-hover:text-[#D49313] transition-colors">
           {faq.question}
         </span>
-        <FiChevronDown
-          size={18}
-          className={`text-[#D49313] flex-shrink-0 transition-transform duration-300 ${
-            open ? "rotate-180" : ""
-          }`}
-        />
+        <div className={`flex h-7 w-7 items-center justify-center rounded-full bg-[#FAF0DC] text-[#D49313] flex-shrink-0 transition-transform duration-300 ${open ? "rotate-180 bg-[#593102] text-white" : ""}`}>
+          <FiChevronDown size={16} />
+        </div>
       </button>
 
       {open && (
-        <p className="mt-3 text-[13px] sm:text-[14px] text-[#8D7F73] leading-[1.6]">
+        <p className="mt-3 text-[13px] sm:text-[14px] text-[#6E5D4F] font-medium leading-[1.6] pl-1">
           {faq.answer}
         </p>
       )}

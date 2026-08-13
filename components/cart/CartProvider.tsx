@@ -448,93 +448,94 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      {/* ✅ Proper Blur Overlay - NO SPINNER */}
+      {/* Glass morphism blur background */}
       <div
         className={`fixed inset-0 z-[60] transition-all duration-300 ${
           isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsCartOpen(false)}
       >
-        {/* Glass morphism blur background */}
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-[6px] backdrop-saturate-[1.2]" />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[6px]" />
       </div>
 
       {/* Cart sidebar with glass effect */}
       <aside
-        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[420px] flex-col rounded-l-[24px] border border-r-0 border-[#D9B88D]/20 bg-white/95 backdrop-blur-xl shadow-[-20px_0_60px_rgba(0,0,0,0.15)] transition-transform duration-300 ${
+        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[420px] flex-col rounded-l-[24px] overflow-hidden border border-r-0 border-[#EADCC9]/80 bg-[#FFFDF9]/95 backdrop-blur-xl shadow-[-20px_0_60px_rgba(0,0,0,0.15)] transition-transform duration-300 ${
           isCartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-[#D9B88D]/30 px-4">
-          <h2 className="font-serif text-[16px] font-medium text-[#3C2015]">
-            My Cart <span className="font-normal">({itemCount})</span>
-          </h2>
+        {/* Header */}
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#EADCC9]/80 px-5 bg-white/80 rounded-tl-[24px]">
+          <div className="flex items-center gap-2">
+            <h2 className="font-serif text-lg font-extrabold text-[#593102]">
+              My Cart
+            </h2>
+            <span className="inline-flex items-center justify-center rounded-full bg-[#FAF0DC] border border-[#D49313]/40 px-2.5 py-0.5 text-xs font-black text-[#593102] shadow-2xs">
+              {itemCount}
+            </span>
+          </div>
           <button
             type="button"
             onClick={() => setIsCartOpen(false)}
-            className="text-[#3C2015] hover:text-[#593102]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAF5EC] text-[#593102] hover:bg-[#FAF0DC] hover:text-[#D49313] transition-colors cursor-pointer"
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 
+        {/* Content */}
         <div className="flex-1 overflow-y-auto px-4 py-5">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              {/* ✅ Simple dots loading instead of spinner */}
+            <div className="flex flex-col items-center justify-center py-16">
               <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse" />
-                <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse delay-150" />
+                <div className="h-3 w-3 rounded-full bg-[#D49313] animate-pulse" />
+                <div className="h-3 w-3 rounded-full bg-[#8F590A] animate-pulse delay-150" />
                 <div className="h-3 w-3 rounded-full bg-[#593102] animate-pulse delay-300" />
               </div>
-              <p className="mt-4 text-[14px] text-[#8E623A]">Loading your cart...</p>
+              <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[#8D7F73]">Loading your cart...</p>
             </div>
           ) : cartProducts.length === 0 ? (
-            <div className="rounded-xl bg-white/50 p-5 text-center text-[#8E623A]">
-              Your cart is empty.
+            <div className="rounded-2xl border-2 border-dashed border-[#EADCC9] bg-white/60 p-8 text-center text-[#6E5D4F] font-medium my-6">
+              Your cart is currently empty.
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {cartProducts.map((product) => (
                 <div
                   key={product.cartItemId}
-                  className="grid grid-cols-[70px_1fr_72px] gap-3"
+                  className="rounded-2xl border-2 border-[#EADCC9]/80 bg-white/90 p-3.5 shadow-xs hover:border-[#D49313]/50 transition-all flex items-center justify-between gap-3"
                 >
-                  <div className="relative h-[70px] w-[70px] overflow-hidden rounded-sm bg-[#FFF8EF]">
+                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]/60 p-1.5">
                     <Image
                       src={product.image}
                       alt={product.productName}
                       fill
-                      className="object-contain p-2"
+                      className="object-contain p-1"
                     />
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="truncate text-[14px] font-bold leading-5 text-[#1F1A16]">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-serif text-[14px] font-extrabold leading-tight text-[#593102]">
                       {product.productName}
                     </h3>
-                    {product.type === "NORMAL" && product.categoryName && (
-                      <p className="truncate text-[11px] text-[#6F6258]">
-                        {product.categoryName}
-                      </p>
-                    )}
-                    <p className="text-[11px] text-[#6F6258]">
+                    <p className="mt-0.5 text-xs text-[#6E5D4F] font-semibold">
                       {product.type === "NORMAL"
                         ? product.weight || "Selected weight"
                         : product.customMessage || "Gift box"}
                     </p>
-                    <p className="mt-4 text-[15px] font-bold text-[#111]">
+                    <p className="mt-1.5 font-serif text-base font-extrabold text-[#593102]">
                       ₹{product.price}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end justify-between">
+                  <div className="flex flex-col items-end justify-between self-stretch py-0.5">
                     <button
                       type="button"
                       onClick={() => removeItem(product.cartItemId)}
-                      className="text-[#5B3A20] hover:text-[#593102]"
+                      className="p-1 text-[#8D7F73] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Remove item"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
-                    <div className="grid h-[24px] grid-cols-3 items-center rounded-full border border-[#D9B88D] bg-white text-[12px]">
+                    <div className="flex items-center rounded-full border border-[#D49313]/40 bg-[#FAF0DC] text-[#593102] px-2 py-0.5 text-xs font-extrabold shadow-2xs">
                       <button
                         type="button"
                         onClick={() =>
@@ -542,11 +543,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                             ? updateQuantity(product.productId, product.variantId, -1)
                             : updateCustomQuantity(product.cartItemId, -1)
                         }
-                        className="flex h-full items-center justify-center text-[#5B3A20]"
+                        className="flex h-5 w-5 items-center justify-center text-[#593102] hover:text-[#D49313] transition cursor-pointer"
                       >
-                        <Minus size={13} />
+                        <Minus size={12} />
                       </button>
-                      <span className="min-w-5 text-center font-bold text-[#111]">
+                      <span className="min-w-5 text-center font-black text-[#593102] text-xs">
                         {product.quantity}
                       </span>
                       <button
@@ -556,63 +557,66 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                             ? updateQuantity(product.productId, product.variantId, 1)
                             : updateCustomQuantity(product.cartItemId, 1)
                         }
-                        className="flex h-full items-center justify-center text-[#5B3A20]"
+                        className="flex h-5 w-5 items-center justify-center text-[#593102] hover:text-[#D49313] transition cursor-pointer"
                       >
-                        <Plus size={13} />
+                        <Plus size={12} />
                       </button>
                     </div>
                   </div>
                 </div>
               ))}
-
-              
             </div>
           )}
         </div>
 
-        <div className="shrink-0 border-t border-[#D9B88D]/30 bg-[#FFF1E5]/80 backdrop-blur-sm px-4 py-5">
-          <div className="mb-4 flex items-center justify-between text-[#3C2015]">
+        {/* Footer */}
+        <div className="shrink-0 border-t-2 border-[#EADCC9]/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FAF0DC] p-5 shadow-inner">
+          <div className="mb-4 flex items-start justify-between text-[#593102]">
             <div>
-              <p className="text-[15px] font-bold">
-                Subtotal <span className="font-normal text-[#7E6A56]">({itemCount} items)</span>
+              <p className="font-serif text-base font-extrabold">
+                Subtotal
               </p>
-              <p className="mt-1 text-[12px] text-[#7E6A56]">You save</p>
+              <p className="text-xs font-bold text-[#8D7F73] uppercase tracking-wider mt-0.5">
+                {itemCount} {itemCount === 1 ? "item" : "items"}
+              </p>
+              {saved > 0 && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2.5 py-0.5 rounded-full mt-1.5 shadow-2xs">
+                  You save ₹{saved}
+                </span>
+              )}
             </div>
             <div className="text-right">
-              <p className="text-[17px] font-bold">
+              <p className="font-serif text-2xl font-extrabold text-[#593102]">
                 ₹{subtotal.toLocaleString("en-IN")}
               </p>
-              <p className="mt-1 text-[12px] font-bold text-[#B97800]">₹{saved}</p>
             </div>
           </div>
           
-          <Link
-            href="/cart"
-            onClick={() => setIsCartOpen(false)}
-            className="block h-12 w-full rounded border border-[#9A5A05] bg-white py-3 text-center text-[16px] font-bold text-[#9A5A05] hover:bg-[#FFF8EF]"
-          >
-            View Cart
-          </Link>
+          <div className="space-y-2.5">
+            <Link
+              href="/cart"
+              onClick={() => setIsCartOpen(false)}
+              className="flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 cursor-pointer"
+            >
+              View Full Cart
+            </Link>
+          </div>
           
-          <div className="mt-7 grid grid-cols-3 gap-2 border-t border-[#D9B88D]/30 pt-5 text-center text-[#4A2B12]">
+          <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[#EADCC9]/60 pt-4 text-center text-[#593102]">
             <span className="flex flex-col items-center">
-              <RotateCcw className="mb-1 h-5 w-5 text-[#9A5A05]" />
-              <strong className="text-[10px]">Easy Returns</strong>
-              <small className="text-[8px] text-[#7E6A56]">Hassle-Free</small>
+              <RotateCcw className="mb-1 h-4 w-4 text-[#D49313]" />
+              <strong className="text-[10px] font-bold uppercase tracking-wider">Easy Returns</strong>
+              <small className="text-[9px] text-[#6E5D4F] font-medium">Hassle-Free</small>
             </span>
             <span className="flex flex-col items-center">
-              <Leaf className="mb-1 h-5 w-5 text-[#9A5A05]" />
-              <strong className="text-[10px]">100% Natural</strong>
-              <small className="text-[8px] text-[#7E6A56]">
-                Pure & Unadulterated
-              </small>
+              <Leaf className="mb-1 h-4 w-4 text-[#D49313]" />
+              <strong className="text-[10px] font-bold uppercase tracking-wider">100% Natural</strong>
+              <small className="text-[9px] text-[#6E5D4F] font-medium">Pure Goodness</small>
             </span>
             <span className="flex flex-col items-center">
-              <Truck className="mb-1 h-5 w-5 text-[#9A5A05]" />
-              <strong className="text-[10px]">Fast Delivery</strong>
-              <small className="text-[8px] text-[#7E6A56]">
-                Quick & Reliable
-              </small>
+              <Truck className="mb-1 h-4 w-4 text-[#D49313]" />
+              <strong className="text-[10px] font-bold uppercase tracking-wider">Fast Delivery</strong>
+              <small className="text-[9px] text-[#6E5D4F] font-medium">Quick &amp; Safe</small>
             </span>
           </div>
         </div>

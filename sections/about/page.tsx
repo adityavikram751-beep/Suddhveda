@@ -2,77 +2,86 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FiBox, FiDollarSign, FiHeart } from "react-icons/fi";
+import { Sparkles, ShieldCheck, Heart, Leaf, ShoppingBag } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="bg-[#FEF8F4] overflow-hidden lg:min-h-[720px]">
-      <div className="max-w-[1440px] mx-auto w-full px-6 lg:pl-8 lg:pr-16 pt-4 pb-12 lg:pb-0">
+    <section className="relative bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] overflow-hidden lg:min-h-[720px] border-b border-[#EADCC9]/50">
+      {/* Decorative Glow Blobs */}
+      <div className="absolute top-0 right-10 w-96 h-96 bg-[#D49313]/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-10 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-[1440px] mx-auto w-full px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center">
           
           {/* LEFT CONTENT */}
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left pt-4 lg:pt-8">
-            {/* Badge */}
-            <span className="mt-4 lg:mt-8 text-[#D49313] text-[13px] font-semibold tracking-[0.08em] uppercase">
-              Our Story
-            </span>
+            
+            {/* Subtitle Pill Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
+              <Sparkles size={14} className="text-[#D49313]" />
+              <span>OUR STORY</span>
+            </div>
 
             {/* Heading */}
-            <h1 className="mt-2 text-[38px] sm:text-[52px] md:text-[60px] lg:text-[68px] leading-[1.18] font-serif text-[#593102] tracking-tight font-normal">
+            <h1 className="mt-2 text-[38px] sm:text-[52px] md:text-[60px] lg:text-[68px] leading-[1.15] font-serif text-[#593102] tracking-tight font-extrabold">
               Rooted in Nature.
               <br />
-              <span className="italic text-[#D49313]">Driven by Purpose.</span>
+              <span className="italic bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent">
+                Driven by Purpose.
+              </span>
             </h1>
 
             {/* Description */}
-            <p className="mt-6 lg:mt-8 text-[15px] sm:text-[16px] leading-[1.65] text-[#8D7F73] max-w-[460px]">
-              At ShuddhaVeda, we believe honey is more than a sweetener—it's a
+            <p className="mt-5 lg:mt-6 text-[15px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[480px]">
+              At ShuddhaVeda, we believe honey is more than a sweetener—it&apos;s a
               gift from nature, crafted by hardworking bees and preserved with
-              care and respect.
+              uncompromising care and respect.
             </p>
 
-            {/* Features */}
-            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-x-8 gap-y-4 mt-8 lg:mt-10">
+            {/* Features Bar */}
+            <div className="flex flex-wrap justify-center lg:justify-start items-center gap-x-6 gap-y-4 mt-8 lg:mt-10">
               {/* Feature 1 */}
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-[#B37B1B] bg-[#F3E3C8] flex-shrink-0">
-                  <FiBox size={16} />
+              <div className="flex items-center gap-3 bg-white/80 border border-[#EADCC9] px-3.5 py-2 rounded-2xl shadow-xs">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#D49313] bg-[#FAF0DC] flex-shrink-0">
+                  <ShieldCheck size={18} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#593102]">100%</span>
-                  <span className="text-[#8D7F73] text-[12.5px]">Pure &amp; Natural</span>
+                  <span className="font-extrabold text-[14px] text-[#593102]">100% Pure</span>
+                  <span className="text-[#8D7F73] text-[12px] font-medium">Natural Honey</span>
                 </div>
               </div>
 
               {/* Feature 2 */}
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-[#B37B1B] bg-[#F3E3C8] flex-shrink-0">
-                  <FiDollarSign size={16} />
+              <div className="flex items-center gap-3 bg-white/80 border border-[#EADCC9] px-3.5 py-2 rounded-2xl shadow-xs">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#D49313] bg-[#FAF0DC] flex-shrink-0">
+                  <Leaf size={18} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#593102]">Ethically</span>
-                  <span className="text-[#8D7F73] text-[12.5px]">Sourced</span>
+                  <span className="font-extrabold text-[14px] text-[#593102]">Ethically</span>
+                  <span className="text-[#8D7F73] text-[12px] font-medium">Sourced</span>
                 </div>
               </div>
 
               {/* Feature 3 */}
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-[#B37B1B] bg-[#F3E3C8] flex-shrink-0">
-                  <FiHeart size={16} />
+              <div className="flex items-center gap-3 bg-white/80 border border-[#EADCC9] px-3.5 py-2 rounded-2xl shadow-xs">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#D49313] bg-[#FAF0DC] flex-shrink-0">
+                  <Heart size={18} />
                 </div>
                 <div className="flex flex-col leading-tight text-left">
-                  <span className="font-bold text-[14px] text-[#593102]">Sustainable</span>
-                  <span className="text-[#8D7F73] text-[12.5px]">Beekeeping</span>
+                  <span className="font-extrabold text-[14px] text-[#593102]">Sustainable</span>
+                  <span className="text-[#8D7F73] text-[12px] font-medium">Beekeeping</span>
                 </div>
               </div>
             </div>
 
-            {/* Button with Link (Full width on mobile, auto on desktop) */}
+            {/* CTA Button with Link */}
             <Link
-              href="/promise"
-              className="mt-8 lg:mt-9 bg-[#D49313] hover:bg-[#B37B1B] transition-colors text-white h-[48px] w-full lg:w-auto px-8 rounded-lg font-medium text-[14px] tracking-wide inline-flex items-center justify-center shadow-md"
+              href="/shop"
+              className="mt-8 lg:mt-10 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[52px] w-full lg:w-auto px-8 rounded-2xl font-black text-[14px] tracking-wider uppercase inline-flex items-center justify-center gap-2.5 shadow-lg hover:shadow-2xl transition-all duration-300 border border-[#FFD700]/30 active:scale-98 cursor-pointer"
             >
-              Our Promise
+              <ShoppingBag size={18} />
+              <span>EXPLORE OUR PRODUCTS</span>
             </Link>
           </div>
 

@@ -2,138 +2,147 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Zap, BadgeCheck, Tag, Package } from "lucide-react";
+import { ChevronRight, Zap, BadgeCheck, Tag, Package, Sparkles } from "lucide-react";
 
 export default function ShopHero() {
   return (
     <>
       {/* ================= Hero ================= */}
-      <section className="bg-[#FAF6F0]">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 py-10 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
+      <section className="relative bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-12 lg:py-18 border-b border-[#EADCC9]/60 overflow-hidden">
+        {/* Ambient Glow */}
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/6 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="relative max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            
             {/* LEFT CONTENT */}
-            <div>
+            <div className="lg:col-span-6 flex flex-col items-start">
               {/* Breadcrumb */}
-              <div className="flex items-center gap-2 text-[14px] text-[#8D7F73]">
-                <Link href="/" className="hover:text-[#593102] transition-colors">
+              <div className="flex items-center gap-2 text-[14px] text-[#7A6A5C]">
+                <Link href="/" className="hover:text-[#593102] transition-colors font-medium">
                   Home
                 </Link>
-                <ChevronRight size={14} className="text-[#B37B1B]" />
-                <span className="text-[#D49313] font-medium">Shop</span>
+                <ChevronRight size={14} className="text-[#D49313]" />
+                <span className="text-[#593102] font-bold">Shop</span>
+              </div>
+
+              {/* Luxury Category Pill Tag */}
+              <div className="mt-3.5 inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
+                <Sparkles size={14} className="text-[#D49313]" />
+                <span className="text-[12px] font-extrabold text-[#593102] uppercase tracking-wider">
+                  100% PURE &amp; ORGANIC
+                </span>
               </div>
 
               {/* Heading */}
-              <h1 className="mt-4 font-serif text-[36px] sm:text-[44px] lg:text-[54px] leading-[1.15] text-[#593102] tracking-tight">
-                Shop Pure <span className="text-[#D49313]">Honey</span>
+              <h1 className="mt-4 font-serif text-[40px] sm:text-[50px] lg:text-[58px] font-extrabold leading-[1.12] text-[#593102] tracking-tight">
+                Shop Pure{" "}
+                <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
+                  Honey
+                </span>
               </h1>
 
               {/* Description */}
-              <p className="mt-4 text-[15px] sm:text-[16px] leading-[1.6] text-[#8D7F73] max-w-[420px]">
-                Discover our 100% pure, raw and unfiltered honey crafted by
-                nature, packed with goodness.
+              <p className="mt-4 text-[16px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[520px]">
+                Discover our 100% pure, raw and filtered honey crafted by nature, packed with goodness.
               </p>
             </div>
 
-            {/* RIGHT IMAGE CARD */}
-            <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] h-[220px] sm:h-[280px] lg:h-[330px]">
-              <Image
-                src="/shopsection.png"
-                alt="ShudhVeda Honey Jars"
-                fill
-                priority
-                className="object-cover"
-              />
+            {/* RIGHT IMAGE CARD - FULL BOX COVER */}
+            <div className="lg:col-span-6 relative w-full flex justify-center">
+              <div className="relative w-full max-w-[640px] xl:max-w-[660px] h-[240px] sm:h-[300px] lg:h-[320px] rounded-3xl overflow-hidden border-2 border-[#D49313]/50 shadow-2xl group bg-white">
+                
+                {/* Product Image Fills Entire Box */}
+                <Image
+                  src="/shopsection.png"
+                  alt="ShudhVeda Honey Jars"
+                  fill
+                  priority
+                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                />
 
-              {/* Mock browser top bar overlay */}
-              <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-black/25 to-transparent">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3.5 h-3.5 rounded-full border border-white/70 flex items-center justify-center text-white/70 text-[8px]">
-                    i
-                  </span>
-                  <span className="text-white text-[11px] font-medium tracking-wide">
-                    SHUddHAVeda
-                  </span>
+                {/* Floating Badge (Top Left Pill) */}
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md border border-[#D49313]/50 rounded-full px-4 py-2 shadow-lg flex items-center gap-2 z-20">
+                  <Sparkles size={16} className="text-[#D49313]" />
+                  <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">100% Pure &amp; Raw</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <div className="hidden sm:flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-                  </div>
-                  <button className="bg-white/90 text-[#593102] text-[10px] font-medium px-2.5 py-1 rounded">
-                    Contact Us
-                  </button>
+
+                {/* Floating Badge (Bottom Right Pill) */}
+                <div className="absolute bottom-4 right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-5 py-2.5 shadow-xl flex items-center gap-2 z-20 border border-[#FFD700]/40">
+                  <span className="font-black text-[13px] uppercase tracking-wider">Signature Collection</span>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
 
       {/* ================= Feature Strip ================= */}
-      <section className="bg-white border-t border-[#F2ECE4]">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-8 py-8 lg:py-10">
-          {/* Mobile: 1 Col with proper space, Tablet: 2 Cols, Desktop: 4 Cols */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-6 sm:gap-y-8 gap-x-6">
+      <section className="bg-white border-b border-[#EADCC9]/60 py-8 lg:py-10">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            
             {/* Feature 1 */}
-            <div className="flex items-center gap-4 p-2 sm:p-0">
-              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/40">
                 <Zap size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#593102]">
-                  100% Pure & Raw
+                <span className="text-[15px] font-extrabold text-[#593102]">
+                  100% Pure &amp; Raw
                 </span>
-                <span className="text-[13px] text-[#8D7F73]">
-                  Unprocessed & Unfiltered
+                <span className="text-[13px] font-medium text-[#7A6A5C]">
+                  Unprocessed &amp; Filtered
                 </span>
               </div>
             </div>
 
             {/* Feature 2 */}
-            <div className="flex items-center gap-4 p-2 sm:p-0">
-              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/40">
                 <BadgeCheck size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#593102]">
+                <span className="text-[15px] font-extrabold text-[#593102]">
                   Lab Tested
                 </span>
-                <span className="text-[13px] text-[#8D7F73]">
-                  For Purity & Safety
+                <span className="text-[13px] font-medium text-[#7A6A5C]">
+                  For Purity &amp; Safety
                 </span>
               </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="flex items-center gap-4 p-2 sm:p-0">
-              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/40">
                 <Tag size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#593102]">
+                <span className="text-[15px] font-extrabold text-[#593102]">
                   No Added Sugar
                 </span>
-                <span className="text-[13px] text-[#8D7F73]">
+                <span className="text-[13px] font-medium text-[#7A6A5C]">
                   No Preservatives
                 </span>
               </div>
             </div>
 
             {/* Feature 4 */}
-            <div className="flex items-center gap-4 p-2 sm:p-0">
-              <div className="w-12 h-12 rounded-xl bg-[#FBEED9] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all">
+              <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/40">
                 <Package size={22} className="text-[#D49313]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-semibold text-[#593102]">
+                <span className="text-[15px] font-extrabold text-[#593102]">
                   Secure Packaging
                 </span>
-                <span className="text-[13px] text-[#8D7F73]">
-                  Safe & Hygienic Delivery
+                <span className="text-[13px] font-medium text-[#7A6A5C]">
+                  Safe &amp; Hygienic Delivery
                 </span>
               </div>
             </div>
+
           </div>
         </div>
       </section>

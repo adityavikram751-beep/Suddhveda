@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 
 const sidebarLinks = [
+    { icon: Package, label: "My Orders", href: "/account" },
     { icon: MapPin, label: "My Addresses", href: "/address" },
     { icon: Heart, label: "Wishlist", href: "/wishlist" },
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },
@@ -250,17 +251,17 @@ function OrderActions({ order }: { order: Order }) {
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
                 href="/trackorder"
-                className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                className="flex h-9 items-center justify-center rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-all duration-300 border border-[#FFD700]/30"
             >
                 Track Shipment
             </Link>
             <Link
                 href={`/account/orders/${order.orderId}`}
-                className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
+                className="flex h-9 items-center justify-center rounded-xl border border-[#D49313] text-xs font-bold text-[#593102] hover:bg-[#FAF0DC] transition-colors"
             >
                 View Details
             </Link>
-            <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition">
+            <button className="flex h-9 items-center justify-center gap-1 rounded-xl border border-[#EADCC9] text-xs font-bold text-[#6E5D4F] hover:bg-[#FAF5EC] transition-colors cursor-pointer">
                 Download Invoice
             </button>
         </div>
@@ -281,58 +282,52 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
 
     return (
         <div className="space-y-4 w-full">
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm">
+            <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FBE4B8] text-base font-bold text-[#593102]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-white shadow-md">
                         {initials}
                     </div>
-                    <p className="font-serif text-lg font-bold text-[#3C2015] capitalize">
+                    <p className="font-serif text-lg font-extrabold text-[#593102] capitalize">
                         {fullName}
                     </p>
-                    <p className="text-xs text-[#B59A78] break-all">
+                    <p className="text-xs text-[#6E5D4F] font-medium break-all">
                         {email !== "Not Provided" ? email : `+91 ${userData?.mobile || userData?.phone || ""}`}
                     </p>
-                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-[#593102] hover:underline">
+                    <button className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#D49313] hover:underline cursor-pointer">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
                         <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
                     </button>
                 </div>
             </div>
 
-            <div className="rounded-2xl border border-[#F0E2CC] bg-white p-5 shadow-sm flex flex-col justify-between">
-                <nav className="space-y-1">
-                    <div className="relative flex items-center gap-3 rounded-xl bg-[#FFF2D8] px-4 py-2.5 text-sm font-medium text-[#593102]">
-                        <Package size={18} className="shrink-0" />
-                        <span>My Orders</span>
-                        <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
-                    </div>
+            <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs flex flex-col justify-between">
+                <nav className="space-y-1.5">
                     {sidebarLinks.map((link) => {
                         const Icon = link.icon;
-                        const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                        const isActive = link.href === "/account"
+                            ? pathname === "/account" || pathname === "/account/" || pathname?.startsWith("/account/orders")
+                            : pathname === link.href || pathname?.startsWith(`${link.href}/`);
                         return (
                             <Link
                                 key={link.label}
                                 href={link.href}
                                 onClick={handleClick}
                                 className={`
-                                    relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors
+                                    relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive
-                                        ? "bg-[#FFF2D8] text-[#593102]"
-                                        : "text-[#593102] hover:bg-[#FFF8EF]"
+                                        ? "bg-[#FAF0DC] text-[#593102] font-bold border-l-4 border-[#D49313] shadow-xs"
+                                        : "text-[#593102] hover:bg-[#FAF5EC] hover:text-[#D49313]"
                                     }
                                 `}
                             >
-                                <Icon size={18} className="shrink-0" />
+                                <Icon size={18} className={`shrink-0 ${isActive ? "text-[#D49313]" : "text-[#8D7F73]"}`} />
                                 <span>{link.label}</span>
-                                {isActive && (
-                                    <span className="absolute right-0 top-0 h-full w-1 rounded-l-full bg-[#593102]" />
-                                )}
                             </Link>
                         );
                     })}
                 </nav>
-                <div className="mt-8 pt-4 border-t border-[#F0E2CC]">
-                    <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50">
+                <div className="mt-8 pt-4 border-t border-[#EADCC9]/60">
+                    <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-bold text-red-500 transition-colors hover:bg-red-50 cursor-pointer">
                         <LogOut size={18} className="shrink-0" />
                         Logout
                     </button>
@@ -678,22 +673,10 @@ export default function MyOrdersPage() {
                 )}
 
                 {/* Main Layout Grid */}
-                <div ref={rowRef} className="flex flex-col lg:flex-row gap-8 items-start relative">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start relative">
 
-                    {/* Placeholder */}
-                    {sidebarPinned && (
-                        <div
-                            className="hidden lg:block w-[280px] shrink-0"
-                            style={{ height: placeholderHeight }}
-                        />
-                    )}
-
-                    {/* Desktop Sidebar */}
-                    <aside
-                        ref={sidebarRef}
-                        style={sidebarStyle}
-                        className="hidden lg:block w-[280px] shrink-0 z-10 max-h-[calc(100vh-96px-24px)] overflow-y-auto"
-                    >
+                    {/* Desktop Sidebar (Pure CSS Sticky - 100% smooth, 0 jitter) */}
+                    <aside className="hidden lg:block w-[280px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
                         <SidebarContent userData={userData} onLogout={logout} />
                     </aside>
 
@@ -703,11 +686,11 @@ export default function MyOrdersPage() {
                         {/* Header */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3C2015]">
+                                <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#593102]">
                                     My Orders
                                 </h1>
-                                <p className="mt-0.5 text-sm text-[#B59A78]">
-                                    Manage and track all your orders.
+                                <p className="mt-0.5 text-sm text-[#6E5D4F] font-medium">
+                                    Manage and track all your orders seamlessly.
                                 </p>
                             </div>
                             <div className="relative w-full sm:w-80">
@@ -716,18 +699,18 @@ export default function MyOrdersPage() {
                                     placeholder="Search Order ID or Product Name..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="h-11 w-full rounded-lg border border-[#F0E2CC] bg-white pl-4 pr-10 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40"
+                                    className="h-11 w-full rounded-xl border border-[#EADCC9] bg-white/90 backdrop-blur-sm pl-4 pr-10 text-sm text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] font-medium transition-colors"
                                 />
                                 <Search
                                     size={18}
-                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#B59A78]"
+                                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#D49313]"
                                 />
                             </div>
                         </div>
 
                         {/* Filter pill */}
                         <div className="flex flex-wrap items-center gap-3">
-                            <button className="rounded-lg border border-[#593102] bg-[#FFF2D8] px-5 py-2 text-sm font-semibold text-[#593102]">
+                            <button className="rounded-full border border-[#D49313]/40 bg-[#FAF0DC] px-5 py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#593102] shadow-2xs">
                                 All Orders
                             </button>
                         </div>
@@ -735,7 +718,7 @@ export default function MyOrdersPage() {
                         {/* Order cards */}
                         <div className="space-y-5">
                             {currentOrders.length === 0 ? (
-                                <div className="text-center py-12 text-[#B59A78] bg-white rounded-2xl border border-[#F0E2CC]">
+                                <div className="text-center py-12 text-[#6E5D4F] font-medium bg-white/90 rounded-3xl border-2 border-[#EADCC9]/80 shadow-xs">
                                     {searchTerm ? "No orders match your search." : "No orders yet."}
                                 </div>
                             ) : (
@@ -744,7 +727,7 @@ export default function MyOrdersPage() {
                                     return (
                                         <div
                                             key={order.id}
-                                            className="rounded-2xl border border-[#F0E2CC] bg-white p-5 md:p-6 shadow-sm"
+                                            className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all"
                                         >
                                             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                                                 {/* Product */}
@@ -758,39 +741,39 @@ export default function MyOrdersPage() {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-bold text-[#3C2015]">
+                                                        <p className="font-serif text-base font-bold text-[#593102]">
                                                             {order.productTitle}
                                                         </p>
-                                                        <p className="text-xs text-[#8A7460]">{order.productSub}</p>
-                                                        <p className="mt-1 text-xs text-[#B59A78]">Qty: {order.qty}</p>
+                                                        <p className="text-xs text-[#6E5D4F] font-medium">{order.productSub}</p>
+                                                        <p className="mt-1 text-xs text-[#8D7F73] font-semibold">Qty: {order.qty}</p>
                                                     </div>
                                                 </div>
 
                                                 {/* Order ID */}
                                                 <div className="md:w-36">
-                                                    <p className="text-xs text-[#B59A78]">Order ID</p>
-                                                    <p className="text-sm font-bold text-[#3C2015]">{order.orderId}</p>
-                                                    <p className="mt-2 text-xs text-[#B59A78]">Ordered on</p>
-                                                    <p className="text-sm font-semibold text-[#3C2015]">{order.orderedOn}</p>
+                                                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
+                                                    <p className="text-sm font-extrabold text-[#593102] mt-0.5">{order.orderId}</p>
+                                                    <p className="mt-2 text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Ordered on</p>
+                                                    <p className="text-xs font-bold text-[#593102] mt-0.5">{order.orderedOn}</p>
                                                 </div>
 
                                                 {/* Payment */}
                                                 <div className="md:w-32">
-                                                    <p className="text-xs text-[#B59A78]">Payment Method</p>
-                                                    <p className="text-sm font-bold text-[#3C2015]">{order.paymentMethod}</p>
-                                                    <p className="mt-2 text-xs text-[#B59A78]">Total Amount</p>
-                                                    <p className="text-sm font-semibold text-[#3C2015]">{order.totalAmount}</p>
+                                                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Payment Method</p>
+                                                    <p className="text-xs font-bold text-[#593102] mt-0.5">{order.paymentMethod}</p>
+                                                    <p className="mt-2 text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Total Amount</p>
+                                                    <p className="text-sm font-extrabold text-[#593102] mt-0.5">{order.totalAmount}</p>
                                                 </div>
 
                                                 {/* Status */}
                                                 <div className="md:w-40">
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${statusStyles[order.status].bg} ${statusStyles[order.status].text}`}
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-extrabold shadow-2xs ${statusStyles[order.status].bg} ${statusStyles[order.status].text}`}
                                                     >
                                                         <StatusIcon size={13} />
                                                         {order.status}
                                                     </span>
-                                                    <p className="mt-2 text-xs text-[#B59A78]">{order.statusNote}</p>
+                                                    <p className="mt-2 text-xs text-[#6E5D4F] font-medium">{order.statusNote}</p>
                                                 </div>
 
                                                 {/* Actions */}

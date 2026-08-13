@@ -51,9 +51,7 @@ export default async function ProductPage({
     if (recRes.ok) {
       const recResult = await recRes.json();
       const allList = getProductsFromResponse(recResult);
-      recommendations = allList
-        .filter((item) => item._id !== id)
-        .slice(0, 4);
+      recommendations = allList.filter((item) => item._id !== id);
     }
   } catch (error) {
     console.error("❌ Failed to fetch recommendations:", error);

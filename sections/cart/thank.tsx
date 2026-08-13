@@ -257,7 +257,7 @@ export default function OrderConfirmation() {
                     <div className="flex-1">
                       <p className="text-[14px] font-semibold">{product.title}</p>
                       <p className="text-[11px] text-[#9AA3AF]">
-                        {product.weight.split(" - ")[0]} - Raw & Unfiltered
+                        {product.weight.split(" - ")[0]} - Raw & Filtered
                       </p>
                       <p className="text-[11px] text-[#9AA3AF]">
                         Qty: {product.quantity}

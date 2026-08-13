@@ -25,7 +25,6 @@ import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 
-
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
     if (typeof document === "undefined") return null;
@@ -75,34 +74,36 @@ export default function Cart() {
     } = useCart();
 
     const cartProducts = Object.values(cartItems);
-    const asideRef = useRef<HTMLElement | null>(null);
     const recommendationScrollerRefs = useRef<Array<HTMLDivElement | null>>([]);
     const [isFooterVisible, setIsFooterVisible] = useState(false);
 
     // Observe footer and toggle sticky behavior for the sidebar
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const footer = document.querySelector('footer');
+        if (typeof window === "undefined") return;
+        const footer = document.querySelector("footer");
         if (!footer) return;
-        const obs = new IntersectionObserver((entries) => {
-            const e = entries[0];
-            setIsFooterVisible(!!(e && (e.isIntersecting || e.intersectionRatio > 0)));
-        }, { threshold: 0 });
+        const obs = new IntersectionObserver(
+            (entries) => {
+                const e = entries[0];
+                setIsFooterVisible(!!(e && (e.isIntersecting || e.intersectionRatio > 0)));
+            },
+            { threshold: 0 }
+        );
         obs.observe(footer);
         return () => obs.disconnect();
     }, []);
 
     const subtotal = cartProducts.reduce(
         (sum, product) => sum + product.price * product.quantity,
-        0,
+        0
     );
     const saved = cartProducts.reduce(
         (sum, product) =>
-        sum +
-        (product.type === "NORMAL"
-            ? Math.max((product.oldPrice || 0) - product.price, 0) * product.quantity
-            : 0),
-        0,
+            sum +
+            (product.type === "NORMAL"
+                ? Math.max((product.oldPrice || 0) - product.price, 0) * product.quantity
+                : 0),
+        0
     );
 
     type ApiProduct = {
@@ -124,8 +125,7 @@ export default function Cart() {
     // Track selected variants for each recommendation product
     const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
-    // 👇 Location data lifted up here so it's fetched ONCE and shared by both
-    // the desktop "Need Help" panel and the mobile "Need Help" panel (no duplicate API calls)
+    // Location data for Need Help panel
     const [location, setLocation] = useState<LocationData | null>(null);
     const [locationLoading, setLocationLoading] = useState(true);
 
@@ -186,7 +186,7 @@ export default function Cart() {
         })();
     }, []);
 
-    // Fetch location/help info once here (shared by desktop + mobile Need Help blocks)
+    // Fetch location/help info
     useEffect(() => {
         (async () => {
             try {
@@ -237,7 +237,8 @@ export default function Cart() {
         const isWishlisted = wishlistIds.includes(productId);
         try {
             const res = await fetch(
-                `${API_BASE_URL}/api/wishlist/${isWishlisted ? "remove" : "add"}/${productId}`, {
+                `${API_BASE_URL}/api/wishlist/${isWishlisted ? "remove" : "add"}/${productId}`,
+                {
                     method: isWishlisted ? "DELETE" : "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -269,17 +270,15 @@ export default function Cart() {
         }
     };
 
-    // 👇 Reusable "You May Also Like" block — rendered once for desktop (original spot)
-    // and once for mobile (bottom of page, above footer). Uses the SAME shared state above,
-    // so no duplicate fetching happens even though it's rendered twice.
+    // Reusable "You May Also Like" block
     const renderRecommendations = (scrollerIndex: number) => (
-        <>
-            <h2 className="text-[22px] font-semibold">You May Also Like</h2>
+        <div className="mt-8">
+            <h2 className="font-serif text-[22px] font-extrabold text-[#593102]">You May Also Like</h2>
             <div
                 ref={(node) => {
                     recommendationScrollerRefs.current[scrollerIndex] = node;
                 }}
-                className="mt-6 flex w-full max-w-full gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="mt-5 flex w-full max-w-full gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
                 {recommendations.map((item) => {
                     const variants = item.variantDocumentId || [];
@@ -303,7 +302,7 @@ export default function Cart() {
                         <div
                             key={item._id}
                             data-recommendation-card
-                            className="h-full shrink-0 basis-full snap-start sm:basis-[calc((100%_-_1.5rem)/2)] lg:basis-[calc((100%_-_3rem)/3)]"
+                            className="w-[280px] sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] min-w-[280px] sm:min-w-0 shrink-0 snap-start flex flex-col h-full"
                         >
                             <ProductCardShop
                                 badge={categoryName}
@@ -311,9 +310,9 @@ export default function Cart() {
                                 title={item.product_name}
                                 subtitle={categoryName}
                                 weight={
-                                    currentVariant ?
-                                    `${currentVariant.weight}${currentVariant.unit || "g"}` :
-                                    ""
+                                    currentVariant
+                                        ? `${currentVariant.weight}${currentVariant.unit || "g"}`
+                                        : ""
                                 }
                                 price={currentVariant?.price || 0}
                                 oldPrice={currentVariant?.mrp}
@@ -329,89 +328,87 @@ export default function Cart() {
                                     currentVariant &&
                                     handleRecommendationAddToCart(item._id, currentVariant._id)
                                 }
-                                onIncrement={() => {}}
-                                onDecrement={() => {}}
+                                onIncrement={() => { }}
+                                onDecrement={() => { }}
                                 onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
                             />
                         </div>
                     );
                 })}
             </div>
-        </>
+        </div>
     );
 
     return (
-        <main className="bg-[#FFF8EF] py-10 text-[#2F241C]">
-            <div className="mx-auto -mt-10 max-w-[1410px] px-5">
-                <nav className="mb-6 text-sm text-[#7B8493]">
-
-                </nav>
-
+        <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
+            <div className="mx-auto max-w-[1410px] px-4 sm:px-6">
                 <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] items-start">
                     {/* LEFT SECTION */}
                     <section className="min-w-0">
-                        <h1 className="text-[34px] font-bold">
-                            Your Cart <span className="text-[#593102]">({cartProducts.length})</span>
+                        <div className="inline-flex items-center gap-2 bg-[#EA580C]/10 border border-[#EA580C]/30 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#EA580C] tracking-[0.18em] shadow-xs mb-2">
+                            <span>YOUR SHOPPING CART</span>
+                        </div>
+                        <h1 className="text-[30px] sm:text-[36px] font-serif font-extrabold text-[#201A18] tracking-tight">
+                            Your <span className="text-[#EA580C]">Cart</span>{" "}
+                            <span className="inline-flex items-center justify-center rounded-full bg-[#EA580C]/10 border border-[#EA580C]/30 px-3 py-0.5 text-sm font-black text-[#EA580C] align-middle ml-1">
+                                ({cartProducts.length})
+                            </span>
                         </h1>
 
-
-                        <div className="mt-12 hidden grid-cols-[1fr_120px_160px_100px] px-5 text-[15px] font-semibold uppercase tracking-[0.08em] text-[#30303A] md:grid">
+                        <div className="mt-8 hidden grid-cols-[1fr_120px_160px_100px] px-6 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102] md:grid">
                             <span>Product</span>
                             <span>Price</span>
                             <span>Quantity</span>
                             <span>Total</span>
                         </div>
 
-                        {/* 👇 SCROLL FIX: max-h-[350px] shows exactly ~2 cards, rest
-                            scroll inside this box. Scrollbar is hidden (still scrollable
-                            via mouse wheel / touch) via the webkit/ms/firefox rules below.
-                            UI/styling of the cards themselves is untouched. */}
-                        <div className="mt-4 space-y-5 max-h-[350px] overflow-y-auto pr-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        {/* Cart items list with max-height scroll (shows 1.5 cards, rest scroll) */}
+                        <div className="mt-4 space-y-4 max-h-[225px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
-                                <div className="rounded bg-white px-5 py-10 text-center text-[#8E623A]">
-                                    Loading cart...
+                                <div className="rounded-2xl border-2 border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
+                                    Loading your cart...
                                 </div>
                             ) : cartProducts.length === 0 ? (
-                                <div className="rounded bg-white px-5 py-10 text-center text-[#8E623A]">
-                                    Your cart is empty.
+                                <div className="rounded-2xl border-2 border-dashed border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
+                                    Your cart is currently empty.
                                 </div>
                             ) : (
                                 cartProducts.map((product) => (
                                     <div
                                         key={product.cartItemId}
-                                        className="group grid gap-5 rounded-2xl border border-[#F0E4D4] bg-white px-5 py-5 shadow-[0_2px_10px_rgba(60,40,20,0.04)] transition-shadow hover:shadow-[0_4px_16px_rgba(60,40,20,0.08)] md:grid-cols-[1fr_110px_140px_110px] md:items-center"
+                                        className="group grid gap-5 rounded-2xl border-2 border-[#EADCC9]/80 bg-white px-5 py-5 shadow-xs hover:border-[#D49313]/60 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center"
                                     >
                                         <div className="flex gap-4 sm:gap-5">
-                                            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-[#FFF8EF] ring-1 ring-[#F0E4D4]">
+                                            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
                                                 <Image
                                                     src={product.image}
                                                     alt={product.productName}
                                                     fill
-                                                    className="object-contain p-2.5"
+                                                    className="object-contain p-2"
                                                 />
                                             </div>
-                                            <div className="flex flex-col justify-center gap-1.5">
-                                                <h2 className="text-[16px] sm:text-[17px] font-bold leading-snug text-[#2F241C]">
+                                            <div className="flex flex-col justify-center gap-1">
+                                                <h2 className="font-serif text-[16px] sm:text-[17px] font-extrabold leading-snug text-[#593102]">
                                                     {product.productName}
                                                 </h2>
                                                 {product.type === "NORMAL" && product.categoryName && (
-                                                    <p className="text-[12.5px] text-[#9B8B76]">
+                                                    <p className="text-xs font-semibold text-[#6E5D4F]">
                                                         {product.categoryName}
                                                     </p>
                                                 )}
-                                                <p className="text-[12.5px] text-[#9B8B76]">
-                                                    {product.type === "NORMAL" ?
-                                                        product.weight :
-                                                        product.customMessage || "Gift box"}
+                                                <p className="text-xs font-semibold text-[#6E5D4F]">
+                                                    {product.type === "NORMAL"
+                                                        ? product.weight
+                                                        : product.customMessage || "Gift box"}
                                                 </p>
-                                                <span className="inline-flex w-fit items-center gap-1 rounded-full bg-[#E7F9EA] px-2.5 py-1 text-[10px] font-bold text-[#149447]">
+                                                <span className="inline-flex w-fit items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 mt-0.5">
                                                     <Check size={11} className="stroke-[3]" />
                                                     100% Raw &amp; Unfiltered
                                                 </span>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeItem(product.cartItemId)}
-                                                    className="mt-1 flex w-fit items-center gap-1.5 text-[12px] font-medium text-[#B0A18C] transition-colors hover:text-red-500"
+                                                    className="mt-1 flex w-fit items-center gap-1.5 text-[12px] font-bold text-[#8D7F73] transition-colors hover:text-red-500 cursor-pointer"
                                                 >
                                                     <Trash2 size={13} /> Remove
                                                 </button>
@@ -419,32 +416,32 @@ export default function Cart() {
                                         </div>
 
                                         <div className="flex items-center justify-between md:block">
-                                            <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Price</span>
-                                            <p className="text-[17px] sm:text-[18px] font-bold text-[#3C2015]">
+                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Price</span>
+                                            <p className="font-serif text-[17px] sm:text-[18px] font-extrabold text-[#593102]">
                                                 ₹{product.price}
                                             </p>
                                         </div>
 
                                         <div className="flex items-center justify-between md:justify-start">
-                                            <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Quantity</span>
+                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Quantity</span>
                                             <QuantityControl
                                                 quantity={product.quantity}
                                                 onMinus={() =>
-                                                    product.type === "NORMAL" ?
-                                                    updateQuantity(product.productId, product.variantId, -1) :
-                                                    updateCustomQuantity(product.cartItemId, -1)
+                                                    product.type === "NORMAL"
+                                                        ? updateQuantity(product.productId, product.variantId, -1)
+                                                        : updateCustomQuantity(product.cartItemId, -1)
                                                 }
                                                 onPlus={() =>
-                                                    product.type === "NORMAL" ?
-                                                    updateQuantity(product.productId, product.variantId, 1) :
-                                                    updateCustomQuantity(product.cartItemId, 1)
+                                                    product.type === "NORMAL"
+                                                        ? updateQuantity(product.productId, product.variantId, 1)
+                                                        : updateCustomQuantity(product.cartItemId, 1)
                                                 }
                                             />
                                         </div>
 
-                                        <div className="flex items-center justify-between border-t border-[#F5EEE3] pt-3 md:border-t-0 md:pt-0 md:block">
-                                            <span className="text-[11px] font-medium text-[#B0A18C] md:hidden">Total</span>
-                                            <p className="text-[19px] sm:text-[20px] font-bold text-[#593102]">
+                                        <div className="flex items-center justify-between border-t border-[#EADCC9]/60 pt-3 md:border-t-0 md:pt-0 md:block">
+                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Total</span>
+                                            <p className="font-serif text-[19px] sm:text-[20px] font-extrabold text-[#593102]">
                                                 ₹{product.price * product.quantity}
                                             </p>
                                         </div>
@@ -453,28 +450,30 @@ export default function Cart() {
                             )}
                         </div>
 
-                        {/* Desktop-only: "You May Also Like" stays exactly where it was (under cart items) */}
-                        <div className="hidden lg:block mt-8">
+                        {/* Desktop Recommendations */}
+                        <div className="hidden lg:block">
                             {renderRecommendations(0)}
                         </div>
                     </section>
 
                     {/* RIGHT SIDEBAR */}
-                    {/* Right sidebar: sticky on desktop, but unstick when footer appears */}
-                    <aside className={`w-full space-y-8 box-border lg:max-w-[420px] ${isFooterVisible ? 'lg:static' : 'lg:sticky lg:top-16'} self-end`}>
+                    <aside
+                        className={`w-full space-y-8 box-border lg:max-w-[420px] ${isFooterVisible ? "lg:static" : "lg:sticky lg:top-16"
+                            } self-end`}
+                    >
                         <OrderSummaryWithCoupons
                             subtotal={subtotal}
                             saved={saved}
                             itemCount={cartProducts.length}
                         />
-                        {/* Desktop-only: "Need Help" stays exactly where it was (under Order Summary) */}
+                        {/* Desktop Help Panel */}
                         <div className="hidden lg:block">
                             <HelpPanel location={location} loading={locationLoading} />
                         </div>
                     </aside>
                 </div>
 
-                {/* Mobile-only: "You May Also Like" + "Need Help" pushed to the very bottom, above the footer */}
+                {/* Mobile Recommendations + Help Panel */}
                 <div className="lg:hidden mt-10 space-y-10">
                     {renderRecommendations(1)}
                     <HelpPanel location={location} loading={locationLoading} />
@@ -487,8 +486,6 @@ export default function Cart() {
 // ─── Free Delivery Bar ──────────────────────────────────────────────────
 
 export function FreeDeliveryBar({ subtotal }: { subtotal: number }) {
-
-    // Empty return to fix the component
     return null;
 }
 
@@ -508,7 +505,7 @@ export function QuantityControl({
             <button
                 type="button"
                 onClick={onMinus}
-                className="flex h-full items-center justify-center rounded-l-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00]"
+                className="flex h-full items-center justify-center rounded-l-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00] cursor-pointer"
             >
                 <Minus size={14} />
             </button>
@@ -516,7 +513,7 @@ export function QuantityControl({
             <button
                 type="button"
                 onClick={onPlus}
-                className="flex h-full items-center justify-center rounded-r-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00]"
+                className="flex h-full items-center justify-center rounded-r-full text-[#7A6A52] transition-colors hover:bg-[#FFF3DF] hover:text-[#B97B00] cursor-pointer"
             >
                 <Plus size={14} />
             </button>
@@ -576,7 +573,11 @@ export function OrderSummaryWithCoupons({
         (async () => {
             try {
                 const data = await authFetch(`${API_BASE_URL}/api/coupon/all-coupons`);
-                const list: ApiCoupon[] = (data.data || data.coupons || Array.isArray(data) ? (data.data || data.coupons || data) : [])
+                const list: ApiCoupon[] = (
+                    data.data || data.coupons || Array.isArray(data)
+                        ? data.data || data.coupons || data
+                        : []
+                )
                     .filter((c: any) => c.isActive !== false)
                     .map((c: any) => ({
                         offerId: c._id || c.offerId,
@@ -615,7 +616,8 @@ export function OrderSummaryWithCoupons({
         try {
             const cartData = await authFetch(`${API_BASE_URL}/api/cart`);
             const serverCode = cartData?.appliedCoupon?.code || cartData?.couponCode;
-            const serverDiscount = cartData?.couponDiscount ?? cartData?.discountAmount ?? cartData?.discount ?? 0;
+            const serverDiscount =
+                cartData?.couponDiscount ?? cartData?.discountAmount ?? cartData?.discount ?? 0;
             const offerId = cartData?.appliedCoupon?._id || cartData?.appliedCoupon?.offerId || serverCode;
 
             if (serverCode && serverDiscount > 0) {
@@ -686,14 +688,20 @@ export function OrderSummaryWithCoupons({
                 return { ...c, calculatedDiscount: d };
             });
 
-            const sumDiscount = updatedList.reduce((acc, item) => acc + (item.calculatedDiscount || 0), 0);
+            const sumDiscount = updatedList.reduce(
+                (acc, item) => acc + (item.calculatedDiscount || 0),
+                0
+            );
 
             if (updatedList.length > 0) {
                 localStorage.setItem("applied_coupons", JSON.stringify(updatedList));
-                localStorage.setItem("applied_coupon", JSON.stringify({
-                    discount: sumDiscount,
-                    coupon: { code: updatedList.map(u => u.code).join(", ") }
-                }));
+                localStorage.setItem(
+                    "applied_coupon",
+                    JSON.stringify({
+                        discount: sumDiscount,
+                        coupon: { code: updatedList.map((u) => u.code).join(", ") },
+                    })
+                );
             } else {
                 localStorage.removeItem("applied_coupons");
                 localStorage.removeItem("applied_coupon");
@@ -723,7 +731,8 @@ export function OrderSummaryWithCoupons({
             });
 
             let calculatedDiscount = 0;
-            const resDiscount = data.discount ?? data.discountAmount ?? data.data?.discount ?? data.data?.discountAmount;
+            const resDiscount =
+                data.discount ?? data.discountAmount ?? data.data?.discount ?? data.data?.discountAmount;
             if (resDiscount !== undefined && resDiscount !== null) {
                 calculatedDiscount = typeof resDiscount === "string" ? parseFloat(resDiscount) || 0 : resDiscount;
             } else if (matched?.discountPercentage && matched.discountPercentage > 0) {
@@ -749,11 +758,12 @@ export function OrderSummaryWithCoupons({
             setCouponCode("");
 
             if (fetchCart) fetchCart();
-            // router.refresh() removed — this was causing the coupon dropdown
-            // to appear to "close" because it forced a full data re-render.
         } catch (err: any) {
             const errorMsg = err.message || "";
-            if (errorMsg.toLowerCase().includes("already used") || errorMsg.toLowerCase().includes("already applied")) {
+            if (
+                errorMsg.toLowerCase().includes("already used") ||
+                errorMsg.toLowerCase().includes("already applied")
+            ) {
                 const couponObj: ApiCoupon = {
                     offerId: matched?.offerId || upperCode,
                     code: matched?.code || upperCode,
@@ -762,9 +772,9 @@ export function OrderSummaryWithCoupons({
                     isAvailable: true,
                     discountPercentage: matched?.discountPercentage,
                     flatDiscount: matched?.flatDiscount,
-                    calculatedDiscount: matched?.discountPercentage ?
-                        Math.round((subtotal * matched.discountPercentage) / 100) :
-                        (matched?.flatDiscount || 0),
+                    calculatedDiscount: matched?.discountPercentage
+                        ? Math.round((subtotal * matched.discountPercentage) / 100)
+                        : matched?.flatDiscount || 0,
                 };
 
                 setAppliedCoupons((prev) => {
@@ -784,12 +794,16 @@ export function OrderSummaryWithCoupons({
     // REMOVE Coupon Action
     const removeCoupon = async (targetOfferId?: string, targetCode?: string) => {
         const codeToRemove = targetCode || appliedCoupons[0]?.code;
-        const matchedCoupon = appliedCoupons.find((c) => c.code.toUpperCase() === codeToRemove?.toUpperCase());
+        const matchedCoupon = appliedCoupons.find(
+            (c) => c.code.toUpperCase() === codeToRemove?.toUpperCase()
+        );
         const idToRemove = targetOfferId || matchedCoupon?.offerId || codeToRemove;
 
         if (!codeToRemove) return;
 
-        const filtered = appliedCoupons.filter((c) => c.code.toUpperCase() !== codeToRemove.toUpperCase());
+        const filtered = appliedCoupons.filter(
+            (c) => c.code.toUpperCase() !== codeToRemove.toUpperCase()
+        );
         setAppliedCoupons(filtered);
 
         if (filtered.length === 0) {
@@ -805,8 +819,6 @@ export function OrderSummaryWithCoupons({
             }
 
             if (fetchCart) await fetchCart();
-            // router.refresh() removed — same reason as above, so the
-            // coupon dropdown stays open after removing a coupon too.
         } catch (err) {
             console.error("Remove coupon error:", err);
         }
@@ -816,41 +828,55 @@ export function OrderSummaryWithCoupons({
     const total = Math.max(subtotal - totalDiscount, 0);
 
     return (
-        <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6">
+        <div className="w-full rounded-3xl border-2 border-[#EADCC9]/80 bg-white/95 backdrop-blur-md shadow-xs flex flex-col p-5 sm:p-6">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#2F241C]">Order Summary</h2>
-                <span className="text-[11px] sm:text-[12px] text-[#9AA3AF]">{itemCount} items</span>
+                <h2 className="font-serif text-[18px] sm:text-[20px] font-extrabold text-[#593102]">
+                    Order Summary
+                </h2>
+                <span className="inline-flex items-center justify-center rounded-full bg-[#FAF0DC] border border-[#D49313]/40 px-2.5 py-0.5 text-xs font-black text-[#593102]">
+                    {itemCount} items
+                </span>
             </div>
 
-            <div className="mt-3 sm:mt-4 space-y-5">
+            <div className="mt-4 space-y-4">
                 {/* Price breakdown */}
                 <div className="space-y-2.5 text-[14px]">
                     <div className="flex justify-between py-1">
-                        <span className="text-[#6F7786]">Subtotal</span>
-                        <span className="font-semibold text-[#2F241C]">₹{subtotal.toLocaleString("en-IN")}</span>
+                        <span className="text-[#6E5D4F] font-semibold">Subtotal</span>
+                        <span className="font-serif font-extrabold text-[#593102]">
+                            ₹{subtotal.toLocaleString("en-IN")}
+                        </span>
                     </div>
                     {saved > 0 && (
                         <div className="flex justify-between py-1">
-                            <span className="text-[#6F7786]">You Save</span>
-                            <span className="font-semibold text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</span>
+                            <span className="text-[#6E5D4F] font-semibold">You Save</span>
+                            <span className="font-serif font-extrabold text-emerald-700">
+                                - ₹{saved.toLocaleString("en-IN")}
+                            </span>
                         </div>
                     )}
                     {totalDiscount > 0 && (
-                        <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
+                        <div className="mt-2 rounded-xl border border-dashed border-emerald-400 bg-emerald-50/80 p-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
-                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0BA445] text-white text-[10px] font-bold">✓</span>
-                                    <span className="text-[12px] font-bold text-[#187A37]">Coupon Applied</span>
+                                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-white text-[10px] font-bold">
+                                        ✓
+                                    </span>
+                                    <span className="text-[12px] font-bold text-emerald-900">
+                                        Coupon Applied
+                                    </span>
                                 </div>
-                                <span className="text-[13px] font-bold text-[#0BA445]">- ₹{totalDiscount.toLocaleString("en-IN")}</span>
+                                <span className="font-serif text-[13px] font-extrabold text-emerald-700">
+                                    - ₹{totalDiscount.toLocaleString("en-IN")}
+                                </span>
                             </div>
                             {appliedCoupons.length > 0 && (
                                 <div className="mt-2 flex flex-wrap gap-1">
                                     {appliedCoupons.map((coupon) => (
                                         <span
                                             key={coupon.code}
-                                            className="inline-flex rounded-md bg-white px-2 py-0.5 text-[10px] font-semibold text-[#187A37] border border-[#D7F3D9]"
+                                            className="inline-flex rounded-md bg-white px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200"
                                         >
                                             {coupon.code}
                                         </span>
@@ -861,54 +887,60 @@ export function OrderSummaryWithCoupons({
                     )}
                 </div>
 
-                <div className="border-t border-[#EEF1F4]"></div>
+                <div className="border-t border-[#EADCC9]/60"></div>
 
-                <div className="flex items-end justify-between border-t border-[#EEF1F4] pt-4">
+                <div className="flex items-end justify-between border-t border-[#EADCC9]/60 pt-4">
                     <div>
-                        <p className="text-[18px] sm:text-[21px] font-bold text-[#2F241C]">Total</p>
-                        <p className="text-[9px] sm:text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
+                        <p className="font-serif text-[18px] sm:text-[21px] font-extrabold text-[#593102]">
+                            Total
+                        </p>
+                        <p className="text-[10px] text-[#8D7F73] font-medium">(Inclusive of all taxes)</p>
                     </div>
-                    <p className="font-serif text-[24px] sm:text-[28px] font-bold text-[#2F241C]">
+                    <p className="font-serif text-[24px] sm:text-[28px] font-extrabold text-[#593102]">
                         ₹{total.toLocaleString("en-IN")}
                     </p>
                 </div>
             </div>
 
-            {/* Coupon Section - Toggleable, natural height up to a max, then scrolls */}
+            {/* Coupon Section */}
             <div className="mt-4 border-t border-[#F5EEE3]">
                 <button
                     type="button"
-                    className="flex w-full items-center justify-between px-4 py-3.5 text-[13px] font-semibold text-[#6F7786] hover:bg-[#FAF7F0] transition-colors"
+                    onClick={() => setIsCouponSectionOpen(!isCouponSectionOpen)}
+                    className="flex w-full items-center justify-between px-2 py-3.5 text-[13px] font-bold text-[#593102] hover:bg-[#FAF7F0] transition-colors rounded-xl cursor-pointer"
                 >
                     <span className="flex items-center gap-2">
-                        <Gift size={15} className="text-[#B97B00]" />
+                        <Gift size={16} className="text-[#D49313]" />
                         Apply Coupons
                         {appliedCoupons.length > 0 && (
-                            <span className="rounded-full bg-[#E7F9EA] px-2 py-0.5 text-[10px] font-bold text-[#0BA445]">
+                            <span className="rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.5 text-[10px] font-black text-emerald-800">
                                 {appliedCoupons.length} applied
                             </span>
                         )}
                     </span>
+                    {isCouponSectionOpen ? (
+                        <ChevronUp size={16} className="text-[#8D7F73]" />
+                    ) : (
+                        <ChevronDown size={16} className="text-[#8D7F73]" />
+                    )}
                 </button>
 
                 {isCouponSectionOpen && (
-                    <div className="px-6 pb-5 pt-1">
-                        {/* max-h instead of a fixed h-, so it grows naturally with
-                            content and only scrolls once it hits the cap */}
+                    <div className="pb-4 pt-1 space-y-3">
                         <div className="max-h-[340px] flex flex-col space-y-3">
-                            {/* Input row - fixed height, won't shrink */}
+                            {/* Input row */}
                             <div className="flex gap-2 shrink-0">
                                 <input
                                     type="text"
                                     placeholder="Enter coupon code"
                                     value={couponCode}
                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                    className="flex-1 rounded-xl border border-[#E8E0D6] bg-[#FBFCFD] px-4 py-2.5 text-sm text-[#2F241C] placeholder:text-[#B0A18C] focus:border-[#B97B00] focus:outline-none focus:ring-2 focus:ring-[#B97B00]/20 transition-all"
+                                    className="flex-1 rounded-xl border border-[#EADCC9] bg-[#FAF5EC]/50 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#593102] placeholder:text-[#8D7F73] focus:border-[#D49313] focus:outline-none focus:ring-2 focus:ring-[#D49313]/20 transition-all"
                                 />
                                 <button
                                     onClick={() => couponCode && applyCoupon(couponCode)}
                                     disabled={couponLoading}
-                                    className="min-w-[90px] rounded-xl bg-[#B97B00] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#A06A00] transition-colors disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                                    className="min-w-[90px] rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
                                 >
                                     {couponLoading ? (
                                         <>
@@ -922,18 +954,18 @@ export function OrderSummaryWithCoupons({
                             </div>
 
                             {couponError && (
-                                <p className="text-[11px] font-medium text-red-500 shrink-0">{couponError}</p>
+                                <p className="text-[11px] font-bold text-red-500 shrink-0">{couponError}</p>
                             )}
 
-                            {/* Scrollable content - takes remaining space, scrolls only past max-h */}
-                            <div className="flex-1 overflow-y-auto space-y-3 min-h-0">
+                            {/* Scrollable content */}
+                            <div className="flex-1 overflow-y-auto space-y-3 min-h-0 pr-0.5">
                                 {/* Available coupons */}
                                 <div>
-                                    <p className="text-[9px] font-bold text-[#A2AAB7] uppercase tracking-[0.1em] mb-2">
+                                    <p className="text-[10px] font-black text-[#8D7F73] uppercase tracking-[0.1em] mb-2">
                                         Available Coupons
                                     </p>
                                     {coupons.length > 0 ? (
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-2">
                                             {coupons.slice(0, 4).map((coupon) => {
                                                 const isApplied = appliedCoupons.some(
                                                     (c) => c.code.toUpperCase() === coupon.code.toUpperCase()
@@ -941,45 +973,45 @@ export function OrderSummaryWithCoupons({
                                                 return (
                                                     <div
                                                         key={coupon.offerId || coupon.code}
-                                                        className={`flex items-center justify-between rounded-xl border p-2.5 transition-all ${isApplied ?
-                                                            "border-[#0BA445] bg-[#E7F9EA]/60" :
-                                                            "border-[#EFE8DE] bg-white hover:border-[#B97B00]/40 hover:shadow-sm"
-                                                        }`}
+                                                        className={`flex items-center justify-between rounded-xl border p-2.5 transition-all ${isApplied
+                                                                ? "border-emerald-500 bg-emerald-50/70"
+                                                                : "border-[#EADCC9] bg-white hover:border-[#D49313]/60 shadow-2xs"
+                                                            }`}
                                                     >
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="inline-block rounded-lg border border-dashed border-[#593102]/30 bg-[#FFF8EF] px-2 py-0.5 text-[10px] font-bold text-[#B97B00]">
+                                                                <span className="inline-block rounded-lg border border-dashed border-[#D49313]/50 bg-[#FAF0DC] px-2 py-0.5 text-[10px] font-black text-[#593102]">
                                                                     {coupon.code}
                                                                 </span>
                                                                 {coupon.discountPercentage && coupon.discountPercentage > 0 ? (
-                                                                    <span className="text-[9px] font-bold text-[#0BA445]">
+                                                                    <span className="text-[10px] font-black text-emerald-700">
                                                                         {coupon.discountPercentage}% OFF
                                                                     </span>
                                                                 ) : coupon.flatDiscount && coupon.flatDiscount > 0 ? (
-                                                                    <span className="text-[9px] font-bold text-[#0BA445]">
+                                                                    <span className="text-[10px] font-black text-emerald-700">
                                                                         ₹{coupon.flatDiscount} OFF
                                                                     </span>
                                                                 ) : null}
                                                             </div>
-                                                            <p className="text-[10px] text-[#6F7786] mt-0.5 truncate">
+                                                            <p className="text-[11px] text-[#6E5D4F] font-semibold mt-0.5 truncate">
                                                                 {coupon.desc}
                                                             </p>
                                                             {coupon.minOrder && (
-                                                                <p className="text-[8px] text-[#A2AAB7] mt-0.5">
-                                                                    Min. {coupon.minOrder}
+                                                                <p className="text-[9px] text-[#8D7F73] font-medium mt-0.5">
+                                                                    Min. order {coupon.minOrder}
                                                                 </p>
                                                             )}
                                                         </div>
 
                                                         {isApplied ? (
-                                                            <div className="flex items-center gap-1 ml-2 shrink-0">
-                                                                <span className="flex items-center gap-0.5 text-[9px] font-bold text-[#0BA445]">
-                                                                    <Check size={11} className="stroke-[3]" /> Applied
+                                                            <div className="flex items-center gap-1.5 ml-2 shrink-0">
+                                                                <span className="flex items-center gap-0.5 text-[10px] font-black text-emerald-700">
+                                                                    <Check size={12} className="stroke-[3]" /> Applied
                                                                 </span>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => removeCoupon(coupon.offerId, coupon.code)}
-                                                                    className="text-[9px] font-bold text-red-500 hover:underline ml-0.5 cursor-pointer"
+                                                                    className="text-[10px] font-black text-red-500 hover:underline ml-0.5 cursor-pointer"
                                                                 >
                                                                     ✕
                                                                 </button>
@@ -988,7 +1020,7 @@ export function OrderSummaryWithCoupons({
                                                             <button
                                                                 onClick={() => applyCoupon(coupon.code)}
                                                                 disabled={couponLoading}
-                                                                className="ml-2 shrink-0 rounded-lg border border-[#593102]/30 px-2.5 py-0.5 text-[9px] font-bold text-[#593102] hover:bg-[#FFF8EF] hover:border-[#B97B00] transition-colors cursor-pointer bg-white"
+                                                                className="ml-2 shrink-0 rounded-lg border border-[#D49313]/40 px-3 py-1 text-[10px] font-black text-[#593102] hover:bg-[#FAF0DC] transition-colors cursor-pointer bg-white"
                                                             >
                                                                 Apply
                                                             </button>
@@ -997,38 +1029,45 @@ export function OrderSummaryWithCoupons({
                                                 );
                                             })}
                                             {coupons.length > 4 && (
-                                                <p className="text-[9px] text-[#A2AAB7] text-center pt-0.5">
+                                                <p className="text-[10px] text-[#8D7F73] font-semibold text-center pt-0.5">
                                                     +{coupons.length - 4} more coupons available
                                                 </p>
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-2 text-[11px] text-[#A2AAB7]">
+                                        <div className="text-center py-2 text-[11px] text-[#8D7F73] font-semibold">
                                             No coupons available right now
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Applied coupons summary - Always visible with fixed height placeholder */}
-                                <div className={`rounded-xl p-2.5 border ${appliedCoupons.length > 0 ? 'bg-[#E7F9EA] border-[#B7E4C7]' : 'bg-gray-50 border-gray-200'}`}>
-                                    <p className="text-[8px] font-bold text-[#0BA445] uppercase tracking-[0.1em] mb-1.5">
+                                {/* Applied coupons summary */}
+                                <div
+                                    className={`rounded-xl p-2.5 border ${appliedCoupons.length > 0
+                                            ? "bg-[#FAF0DC]/70 border-[#D49313]/40"
+                                            : "bg-[#FAF5EC]/50 border-[#EADCC9]"
+                                        }`}
+                                >
+                                    <p className="text-[10px] font-black text-[#593102] uppercase tracking-[0.1em] mb-1.5">
                                         Applied Coupons
                                     </p>
                                     {appliedCoupons.length > 0 ? (
-                                        <div className="space-y-1">
+                                        <div className="space-y-1.5">
                                             {appliedCoupons.map((c) => (
                                                 <div key={c.code} className="flex items-center justify-between">
                                                     <div className="flex items-center gap-1.5">
-                                                        <Check size={11} className="text-[#0BA445] stroke-[3]" />
-                                                        <span className="text-[11px] font-bold text-[#2F241C]">{c.code}</span>
-                                                        <span className="text-[9px] text-[#0BA445] font-semibold">
+                                                        <Check size={12} className="text-emerald-700 stroke-[3]" />
+                                                        <span className="text-[11px] font-black text-[#593102]">
+                                                            {c.code}
+                                                        </span>
+                                                        <span className="text-[10px] text-emerald-700 font-extrabold">
                                                             -₹{(c.calculatedDiscount || 0).toLocaleString("en-IN")}
                                                         </span>
                                                     </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeCoupon(c.offerId, c.code)}
-                                                        className="text-[9px] font-bold text-red-500 hover:underline cursor-pointer"
+                                                        className="text-[10px] font-black text-red-500 hover:underline cursor-pointer"
                                                     >
                                                         Remove
                                                     </button>
@@ -1036,7 +1075,7 @@ export function OrderSummaryWithCoupons({
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-0.5 text-[10px] text-[#A2AAB7]">
+                                        <div className="text-center py-0.5 text-[10px] text-[#8D7F73] font-semibold">
                                             No coupons applied yet
                                         </div>
                                     )}
@@ -1048,27 +1087,27 @@ export function OrderSummaryWithCoupons({
             </div>
 
             {/* Checkout Button */}
-            <div className="px-6 py-5 bg-[#FAF7F0] border-t border-[#F5EEE3]">
+            <div className="px-5 py-5 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4">
                 <Link
                     href="/checkout"
-                    className="flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-[#B97B00] text-[14px] font-bold text-white hover:bg-[#A06A00] transition-all shadow-lg shadow-amber-900/15 hover:shadow-amber-900/25 active:scale-[0.98]"
+                    className="flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 active:scale-[0.98] cursor-pointer"
                 >
-                    <Lock size={16} className="fill-white stroke-[2.5]" />
+                    <Lock size={15} className="fill-white stroke-[2.5]" />
                     PROCEED TO CHECKOUT
                 </Link>
 
                 {/* Trust row */}
-                <div className="mt-4 flex items-center justify-center gap-6 text-[10px] text-[#9B8B76]">
+                <div className="mt-4 flex items-center justify-center gap-5 text-[11px] font-bold text-[#6E5D4F]">
                     <span className="flex items-center gap-1.5">
-                        <Truck size={13} className="text-[#B97B00]" />
-                        Free delivery 
+                        <Truck size={13} className="text-[#D49313]" />
+                        Free delivery
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <ShieldCheck size={13} className="text-[#149447]" />
+                        <ShieldCheck size={13} className="text-emerald-700" />
                         Secure checkout
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <Check size={13} className="text-[#149447]" />
+                        <Check size={13} className="text-emerald-700 stroke-[3]" />
                         100% pure honey
                     </span>
                 </div>
@@ -1084,9 +1123,6 @@ export function TrustBadges() {
 }
 
 // ─── NEED HELP PANEL ──────────────────────────────────────────────────
-// Now a presentational component — location/loading are passed in as props
-// from the parent Cart component, so it can be rendered twice (desktop +
-// mobile position) WITHOUT triggering duplicate API calls.
 
 function HelpPanel({
     location,
@@ -1096,31 +1132,31 @@ function HelpPanel({
     loading: boolean;
 }) {
     return (
-        <div className="w-full box-border flex items-center justify-between gap-4 px-1 pb-2">
-            <div className="flex-1 space-y-3">
-                <h2 className="text-[18px] font-bold text-[#2F241C]">Need help?</h2>
-                <div className="space-y-2 text-[14px] text-[#6F7786]">
-                    <p className="flex items-center gap-3">
-                        <Phone size={16} className="text-[#593102] shrink-0" />
-                        <span className="font-medium text-[#2F241C] whitespace-nowrap">
+        <div className="w-full box-border flex items-center justify-between gap-4 px-3 py-4 rounded-2xl bg-white/95 border-2 border-[#EADCC9]/80 shadow-xs">
+            <div className="flex-1 space-y-2.5">
+                <h2 className="font-serif text-[18px] font-extrabold text-[#593102]">Need help?</h2>
+                <div className="space-y-1.5 text-[13px] font-semibold text-[#6E5D4F]">
+                    <p className="flex items-center gap-2.5">
+                        <Phone size={15} className="text-[#D49313] shrink-0" />
+                        <span className="text-[#593102] whitespace-nowrap">
                             {loading ? "Loading..." : location?.phone || "+91 98765 43210"}
                         </span>
                     </p>
-                    <p className="flex items-center gap-3">
-                        <Mail size={16} className="text-[#593102] shrink-0" />
-                        <span className="font-medium text-[#2F241C] break-all">
+                    <p className="flex items-center gap-2.5">
+                        <Mail size={15} className="text-[#D49313] shrink-0" />
+                        <span className="text-[#593102] break-all">
                             {loading ? "Loading..." : location?.email || "connect@honeyveda.in"}
                         </span>
                     </p>
-                    <p className="flex items-center gap-3">
-                        <Clock size={16} className="text-[#593102] shrink-0" />
-                        <span className="font-medium text-[#2F241C] whitespace-nowrap">
+                    <p className="flex items-center gap-2.5">
+                        <Clock size={15} className="text-[#D49313] shrink-0" />
+                        <span className="text-[#593102] whitespace-nowrap">
                             {loading ? "Loading..." : location?.phone_timing || "Mon - Sat : 9AM - 6PM"}
                         </span>
                     </p>
                 </div>
             </div>
-            <div className="relative w-[100px] h-[90px] shrink-0 hidden sm:block">
+            <div className="relative w-[90px] h-[80px] shrink-0 hidden sm:block">
                 <Image
                     src="/need.png"
                     alt="Honey illustration"

@@ -367,13 +367,13 @@ export default function ShopPage() {
   const filterContent = (
     <div className="rounded-lg bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between lg:hidden pb-4 mb-2 border-b border-[#F0E4D0]">
-        <h2 className="font-['Playfair_Display'] text-[18px] font-bold text-[#593102]">Filters</h2>
+        <h2 className="font-serif text-[18px] font-bold text-[#593102]">Filters</h2>
         <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black">
           <X size={20} />
         </button>
       </div>
 
-      <h2 className="hidden lg:block font-['Playfair_Display'] text-[15px] font-bold uppercase tracking-wide text-[#593102]">
+      <h2 className="hidden lg:block font-serif text-[15px] font-bold uppercase tracking-wide text-[#593102]">
         Filter By
       </h2>
 
@@ -476,12 +476,15 @@ export default function ShopPage() {
       <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-20 sm:px-6 lg:px-8">
         
         {/* Page Heading (Centered & Refined) */}
-        <div className="mb-10 text-center mx-auto max-w-[760px] px-4">
-          <h1 className="font-['Playfair_Display'] text-[34px] sm:text-[44px] font-normal leading-tight text-[#593102]">
+        <div className="mb-10 text-center mx-auto max-w-[760px] px-4 flex flex-col items-center">
+          <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-3">
+            OUR HONEY SELECTION
+          </span>
+          <h2 className="font-serif text-[34px] sm:text-[44px] lg:text-[48px] font-extrabold leading-tight text-[#593102] tracking-tight">
             Discover Pure Honey Collections
-          </h1>
-          <p className="mt-2 text-[15px] sm:text-[16px] text-[#697386]">
-            Ethically harvested, 100% raw and unprocessed honey straight from natural hives.
+          </h2>
+          <p className="mt-3 text-[16px] text-[#6E5D4F] font-medium max-w-[620px] mx-auto leading-relaxed">
+            Ethically harvested, 100% raw and filtered honey straight from natural hives.
           </p>
         </div>
 
@@ -546,8 +549,8 @@ export default function ShopPage() {
       </div>
 
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#593102] px-6 py-3 text-white shadow-lg">
-          {toastMessage}
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] border border-[#D49313]/50 px-7 py-3.5 text-white font-extrabold shadow-2xl flex items-center gap-2 text-[14px]">
+          <span>✨</span> {toastMessage}
         </div>
       )}
       
