@@ -142,6 +142,8 @@ export default function HoneySelection() {
 
       // Update cart context
       updateQuantity(productId, variantId, 1);
+      window.dispatchEvent(new Event("cart-updated"));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
       console.error("Error in Add to Cart:", err);
     } finally {

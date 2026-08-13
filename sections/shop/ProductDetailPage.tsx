@@ -240,6 +240,8 @@ export default function ProductDetailPage({
       if (res.ok) {
         await addToCart(product._id, selectedVariant._id);
         setSelectedQty(1);
+        window.dispatchEvent(new Event("cart-updated"));
+        window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
         if (redirect) {
           router.push("/cart");

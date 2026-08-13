@@ -279,6 +279,9 @@ export default function ShopPage() {
       }
 
       if (!res.ok) throw new Error("Failed to add to cart");
+
+      window.dispatchEvent(new Event("cart-updated"));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (error) {
       console.error("Error adding to cart:", error);
       showToast("Could not add to cart");

@@ -190,7 +190,13 @@ export default function Header() {
 
       const data = await res.json();
       let count = 0;
-      if (data?.data?.count !== undefined) {
+      if (typeof data?.data?.totalCount === "number") {
+        count = data.data.totalCount;
+      } else if (typeof data?.totalCount === "number") {
+        count = data.totalCount;
+      } else if (data?.data?.cartCount !== undefined || data?.data?.giftCartCount !== undefined) {
+        count = (Number(data.data?.cartCount) || 0) + (Number(data.data?.giftCartCount) || 0);
+      } else if (data?.data?.count !== undefined) {
         count = data.data.count;
       } else if (data?.count !== undefined) {
         count = data.count;
@@ -319,6 +325,9 @@ export default function Header() {
     window.addEventListener("wishlist-count-update", handleWishlistUpdate);
     window.addEventListener("cart-count-update", handleCartUpdate);
     window.addEventListener("trigger-live-update", fetchCartCount);
+    window.addEventListener("cart-updated", fetchCartCount);
+    window.addEventListener("cartUpdated", fetchCartCount);
+    window.addEventListener("cart_updated", fetchCartCount);
 
     return () => {
       window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
@@ -327,6 +336,9 @@ export default function Header() {
       window.removeEventListener("wishlist-count-update", handleWishlistUpdate);
       window.removeEventListener("cart-count-update", handleCartUpdate);
       window.removeEventListener("trigger-live-update", fetchCartCount);
+      window.removeEventListener("cart-updated", fetchCartCount);
+      window.removeEventListener("cartUpdated", fetchCartCount);
+      window.removeEventListener("cart_updated", fetchCartCount);
     };
   }, []);
 
