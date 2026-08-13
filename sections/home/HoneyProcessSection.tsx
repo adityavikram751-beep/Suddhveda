@@ -231,6 +231,38 @@ export default function HealthyIdeas() {
         </div>
       </div>
 
+      {/* Video Modal Popup */}
+      {selectedVideo && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setSelectedVideo(null)}
+        >
+          <div
+            className="relative w-full max-w-3xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedVideo(null)}
+              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+            <div className="relative aspect-video w-full">
+              <video
+                src={selectedVideo.video_url}
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="p-4 bg-[#1A1A1A] text-white flex items-center justify-between">
+              <h3 className="font-bold text-lg font-serif">{selectedVideo.title}</h3>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hide scrollbar cross-browser while keeping it scrollable */}
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
