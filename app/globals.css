@@ -12,7 +12,11 @@
   --font-serif: var(--font-averia), "Averia Serif Libre", Georgia, Cambria, serif;
 }
 
-h1, h2, h3, h4, .font-serif {
+h1,
+h2,
+h3,
+h4,
+.font-serif {
   font-family: var(--font-averia), "Averia Serif Libre", Georgia, serif !important;
   letter-spacing: -0.015em;
 }
@@ -53,7 +57,7 @@ body {
   min-width: 100%;
   max-width: 100%;
   min-height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--background);
   border-radius: 0;
 }
@@ -75,12 +79,12 @@ body {
   min-width: 0;
   max-width: 100%;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--background);
   border-radius: 0;
 }
 
-.app-shell > * {
+.app-shell>* {
   width: 100%;
   max-width: 100%;
   border-radius: 0;
@@ -107,6 +111,7 @@ a[class*="hover:from-"]:hover[class*="text-white"] {
   background-image: none !important;
   background-color: #E94816 !important;
 }
+
 /* ========================= */
 /* TOP BAR */
 /* ========================= */
@@ -151,6 +156,7 @@ a[class*="hover:from-"]:hover[class*="text-white"] {
     transform: translateX(-100%);
   }
 }
+
 /* ============================= */
 /* Flying Bees Animation */
 /* ============================= */
@@ -162,223 +168,224 @@ a[class*="hover:from-"]:hover[class*="text-white"] {
   will-change: transform;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .15));
 }
 
-.bee1{
+.bee1 {
   animation: beePath1 14s linear infinite;
 }
 
-.bee2{
+.bee2 {
   animation: beePath2 16s linear infinite;
 }
 
-.bee3{
+.bee3 {
   animation: beePath3 18s linear infinite;
 }
 
-.bee4{
+.bee4 {
   animation: beePath4 15s linear infinite;
 }
 
-.bee5{
+.bee5 {
   animation: beePath5 17s linear infinite;
 }
 
-.bee6{
+.bee6 {
   animation: beePath6 19s linear infinite;
 }
 
 /* ============================= */
 
-@keyframes beePath1{
+@keyframes beePath1 {
 
-0%{
-left:7%;
-top:28%;
-transform:rotate(-8deg) scale(.9);
-}
+  0% {
+    left: 7%;
+    top: 28%;
+    transform: rotate(-8deg) scale(.9);
+  }
 
-25%{
-left:33%;
-top:16%;
-transform:rotate(8deg);
-}
+  25% {
+    left: 33%;
+    top: 16%;
+    transform: rotate(8deg);
+  }
 
-50%{
-left:57%;
-top:29%;
-transform:rotate(-5deg);
-}
+  50% {
+    left: 57%;
+    top: 29%;
+    transform: rotate(-5deg);
+  }
 
-75%{
-left:82%;
-top:17%;
-transform:rotate(8deg);
-}
+  75% {
+    left: 82%;
+    top: 17%;
+    transform: rotate(8deg);
+  }
 
-100%{
-left:7%;
-top:28%;
-transform:rotate(-8deg) scale(.9);
-}
-
-}
-
-/* ============================= */
-
-@keyframes beePath2{
-
-0%{
-left:9%;
-top:45%;
-}
-
-25%{
-left:35%;
-top:56%;
-}
-
-50%{
-left:59%;
-top:42%;
-}
-
-75%{
-left:83%;
-top:55%;
-}
-
-100%{
-left:9%;
-top:45%;
-}
+  100% {
+    left: 7%;
+    top: 28%;
+    transform: rotate(-8deg) scale(.9);
+  }
 
 }
 
 /* ============================= */
 
-@keyframes beePath3{
+@keyframes beePath2 {
 
-0%{
-left:12%;
-top:20%;
-}
+  0% {
+    left: 9%;
+    top: 45%;
+  }
 
-25%{
-left:37%;
-top:32%;
-}
+  25% {
+    left: 35%;
+    top: 56%;
+  }
 
-50%{
-left:61%;
-top:18%;
-}
+  50% {
+    left: 59%;
+    top: 42%;
+  }
 
-75%{
-left:84%;
-top:31%;
-}
+  75% {
+    left: 83%;
+    top: 55%;
+  }
 
-100%{
-left:12%;
-top:20%;
-}
-
-}
-
-/* ============================= */
-
-@keyframes beePath4{
-
-0%{
-left:15%;
-top:60%;
-}
-
-25%{
-left:38%;
-top:48%;
-}
-
-50%{
-left:62%;
-top:60%;
-}
-
-75%{
-left:85%;
-top:49%;
-}
-
-100%{
-left:15%;
-top:60%;
-}
+  100% {
+    left: 9%;
+    top: 45%;
+  }
 
 }
 
 /* ============================= */
 
-@keyframes beePath5{
+@keyframes beePath3 {
 
-0%{
-left:11%;
-top:34%;
-}
+  0% {
+    left: 12%;
+    top: 20%;
+  }
 
-25%{
-left:36%;
-top:24%;
-}
+  25% {
+    left: 37%;
+    top: 32%;
+  }
 
-50%{
-left:60%;
-top:36%;
-}
+  50% {
+    left: 61%;
+    top: 18%;
+  }
 
-75%{
-left:84%;
-top:25%;
-}
+  75% {
+    left: 84%;
+    top: 31%;
+  }
 
-100%{
-left:11%;
-top:34%;
-}
+  100% {
+    left: 12%;
+    top: 20%;
+  }
 
 }
 
 /* ============================= */
 
-@keyframes beePath6{
+@keyframes beePath4 {
 
-0%{
-left:8%;
-top:12%;
+  0% {
+    left: 15%;
+    top: 60%;
+  }
+
+  25% {
+    left: 38%;
+    top: 48%;
+  }
+
+  50% {
+    left: 62%;
+    top: 60%;
+  }
+
+  75% {
+    left: 85%;
+    top: 49%;
+  }
+
+  100% {
+    left: 15%;
+    top: 60%;
+  }
+
 }
 
-25%{
-left:34%;
-top:4%;
+/* ============================= */
+
+@keyframes beePath5 {
+
+  0% {
+    left: 11%;
+    top: 34%;
+  }
+
+  25% {
+    left: 36%;
+    top: 24%;
+  }
+
+  50% {
+    left: 60%;
+    top: 36%;
+  }
+
+  75% {
+    left: 84%;
+    top: 25%;
+  }
+
+  100% {
+    left: 11%;
+    top: 34%;
+  }
+
 }
 
-50%{
-left:58%;
-top:14%;
+/* ============================= */
+
+@keyframes beePath6 {
+
+  0% {
+    left: 8%;
+    top: 12%;
+  }
+
+  25% {
+    left: 34%;
+    top: 4%;
+  }
+
+  50% {
+    left: 58%;
+    top: 14%;
+  }
+
+  75% {
+    left: 82%;
+    top: 5%;
+  }
+
+  100% {
+    left: 8%;
+    top: 12%;
+  }
+
 }
 
-75%{
-left:82%;
-top:5%;
-}
-
-100%{
-left:8%;
-top:12%;
-}
-
-}
 .clip-hexagon {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
@@ -389,17 +396,16 @@ top:12%;
     border-radius: 1rem;
   }
 }
+
 .hexagon {
   width: 58px;
   height: 66px;
-  clip-path: polygon(
-    25% 6.7%,
-    75% 6.7%,
-    100% 50%,
-    75% 93.3%,
-    25% 93.3%,
-    0% 50%
-  );
+  clip-path: polygon(25% 6.7%,
+      75% 6.7%,
+      100% 50%,
+      75% 93.3%,
+      25% 93.3%,
+      0% 50%);
   border: 1.8px solid #593102;
   display: flex;
   align-items: center;

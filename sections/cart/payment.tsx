@@ -321,7 +321,7 @@ export default function PaymentPage() {
                             <div className="rounded-md border border-[#BFDDB4] bg-[#EDF8E7] px-4 py-3 text-[12px] font-bold text-[#45A651] md:col-start-2">
                                 <span className="inline-flex items-center gap-3">
                                     <CheckCircle2 size={16} fill="#45A651" className="text-white" />
-                                    Your payment information is 100% secure and encrypted.
+                                    Your payment information is safe and encrypted.
                                 </span>
                             </div>
                         </div>
@@ -451,7 +451,7 @@ export default function PaymentPage() {
                                     <p className="text-[10px] font-bold text-[#2F241C]">
                                         Secure Checkout
                                     </p>
-                                    <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
+                                    <p className="text-[9px] text-[#9AA3AF]">Safe &amp; secure payments</p>
                                 </div>
                                 <div className="rounded-md bg-white p-3 shadow-sm">
                                     <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
@@ -460,7 +460,7 @@ export default function PaymentPage() {
                                 </div>
                                 <div className="rounded-md bg-white p-3 shadow-sm">
                                     <Leaf className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
-                                    <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
+                                    <p className="text-[10px] font-bold text-[#2F241C]">Raw &amp; Natural</p>
                                     <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
                                 </div>
                             </div>

@@ -6,7 +6,7 @@ import { Star, Heart, Eye, Users, Globe, ShieldCheck, Sparkles } from "lucide-re
 const values = [
   {
     title: "Purity First",
-    desc: "We never compromise on 100% raw quality, warmth, or natural authenticity.",
+    desc: "We never compromise on raw quality, warmth, or natural authenticity.",
     icon: Star,
   },
   {
@@ -68,7 +68,7 @@ export default function OurValues() {
                   — TEAM SHUDHVEDA
                 </span>
                 <span className="text-[11px] font-bold text-white/80 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
-                  100% Pure Guarantee
+                  Raw &amp; Organic Guarantee
                 </span>
               </div>
             </div>

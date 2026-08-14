@@ -156,7 +156,7 @@ export default function HappyCustomersSection() {
           </h2>
           
           <p className="mt-2.5 text-[15px] sm:text-[17px] text-[#6E5D4F] font-medium max-w-[680px] mx-auto leading-relaxed">
-            Trusted by thousands of families who choose 100% purity, natural taste, and uncompromised quality every day.
+            Trusted by thousands of families who choose raw purity, natural taste, and uncompromised quality every day.
           </p>
 
           {/* Rating Showcase Badge */}

@@ -34,7 +34,7 @@ const FALLBACK_REVIEWS: Review[] = [
   {
     _id: "rev-3",
     rating: 5,
-    text: "100% authentic raw honey! You can taste the nectar of wild flowers. Beautiful glass jar and elegant presentation. Highly recommended!",
+    text: "Authentic raw honey! You can taste the nectar of wild flowers. Beautiful glass jar and elegant presentation. Highly recommended!",
     name: "Pooja Verma",
     role: "Verified Buyer",
     image: "/female.png",

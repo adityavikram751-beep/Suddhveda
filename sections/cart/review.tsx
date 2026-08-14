@@ -234,7 +234,7 @@ export default function ReviewPage() {
   const fetchAddress = async () => {
     try {
       setAddressLoading(true);
-      const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+      const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/all`, {
         credentials: "include",
       });
       if (!res.ok) {
@@ -470,7 +470,7 @@ export default function ReviewPage() {
             <div className="flex flex-col gap-3 rounded-md border border-[#BFDDB4] bg-[#EDF8E7] px-5 py-3 text-[12px] font-semibold text-[#0F6B33] sm:flex-row sm:items-center sm:justify-between">
               <span className="inline-flex items-center gap-3">
                 <ShieldCheck size={16} fill="#0F6B33" className="text-white" />
-                Your order is 100% safe and secure. We never share your information.
+                Your order is safe and secure. We never share your information.
               </span>
               <span className="flex items-center gap-5 text-[#5D6778]">
                 <span className="inline-flex items-center gap-1">

@@ -49,15 +49,15 @@ type LocationData = {
 };
 
 const mapApiAddress = (item: any): Address => ({
-  id: item._id,
+  id: item._id || item.id,
   label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : "Other",
   isDefault: item.is_default || false,
-  name: item.full_name || "",
+  name: item.full_name || item.fullName || "",
   line: `${item.address_line1 || ""} ${item.address_line2 || ""}`.trim(),
   city: item.city || "",
   state: item.state || "",
   pincode: item.pincode || "",
-  phone: item.phone || "",
+  phone: item.phone_number || item.phone || "",
 });
 
 export default function Checkout() {
@@ -250,13 +250,24 @@ export default function Checkout() {
     }
   };
 
+function getTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
   const fetchAddresses = async () => {
     try {
       if (addresses.length === 0) {
         setLoading(true);
       }
-      const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+      const token = getTokenFromCookie();
+      const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/all`, {
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       if (res.status === 401) {
         setAddresses([]);
@@ -298,28 +309,42 @@ export default function Checkout() {
   }, [isMounted]);
 
   const saveAddressToAPI = async (addressData: any, isEdit: boolean, addressId?: string) => {
+    const line1 = addressData.address || addressData.locality || "";
+    const line2 = addressData.locality || addressData.address || "N/A";
+    const city = addressData.city || "Bengaluru";
+    const state = addressData.state || "Karnataka";
+    const pincode = addressData.pincode || "";
+    const phone = addressData.phone || "";
+    const fullName = addressData.fullName || "";
+    const addressType = (addressData.address_type || "home").toLowerCase();
+
     const payload = {
-      full_name: addressData.fullName,
-      phone: addressData.phone,
-      address_line1: addressData.address.split(",")[0] || addressData.address,
-      address_line2: addressData.address.split(",").slice(1).join(",").trim() || "",
-      city: addressData.city || "Bengaluru",
-      state: addressData.state || "Karnataka",
-      pincode: addressData.pincode,
+      full_name: fullName,
+      phone_number: phone,
+      address_line1: line1,
+      address_line2: line2,
+      city: city,
+      state: state,
+      pincode: pincode,
       country: "India",
-      address_type: addressData.address_type || "home",
-      is_default: addressData.isDefault || false,
+      address_type: addressType,
     };
 
     const url = isEdit
-      ? `${API_BASE_URL}/api/addresses/update/${addressId}`
-      : `${API_BASE_URL}/api/addresses/add`;
+      ? `${API_BASE_URL}/api/shipping/addresses/update/${addressId}`
+      : `${API_BASE_URL}/api/shipping/addresses/add`;
     const method = isEdit ? "PUT" : "POST";
+
+    const token = getTokenFromCookie();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
     const res = await fetch(url, {
       method,
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -327,6 +352,28 @@ export default function Checkout() {
       throw new Error(errData.message || "Failed to save address");
     }
     return res.json();
+  };
+
+  const deleteAddressFromAPI = async (addressId: string) => {
+    if (!confirm("Are you sure you want to delete this address?")) return;
+    try {
+      const token = getTokenFromCookie();
+      const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/delete/${addressId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to delete address");
+      }
+      await fetchAddresses();
+    } catch (err: any) {
+      alert(err.message || "Could not delete address");
+    }
   };
 
   const populateForm = (address: Address) => {
@@ -478,6 +525,7 @@ export default function Checkout() {
               onSelect={handleSelectAddress}
               onAddNew={handleAddNew}
               onEdit={handleEditAddress}
+              onDelete={deleteAddressFromAPI}
             />
 
             <DeliveryAddressForm
@@ -753,7 +801,7 @@ function FormField({ label, required, optional, placeholder, name, value, onChan
   );
 }
 
-function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: any) {
+function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onDelete }: any) {
   if (addresses.length === 0) {
     return (
       <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7 text-center text-[#B59A78]">
@@ -797,16 +845,30 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit }: a
                     <span className="text-[10px] sm:text-[11px] font-normal text-[#593102]">(Default)</span>
                   )}
                 </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(address);
-                  }}
-                  className="text-[11px] sm:text-[12px] font-semibold text-[#593102] hover:underline"
-                >
-                  ✎ Edit
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(address);
+                    }}
+                    className="text-[11px] sm:text-[12px] font-semibold text-[#593102] hover:underline cursor-pointer"
+                  >
+                    ✎ Edit
+                  </button>
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(address.id);
+                      }}
+                      className="text-[11px] sm:text-[12px] font-semibold text-red-600 hover:underline cursor-pointer"
+                    >
+                      ✕ Delete
+                    </button>
+                  )}
+                </div>
               </div>
               <p className="mt-2 sm:mt-3 text-[12px] sm:text-[13px] leading-relaxed text-[#4C5362]">
                 {address.name}

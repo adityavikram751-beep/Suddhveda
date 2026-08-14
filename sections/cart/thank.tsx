@@ -329,7 +329,7 @@ export default function OrderConfirmation() {
                     <span className="p-1">
                       <ShieldCheck className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
                       <p className="text-[10px] font-bold text-[#2F241C]">Secure Checkout</p>
-                      <p className="text-[9px] text-[#9AA3AF]">100% safe payments</p>
+                      <p className="text-[9px] text-[#9AA3AF]">Safe &amp; secure payments</p>
                     </span>
                     <span className="p-1">
                       <RotateCcw className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
@@ -338,7 +338,7 @@ export default function OrderConfirmation() {
                     </span>
                     <span className="p-1">
                       <Leaf className="mx-auto mb-1 h-5 w-5 text-[#593102]" />
-                      <p className="text-[10px] font-bold text-[#2F241C]">100% Natural</p>
+                      <p className="text-[10px] font-bold text-[#2F241C]">Raw &amp; Natural</p>
                       <p className="text-[9px] text-[#9AA3AF]">Pure & unadulterated</p>
                     </span>
                   </div>

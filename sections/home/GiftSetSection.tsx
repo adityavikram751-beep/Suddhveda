@@ -35,7 +35,7 @@ export default function GiftSetSection() {
 
             {/* Sub-description */}
             <p className="text-[16px] sm:text-[18px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[620px] mt-2">
-              Choose your signature gift box and handpick your favorite 100% pure, raw honey flavors to create a personalized royal gift for your loved ones.
+              Choose your signature gift box and handpick your favorite raw &amp; organic honey flavors to create a personalized royal gift for your loved ones.
             </p>
 
             {/* Feature Grid - 4 Highlights */}
@@ -56,7 +56,7 @@ export default function GiftSetSection() {
                 </div>
                 <div>
                   <h4 className="font-extrabold text-[15px] text-[#593102]">Handpicked Flavors</h4>
-                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Handpick 100% pure raw honey flavors</p>
+                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Handpick raw &amp; natural honey flavors</p>
                 </div>
               </div>
 
@@ -112,7 +112,7 @@ export default function GiftSetSection() {
               {/* Floating Badge (Top Left Pill) */}
               <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-[#D49313]/50 rounded-full px-4 py-2 shadow-md flex items-center gap-2 z-20">
                 <ShieldCheck size={18} className="text-[#D49313]" />
-                <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">100% Pure &amp; Raw</span>
+                <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
               </div>
 
               {/* Floating Badge (Bottom Right Pill) */}

@@ -30,7 +30,7 @@ export default function ShopHero() {
               <div className="mt-3.5 inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
                 <Sparkles size={14} className="text-[#D49313]" />
                 <span className="text-[12px] font-extrabold text-[#593102] uppercase tracking-wider">
-                  100% PURE &amp; ORGANIC
+                  RAW &amp; ORGANIC
                 </span>
               </div>
 
@@ -44,7 +44,7 @@ export default function ShopHero() {
 
               {/* Description */}
               <p className="mt-4 text-[16px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[520px]">
-                Discover our 100% pure, raw and filtered honey crafted by nature, packed with goodness.
+                Discover our raw, natural and filtered honey crafted by nature, packed with goodness.
               </p>
             </div>
 
@@ -64,7 +64,7 @@ export default function ShopHero() {
                 {/* Floating Badge (Top Left Pill) */}
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md border border-[#D49313]/50 rounded-full px-4 py-2 shadow-lg flex items-center gap-2 z-20">
                   <Sparkles size={16} className="text-[#D49313]" />
-                  <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">100% Pure &amp; Raw</span>
+                  <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
                 </div>
 
                 {/* Floating Badge (Bottom Right Pill) */}
@@ -90,7 +90,7 @@ export default function ShopHero() {
               </div>
               <div className="flex flex-col">
                 <span className="text-[15px] font-extrabold text-[#593102]">
-                  100% Pure &amp; Raw
+                  Raw &amp; Natural
                 </span>
                 <span className="text-[13px] font-medium text-[#7A6A5C]">
                   Unprocessed &amp; Filtered

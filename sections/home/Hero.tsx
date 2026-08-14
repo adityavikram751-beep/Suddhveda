@@ -14,7 +14,7 @@ export default function Hero() {
           {/* VIP Royal Badge */}
           <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-2 border-[#D49313]/60 rounded-full px-5 py-2 text-[#593102] text-[13px] font-black tracking-widest uppercase bg-gradient-to-r from-[#FAF0DC] via-[#FFE3AA] to-[#FAF0DC] shadow-md backdrop-blur-md">
             <span className="text-[#D49313] text-[15px]">👑</span>
-            <span>100% Pure</span>
+            <span>RAW &amp; ORGANIC</span>
             <span className="text-[#D49313] font-bold">•</span>
             <span>Raw</span>
             <span className="text-[#D49313] font-bold">•</span>
@@ -34,17 +34,17 @@ export default function Hero() {
 
           {/* Description */}
           <p className="text-[15px] sm:text-[17px] leading-[1.65] text-[#6E5D4F] max-w-[500px] px-2 font-medium">
-            Ethically harvested, 100% raw and unprocessed organic honey crafted by nature and delivered fresh from trusted beekeepers to your home.
+            Ethically harvested, raw and unprocessed organic honey crafted by nature and delivered fresh from trusted beekeepers to your home.
           </p>
 
           {/* Features Row - 4 Circles matching Desktop */}
           <div className="grid grid-cols-4 gap-2 sm:gap-4 pt-2 w-full max-w-[500px]">
             <div className="flex flex-col items-center text-center gap-1.5">
               <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
-                100%
+                RAW
               </div>
               <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
-                100% Pure<br />&amp; Raw
+                Raw &amp; Organic
               </span>
             </div>
 
@@ -143,7 +143,7 @@ export default function Hero() {
             {/* VIP Royal Badge */}
             <div className="inline-flex items-center gap-x-2 border-2 border-[#D49313]/50 rounded-full px-4.5 py-1.5 text-[#593102] text-[13px] font-extrabold bg-[#FAF0DC]/80 backdrop-blur-sm shadow-2xs">
               <span className="text-[#D49313] text-[15px]">👑</span>
-              <span>100% PURE</span>
+              <span>RAW &amp; ORGANIC</span>
               <span className="text-[#D49313] font-bold">•</span>
               <span>RAW</span>
               <span className="text-[#D49313] font-bold">•</span>
@@ -174,10 +174,10 @@ export default function Hero() {
             <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-10 w-full max-w-[530px]">
               <div className="flex flex-col items-center text-center gap-2 group">
                 <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
-                  100%
+                  RAW
                 </div>
                 <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
-                  100% Pure<br />&amp; Raw
+                  Raw &amp; Organic
                 </span>
               </div>
 

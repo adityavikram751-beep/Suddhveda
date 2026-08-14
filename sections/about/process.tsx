@@ -25,7 +25,7 @@ const steps = [
   {
     step: "04",
     title: "Lab Tested",
-    desc: "Every batch is lab tested for 100% purity, quality, and zero additives.",
+    desc: "Every batch is lab tested for raw purity, quality, and zero additives.",
     icon: "/upcoming.png",
   },
   {
@@ -74,7 +74,7 @@ export default function BeekeepingProcess() {
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto mt-3.5 rounded-full" />
 
           <p className="mt-3.5 text-[14.5px] sm:text-[16px] leading-[1.65] text-[#6E5D4F] font-medium max-w-[640px] mx-auto">
-            From ethical honey harvesting to eco-conscious glass packaging, discover how we deliver 100% pure raw honey to your family.
+            From ethical honey harvesting to eco-conscious glass packaging, discover how we deliver raw &amp; natural honey to your family.
           </p>
         </div>
 

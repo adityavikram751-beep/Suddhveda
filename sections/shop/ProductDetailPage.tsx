@@ -44,7 +44,7 @@ const accordionSections = [
     icon: Box,
     title: "Product Details",
     content:
-      "100% raw and unfiltered honey, cold-extracted and packed in food-grade glass jars. No additives, no preservatives.",
+      "Raw and unfiltered honey, cold-extracted and packed in food-grade glass jars. No additives, no preservatives.",
   },
   {
     key: "benefits",
@@ -69,7 +69,7 @@ export default function ProductDetailPage({
   product: any;
   recommendations?: any[];
 }) {
-  const { cartItems, addToCart, updateQuantity } = useCart();
+  const { cartItems, fetchCart, openCart, updateQuantity } = useCart();
   const router = useRouter();
 
   // Recommendations Carousel Ref & Auto-scroll state
@@ -265,13 +265,15 @@ export default function ProductDetailPage({
       }
 
       if (res.ok) {
-        await addToCart(product._id, selectedVariant._id);
+        await fetchCart();
         setSelectedQty(1);
         window.dispatchEvent(new Event("cart-updated"));
         window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
         if (redirect) {
           router.push("/cart");
+        } else if (openCart) {
+          openCart();
         }
       }
     } catch (err) {
@@ -422,8 +424,8 @@ export default function ProductDetailPage({
         {/* MAIN GRID - DESKTOP STICKY GALLERY */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
-          {/* LEFT MEDIA COLUMN (SMOOTH HARDWARE ACCELERATED STICKY BELOW HEADER) */}
-          <div className="lg:col-span-6 flex flex-col-reverse lg:flex-row gap-4 lg:sticky lg:top-[110px] lg:self-start z-10 will-change-transform transition-all duration-200 ease-out">
+          {/* LEFT MEDIA COLUMN (DESKTOP STICKY GALLERY BELOW HEADER) */}
+          <div className="lg:col-span-6 flex flex-col-reverse lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-10">
 
             {/* THUMBNAILS (Desktop vertical column / Mobile horizontal scroll) */}
             <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none shrink-0">
@@ -478,7 +480,7 @@ export default function ProductDetailPage({
           </div>
 
           {/* RIGHT PRODUCT DETAILS COLUMN */}
-          <div className="lg:col-span-6 space-y-6 relative">
+          <div className="lg:col-span-6 space-y-6 relative pt-3 lg:pt-5">
             {/* Product Category Tag & Title */}
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-3.5 py-1.5 rounded-full shadow-2xs">
@@ -649,15 +651,6 @@ export default function ProductDetailPage({
                   {btnLoading ? "ADDING..." : "ADD TO CART"}
                 </button>
               </div>
-
-              {/* Buy Now Direct Button */}
-              <button
-                disabled={btnLoading}
-                onClick={() => handleAddToCart(true)}
-                className="w-full max-w-xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] hover:from-[#D49313] hover:to-[#593102] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[15px] tracking-wider uppercase disabled:opacity-50 shadow-md hover:shadow-xl cursor-pointer mt-3 border border-[#D49313]/30 active:scale-98 flex items-center justify-center gap-2"
-              >
-                BUY IT NOW
-              </button>
             </div>
 
             {/* Weather Alert */}

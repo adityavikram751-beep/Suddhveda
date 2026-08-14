@@ -74,6 +74,25 @@ export default function Cart() {
     } = useCart();
 
     const cartProducts = Object.values(cartItems);
+    const [unselectedItemIds, setUnselectedItemIds] = useState<string[]>([]);
+
+    const isItemSelected = (cartItemId: string) => !unselectedItemIds.includes(cartItemId);
+
+    const toggleSelectItem = (cartItemId: string) => {
+        setUnselectedItemIds((prev) =>
+            prev.includes(cartItemId)
+                ? prev.filter((id) => id !== cartItemId)
+                : [...prev, cartItemId]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        const allIds = cartProducts.map((p) => p.cartItemId);
+        setUnselectedItemIds((prev) => (prev.length === 0 ? allIds : []));
+    };
+
+    const selectedProducts = cartProducts.filter((p) => isItemSelected(p.cartItemId));
+
     const recommendationScrollerRefs = useRef<Array<HTMLDivElement | null>>([]);
     const [isFooterVisible, setIsFooterVisible] = useState(false);
 
@@ -93,11 +112,11 @@ export default function Cart() {
         return () => obs.disconnect();
     }, []);
 
-    const subtotal = cartProducts.reduce(
+    const subtotal = selectedProducts.reduce(
         (sum, product) => sum + product.price * product.quantity,
         0
     );
-    const saved = cartProducts.reduce(
+    const saved = selectedProducts.reduce(
         (sum, product) =>
             sum +
             (product.type === "NORMAL"
@@ -278,7 +297,7 @@ export default function Cart() {
                 ref={(node) => {
                     recommendationScrollerRefs.current[scrollerIndex] = node;
                 }}
-                className="mt-5 flex w-full max-w-full gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="mt-5 flex w-full max-w-full gap-0 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
                 {recommendations.map((item) => {
                     const variants = item.variantDocumentId || [];
@@ -302,7 +321,7 @@ export default function Cart() {
                         <div
                             key={item._id}
                             data-recommendation-card
-                            className="w-[280px] sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] min-w-[280px] sm:min-w-0 shrink-0 snap-start flex flex-col h-full"
+                            className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] shrink-0 snap-center flex flex-col h-full mx-auto px-1 sm:px-0"
                         >
                             <ProductCardShop
                                 badge={categoryName}
@@ -355,15 +374,25 @@ export default function Cart() {
                             </span>
                         </h1>
 
-                        <div className="mt-8 hidden grid-cols-[1fr_120px_160px_100px] px-6 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102] md:grid">
-                            <span>Product</span>
-                            <span>Price</span>
-                            <span>Quantity</span>
-                            <span>Total</span>
+                        <div className="mt-8 flex items-center justify-between px-6 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102]">
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={cartProducts.length > 0 && unselectedItemIds.length === 0}
+                                    onChange={toggleSelectAll}
+                                    className="h-4.5 w-4.5 accent-[#EA580C] rounded cursor-pointer shrink-0"
+                                />
+                                <span>Product</span>
+                            </div>
+                            <div className="hidden md:grid grid-cols-3 gap-12 text-right min-w-[360px]">
+                                <span>Price</span>
+                                <span>Quantity</span>
+                                <span>Total</span>
+                            </div>
                         </div>
 
                         {/* Cart items list with max-height scroll (shows 1.5 cards, rest scroll) */}
-                        <div className="mt-4 space-y-4 max-h-[225px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        <div className="mt-4 space-y-4 max-h-[360px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
                                 <div className="rounded-2xl border-2 border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
                                     Loading your cart...
@@ -373,80 +402,93 @@ export default function Cart() {
                                     Your cart is currently empty.
                                 </div>
                             ) : (
-                                cartProducts.map((product) => (
-                                    <div
-                                        key={product.cartItemId}
-                                        className="group grid gap-5 rounded-2xl border-2 border-[#EADCC9]/80 bg-white px-5 py-5 shadow-xs hover:border-[#D49313]/60 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center"
-                                    >
-                                        <div className="flex gap-4 sm:gap-5">
-                                            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
-                                                <Image
-                                                    src={product.image}
-                                                    alt={product.productName}
-                                                    fill
-                                                    className="object-contain p-2"
+                                cartProducts.map((product) => {
+                                    const selected = isItemSelected(product.cartItemId);
+                                    return (
+                                        <div
+                                            key={product.cartItemId}
+                                            className={`group grid gap-4 rounded-2xl border-2 p-3.5 sm:p-5 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center overflow-hidden ${
+                                                selected
+                                                    ? "border-[#D49313] bg-white shadow-xs"
+                                                    : "border-[#EADCC9]/70 bg-white/60 opacity-60"
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selected}
+                                                    onChange={() => toggleSelectItem(product.cartItemId)}
+                                                    className="h-5 w-5 accent-[#EA580C] rounded cursor-pointer shrink-0"
+                                                />
+                                                <div className="relative h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
+                                                    <Image
+                                                        src={product.image}
+                                                        alt={product.productName}
+                                                        fill
+                                                        className="object-contain p-1.5"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col justify-center gap-0.5 min-w-0 flex-1">
+                                                    <h2 className="font-serif text-[15px] sm:text-[17px] font-extrabold leading-snug text-[#593102] truncate">
+                                                        {product.productName}
+                                                    </h2>
+                                                    {product.type === "NORMAL" && product.categoryName && (
+                                                        <p className="text-xs font-semibold text-[#6E5D4F] truncate">
+                                                            {product.categoryName}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs font-semibold text-[#6E5D4F] truncate">
+                                                        {product.type === "NORMAL"
+                                                            ? product.weight
+                                                            : product.customMessage || "Gift box"}
+                                                    </p>
+                                                    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300 px-2 py-0.5 text-[9px] sm:text-[10px] font-black text-emerald-800 mt-0.5">
+                                                        <Check size={10} className="stroke-[3]" />
+                                                        Raw &amp; Unfiltered
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeItem(product.cartItemId)}
+                                                        className="mt-2.5 flex w-fit items-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200/80 px-3 py-1.5 text-[12px] sm:text-[13px] font-bold text-red-600 transition-all cursor-pointer shadow-2xs active:scale-95"
+                                                    >
+                                                        <Trash2 size={14} /> Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:block">
+                                                <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Price</span>
+                                                <p className="font-serif text-[15px] sm:text-[17px] font-extrabold text-[#593102]">
+                                                    ₹{product.price}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center justify-between md:justify-start">
+                                                <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Quantity</span>
+                                                <QuantityControl
+                                                    quantity={product.quantity}
+                                                    onMinus={() =>
+                                                        product.type === "NORMAL"
+                                                            ? updateQuantity(product.productId, product.variantId, -1)
+                                                            : updateCustomQuantity(product.cartItemId, -1)
+                                                    }
+                                                    onPlus={() =>
+                                                        product.type === "NORMAL"
+                                                            ? updateQuantity(product.productId, product.variantId, 1)
+                                                            : updateCustomQuantity(product.cartItemId, 1)
+                                                    }
                                                 />
                                             </div>
-                                            <div className="flex flex-col justify-center gap-1">
-                                                <h2 className="font-serif text-[16px] sm:text-[17px] font-extrabold leading-snug text-[#593102]">
-                                                    {product.productName}
-                                                </h2>
-                                                {product.type === "NORMAL" && product.categoryName && (
-                                                    <p className="text-xs font-semibold text-[#6E5D4F]">
-                                                        {product.categoryName}
-                                                    </p>
-                                                )}
-                                                <p className="text-xs font-semibold text-[#6E5D4F]">
-                                                    {product.type === "NORMAL"
-                                                        ? product.weight
-                                                        : product.customMessage || "Gift box"}
+
+                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:block">
+                                                <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Total</span>
+                                                <p className="font-serif text-[16px] sm:text-[19px] font-extrabold text-[#593102]">
+                                                    ₹{product.price * product.quantity}
                                                 </p>
-                                                <span className="inline-flex w-fit items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 mt-0.5">
-                                                    <Check size={11} className="stroke-[3]" />
-                                                    100% Raw &amp; Unfiltered
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeItem(product.cartItemId)}
-                                                    className="mt-1 flex w-fit items-center gap-1.5 text-[12px] font-bold text-[#8D7F73] transition-colors hover:text-red-500 cursor-pointer"
-                                                >
-                                                    <Trash2 size={13} /> Remove
-                                                </button>
                                             </div>
                                         </div>
-
-                                        <div className="flex items-center justify-between md:block">
-                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Price</span>
-                                            <p className="font-serif text-[17px] sm:text-[18px] font-extrabold text-[#593102]">
-                                                ₹{product.price}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex items-center justify-between md:justify-start">
-                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Quantity</span>
-                                            <QuantityControl
-                                                quantity={product.quantity}
-                                                onMinus={() =>
-                                                    product.type === "NORMAL"
-                                                        ? updateQuantity(product.productId, product.variantId, -1)
-                                                        : updateCustomQuantity(product.cartItemId, -1)
-                                                }
-                                                onPlus={() =>
-                                                    product.type === "NORMAL"
-                                                        ? updateQuantity(product.productId, product.variantId, 1)
-                                                        : updateCustomQuantity(product.cartItemId, 1)
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="flex items-center justify-between border-t border-[#EADCC9]/60 pt-3 md:border-t-0 md:pt-0 md:block">
-                                            <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Total</span>
-                                            <p className="font-serif text-[19px] sm:text-[20px] font-extrabold text-[#593102]">
-                                                ₹{product.price * product.quantity}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
 
@@ -464,7 +506,8 @@ export default function Cart() {
                         <OrderSummaryWithCoupons
                             subtotal={subtotal}
                             saved={saved}
-                            itemCount={cartProducts.length}
+                            itemCount={selectedProducts.length}
+                            selectedProducts={selectedProducts}
                         />
                         {/* Desktop Help Panel */}
                         <div className="hidden lg:block">
@@ -540,10 +583,12 @@ export function OrderSummaryWithCoupons({
     subtotal,
     saved,
     itemCount,
+    selectedProducts = [],
 }: {
     subtotal: number;
     saved: number;
     itemCount: number;
+    selectedProducts?: any[];
 }) {
     const router = useRouter();
     const { fetchCart } = useCart() as any;
@@ -573,21 +618,35 @@ export function OrderSummaryWithCoupons({
         (async () => {
             try {
                 const data = await authFetch(`${API_BASE_URL}/api/coupon/all-coupons`);
-                const list: ApiCoupon[] = (
-                    data.data || data.coupons || Array.isArray(data)
-                        ? data.data || data.coupons || data
-                        : []
-                )
+                const rawList =
+                    data.data || data.coupons || (Array.isArray(data) ? data : []);
+                const list: ApiCoupon[] = rawList
                     .filter((c: any) => c.isActive !== false)
-                    .map((c: any) => ({
-                        offerId: c._id || c.offerId,
-                        code: c.couponCode || c.code,
-                        desc: c.title || c.description || "",
-                        minOrder: c.minimumOrderAmount ? `₹${c.minimumOrderAmount}` : "",
-                        isAvailable: true,
-                        discountPercentage: c.discountPercentage || c.percentage || 0,
-                        flatDiscount: c.discountAmount || c.amount || 0,
-                    }));
+                    .map((c: any) => {
+                        const typeUpper = (c.discountType || c.type || "").toUpperCase();
+                        const val = Number(c.discountValue ?? c.value ?? c.discount ?? 0);
+
+                        const isPerc = typeUpper === "PERCENTAGE" || typeUpper === "PERCENT";
+                        const isFlat = typeUpper === "FLAT" || typeUpper === "AMOUNT" || typeUpper === "FIXED";
+
+                        const discountPercentage = isPerc
+                            ? val || c.discountPercentage || c.percentage || 0
+                            : c.discountPercentage || c.percentage || 0;
+
+                        const flatDiscount = isFlat
+                            ? val || c.discountAmount || c.amount || 0
+                            : c.discountAmount || c.amount || 0;
+
+                        return {
+                            offerId: c._id || c.offerId,
+                            code: c.couponCode || c.code,
+                            desc: c.title || c.description || "",
+                            minOrder: c.minimumOrderAmount ? `₹${c.minimumOrderAmount}` : "",
+                            isAvailable: true,
+                            discountPercentage,
+                            flatDiscount,
+                        };
+                    });
                 setCoupons(list);
             } catch (err) {
                 console.error("Failed to fetch coupons:", err);
@@ -722,19 +781,31 @@ export function OrderSummaryWithCoupons({
 
         setCouponLoading(true);
         try {
+            const selectedItem = selectedProducts[0];
+            const targetItemId = selectedItem?.cartItemId || "";
+            const targetItemType = selectedItem?.type || "NORMAL";
+
             const data = await authFetch(`${API_BASE_URL}/api/coupon/apply`, {
                 method: "POST",
                 body: JSON.stringify({
                     couponCode: upperCode,
-                    cartAmount: subtotal,
+                    itemType: targetItemType,
+                    itemId: targetItemId,
                 }),
             });
 
             let calculatedDiscount = 0;
             const resDiscount =
-                data.discount ?? data.discountAmount ?? data.data?.discount ?? data.data?.discountAmount;
-            if (resDiscount !== undefined && resDiscount !== null) {
-                calculatedDiscount = typeof resDiscount === "string" ? parseFloat(resDiscount) || 0 : resDiscount;
+                data.discount ??
+                data.discountAmount ??
+                data.discountValue ??
+                data.data?.discount ??
+                data.data?.discountAmount ??
+                data.data?.discountValue ??
+                data.data?.calculatedDiscount;
+
+            if (resDiscount !== undefined && resDiscount !== null && Number(resDiscount) > 0) {
+                calculatedDiscount = typeof resDiscount === "string" ? parseFloat(resDiscount) || 0 : Number(resDiscount);
             } else if (matched?.discountPercentage && matched.discountPercentage > 0) {
                 calculatedDiscount = (subtotal * matched.discountPercentage) / 100;
             } else if (matched?.flatDiscount && matched.flatDiscount > 0) {
@@ -974,8 +1045,8 @@ export function OrderSummaryWithCoupons({
                                                     <div
                                                         key={coupon.offerId || coupon.code}
                                                         className={`flex items-center justify-between rounded-xl border p-2.5 transition-all ${isApplied
-                                                                ? "border-emerald-500 bg-emerald-50/70"
-                                                                : "border-[#EADCC9] bg-white hover:border-[#D49313]/60 shadow-2xs"
+                                                            ? "border-emerald-500 bg-emerald-50/70"
+                                                            : "border-[#EADCC9] bg-white hover:border-[#D49313]/60 shadow-2xs"
                                                             }`}
                                                     >
                                                         <div className="flex-1 min-w-0">
@@ -1044,8 +1115,8 @@ export function OrderSummaryWithCoupons({
                                 {/* Applied coupons summary */}
                                 <div
                                     className={`rounded-xl p-2.5 border ${appliedCoupons.length > 0
-                                            ? "bg-[#FAF0DC]/70 border-[#D49313]/40"
-                                            : "bg-[#FAF5EC]/50 border-[#EADCC9]"
+                                        ? "bg-[#FAF0DC]/70 border-[#D49313]/40"
+                                        : "bg-[#FAF5EC]/50 border-[#EADCC9]"
                                         }`}
                                 >
                                     <p className="text-[10px] font-black text-[#593102] uppercase tracking-[0.1em] mb-1.5">
@@ -1108,7 +1179,7 @@ export function OrderSummaryWithCoupons({
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Check size={13} className="text-emerald-700 stroke-[3]" />
-                        100% pure honey
+                        100% raw &amp; natural honey
                     </span>
                 </div>
             </div>

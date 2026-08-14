@@ -35,7 +35,7 @@ const navItems = [
   { title: "Gift Sets", href: "/giftsets" },
   { title: "About Us", href: "/about" },
   { title: "Contact", href: "/contact" },
-  { title: "Subcribe", href: "/subscribe" },
+  { title: "Subscribe", href: "/subscribe" },
 ];
 
 export default function Header() {
@@ -383,6 +383,23 @@ export default function Header() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [open]);
+
   function handleAccountClick() {
     if (!session) {
       const currentPath = `${pathname || "/"}${window.location.search || ""}`;
@@ -570,7 +587,7 @@ export default function Header() {
                             {/* Featured Honey Jars Spotlight Box */}
                             <div className="col-span-4 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-[#F6EDE2] to-[#EBE0CE] p-4 border border-[#E5DACB] shadow-inner relative overflow-hidden group/card">
                               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#593102] bg-white/80 backdrop-blur-xs px-2.5 py-0.5 rounded-full w-fit">
-                                100% Raw & Organic
+                                Raw & Organic
                               </span>
                               <div className="relative h-[130px] w-full my-2">
                                 <Image
@@ -666,7 +683,7 @@ export default function Header() {
               )}
             </div>
 
-            <button
+                <button
               type="button"
               onClick={openCart}
               className="relative text-[#7A3F10] transition hover:text-[#D89B00]"
@@ -683,180 +700,311 @@ export default function Header() {
           </div>
         </div>
 
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ${
-            open ? "max-h-[800px]" : "max-h-0"
-          }`}
-        >
-          <div className="bg-[#FAF5EE] border-t border-[#EFE7DF] px-4 py-2 font-sans">
-            {navItems.map((item) => {
-              const isActive =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname === item.href || pathname?.startsWith(`${item.href}/`);
-
-              if (item.title === "Shop") {
-                return (
-                  <div key={item.title} className="border-b border-[#E8DED1]">
-                    <div className="flex items-center justify-between py-3.5 px-2">
-                      <Link
-                        href="/shop"
-                        onClick={() => setOpen(false)}
-                        className={`text-[16px] font-bold ${
-                          isActive ? "text-[#D89B00]" : "text-[#593102]"
-                        }`}
-                      >
-                        Shop
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => setMobileShopOpen((prev) => !prev)}
-                        className="p-2.5 text-[#593102] hover:text-[#D89B00] cursor-pointer"
-                        aria-label="Toggle Shop mobile menu"
-                      >
-                        <FiChevronDown
-                          size={18}
-                          className={`transition-transform duration-200 ${
-                            mobileShopOpen ? "rotate-180 text-[#D89B00]" : ""
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Expandable Mobile Submenu */}
-                    {mobileShopOpen && (
-                      <div className="pb-4 pl-3 pr-2 space-y-3 bg-[#FFFDF9] rounded-xl p-3.5 mb-2 border border-[#E8DED1]">
-                        <Link
-                          href="/shop"
-                          onClick={() => {
-                            setOpen(false);
-                            setMobileShopOpen(false);
-                          }}
-                          className="block text-[14px] font-bold text-[#593102] underline"
-                        >
-                          Shop All Honey &rarr;
-                        </Link>
-
-                        {/* Multi Flora */}
-                        <div>
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-1.5 border-b border-[#E8DED1] pb-0.5">
-                            Multi-Flora
-                          </span>
-                          <div className="pl-1 space-y-2 mt-1">
-                            {multiFloraProducts.length > 0 ? (
-                              multiFloraProducts.map((p) => {
-                                const id = getProductId(p);
-                                const name = getProductName(p);
-                                return (
-                                  <Link
-                                    key={id || name}
-                                    href={`/shop/products/${id}`}
-                                    onClick={() => {
-                                      setOpen(false);
-                                      setMobileShopOpen(false);
-                                    }}
-                                    className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
-                                  >
-                                    • {name}
-                                  </Link>
-                                );
-                              })
-                            ) : (
-                              <Link
-                                href="/shop"
-                                onClick={() => {
-                                  setOpen(false);
-                                  setMobileShopOpen(false);
-                                }}
-                                className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
-                              >
-                                • Himalayan Forest Honey
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Mono Flora */}
-                        <div>
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9E826B] block mb-1.5 border-b border-[#E8DED1] pb-0.5">
-                            Mono-Flora
-                          </span>
-                          <div className="pl-1 grid grid-cols-1 gap-2 mt-1">
-                            {monoFloraProducts.length > 0 ? (
-                              monoFloraProducts.map((p) => {
-                                const id = getProductId(p);
-                                const name = getProductName(p);
-                                return (
-                                  <Link
-                                    key={id || name}
-                                    href={`/shop/products/${id}`}
-                                    onClick={() => {
-                                      setOpen(false);
-                                      setMobileShopOpen(false);
-                                    }}
-                                    className="block text-[13px] font-semibold text-[#2C221E] hover:text-[#593102]"
-                                  >
-                                    • {name}
-                                  </Link>
-                                );
-                              })
-                            ) : (
-                              <>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Ajwain Honey</Link>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Lychee Honey</Link>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Fennel Honey</Link>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Jamun Honey</Link>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Mustard Honey</Link>
-                                <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#2C221E]">• Eucalyptus Honey</Link>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
+        {/* MOBILE SIDE NAVIGATION DRAWER (Slides from Left) */}
+        {open && (
+          <div
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md lg:hidden animate-in fade-in duration-300 transition-all touch-none overscroll-contain"
+            onClick={() => setOpen(false)}
+            onTouchMove={(e) => {
+              if (e.target === e.currentTarget) {
+                e.preventDefault();
               }
+            }}
+          >
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[88%] max-w-[340px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] shadow-[0_0_60px_rgba(89,49,2,0.35)] rounded-r-[32px] border-r-2 border-[#D49313]/50 overflow-y-auto flex flex-col animate-in slide-in-from-left duration-300 ease-out overscroll-contain touch-pan-y"
+              onClick={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
+              {/* VIP Glow Accent */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
 
-              return (
-                <Link
-                  key={item.title}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`relative flex items-center justify-between px-2 py-3.5 border-b border-[#E8DED1] text-[16px] font-semibold ${
-                    isActive ? "text-[#D89B00]" : "text-[#593102]"
-                  }`}
-                >
-                  {item.title}
-                  {isActive && (
-                    <span className="h-2 w-2 rounded-full bg-[#D89B00]" />
-                  )}
-                </Link>
-              );
-            })}
-
-            {session && (
-              <div className="border-t border-[#F1ECE6] px-6 py-4">
-                <Link
-                  href="/account"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-between py-2 text-sm font-semibold text-[#593102]"
-                >
-                  Account
-                  <FiUser size={18} />
+              {/* Drawer Header */}
+              <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-20 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
+                <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5">
+                  <Image
+                    src="/yellow logo.png"
+                    alt="ShuddhVeda Honey"
+                    width={52}
+                    height={52}
+                    priority
+                    className="h-10 w-auto object-contain"
+                  />
+                  <div className="flex flex-col leading-tight">
+                    <span className="font-serif text-[17px] font-extrabold text-[#593102] tracking-tight">
+                      ShuddhVeda
+                    </span>
+                    <span className="text-[9.5px] font-black text-[#D49313] uppercase tracking-[0.18em]">
+                      👑 Royal Honey
+                    </span>
+                  </div>
                 </Link>
                 <button
                   type="button"
-                  onClick={handleLogout}
-                  className="flex w-full items-center justify-between py-2 text-sm font-semibold text-red-600 mt-2"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full p-2 bg-[#FAF0DC] hover:bg-[#D49313] text-[#593102] hover:text-white transition-all shadow-2xs cursor-pointer active:scale-95 border border-[#D49313]/30"
+                  aria-label="Close navigation"
                 >
-                  Logout
-                  <FiX size={18} />
+                  <FiX size={18} strokeWidth={2.5} />
                 </button>
               </div>
-            )}
+
+              {/* Drawer Content Body */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-5">
+                
+                {/* User Profile / Account Welcome Banner */}
+                {session ? (
+                  <div className="relative overflow-hidden rounded-2xl border border-[#EADCC9] bg-gradient-to-br from-[#FFFDF9] via-white to-[#FAF5EC] p-3.5 shadow-2xs">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-sm font-black text-white shadow-md uppercase tracking-wider">
+                        {session.user.name ? session.user.name.slice(0, 2) : "SV"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-serif text-sm font-extrabold text-[#593102] truncate capitalize">
+                          {session.user.name || "ShuddhVeda Customer"}
+                        </p>
+                        <Link
+                          href="/account"
+                          onClick={() => setOpen(false)}
+                          className="text-[11px] font-bold text-[#D49313] hover:underline inline-flex items-center gap-1 mt-0.5"
+                        >
+                          My Profile &amp; Orders &rarr;
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative overflow-hidden rounded-2xl border border-[#EADCC9] bg-gradient-to-r from-[#593102] to-[#8F590A] p-3.5 text-white shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-serif text-sm font-extrabold text-white">Welcome to ShuddhVeda</p>
+                        <p className="text-[11px] text-white/80 font-medium">Pure organic raw honey</p>
+                      </div>
+                      <Link
+                        href="/login"
+                        onClick={() => setOpen(false)}
+                        className="bg-white text-[#593102] hover:bg-[#FAF0DC] transition-colors text-xs font-black px-3.5 py-1.5 rounded-xl shadow-xs active:scale-95 shrink-0"
+                      >
+                        Login
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* Main Navigation Links */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#8D7F73] px-2 block mb-1">
+                    Navigation Menu
+                  </span>
+
+                  <nav className="space-y-2">
+                    {navItems.map((item) => {
+                      const isActive =
+                        item.href === "/"
+                          ? pathname === "/"
+                          : pathname === item.href || pathname?.startsWith(`${item.href}/`);
+
+                      if (item.title === "Shop") {
+                        return (
+                          <div key={item.title} className="rounded-2xl border border-[#EADCC9]/90 bg-white/90 overflow-hidden shadow-2xs">
+                            <div className="flex items-center justify-between px-4 py-3">
+                              <Link
+                                href="/shop"
+                                onClick={() => setOpen(false)}
+                                className={`text-[15px] font-extrabold ${
+                                  isActive ? "text-[#D49313]" : "text-[#593102]"
+                                }`}
+                              >
+                                Shop Collections
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={() => setMobileShopOpen((prev) => !prev)}
+                                className="p-1.5 rounded-xl bg-[#FAF0DC] text-[#593102] hover:text-[#D49313] cursor-pointer border border-[#D49313]/20"
+                                aria-label="Toggle Shop submenu"
+                              >
+                                <FiChevronDown
+                                  size={18}
+                                  className={`transition-transform duration-300 ${
+                                    mobileShopOpen ? "rotate-180 text-[#D49313]" : ""
+                                  }`}
+                                />
+                              </button>
+                            </div>
+
+                            {/* Expandable Shop Submenu */}
+                            {mobileShopOpen && (
+                              <div className="p-3.5 bg-[#FAF5EC] border-t border-[#EADCC9]/60 space-y-3">
+                                <Link
+                                  href="/shop"
+                                  onClick={() => {
+                                    setOpen(false);
+                                    setMobileShopOpen(false);
+                                  }}
+                                  className="block text-[13px] font-extrabold text-[#D49313] hover:underline"
+                                >
+                                  View All Honey Collections &rarr;
+                                </Link>
+
+                                {/* Multi-Flora */}
+                                <div>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
+                                    Multi-Flora Honey
+                                  </span>
+                                  <div className="space-y-1.5 pl-1">
+                                    {multiFloraProducts.length > 0 ? (
+                                      multiFloraProducts.map((p) => {
+                                        const id = getProductId(p);
+                                        const name = getProductName(p);
+                                        return (
+                                          <Link
+                                            key={id || name}
+                                            href={`/shop/products/${id}`}
+                                            onClick={() => {
+                                              setOpen(false);
+                                              setMobileShopOpen(false);
+                                            }}
+                                            className="block text-[13px] font-semibold text-[#593102] hover:text-[#D49313] transition-colors"
+                                          >
+                                            • {name}
+                                          </Link>
+                                        );
+                                      })
+                                    ) : (
+                                      <Link
+                                        href="/shop"
+                                        onClick={() => {
+                                          setOpen(false);
+                                          setMobileShopOpen(false);
+                                        }}
+                                        className="block text-[13px] font-semibold text-[#593102]"
+                                      >
+                                        • Himalayan Forest Honey
+                                      </Link>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Mono-Flora */}
+                                <div>
+                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
+                                    Mono-Flora Honey
+                                  </span>
+                                  <div className="grid grid-cols-1 gap-1.5 pl-1">
+                                    {monoFloraProducts.length > 0 ? (
+                                      monoFloraProducts.map((p) => {
+                                        const id = getProductId(p);
+                                        const name = getProductName(p);
+                                        return (
+                                          <Link
+                                            key={id || name}
+                                            href={`/shop/products/${id}`}
+                                            onClick={() => {
+                                              setOpen(false);
+                                              setMobileShopOpen(false);
+                                            }}
+                                            className="block text-[13px] font-semibold text-[#593102] hover:text-[#D49313] transition-colors"
+                                          >
+                                            • {name}
+                                          </Link>
+                                        );
+                                      })
+                                    ) : (
+                                      <>
+                                        <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#593102]">• Ajwain Honey</Link>
+                                        <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#593102]">• Lychee Honey</Link>
+                                        <Link href="/shop" onClick={() => setOpen(false)} className="block text-[13px] font-semibold text-[#593102]">• Fennel Honey</Link>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={item.title}
+                          href={item.href}
+                          onClick={() => setOpen(false)}
+                          className={`flex items-center justify-between rounded-2xl px-4 py-3 text-[15px] font-extrabold transition-all duration-300 ${
+                            isActive
+                              ? "bg-[#FAF0DC] text-[#593102] border-l-4 border-[#D49313] shadow-2xs"
+                              : "text-[#593102] bg-white/90 hover:bg-[#FAF5EC] border border-[#EADCC9]/80 hover:border-[#D49313]/50"
+                          }`}
+                        >
+                          <span>{item.title}</span>
+                          {isActive ? (
+                            <span className="h-2.5 w-2.5 rounded-full bg-[#D49313] shadow-xs" />
+                          ) : (
+                            <span className="text-[12px] text-[#8D7F73] font-normal">&rarr;</span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </div>
+
+                {/* Quick Action Shortcuts */}
+                <div className="pt-3 space-y-2 border-t border-[#EADCC9]/80">
+                  <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#8D7F73] px-2 block mb-1">
+                    Quick Access
+                  </span>
+
+                  <Link
+                    href="/wishlist"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between rounded-2xl bg-white/90 p-3 px-4 border border-[#EADCC9]/80 text-[#593102] font-bold text-sm hover:border-[#D49313] transition shadow-2xs"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <FiHeart size={18} className="text-[#D49313]" />
+                      My Wishlist
+                    </span>
+                    {wishlistCount > 0 && (
+                      <span className="rounded-full bg-[#D49313] px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
+                    href="/account/privacy"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between rounded-2xl bg-white/90 p-3 px-4 border border-[#EADCC9]/80 text-[#593102] font-bold text-sm hover:border-[#D49313] transition shadow-2xs"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <FiUser size={18} className="text-[#D49313]" />
+                      Policy Center
+                    </span>
+                  </Link>
+
+                  {session && (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2.5 rounded-2xl bg-red-50/90 p-3 px-4 text-red-600 font-bold text-sm hover:bg-red-100 transition border border-red-200/60"
+                    >
+                      Logout
+                    </button>
+                  )}
+                </div>
+
+                {/* VIP Quality Tagline Card */}
+                <div className="rounded-2xl bg-[#FAF0DC]/80 border border-[#D49313]/30 p-3 text-center">
+                  <p className="text-[11px] font-black text-[#593102] uppercase tracking-wider">
+                    🌿 Raw, Pure &amp; Cold Extracted
+                  </p>
+                  <p className="text-[10px] text-[#8D7F73] font-semibold mt-0.5">
+                    Direct from natural hives to your home
+                  </p>
+                </div>
+
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </header>
     </div>
   );

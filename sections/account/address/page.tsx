@@ -18,6 +18,7 @@ import {
     X,
     CheckCircle,
     Menu,
+    Sparkles,
 } from "lucide-react";
 import { API_BASE_URL, getInitials } from "@/lib/auth";
 
@@ -842,6 +843,23 @@ export default function MyAddressesPage() {
         addr.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.touchAction = "none";
+        } else {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        };
+    }, [mobileMenuOpen]);
+
     return (
         <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-32 lg:pt-12">
 
@@ -874,27 +892,38 @@ export default function MyAddressesPage() {
             </div>
 
             <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
-
-                {/* Mobile Drawer Overlay */}
+                {/* Mobile Drawer */}
                 {mobileMenuOpen && (
-                    <div
-                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+                    <div 
+                        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md lg:hidden animate-in fade-in duration-300 transition-all touch-none overscroll-contain"
                         onClick={() => setMobileMenuOpen(false)}
+                        onTouchMove={(e) => {
+                            if (e.target === e.currentTarget) {
+                                e.preventDefault();
+                            }
+                        }}
                     >
-                        <div
-                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFF8EF] shadow-2xl overflow-y-auto flex flex-col"
+                        <div 
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[330px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] shadow-[0_0_40px_rgba(89,49,2,0.25)] rounded-r-[28px] border-r-2 border-[#D49313]/40 overflow-y-auto flex flex-col animate-in slide-in-from-left duration-300 overscroll-contain touch-pan-y"
                             onClick={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
                         >
-                            <div className="sticky top-0 bg-[#FFF8EF] z-10 flex items-center justify-between p-4 pb-2 border-b border-[#F0E2CC]">
-                                <h3 className="font-serif text-lg font-bold text-[#3C2015]">Menu</h3>
-                                <button
+                            <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-10 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313] border border-[#D49313]/30">
+                                        <Sparkles size={16} />
+                                    </div>
+                                    <h3 className="font-serif text-base font-extrabold text-[#593102] tracking-tight">Account Navigation</h3>
+                                </div>
+                                <button 
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-full p-2 hover:bg-[#F0E2CC] text-[#8A7460]"
+                                    className="rounded-full p-2 bg-[#FAF0DC] hover:bg-[#D49313] text-[#593102] hover:text-white transition-all shadow-2xs cursor-pointer active:scale-95"
+                                    aria-label="Close menu"
                                 >
-                                    <X size={20} />
+                                    <X size={18} strokeWidth={2.5} />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-4 pt-2" onClick={() => setMobileMenuOpen(false)}>
+                            <div className="flex-1 overflow-y-auto p-4 pt-3" onClick={() => setMobileMenuOpen(false)}>
                                 <SidebarContent userData={userData} onLinkClick={() => setMobileMenuOpen(false)} />
                             </div>
                         </div>

@@ -25,7 +25,7 @@ const stats = [
   },
   {
     icon: Heart,
-    value: "100%",
+    value: "Pure",
     label: "Love & Trust",
   },
 ];

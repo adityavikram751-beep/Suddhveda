@@ -47,8 +47,8 @@ const features: Feature[] = [
 const faqs: Faq[] = [
   {
     id: 1,
-    question: "Is Shuddh Veda Honey 100% pure?",
-    answer: "Yes, our honey is 100% pure, raw, and unprocessed with no additives.",
+    question: "Is Shuddh Veda Honey raw & natural?",
+    answer: "Yes, our honey is raw, natural, and unprocessed with no additives.",
   },
   {
     id: 2,
@@ -99,7 +99,7 @@ export default function GiftSetSection() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3]">
         {/* ================= FEATURES STRIP ================= */}
         <div className="border-t border-b border-[#EADCC9]/60 bg-white/80 backdrop-blur-md">
-          <div className="max-w-[1480px] mx-auto w-full px-6 lg:px-16 py-8 md:py-10">
+          <div className="max-w-[1480px] mx-auto w-full px-6 lg:px-16 py-5 md:py-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature) => (
                 <div key={feature.id} className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md transition-all">

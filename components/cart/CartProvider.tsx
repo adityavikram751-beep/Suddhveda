@@ -56,27 +56,27 @@ async function authFetch(url: string, options: RequestInit = {}) {
 // ---------- Types ----------
 type CartItemDetail =
   | {
-      type: "NORMAL";
-      cartItemId: string;
-      productId: string;
-      variantId: string;
-      productName: string;
-      categoryName?: string;
-      image: string;
-      price: number;
-      oldPrice?: number;
-      weight: string;
-      quantity: number;
-    }
+    type: "NORMAL";
+    cartItemId: string;
+    productId: string;
+    variantId: string;
+    productName: string;
+    categoryName?: string;
+    image: string;
+    price: number;
+    oldPrice?: number;
+    weight: string;
+    quantity: number;
+  }
   | {
-      type: "CUSTOM";
-      cartItemId: string;
-      productName: string;
-      image: string;
-      price: number;
-      customMessage?: string;
-      quantity: number;
-    };
+    type: "CUSTOM";
+    cartItemId: string;
+    productName: string;
+    image: string;
+    price: number;
+    customMessage?: string;
+    quantity: number;
+  };
 
 type CartContextValue = {
   cartItems: Record<string, CartItemDetail>;
@@ -85,6 +85,7 @@ type CartContextValue = {
   updateQuantity: (productId: string, variantId: string, change: number) => Promise<void>;
   updateCustomQuantity: (cartItemId: string, change: number) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
+  fetchCart: () => Promise<Record<string, CartItemDetail>>;
   openCart: () => void;
   closeCart: () => void;
   isLoading: boolean;
@@ -198,25 +199,25 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isCartOpen) {
       const scrollY = window.scrollY;
-      
+
       // Lock body scroll
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
-      
+
     } else {
       const scrollY = document.body.style.top;
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
       document.body.style.overflow = "";
-      
+
       if (scrollY) {
         window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
       }
     }
-    
+
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
@@ -397,6 +398,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         updateCustomQuantity,
         removeItem,
+        fetchCart,
         openCart,
         closeCart,
         isLoading,
@@ -450,9 +452,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
       {/* Glass morphism blur background */}
       <div
-        className={`fixed inset-0 z-[60] transition-all duration-300 ${
-          isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[60] transition-all duration-300 ${isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsCartOpen(false)}
       >
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[6px]" />
@@ -460,9 +461,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
       {/* Cart sidebar with glass effect */}
       <aside
-        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[420px] flex-col rounded-l-[24px] overflow-hidden border border-r-0 border-[#EADCC9]/80 bg-[#FFFDF9]/95 backdrop-blur-xl shadow-[-20px_0_60px_rgba(0,0,0,0.15)] transition-transform duration-300 ${
-          isCartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed right-0 top-[62px] z-[70] flex h-[calc(100dvh-62px)] w-full max-w-[420px] flex-col rounded-l-[24px] overflow-hidden border border-r-0 border-[#EADCC9]/80 bg-[#FFFDF9]/95 backdrop-blur-xl shadow-[-20px_0_60px_rgba(0,0,0,0.15)] transition-transform duration-300 ${isCartOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Header */}
         <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#EADCC9]/80 px-5 bg-white/80 rounded-tl-[24px]">
@@ -591,7 +591,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               </p>
             </div>
           </div>
-          
+
           <div className="space-y-2.5">
             <Link
               href="/cart"
@@ -601,7 +601,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
               View Full Cart
             </Link>
           </div>
-          
+
           <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[#EADCC9]/60 pt-4 text-center text-[#593102]">
             <span className="flex flex-col items-center">
               <RotateCcw className="mb-1 h-4 w-4 text-[#D49313]" />
@@ -610,7 +610,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             </span>
             <span className="flex flex-col items-center">
               <Leaf className="mb-1 h-4 w-4 text-[#D49313]" />
-              <strong className="text-[10px] font-bold uppercase tracking-wider">100% Natural</strong>
+              <strong className="text-[10px] font-bold uppercase tracking-wider">Raw &amp; Natural</strong>
               <small className="text-[9px] text-[#6E5D4F] font-medium">Pure Goodness</small>
             </span>
             <span className="flex flex-col items-center">

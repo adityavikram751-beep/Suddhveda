@@ -441,7 +441,7 @@ export default function CuratedGift() {
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-4 rounded-full" />
 
           <p className="text-[#8D7F73] text-[15px] sm:text-[18px] leading-relaxed max-w-2xl mx-auto font-medium">
-            Select your ideal gift box size and customize it with your choice of 100% pure, organic honey flavors.
+            Select your ideal gift box size and customize it with your choice of raw &amp; organic honey flavors.
           </p>
         </div>
 

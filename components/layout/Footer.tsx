@@ -60,10 +60,10 @@ export default function Footer() {
     <footer className="bg-[#593102] text-white block">
       <div className="max-w-[1445px] mx-auto px-6 sm:px-8 py-12">
 
-        {/* ================= MOBILE & TABLET LAYOUT (Centered Stack) ================= */}
+        {/* ================= MOBILE & TABLET LAYOUT (Original Mobile UI Styling + Full Content) ================= */}
         <div className="flex flex-col items-center text-center lg:hidden space-y-10">
 
-          {/* Logo & Brand */}
+          {/* Logo & Brand & Description */}
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5 shadow-md">
               <Image
@@ -77,6 +77,9 @@ export default function Footer() {
             <h2 className="text-[22px] font-semibold mt-3">
               ShuddhVedaHoney
             </h2>
+            <p className="mt-3 text-[13px] leading-relaxed text-[#E2D2C4] max-w-xs text-center">
+              Bringing nature&apos;s purest honey from the hive to your home. Committed to quality, purity, and sustainability.
+            </p>
 
             {/* 4 Social Media Icons */}
             <div className="flex items-center justify-center gap-3 mt-4">
@@ -95,28 +98,34 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Grid for Mobile / Tablet (Properly Aligned & Centered) */}
-          <div className="grid grid-cols-2 gap-x-8 sm:gap-x-14 gap-y-8 w-full max-w-lg px-4 justify-items-center text-left">
+          {/* Links Grid for Mobile / Tablet (Original UI Layout + ALL Content) */}
+          <div className="grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-8 w-full max-w-lg px-2 justify-items-center text-left">
 
             {/* Quick Links */}
-            <div className="w-full max-w-[150px]">
+            <div className="w-full">
               <h3 className="text-[16px] font-semibold text-center sm:text-left">Quick Links</h3>
               <ul className="mt-4 space-y-2.5 text-center sm:text-left">
-                <li><Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">All Honey</Link></li>
+                <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">All Honey</Link></li>
                 <li><Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">My Account</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Policies &amp; Info</Link></li>
+                <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Products</Link></li>
                 <li><Link href="/b2b" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">B2B Order</Link></li>
                 <li><Link href="/bulk-gifting" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Bulk Gifting</Link></li>
               </ul>
             </div>
 
-            {/* Products */}
-            <div className="w-full max-w-[150px]">
-              <h3 className="text-[16px] font-semibold text-center sm:text-left">Products</h3>
+            {/* Info & Policies */}
+            <div className="w-full">
+              <h3 className="text-[16px] font-semibold text-center sm:text-left">Info &amp; Policies</h3>
               <ul className="mt-4 space-y-2.5 text-center sm:text-left">
                 <li><Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Contact Us</Link></li>
                 <li><Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">About Us</Link></li>
                 <li><Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Our Process</Link></li>
-                <li><Link href="/blogs" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Blogs</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Terms &amp; Conditions</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Return Policy</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Shipping Policy</Link></li>
+                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Refund Policy</Link></li>
               </ul>
             </div>
 
@@ -133,6 +142,12 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-center justify-center gap-3">
+                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
+                <a href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  WhatsApp: {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
+                </a>
+              </div>
+              <div className="flex items-center justify-center gap-3">
                 <Mail size={15} className="text-[#E2D2C4] shrink-0" />
                 <a href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@Shuddhveda.in"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   {loading ? "Loading..." : locationData?.email || "connect@Shuddhveda.in"}
@@ -141,7 +156,7 @@ export default function Footer() {
               <div className="flex items-start justify-center gap-3">
                 <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <p className="text-[13px] leading-5 text-[#E2D2C4] text-center max-w-sm">
-                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Ahmedabad, Gujarat, India–380054"}
+                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
                 </p>
               </div>
             </div>
@@ -157,7 +172,7 @@ export default function Footer() {
               <span className="text-[#c29665]">•</span>
               <span>ISO Certified</span>
               <span className="text-[#c29665]">•</span>
-              <span>100% Natural</span>
+              <span>Raw &amp; Organic</span>
             </div>
           </div>
 
@@ -209,7 +224,7 @@ export default function Footer() {
             </h3>
             <ul className="mt-5 space-y-3">
               <li>
-                <Link href="/products" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   All Honey
                 </Link>
               </li>
@@ -219,8 +234,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  Policies & Information
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Policies &amp; Information
                 </Link>
               </li>
               <li>
@@ -248,27 +263,27 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  Terms & Conditions
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Terms &amp; Conditions
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Return Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  Shipping & Delivery Policy
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  Shipping &amp; Delivery Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Cancellation/Refund Policy
                 </Link>
               </li>
@@ -338,7 +353,7 @@ export default function Footer() {
             <span className="text-[#c29665]">•</span>
             <span>ISO Certified</span>
             <span className="text-[#c29665]">•</span>
-            <span>100% Natural</span>
+            <span>Raw &amp; Organic</span>
           </div>
         </div>
 

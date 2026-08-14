@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -60,6 +60,7 @@ export default function ShopPage() {
 
   // Mobile Filter Drawer State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isMobileSliderHovered, setIsMobileSliderHovered] = useState(false);
 
   // 🟢 Strict Background Scroll Lock when Filter Drawer is Open
   useEffect(() => {
@@ -75,6 +76,7 @@ export default function ShopPage() {
       document.documentElement.style.overflow = "unset";
     };
   }, [isFilterOpen]);
+
 
   const [openSections, setOpenSections] = useState({
     category: true,
@@ -183,6 +185,23 @@ export default function ShopPage() {
     [products, appliedFilters]
   );
 
+  // 🟢 Mobile Products Auto-Scroll Effect (Interval every 3.5s)
+  useEffect(() => {
+    if (isMobileSliderHovered || filteredProducts.length === 0) return;
+    const interval = setInterval(() => {
+      if (sliderRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 15) {
+          sliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          sliderRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
+        }
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [isMobileSliderHovered, filteredProducts]);
+
   const applyFilters = async () => {
     try {
       setFilterLoading(true);
@@ -212,7 +231,6 @@ export default function ShopPage() {
       setAppliedFilters(nextAppliedFilters);
       setIsFilterOpen(false);
 
-      // If user applied a specific filter (e.g. category, search, weight), open the product detail page directly
       if (list && list.length > 0 && (selectedCategorySlug || query || selectedWeights.length > 0)) {
         const targetProduct = list[0];
         const targetId = getProductId(targetProduct);
@@ -345,13 +363,10 @@ export default function ShopPage() {
     );
   }
 
-  const activeCategoryName =
-    categoryOptions.find((category) => category.slug === appliedFilters.categorySlug)?.name || "All Honeys";
-
   const promoBannerComponent = (
     <div className="mt-6 overflow-hidden rounded-[14px] bg-[#593102] px-5 pb-5 pt-6 text-center text-white">
       <h3 className="font-serif text-[22px] font-medium leading-tight">
-        Pure Honey.
+        Raw Honey.
         <br />
         <span className="text-white/80">Pure You.</span>
       </h3>
@@ -365,10 +380,10 @@ export default function ShopPage() {
   );
 
   const filterContent = (
-    <div className="rounded-lg bg-white p-6 shadow-sm">
+    <div className="rounded-2xl bg-white p-5 border border-[#EADCC9] shadow-2xs">
       <div className="flex items-center justify-between lg:hidden pb-4 mb-2 border-b border-[#F0E4D0]">
         <h2 className="font-serif text-[18px] font-bold text-[#593102]">Filters</h2>
-        <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black">
+        <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black cursor-pointer">
           <X size={20} />
         </button>
       </div>
@@ -384,7 +399,7 @@ export default function ShopPage() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search Honey"
-            className="h-10 w-full rounded border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#593102]"
+            className="h-10 w-full rounded-xl border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:ring-1 focus:ring-[#593102]"
           />
         </div>
       </FilterSection>
@@ -445,7 +460,7 @@ export default function ShopPage() {
         type="button"
         onClick={applyFilters}
         disabled={filterLoading}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded bg-[#593102] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#C98715] disabled:opacity-60 cursor-pointer"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] hover:from-[#D49313] hover:to-[#593102] py-3 text-[13px] font-bold uppercase tracking-wide text-white transition-all disabled:opacity-60 cursor-pointer shadow-md"
       >
         {filterLoading && <Loader2 size={15} className="animate-spin" />}
         Apply Filter
@@ -458,25 +473,13 @@ export default function ShopPage() {
     </div>
   );
 
-  const scrollLeft = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: -340, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: 340, behavior: "smooth" });
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-white text-[#2F241C]">
+    <main className="bg-white text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
-      <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-6 lg:pb-12 sm:px-6 lg:px-8">
         
         {/* Page Heading (Centered & Refined) */}
-        <div className="mb-10 text-center mx-auto max-w-[760px] px-4 flex flex-col items-center">
+        <div className="mb-8 lg:mb-10 text-center mx-auto max-w-[760px] px-4 flex flex-col items-center">
           <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-3">
             OUR HONEY SELECTION
           </span>
@@ -484,19 +487,47 @@ export default function ShopPage() {
             Discover Pure Honey Collections
           </h2>
           <p className="mt-3 text-[16px] text-[#6E5D4F] font-medium max-w-[620px] mx-auto leading-relaxed">
-            Ethically harvested, 100% raw and filtered honey straight from natural hives.
+            Ethically harvested, raw and filtered honey straight from natural hives.
           </p>
         </div>
 
-        {/* Full-width Products Carousel / Grid Section */}
-        <section className="w-full">
-          {error && <p className="mb-4 text-[13px] text-red-600">{error}</p>}
-
-          {/* 🟢 Products Slider (4 Cards per view + Smooth Scroll) */}
-          <div
-            ref={sliderRef}
-            className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-6 pb-4 px-1 scroll-smooth"
+        {/* Mobile Filter Toggle Bar */}
+        <div className="flex lg:hidden justify-between items-center mb-6 pb-3 border-b border-[#EADCC9]">
+          <button
+            type="button"
+            onClick={() => setIsFilterOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-2.5 text-[13px] font-extrabold text-[#593102] shadow-2xs cursor-pointer active:scale-95 transition-all"
           >
+            <SlidersHorizontal size={16} className="text-[#D49313]" />
+            <span>Filters</span>
+          </button>
+          <span className="text-[13px] font-extrabold text-[#7A6A5C]">
+            {filteredProducts.length} Products
+          </span>
+        </div>
+
+        {/* Main Shop Section Grid: Sidebar + Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Desktop Left Sidebar (Filters + Promo Banner) */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-[135px]">
+            {filterContent}
+            {promoBannerComponent}
+          </aside>
+
+          {/* Products Grid Column */}
+          <section className="lg:col-span-9 w-full">
+            {error && <p className="mb-4 text-[13px] text-red-600">{error}</p>}
+
+            {/* Mobile View: Auto-Scrolling Horizontal Carousel */}
+            <div
+              ref={sliderRef}
+              onMouseEnter={() => setIsMobileSliderHovered(true)}
+              onMouseLeave={() => setIsMobileSliderHovered(false)}
+              onTouchStart={() => setIsMobileSliderHovered(true)}
+              onTouchEnd={() => setIsMobileSliderHovered(false)}
+              className="flex lg:hidden overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-1 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            >
               {filteredProducts.map((item) => {
                 const productId = getProductId(item);
                 const variants = getProductVariants(item);
@@ -504,7 +535,48 @@ export default function ShopPage() {
                 const product = normalizeProduct(item, selectedVariantId);
 
                 return (
-                  <div key={productId} className="w-full min-w-[280px] sm:min-w-[300px] lg:min-w-0 snap-center flex-shrink-0 flex flex-col h-full">
+                  <div key={productId} className="w-full sm:w-[calc(50%-8px)] shrink-0 snap-center flex flex-col h-full items-center">
+                    <ProductCardShop
+                      badge={product.badge}
+                      image={product.image}
+                      title={product.title}
+                      subtitle={product.subtitle}
+                      category={product.category}
+                      tasteProfile={product.tasteProfile}
+                      shortDescription={product.shortDescription}
+                      weight={product.weight}
+                      price={product.price}
+                      oldPrice={product.oldPrice}
+                      rating={product.rating}
+                      reviews={product.reviews}
+                      quantity={0}
+                      variants={variants}
+                      selectedVariantId={selectedVariantId}
+                      onVariantSelect={(variantId) =>
+                        setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
+                      }
+                      isWishlisted={wishlistIds.includes(productId)}
+                      onToggleWishlist={() => handleToggleWishlist(productId)}
+                      onAddToCart={() => handleAddToCart(item)}
+                      onIncrement={() => {}}
+                      onDecrement={() => {}}
+                      onOpenDetails={() => router.push(`/shop/products/${productId}`)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop View: 3-Column Grid */}
+            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+              {filteredProducts.map((item) => {
+                const productId = getProductId(item);
+                const variants = getProductVariants(item);
+                const selectedVariantId = getSelectedVariantId(item);
+                const product = normalizeProduct(item, selectedVariantId);
+
+                return (
+                  <div key={productId} className="w-full flex flex-col items-center h-full">
                     <ProductCardShop
                       badge={product.badge}
                       image={product.image}
@@ -546,24 +618,29 @@ export default function ShopPage() {
               </div>
             )}
           </section>
+        </div>
       </div>
+
+      {/* Mobile Slide-Over Filter Drawer */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsFilterOpen(false)}
+          />
+          {/* Drawer Content */}
+          <div className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white p-4 shadow-2xl z-10">
+            {filterContent}
+          </div>
+        </div>
+      )}
 
       {toastMessage && (
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] border border-[#D49313]/50 px-7 py-3.5 text-white font-extrabold shadow-2xl flex items-center gap-2 text-[14px]">
           <span>✨</span> {toastMessage}
         </div>
       )}
-      
-      {/* 🟢 CSS to hide scrollbar */}
-      <style jsx>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </main>
   );
 }
@@ -587,13 +664,5 @@ function FilterSection({
       </button>
       {isOpen && <div className="mt-3 space-y-2.5">{children}</div>}
     </div>
-  );
-}
-
-function Chip({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FBF3E4] px-2.5 py-0.5 text-[11px] font-medium text-[#593102]">
-      {label}
-    </span>
   );
 }

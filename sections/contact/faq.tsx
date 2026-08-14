@@ -36,9 +36,9 @@ const faqs: Faq[] = [
       "Domestic orders typically arrive within 3–5 business days. International orders may take longer depending on location.",
   },
   {
-    question: "Is your honey 100% pure?",
+    question: "Is your honey raw & natural?",
     answer:
-      "Every drop of Shuddha Veda honey is raw, unheated, unfiltered, and 100% unprocessed.",
+      "Every drop of Shuddha Veda honey is raw, unheated, unfiltered, and completely unprocessed.",
   },
 ];
 

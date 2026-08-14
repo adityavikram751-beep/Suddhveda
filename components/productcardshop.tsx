@@ -97,17 +97,17 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[470px] w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#EADCC9] bg-white p-5 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-2 hover:border-[#D49313]/60 hover:shadow-lg"
+      className="relative flex h-full min-h-[380px] sm:min-h-[400px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[20px] border border-[#EADCC9] bg-white p-3.5 sm:p-4 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:border-[#D49313]/60 hover:shadow-md mx-auto"
     >
       {/* Wishlist Button (Top Left) */}
       <button
         type="button"
         onClick={handleWishlistClick}
         aria-label="Wishlist"
-        className="absolute left-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
+        className="absolute left-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
       >
         <Heart
-          size={18}
+          size={16}
           className={
             isWishlisted
               ? "fill-[#FF6F3C] text-[#FF6F3C]"
@@ -118,52 +118,52 @@ export default function ProductCardShop({
 
       {/* Dynamic Badge (Top Right) */}
       {badge && (
-        <div className="absolute right-4 top-4 z-20">
-          <span className="rounded-full bg-gradient-to-r from-[#D49313] to-[#8F590A] px-3.5 py-1 text-[11px] font-black text-white shadow-md uppercase tracking-wider">
+        <div className="absolute right-3 top-3 z-20">
+          <span className="rounded-full bg-gradient-to-r from-[#D49313] to-[#8F590A] px-2.5 py-0.5 text-[10px] font-black text-white shadow-md uppercase tracking-wider">
             {badge}
           </span>
         </div>
       )}
 
       {/* Dynamic Product Image */}
-      <div className="relative h-[220px] sm:h-[240px] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6F0] border border-[#F2ECE4] shrink-0 pt-2 flex items-center justify-center">
+      <div className="relative h-[160px] sm:h-[180px] w-full overflow-hidden rounded-xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6F0] border border-[#F2ECE4] shrink-0 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-108"
+          className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>
 
       {/* Text Content & Details */}
-      <div className="mt-5 flex flex-col flex-1 justify-between text-center">
+      <div className="mt-3.5 flex flex-col flex-1 justify-between text-center">
         <div>
-          {/* Dynamic Title */}
-          <h3 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#593102] group-hover:text-[#D49313] transition-colors leading-snug">
-            {title}
-          </h3>
+          {/* Dynamic Title with Fixed Equal Height */}
+          <div className="h-[44px] sm:h-[48px] flex items-center justify-center">
+            <h3 className="font-serif text-[15px] sm:text-[17px] font-bold text-[#593102] group-hover:text-[#D49313] transition-colors leading-snug line-clamp-2 text-center">
+              {title}
+            </h3>
+          </div>
 
-          {/* Dynamic Category Name */}
-          {(category || subtitle) && (
-            <div className="mt-1.5 text-[13px] font-semibold text-[#8D7F73]">
-              {category || subtitle}
-            </div>
-          )}
+          {/* Dynamic Category Name with Fixed Equal Height */}
+          <div className="h-[18px] mt-0.5 flex items-center justify-center text-[12px] font-semibold text-[#8D7F73]">
+            {category || subtitle || ""}
+          </div>
 
           {/* Dynamic Price Row */}
-          <div className="mt-3 text-[16px] sm:text-[17px] font-bold text-[#593102] flex items-center justify-center gap-2">
+          <div className="mt-2 text-[14px] sm:text-[15px] font-bold text-[#593102] flex items-center justify-center gap-1.5">
             {oldPrice && oldPrice > price ? (
-              <span className="line-through text-[#B09077] font-normal text-[14px]">
+              <span className="line-through text-[#B09077] font-normal text-[12px]">
                 ₹{oldPrice}
               </span>
             ) : null}
-            <span className="font-black text-[#593102] text-[18px]">From ₹{price}</span>
+            <span className="font-black text-[#593102] text-[16px]">From ₹{price}</span>
           </div>
 
           {/* Dynamic Weight Variants */}
           {variants.length > 0 && (
-            <div className="mt-3.5 flex items-center justify-center gap-2 flex-wrap">
+            <div className="mt-2.5 flex items-center justify-center gap-1.5 flex-wrap">
               {variants.map((variant, index) => {
                 const variantId = getVariantId(variant);
                 const uniqueKey = variantId || `variant-${index}`;
@@ -173,8 +173,8 @@ export default function ProductCardShop({
                     key={uniqueKey}
                     type="button"
                     onClick={(e) => handleVariantClick(variantId, e)}
-                    className={`rounded-lg border-2 px-3.5 py-1 text-[12px] font-bold transition-all cursor-pointer ${selected
-                        ? "border-[#593102] bg-[#593102] text-white shadow-sm scale-105"
+                    className={`rounded-md border px-2.5 py-0.5 text-[11px] font-bold transition-all cursor-pointer ${selected
+                        ? "border-[#593102] bg-[#593102] text-white shadow-xs scale-105"
                         : "border-[#E5DBCB] bg-white text-[#5C4033] hover:border-[#593102]"
                       }`}
                   >
@@ -187,14 +187,14 @@ export default function ProductCardShop({
         </div>
 
         {/* Buy Now Button */}
-        <div className="mt-5 flex justify-center">
+        <div className="mt-3.5 flex justify-center">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onOpenDetails();
             }}
-            className="h-[54px] w-[176px] rounded-md bg-[#FA4B1B] text-white font-bold text-[20px] shadow-sm transition-colors hover:bg-[#E64216] cursor-pointer flex items-center justify-center active:scale-98"
+            className="h-[44px] w-[148px] rounded-md bg-[#FA4B1B] text-white font-bold text-[17px] shadow-xs transition-colors hover:bg-[#E64216] cursor-pointer flex items-center justify-center active:scale-98"
           >
             Buy Now
           </button>

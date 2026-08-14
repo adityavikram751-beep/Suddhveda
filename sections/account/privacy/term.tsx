@@ -24,6 +24,7 @@ import {
     X,
     ArrowLeft,
     CheckCircle2,
+    Sparkles,
 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -231,11 +232,28 @@ export default function TermsAndConditionsPage() {
         fetchProfileDetails();
     }, []);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.touchAction = "none";
+        } else {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        };
+    }, [mobileMenuOpen]);
+
     return (
-        <section className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-32 lg:pt-12 border-b border-[#EADCC9]/50">
+        <section className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-0 lg:pt-12 border-b border-[#EADCC9]/50">
 
             {/* MOBILE BAR */}
-            <div className="z-30 bg-[#FFFDF9]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#EADCC9] shadow-sm sticky top-[95px]">
+            <div className="z-30 bg-[#FFFDF9]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#EADCC9] shadow-sm sticky top-[94px]">
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#EADCC9] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
                         <Link href="/account/privacy" className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#593102] hover:bg-[#EADCC9] transition">
@@ -258,23 +276,35 @@ export default function TermsAndConditionsPage() {
                 {/* Mobile Drawer Overlay */}
                 {mobileMenuOpen && (
                     <div
-                        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+                        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md lg:hidden animate-in fade-in duration-300 transition-all touch-none overscroll-contain"
                         onClick={() => setMobileMenuOpen(false)}
+                        onTouchMove={(e) => {
+                            if (e.target === e.currentTarget) {
+                                e.preventDefault();
+                            }
+                        }}
                     >
                         <div
-                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-[#FFFDF9] shadow-2xl overflow-y-auto flex flex-col"
+                            className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[330px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] shadow-[0_0_40px_rgba(89,49,2,0.25)] rounded-r-[28px] border-r-2 border-[#D49313]/40 overflow-y-auto flex flex-col animate-in slide-in-from-left duration-300 overscroll-contain touch-pan-y"
                             onClick={(e) => e.stopPropagation()}
+                            onTouchMove={(e) => e.stopPropagation()}
                         >
-                            <div className="sticky top-0 bg-[#FFFDF9] z-10 flex items-center justify-between p-4 pb-2 border-b border-[#EADCC9]">
-                                <h3 className="font-serif text-lg font-bold text-[#593102]">Menu</h3>
+                            <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-10 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313] border border-[#D49313]/30">
+                                        <Sparkles size={16} />
+                                    </div>
+                                    <h3 className="font-serif text-base font-extrabold text-[#593102] tracking-tight">Account Navigation</h3>
+                                </div>
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="rounded-full p-2 hover:bg-[#FAF0DC] text-[#6E5D4F]"
+                                    className="rounded-full p-2 bg-[#FAF0DC] hover:bg-[#D49313] text-[#593102] hover:text-white transition-all shadow-2xs cursor-pointer active:scale-95"
+                                    aria-label="Close menu"
                                 >
-                                    <X size={20} />
+                                    <X size={18} strokeWidth={2.5} />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-4 pt-2" onClick={() => setMobileMenuOpen(false)}>
+                            <div className="flex-1 overflow-y-auto p-4 pt-3" onClick={() => setMobileMenuOpen(false)}>
                                 <SidebarContent userData={formData} onLinkClick={() => setMobileMenuOpen(false)} />
                             </div>
                         </div>

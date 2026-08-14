@@ -18,7 +18,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ShuddhVeda | 100% Pure Raw & Unprocessed Honey",
+  title: "ShuddhVeda | Raw & Unprocessed Honey",
   description: "Ethically harvested raw and unprocessed honey straight from natural hives.",
 };
 

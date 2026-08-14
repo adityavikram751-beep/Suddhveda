@@ -6,7 +6,7 @@ import { Sparkles, ShieldCheck, Award } from "lucide-react";
 const features = [
   {
     icon: "/icon-raw.png",
-    title: "100% RAW",
+    title: "RAW HONEY",
     subtitle: "Cold Extracted",
   },
   {
@@ -116,7 +116,7 @@ export default function CertifiedQualitySection() {
               {/* Floating Top Badge */}
               <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#D49313]/30 shadow-md flex items-center gap-1.5 text-[11px] font-black text-[#593102] uppercase tracking-wider">
                 <ShieldCheck size={14} className="text-[#D49313]" />
-                <span>100% Tested &amp; Verified</span>
+                <span>Tested &amp; Verified</span>
               </div>
 
               {/* Floating Bottom Card */}

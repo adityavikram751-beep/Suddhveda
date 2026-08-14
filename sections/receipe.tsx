@@ -63,8 +63,8 @@ const features: Feature[] = [
 const faqs: Faq[] = [
   {
     id: 1,
-    question: "Is Shuddh Veda Honey 100% pure?",
-    answer: "Yes, our honey is 100% pure, raw, and unprocessed with no artificial additives or preservatives.",
+    question: "Is Shuddh Veda Honey raw & natural?",
+    answer: "Yes, our honey is raw, natural, and unprocessed with no artificial additives or preservatives.",
   },
   {
     id: 2,
