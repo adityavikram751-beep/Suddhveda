@@ -83,8 +83,8 @@ export default function BeekeepingProcess() {
           
           {/* DESKTOP CONTAINER */}
           <div className="hidden lg:block relative min-w-0 overflow-x-auto py-4">
-            {/* ONE continuous dashed line running behind all icons */}
-            <div className="absolute top-15 left-[8.33%] right-[8.33%] border-t-2 border-dashed border-[#D49313]/60 -translate-y-1/2 pointer-events-none z-0" />
+            {/* ONE continuous dashed line running behind all icons - PERFECTLY CENTERED AT 87PX */}
+            <div className="absolute top-[87px] left-[8.33%] right-[8.33%] border-t-2 border-dashed border-[#D49313]/70 -translate-y-1/2 pointer-events-none z-0" />
 
             <div className="grid grid-cols-6 gap-6 relative z-10">
               {steps.map((item) => (
@@ -126,10 +126,10 @@ export default function BeekeepingProcess() {
                   STEP {item.step}
                 </span>
 
-                {/* Icon wrapper with left and right dashed lines */}
+                {/* Icon wrapper with left and right dashed lines - PERFECTLY CENTERED */}
                 <div className="relative flex items-center justify-center w-full">
                   {/* Left Dashed Line */}
-                  <div className="absolute left-0 right-[calc(50%+38px)] border-t-2 border-dashed border-[#D49313]/60" />
+                  <div className="absolute left-0 right-[calc(50%+39px)] top-1/2 border-t-2 border-dashed border-[#D49313]/70 -translate-y-1/2" />
 
                   {/* Icon Circle */}
                   <div className="relative z-10 w-[78px] h-[78px] rounded-full border-2 border-[#D49313] bg-white flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-108 transition-all p-4">
@@ -143,7 +143,7 @@ export default function BeekeepingProcess() {
                   </div>
 
                   {/* Right Dashed Line */}
-                  <div className="absolute left-[calc(50%+38px)] right-0 border-t-2 border-dashed border-[#D49313]/60" />
+                  <div className="absolute left-[calc(50%+39px)] right-0 top-1/2 border-t-2 border-dashed border-[#D49313]/70 -translate-y-1/2" />
                 </div>
 
                 <h3 className="mt-4 font-serif font-bold text-[15px] tracking-wide text-[#593102] group-hover:text-[#D49313] transition-colors uppercase">
