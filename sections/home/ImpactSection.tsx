@@ -9,26 +9,20 @@ import { Sparkles, ChevronRight } from "lucide-react";
 
 export default function ImpactSection() {
   const router = useRouter();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
-      videoRef.current.defaultMuted = true;
     }
   }, []);
 
   const handlePlayClick = () => {
     if (videoRef.current) {
       videoRef.current.muted = true;
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
+      videoRef.current.play();
+      setHasStarted(true);
     }
   };
 
@@ -48,23 +42,21 @@ export default function ImpactSection() {
                 src="/whychose.mp4"
                 poster="/move1.png"
                 muted
-                controls={isPlaying}
+                controls
                 playsInline
                 preload="metadata"
                 onPlay={() => {
                   if (videoRef.current) videoRef.current.muted = true;
-                  setIsPlaying(true);
+                  setHasStarted(true);
                 }}
                 onVolumeChange={(e) => {
                   e.currentTarget.muted = true;
                 }}
-                onPause={() => setIsPlaying(false)}
-                onEnded={() => setIsPlaying(false)}
                 className="w-full h-full object-cover"
               />
 
-              {/* Glowing Play button overlay when paused */}
-              {!isPlaying && (
+              {/* Glowing Play button overlay when not started */}
+              {!hasStarted && (
                 <button
                   type="button"
                   onClick={handlePlayClick}
@@ -76,7 +68,7 @@ export default function ImpactSection() {
               )}
 
               {/* Floating Quality Badge */}
-              {!isPlaying && (
+              {!hasStarted && (
                 <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-[#D49313]/40 shadow-md flex items-center gap-2 z-10 pointer-events-none">
                   <Sparkles size={16} className="text-[#D49313]" />
                   <span className="font-extrabold text-[12px] text-[#593102] uppercase tracking-wider">Traditional Beekeeping</span>
