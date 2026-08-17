@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
     Package,
@@ -24,7 +24,7 @@ import {
     Shield,
     Sparkles,
 } from "lucide-react";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const sidebarLinks = [
     { icon: Package, label: "My Orders", href: "/account" },
@@ -80,12 +80,21 @@ function getInitials(fullName: string) {
 // ---------- Sidebar Content ----------
 function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?: () => void }) {
     const pathname = usePathname();
-    const fullName = userData?.fullName || "Rahul Sharma";
+    const router = useRouter();
+    const fullName = userData?.fullName || getStoredSession()?.user?.name || "ShuddhVeda Customer";
     const email = userData?.email || "Not Provided";
     const initials = getInitials(fullName);
 
-    const handleClick = () => {
+    const handleNavClick = (e: React.MouseEvent, href: string) => {
         if (onLinkClick) onLinkClick();
+
+        const isPolicyLink = href.startsWith("/account/privacy");
+        const isLoggedIn = Boolean(getStoredSession());
+
+        if (!isPolicyLink && !isLoggedIn) {
+            e.preventDefault();
+            router.push(`/login?redirect=${encodeURIComponent(href)}`);
+        }
     };
 
     return (
@@ -103,7 +112,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                     </p>
                     <Link
                         href="/account/editprofile"
-                        onClick={handleClick}
+                        onClick={(e) => handleNavClick(e, "/account/editprofile")}
                         className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#D49313] hover:underline cursor-pointer"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
@@ -123,7 +132,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                onClick={handleClick}
+                                onClick={(e) => handleNavClick(e, link.href)}
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive

@@ -22,16 +22,25 @@ export default function InfluencerConnectSection() {
   const [error, setError] = useState<string | null>(null);
 
   const genres = [
-    { label: "Food", value: "food" },
-    { label: "Fitness", value: "fitness" },
-    { label: "Wellness", value: "wellness" },
-    { label: "Lifestyle", value: "lifestyle" },
-    { label: "Other", value: "other" },
+    { label: "Food", value: "Food" },
+    { label: "Fitness", value: "Fitness" },
+    { label: "Wellness", value: "Wellness" },
+    { label: "Lifestyle", value: "Lifestyle" },
+    { label: "Creator", value: "Creator" },
+    { label: "Other", value: "Other" },
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "phoneNumber") {
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 10);
+      setFormData((prev) => ({ ...prev, phoneNumber: digitsOnly }));
+    } else if (name === "pincode") {
+      const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+      setFormData((prev) => ({ ...prev, pincode: digitsOnly }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
     if (error) setError(null);
   };
 
@@ -47,15 +56,15 @@ export default function InfluencerConnectSection() {
       setError("Please enter your email address.");
       return;
     }
-    if (!formData.phoneNumber.trim()) {
-      setError("Please enter your phone number.");
+    if (!formData.phoneNumber.trim() || formData.phoneNumber.length < 10) {
+      setError("Please enter a valid 10-digit phone number.");
       return;
     }
     if (!formData.username.trim()) {
       setError("Please enter your social username.");
       return;
     }
-    if (!formData.followers.trim()) {
+    if (!formData.followers.toString().trim()) {
       setError("Please enter your number of followers.");
       return;
     }
@@ -80,21 +89,36 @@ export default function InfluencerConnectSection() {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/influencer-connect`, {
+      const parsedFollowers = Number(formData.followers.toString().replace(/[^0-9]/g, "")) || 0;
+
+      const payload = {
+        name: formData.name.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        email: formData.email.trim(),
+        username: formData.username.trim(),
+        numberOfFollowers: parsedFollowers,
+        fullAddress: formData.address.trim(),
+        city: formData.city.trim(),
+        pinCode: formData.pincode.trim(),
+        influencerGeneric: formData.genre.trim(),
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/influencer/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        console.warn("Backend response warning:", data);
+        throw new Error(data?.message || "Failed to submit influencer application.");
       }
 
       setSubmitted(true);
-    } catch (err) {
-      console.warn("Network notice: Simulating fallback success for frontend demo", err);
-      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Influencer submit error:", err);
+      setError(err.message || "Failed to submit application. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -223,6 +247,8 @@ export default function InfluencerConnectSection() {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
+                    maxLength={10}
+                    inputMode="numeric"
                     required
                     className="w-full bg-white/90 border border-[#EADCC9] focus:border-[#D49313] focus:ring-3 focus:ring-[#D49313]/20 rounded-xl px-4 py-3 text-[#593102] placeholder-[#A39282] outline-none transition-all font-medium text-[15px] shadow-xs"
                   />
@@ -256,7 +282,7 @@ export default function InfluencerConnectSection() {
                     name="followers"
                     value={formData.followers}
                     onChange={handleChange}
-                    placeholder="e.g. 10k, 50k, 100k+"
+                    placeholder="e.g. 1000, 10000, 50000+"
                     required
                     className="w-full bg-white/90 border border-[#EADCC9] focus:border-[#D49313] focus:ring-3 focus:ring-[#D49313]/20 rounded-xl px-4 py-3 text-[#593102] placeholder-[#A39282] outline-none transition-all font-medium text-[15px] shadow-xs"
                   />

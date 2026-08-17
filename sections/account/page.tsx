@@ -272,13 +272,23 @@ function OrderActions({ order }: { order: Order }) {
 // ---------- Sidebar Content Component ----------
 function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; onLogout?: () => void; onLinkClick?: () => void }) {
     const pathname = usePathname();
+    const router = useRouter();
 
-    const fullName = userData?.fullName || "Rahul Sharma";
+    const fullName = userData?.fullName || getStoredSession()?.user?.name || "ShuddhVeda Customer";
     const email = userData?.email || "Not Provided";
-    const initials = getInitials({ name: fullName, mobile: userData?.mobile || "" });
+    const mobile = userData?.mobile || userData?.phone || getStoredSession()?.user?.mobile || "";
+    const initials = getInitials({ name: fullName, mobile });
 
-    const handleClick = () => {
+    const handleNavClick = (e: React.MouseEvent, href: string) => {
         if (onLinkClick) onLinkClick();
+
+        const isPolicyLink = href.startsWith("/account/privacy");
+        const isLoggedIn = Boolean(getStoredSession());
+
+        if (!isPolicyLink && !isLoggedIn) {
+            e.preventDefault();
+            router.push(`/login?redirect=${encodeURIComponent(href)}`);
+        }
     };
 
     return (
@@ -296,7 +306,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                     </p>
                     <button className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#D49313] hover:underline cursor-pointer">
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
-                        <Link href="/account/editprofile" onClick={handleClick}>Edit profile</Link>
+                        <Link href="/account/editprofile" onClick={(e) => handleNavClick(e, "/account/editprofile")}>Edit profile</Link>
                     </button>
                 </div>
             </div>
@@ -312,7 +322,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                onClick={handleClick}
+                                onClick={(e) => handleNavClick(e, link.href)}
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive

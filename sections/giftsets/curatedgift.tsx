@@ -33,37 +33,6 @@ type HoneyProduct = {
   price?: number;
 };
 
-// Fallback sample data in case API returns empty
-const FALLBACK_GIFT_BOXES: GiftBox[] = [
-  {
-    _id: "6a7c581cd89875d9423ae5c5",
-    name: "Honey Duo Box",
-    description: "Luxury 2-jar customizable honey gift set perfect for celebrations.",
-    image: "https://res.cloudinary.com/anjp8e9i/image/upload/v1786533916/sudhvedahoney/giftboxes/cx0whzdoojpsvmqh4wz1.jpg",
-    price: 250,
-    jar_count: 2,
-    isActive: true,
-  },
-  {
-    _id: "6a7c58b1d89875d9423ae5c7",
-    name: "Honey Trio Box",
-    description: "Signature 3-jar customizable honey box with curated artisanal flavors.",
-    image: "https://res.cloudinary.com/anjp8e9i/image/upload/v1786534065/sudhvedahoney/giftboxes/h3fupqdwuhbwpb7c2kwo.jpg",
-    price: 300,
-    jar_count: 3,
-    isActive: true,
-  },
-  {
-    _id: "6a7c58b1d89875d9423ae5c8",
-    name: "Honey Quad Luxury Box",
-    description: "Grand 4-jar gourmet honey set designed for royal gifting.",
-    image: "https://res.cloudinary.com/anjp8e9i/image/upload/v1786534065/sudhvedahoney/giftboxes/h3fupqdwuhbwpb7c2kwo.jpg",
-    price: 400,
-    jar_count: 4,
-    isActive: true,
-  },
-];
-
 export default function CuratedGift() {
   const router = useRouter();
   const [giftBoxes, setGiftBoxes] = useState<GiftBox[]>([]);
@@ -95,11 +64,11 @@ export default function CuratedGift() {
           const activeBoxes = data.data.filter((b: GiftBox) => b.isActive !== false);
           setGiftBoxes(activeBoxes.length > 0 ? activeBoxes : data.data);
         } else {
-          setGiftBoxes(FALLBACK_GIFT_BOXES);
+          setGiftBoxes([]);
         }
       } catch (err) {
         console.error("Error fetching gift boxes:", err);
-        setGiftBoxes(FALLBACK_GIFT_BOXES);
+        setGiftBoxes([]);
       } finally {
         setLoadingBoxes(false);
       }

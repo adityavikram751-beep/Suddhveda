@@ -23,7 +23,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getCategoryName } from "@/lib/api-products";
 
 // ---------- Helper to get token from cookie ----------
@@ -362,6 +362,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
   // ---------- Open/Close Cart ----------
   const openCart = useCallback(() => {
+    if (!getStoredSession()) {
+      if (typeof window !== "undefined") {
+        const currentPath = `${window.location.pathname || "/"}${window.location.search || ""}`;
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      }
+      return;
+    }
     setIsCartOpen(true);
   }, []);
 

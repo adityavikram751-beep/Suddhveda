@@ -34,54 +34,6 @@ const subscriberBenefits8 = [
     { title: "Eco Glass Packaging", subtitle: "Airtight luxury glass jar protection", icon: Box },
 ];
 
-const fallbackPlans: PlanItem[] = [
-    {
-        id: "sub-discovery",
-        name: "DISCOVERY PLAN",
-        tagline: "Perfect for first-time explorers",
-        detail: "250 g x 6 Jars",
-        totalWeight: "Total: 1.5 KG Honey",
-        idealFor: "Ideal for individuals and gifting",
-        price: 2099,
-        mrp: 2394,
-        isPopular: false,
-        btnColor: "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white",
-        borderColor: "border-[#EADCC9]",
-        cardBg: "bg-white",
-        image: "/giftset.png",
-    },
-    {
-        id: "sub-family",
-        name: "FAMILY PLAN",
-        tagline: "Our most popular plan",
-        detail: "500 g x 6 Jars",
-        totalWeight: "Total: 3 KG Honey",
-        idealFor: "Perfect for everyday family use",
-        price: 4299,
-        mrp: 4794,
-        isPopular: true,
-        btnColor: "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white",
-        borderColor: "border-[#D49313]",
-        cardBg: "bg-[#FFFDF7]",
-        image: "/fourtsection.png",
-    },
-    {
-        id: "sub-wellness",
-        name: "WELLNESS PLAN",
-        tagline: "Best value for regular honey lovers",
-        detail: "1 KG x 6 Jars",
-        totalWeight: "Total: 6 KG Honey",
-        idealFor: "Ideal for large families and daily wellness",
-        price: 7999,
-        mrp: 8994,
-        isPopular: false,
-        btnColor: "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white",
-        borderColor: "border-[#EADCC9]",
-        cardBg: "bg-white",
-        image: "/shopsection.png",
-    },
-];
-
 export default function SubscriptionPlansSection() {
     const { addToCart, openCart } = useCart();
     const [plans, setPlans] = useState<PlanItem[]>([]);
@@ -99,7 +51,7 @@ export default function SubscriptionPlansSection() {
                 const data = await res.json();
                 const rawList = data.data || data.plans || data || [];
 
-                if (Array.isArray(rawList) && rawList.length > 0) {
+                if (Array.isArray(rawList)) {
                     const formattedPlans: PlanItem[] = rawList
                         .filter((item: any) => item.isActive !== false)
                         .map((item: any) => ({
@@ -121,11 +73,11 @@ export default function SubscriptionPlansSection() {
 
                     setPlans(formattedPlans);
                 } else {
-                    setPlans(fallbackPlans);
+                    setPlans([]);
                 }
             } catch (err) {
                 console.error("Error fetching subscription plans:", err);
-                setPlans(fallbackPlans);
+                setPlans([]);
             } finally {
                 setLoadingApi(false);
             }

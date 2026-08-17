@@ -56,6 +56,9 @@ body {
   overflow-x: clip;
   background: var(--background);
   border-radius: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 * {

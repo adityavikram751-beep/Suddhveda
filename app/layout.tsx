@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Instrument_Sans } from "next/font/google";
 import CartProvider from "@/components/cart/CartProvider";
 import "./globals.css";
@@ -10,9 +10,21 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export const metadata: Metadata = {
   title: "ShuddhVeda | Raw & Unprocessed Honey",
   description: "Ethically harvested raw and unprocessed honey straight from natural hives.",
+  icons: {
+    icon: "/yellow logo.png",
+    shortcut: "/yellow logo.png",
+    apple: "/yellow logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -23,6 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
       <head>
+        <link rel="icon" href="/yellow logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/yellow logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/yellow logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
@@ -64,6 +64,13 @@ type LocationData = {
 
 export default function Cart() {
     const router = useRouter();
+
+    useEffect(() => {
+        if (!getStoredSession()) {
+            router.replace("/login?redirect=/cart");
+        }
+    }, [router]);
+
     const {
         cartItems,
         addToCart,

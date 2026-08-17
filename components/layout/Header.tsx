@@ -410,6 +410,14 @@ export default function Header() {
     setAccountOpen((value) => !value);
   }
 
+  function handleWishlistClick(e: React.MouseEvent) {
+    setOpen(false);
+    if (!session && !getStoredSession()) {
+      e.preventDefault();
+      router.push("/login?redirect=/wishlist");
+    }
+  }
+
   return (
     <div ref={headerWrapperRef} className="fixed top-0 left-0 w-full z-40">
       <PromoBar />
@@ -578,8 +586,8 @@ export default function Header() {
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Fennel Honey</Link>
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Jamun Honey</Link>
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Mustard Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Eucalyptus Honey</Link>
-                                  </>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#Eucalyptus Honey">Eucalyptus Honey</Link>
+                                   </>
                                 )}
                               </div>
                             </div>
@@ -633,6 +641,7 @@ export default function Header() {
           <div className="flex items-center gap-4 sm:gap-[18px] z-10">
             <Link
               href="/wishlist"
+              onClick={handleWishlistClick}
               className="relative text-[#7A3F10] hover:text-[#D89B00] transition"
             >
               <FiHeart size={22} />
@@ -733,9 +742,6 @@ export default function Header() {
                   <div className="flex flex-col leading-tight">
                     <span className="font-serif text-[17px] font-extrabold text-[#593102] tracking-tight">
                       ShuddhVeda
-                    </span>
-                    <span className="text-[9.5px] font-black text-[#D49313] uppercase tracking-[0.18em]">
-                      👑 Royal Honey
                     </span>
                   </div>
                 </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
     Package,
@@ -20,7 +20,7 @@ import {
     Menu,
     Sparkles,
 } from "lucide-react";
-import { API_BASE_URL, getInitials } from "@/lib/auth";
+import { API_BASE_URL, getInitials, getStoredSession } from "@/lib/auth";
 
 type AddressType = "Home" | "Office" | "Other";
 
@@ -416,19 +416,28 @@ const sidebarLinks = [
 // ---------- Sidebar Content Component ----------
 function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick?: () => void }) {
     const pathname = usePathname();
-    const fullName = userData?.fullName || "Rahul Sharma";
+    const router = useRouter();
+    const fullName = userData?.fullName || getStoredSession()?.user?.name || "ShuddhVeda Customer";
     const email = userData?.email || "Not Provided";
     const initials = getInitials({ name: fullName, mobile: userData?.mobile || "" });
 
-    const handleClick = () => {
+    const handleNavClick = (e: React.MouseEvent, href: string) => {
         if (onLinkClick) onLinkClick();
+
+        const isPolicyLink = href.startsWith("/account/privacy");
+        const isLoggedIn = Boolean(getStoredSession());
+
+        if (!isPolicyLink && !isLoggedIn) {
+            e.preventDefault();
+            router.push(`/login?redirect=${encodeURIComponent(href)}`);
+        }
     };
 
     return (
         <div className="space-y-4 w-full">
             <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs">
                 <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-white shadow-md">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-[#ffffff] shadow-md">
                         {initials}
                     </div>
                     <p className="font-serif text-lg font-extrabold text-[#593102] capitalize">
@@ -439,7 +448,7 @@ function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick
                     </p>
                     <Link
                         href="/account/editprofile"
-                        onClick={handleClick}
+                        onClick={(e) => handleNavClick(e, "/account/editprofile")}
                         className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-[#D49313] hover:underline cursor-pointer"
                     >
                         <Pencil size={12} strokeWidth={2.5} className="inline-block shrink-0" />
@@ -459,7 +468,7 @@ function SidebarContent({ userData, onLinkClick }: { userData?: any; onLinkClick
                             <Link
                                 key={link.label}
                                 href={link.href}
-                                onClick={handleClick}
+                                onClick={(e) => handleNavClick(e, link.href)}
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2, Sparkles } from "lucide-react";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
 
 interface WishlistItem {
@@ -151,8 +151,12 @@ export default function WishlistPage() {
   };
 
   useEffect(() => {
+    if (!getStoredSession()) {
+      router.replace("/login?redirect=/wishlist");
+      return;
+    }
     fetchWishlist();
-  }, []);
+  }, [router]);
 
   const removeItem = async (productId: string) => {
     try {
