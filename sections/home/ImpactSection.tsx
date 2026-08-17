@@ -33,13 +33,13 @@ export default function ImpactSection() {
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          
+
           {/* LEFT - Video Showcase */}
           <div className="lg:col-span-6 relative w-full max-w-[540px] mx-auto lg:mx-0">
             <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group bg-black">
               <video
                 ref={videoRef}
-                src="/whychose.mp4"
+                src="/"
                 poster="/move1.png"
                 muted
                 controls
