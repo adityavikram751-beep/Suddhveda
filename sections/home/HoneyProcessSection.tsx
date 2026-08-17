@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Play, X } from "lucide-react";
@@ -22,6 +22,7 @@ export default function HealthyIdeas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ title: string; video_url: string } | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const category = "healthy"; // or dynamic if needed
 
@@ -75,6 +76,28 @@ export default function HealthyIdeas() {
 
     fetchBenefits();
   }, []);
+
+  // Automatic Smooth Side-Scroll Timer
+  useEffect(() => {
+    if (recipes.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      const scroller = scrollRef.current;
+      if (!scroller || scroller.offsetParent === null) return;
+
+      const firstCard = scroller.querySelector<HTMLElement>("[data-recipe-card]");
+      const gap = 24;
+      const step = firstCard ? firstCard.offsetWidth + gap : scroller.clientWidth;
+      const isAtEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 12;
+
+      scroller.scrollTo({
+        left: isAtEnd ? 0 : scroller.scrollLeft + step,
+        behavior: "smooth",
+      });
+    }, 3500);
+
+    return () => window.clearInterval(timer);
+  }, [recipes.length]);
 
   // Loading state
   if (loading) {
@@ -175,20 +198,24 @@ export default function HealthyIdeas() {
           </Link>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mt-8 md:mt-10">
+        {/* Cards Carousel Container */}
+        <div
+          ref={scrollRef}
+          className="flex w-full max-w-full gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 pt-2 mt-8 md:mt-10 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {recipes.map((recipe) => {
             const hasVideo = Boolean(recipe.video_url);
 
             return (
               <div
                 key={recipe._id}
+                data-recipe-card
                 onClick={() => {
                   if (hasVideo && recipe.video_url) {
                     setSelectedVideo({ title: recipe.title, video_url: recipe.video_url });
                   }
                 }}
-                className="relative rounded-3xl overflow-hidden border-2 border-[#D49313]/30 shadow-lg hover:shadow-2xl hover:border-[#D49313]/70 transition-all duration-500 group h-[300px] sm:h-[330px] lg:h-[360px] cursor-pointer bg-black"
+                className="w-full min-w-full md:min-w-0 md:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)] shrink-0 snap-center relative rounded-3xl overflow-hidden border-2 border-[#D49313]/30 shadow-lg hover:shadow-2xl hover:border-[#D49313]/70 transition-all duration-500 group h-[300px] sm:h-[330px] lg:h-[360px] cursor-pointer bg-black"
               >
                 {hasVideo ? (
                   <div className="relative w-full h-full">
