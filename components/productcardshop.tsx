@@ -126,12 +126,12 @@ export default function ProductCardShop({
       )}
 
       {/* Dynamic Product Image */}
-      <div className="relative h-[160px] sm:h-[180px] w-full overflow-hidden rounded-xl bg-gradient-to-b from-[#FFFDF9] to-[#FAF6F0] border border-[#F2ECE4] shrink-0 flex items-center justify-center">
+      <div className="relative h-[170px] sm:h-[190px] w-full overflow-hidden shrink-0 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-1 transition-transform duration-500 group-hover:scale-105"
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>

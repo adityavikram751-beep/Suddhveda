@@ -549,10 +549,19 @@ export default function MyOrdersPage() {
         };
     }, []);
 
-    function logout() {
+    async function logout() {
+        try {
+            await fetch(`${API_BASE_URL}/api/users/logout`, {
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (e) {
+            console.error("Logout API error", e);
+        }
         clearSession();
         setSession(null);
-        router.push("/login");
+        window.dispatchEvent(new Event("auth-changed"));
+        window.location.href = "/login";
     }
 
     if (!session) {

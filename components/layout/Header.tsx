@@ -268,7 +268,7 @@ export default function Header() {
       setWishlistCount(0);
       setCartCount(0);
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-      router.push("/login");
+      window.location.href = "/login";
     }
   };
 

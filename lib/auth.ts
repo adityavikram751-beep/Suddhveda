@@ -80,13 +80,17 @@ export async function ensureValidSession(): Promise<AuthSession | null> {
 
 export async function logout() {
   try {
-    // Ask backend to clear the httpOnly cookie too (it must expose this route)
+    // Ask backend to clear the httpOnly cookie too
     await fetch(`${API_BASE_URL}/api/users/logout`, {
       method: "POST",
       credentials: "include",
     });
   } catch {}
   clearSession();
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+    window.location.href = "/login";
+  }
 }
 
 // ---------- Helpers ----------

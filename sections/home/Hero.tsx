@@ -1,7 +1,90 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiGift, FiPackage } from "react-icons/fi";
 import { TbLeaf } from "react-icons/tb";
+
+function FssaiBadge() {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 border-[#D49313]/40 bg-white flex items-center justify-center shadow-xs p-1 sm:p-1.5 mx-auto group-hover:scale-105 group-hover:border-[#D49313] transition-all shrink-0 aspect-square overflow-hidden">
+      {!imgError ? (
+        <Image
+          src="/fssai.png"
+          alt="FSSAI Approved"
+          width={80}
+          height={80}
+          className="w-full h-full object-contain"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[#593102] text-[10px] sm:text-[11px] font-black">FSSAI</span>
+      )}
+    </div>
+  );
+}
+
+function IsoBadge() {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 border-[#D49313]/40 bg-white flex items-center justify-center shadow-xs p-1 sm:p-1.5 mx-auto group-hover:scale-105 group-hover:border-[#D49313] transition-all shrink-0 aspect-square overflow-hidden">
+      {!imgError ? (
+        <Image
+          src="/iso-.png"
+          alt="ISO Certified 22000:2015"
+          width={100}
+          height={100}
+          className="w-full h-full object-contain rounded-full scale-125"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[#593102] text-[10px] sm:text-[11px] font-black">ISO</span>
+      )}
+    </div>
+  );
+}
+
+function NaturalBadge() {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 border-[#D49313]/40 bg-white flex items-center justify-center shadow-xs p-1 sm:p-1.5 mx-auto group-hover:scale-105 group-hover:border-[#D49313] transition-all shrink-0 aspect-square overflow-hidden">
+      {!imgError ? (
+        <Image
+          src="/natural.webp"
+          alt="100% Pure & Natural"
+          width={100}
+          height={100}
+          className="w-full h-full object-contain rounded-full scale-125"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[#593102] text-[10px] sm:text-[11px] font-black">100%</span>
+      )}
+    </div>
+  );
+}
+
+function LabTestedBadge() {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 border-[#D49313]/40 bg-white flex items-center justify-center shadow-xs p-1 sm:p-1.5 mx-auto group-hover:scale-105 group-hover:border-[#D49313] transition-all shrink-0 aspect-square overflow-hidden">
+      {!imgError ? (
+        <Image
+          src="/lab..webp"
+          alt="Lab Tested Purity & Safety"
+          width={100}
+          height={100}
+          className="w-full h-full object-contain rounded-full scale-125"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[#593102] text-[10px] sm:text-[11px] font-black">LAB</span>
+      )}
+    </div>
+  );
+}
 
 export default function Hero() {
   return (
@@ -37,41 +120,33 @@ export default function Hero() {
             Ethically harvested, raw and unprocessed organic honey crafted by nature and delivered fresh from trusted beekeepers to your home.
           </p>
 
-          {/* Features Row - 4 Circles matching Desktop */}
-          <div className="grid grid-cols-4 gap-2 sm:gap-4 pt-2 w-full max-w-[500px]">
-            <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
-                RAW
-              </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
-                Raw &amp; Organic
+          {/* 4 Feature Circles - Image Inside Circle, Text Below */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-6 mt-4 w-full max-w-[540px]">
+            <div className="flex flex-col items-center text-center group cursor-pointer">
+              <FssaiBadge />
+              <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
+                FSSAI<br />APPROVED
               </span>
             </div>
 
-            <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
-                LAB
-              </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
-                Lab Tested<br />For Purity
+            <div className="flex flex-col items-center text-center group cursor-pointer">
+              <IsoBadge />
+              <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
+                22000 : 2015
               </span>
             </div>
 
-            <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
-                NO
-              </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
-                No Added Sugar<br />Or Preservatives
+            <div className="flex flex-col items-center text-center group cursor-pointer">
+              <NaturalBadge />
+              <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
+                PURE &amp;<br />NATURAL
               </span>
             </div>
 
-            <div className="flex flex-col items-center text-center gap-1.5">
-              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full border-2 border-[#D49313]/50 flex items-center justify-center text-[#593102] bg-white/90 text-[11px] sm:text-[13px] font-black shadow-sm shrink-0">
-                SEC
-              </div>
-              <span className="text-[#593102] text-[11px] sm:text-[12px] font-extrabold leading-snug text-center">
-                Secure &amp; Safe<br />Packaging
+            <div className="flex flex-col items-center text-center group cursor-pointer">
+              <LabTestedBadge />
+              <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
+                LAB<br />TESTED
               </span>
             </div>
           </div>
@@ -170,41 +245,33 @@ export default function Hero() {
               Experience the true goodness of pure honey, just as nature intended—ethically harvested and delivered fresh with guaranteed royal purity.
             </p>
 
-            {/* 4 Feature Circles */}
-            <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-10 w-full max-w-[530px]">
-              <div className="flex flex-col items-center text-center gap-2 group">
-                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
-                  RAW
-                </div>
-                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
-                  Raw &amp; Organic
+            {/* 4 Feature Circles - Image Inside Circle, Text Below */}
+            <div className="grid grid-cols-4 gap-x-6 sm:gap-x-8 mt-10 w-full max-w-[540px]">
+              <div className="flex flex-col items-center text-center group cursor-pointer">
+                <FssaiBadge />
+                <span className="text-[#593102] text-[12px] xl:text-[13px] font-black leading-tight mt-3 uppercase tracking-tight">
+                  FSSAI<br />APPROVED
                 </span>
               </div>
 
-              <div className="flex flex-col items-center text-center gap-2 group">
-                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
-                  LAB
-                </div>
-                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
-                  Lab Tested<br />For Purity
+              <div className="flex flex-col items-center text-center group cursor-pointer">
+                <IsoBadge />
+                <span className="text-[#593102] text-[12px] xl:text-[13px] font-black leading-tight mt-3 uppercase tracking-tight">
+                  22000 : 2015
                 </span>
               </div>
 
-              <div className="flex flex-col items-center text-center gap-2 group">
-                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
-                  NO
-                </div>
-                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
-                  No Added Sugar<br />Or Preservatives
+              <div className="flex flex-col items-center text-center group cursor-pointer">
+                <NaturalBadge />
+                <span className="text-[#593102] text-[12px] xl:text-[13px] font-black leading-tight mt-3 uppercase tracking-tight">
+                  PURE &amp;<br />NATURAL
                 </span>
               </div>
 
-              <div className="flex flex-col items-center text-center gap-2 group">
-                <div className="w-16 h-16 rounded-full border-2 border-[#D49313]/40 flex items-center justify-center text-[#593102] bg-white text-[13px] font-extrabold shadow-sm group-hover:scale-105 group-hover:border-[#D49313] transition-all">
-                  SEC
-                </div>
-                <span className="text-[#593102] text-[12px] font-bold leading-snug text-center">
-                  Secure &amp; Safe<br />Packaging
+              <div className="flex flex-col items-center text-center group cursor-pointer">
+                <LabTestedBadge />
+                <span className="text-[#593102] text-[12px] xl:text-[13px] font-black leading-tight mt-3 uppercase tracking-tight">
+                  LAB<br />TESTED
                 </span>
               </div>
             </div>
@@ -244,26 +311,10 @@ export default function Hero() {
               <div className="absolute right-[-30px] top-[18%] -translate-y-1/2 flex flex-col gap-3.5 z-20">
 
                 {/* Card 1 */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_10px_30px_rgba(89,49,2,0.06)] border border-[#F2ECE4] w-[175px] py-3.5 px-4 flex items-center gap-3.5">
-                  <div className="text-[#B37B1B] shrink-0">
-                    <TbLeaf size={28} className="stroke-[1.5]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#593102] text-[16px] leading-tight">No Added</span>
-                    <span className="text-[#8D7F73] text-[13px]">Sugar</span>
-                  </div>
-                </div>
+
 
                 {/* Card 2 */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-[0_10px_30px_rgba(89,49,2,0.06)] border border-[#F2ECE4] w-[175px] py-3.5 px-4 flex items-center gap-3.5">
-                  <div className="w-9 h-9 flex items-center justify-center shrink-0">
-                    <Image src="/pinhead_honeycomb.png" alt="Raw & Filtered" width={36} height={36} className="object-contain" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#593102] text-[16px] leading-tight">Raw &amp;</span>
-                    <span className="text-[#8D7F73] text-[13px]">Filtered</span>
-                  </div>
-                </div>
+
 
               </div>
             </div>

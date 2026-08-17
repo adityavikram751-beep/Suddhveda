@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiUser, FiBox, FiDroplet } from "react-icons/fi";
@@ -8,6 +9,28 @@ import { Sparkles, ChevronRight } from "lucide-react";
 
 export default function ImpactSection() {
   const router = useRouter();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.defaultMuted = true;
+    }
+  }, []);
+
+  const handlePlayClick = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-14 sm:py-20 border-t border-b border-[#EADCC9]/60">
@@ -17,31 +40,48 @@ export default function ImpactSection() {
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           
-          {/* LEFT - Image / Video Showcase */}
+          {/* LEFT - Video Showcase */}
           <div className="lg:col-span-6 relative w-full max-w-[540px] mx-auto lg:mx-0">
-            <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group">
-              <Image
-                src="/move1.png"
-                alt="Rooted in Tradition"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                priority
+            <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group bg-black">
+              <video
+                ref={videoRef}
+                src="/whychose.mp4"
+                poster="/move1.png"
+                muted
+                controls={isPlaying}
+                playsInline
+                preload="metadata"
+                onPlay={() => {
+                  if (videoRef.current) videoRef.current.muted = true;
+                  setIsPlaying(true);
+                }}
+                onVolumeChange={(e) => {
+                  e.currentTarget.muted = true;
+                }}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
+                className="w-full h-full object-cover"
               />
 
-              {/* Glowing Play button */}
-              <button
-                type="button"
-                aria-label="Play video"
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white flex items-center justify-center shadow-xl hover:scale-110 transition-transform duration-300 cursor-pointer border-2 border-[#FFD700]/50"
-              >
-                <div className="w-0 h-0 border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent border-l-[16px] border-l-white ml-1" />
-              </button>
+              {/* Glowing Play button overlay when paused */}
+              {!isPlaying && (
+                <button
+                  type="button"
+                  onClick={handlePlayClick}
+                  aria-label="Play video"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer border-2 border-[#FFD700]/70 z-10"
+                >
+                  <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[18px] border-l-white ml-1.5" />
+                </button>
+              )}
 
               {/* Floating Quality Badge */}
-              <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-[#D49313]/40 shadow-md flex items-center gap-2">
-                <Sparkles size={16} className="text-[#D49313]" />
-                <span className="font-extrabold text-[12px] text-[#593102] uppercase tracking-wider">Traditional Beekeeping</span>
-              </div>
+              {!isPlaying && (
+                <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-[#D49313]/40 shadow-md flex items-center gap-2 z-10 pointer-events-none">
+                  <Sparkles size={16} className="text-[#D49313]" />
+                  <span className="font-extrabold text-[12px] text-[#593102] uppercase tracking-wider">Traditional Beekeeping</span>
+                </div>
+              )}
             </div>
           </div>
 
