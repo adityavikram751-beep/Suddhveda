@@ -50,12 +50,13 @@ export default function WhatsInsideSection() {
                     </div>
 
                     {/* Center Visual Graphic */}
-                    <div className="relative mx-auto w-full max-w-[380px] h-[340px] rounded-3xl bg-gradient-to-b from-[#FAF5EC] to-white p-6 border-2 border-[#EADCC9] flex items-center justify-center shadow-xl">
+                    <div className="relative mx-auto w-full max-w-[380px] h-[260px] sm:h-[340px] rounded-3xl bg-gradient-to-b from-[#FAF5EC] to-white p-4 sm:p-6 border-2 border-[#EADCC9] flex items-center justify-center shadow-xl">
                         <Image
                             src="/honneycart.png"
                             alt="Inside Every Delivery"
                             width={320}
                             height={320}
+                            style={{ width: "auto", height: "auto" }}
                             className="object-contain max-h-full p-2"
                         />
                     </div>
@@ -94,8 +95,8 @@ export default function WhatsInsideSection() {
                     </div>
 
                     {/* Mobile Badges Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden text-left">
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden text-left mt-4 sm:mt-0">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <Box size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Premium Glass Jar</h4>
@@ -103,7 +104,7 @@ export default function WhatsInsideSection() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <Sparkles size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Floral Source &amp; Harvest</h4>
@@ -111,7 +112,7 @@ export default function WhatsInsideSection() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <BookOpen size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Information Card</h4>
@@ -119,7 +120,7 @@ export default function WhatsInsideSection() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <Star size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Suggested Uses</h4>
@@ -127,7 +128,7 @@ export default function WhatsInsideSection() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <Layers size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Storage Guide</h4>
@@ -135,7 +136,7 @@ export default function WhatsInsideSection() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3.5">
+                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
                             <QrCode size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">QR Code Report</h4>

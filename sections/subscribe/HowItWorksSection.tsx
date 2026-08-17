@@ -82,11 +82,11 @@ export default function HowItWorksSection() {
 
                 {/* 5-Step 3D Glassmorphic Cards Flow Container */}
                 <div
-                    className="mt-14 relative"
+                    className="mt-10 sm:mt-14 relative"
                     onMouseEnter={() => setIsPaused(true)}
                     onMouseLeave={() => setIsPaused(false)}
                 >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 relative z-10 items-stretch">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 relative z-10 items-stretch">
                         {steps.map((step, index) => {
                             const isCurrent = index === activeIndex;
                             const isCompleted = index <= activeIndex;
@@ -96,15 +96,15 @@ export default function HowItWorksSection() {
                                 <div
                                     key={step.number}
                                     onClick={() => setActiveIndex(index)}
-                                    className={`relative flex flex-col justify-between rounded-3xl p-6 transition-all duration-500 cursor-pointer h-full border-2 ${isCurrent
-                                        ? "bg-white border-[#D49313] shadow-[0_15px_35px_rgba(212,147,19,0.3)] -translate-y-3 ring-4 ring-[#D49313]/20"
+                                    className={`relative flex flex-col justify-between rounded-3xl p-5 sm:p-6 transition-all duration-500 cursor-pointer h-full border-2 ${isCurrent
+                                        ? "bg-white border-[#D49313] shadow-[0_15px_35px_rgba(212,147,19,0.3)] -translate-y-2 sm:-translate-y-3 ring-4 ring-[#D49313]/20"
                                         : isCompleted
                                             ? "bg-white/90 border-[#D49313]/50 shadow-md hover:-translate-y-1.5"
                                             : "bg-white/60 border-[#EADCC9] shadow-2xs hover:bg-white hover:border-[#D49313]/40 hover:-translate-y-1.5"
                                         }`}
                                 >
                                     {/* Top Step Pill & Completed Badge */}
-                                    <div className="flex items-center justify-between mb-5">
+                                    <div className="flex items-center justify-between mb-4 sm:mb-5">
                                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black tracking-wider uppercase transition-colors ${isCurrent
                                             ? "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white shadow-sm"
                                             : "bg-[#FAF0DC] text-[#593102] border border-[#EADCC9]"
@@ -125,28 +125,28 @@ export default function HowItWorksSection() {
 
                                     {/* Step Icon Box */}
                                     <div className="my-2 flex justify-center">
-                                        <div className={`flex h-16 w-16 items-center justify-center rounded-2xl border transition-all duration-500 ${isCurrent
-                                            ? "bg-gradient-to-br from-[#FAF0DC] to-[#FFF8EF] border-[#D49313] text-[#D49313] shadow-md scale-110"
+                                        <div className={`flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border transition-all duration-500 ${isCurrent
+                                            ? "bg-gradient-to-br from-[#FAF0DC] to-[#FFF8EF] border-[#D49313] text-[#D49313] shadow-md scale-105 sm:scale-110"
                                             : "bg-[#FAF6F0] border-[#EADCC9] text-[#593102]"
                                             }`}>
-                                            <StepIcon size={28} />
+                                            <StepIcon size={24} className="sm:w-[28px] sm:h-[28px]" />
                                         </div>
                                     </div>
 
                                     {/* Step Content */}
-                                    <div className="mt-4 text-center">
-                                        <h3 className={`font-serif text-base font-bold uppercase leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
+                                    <div className="mt-3 sm:mt-4 text-center">
+                                        <h3 className={`font-serif text-sm sm:text-base font-bold uppercase leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
                                             }`}>
                                             {step.title}
                                         </h3>
 
-                                        <p className="mt-2 text-xs text-[#6E5D4F] leading-relaxed font-medium">
+                                        <p className="mt-1.5 sm:mt-2 text-xs text-[#6E5D4F] leading-relaxed font-medium">
                                             {step.description}
                                         </p>
                                     </div>
 
                                     {/* Animated Bottom Active Line */}
-                                    <div className="mt-5 w-full h-1 bg-[#FAF0DC] rounded-full overflow-hidden">
+                                    <div className="mt-4 sm:mt-5 w-full h-1 bg-[#FAF0DC] rounded-full overflow-hidden">
                                         <div
                                             className={`h-full bg-gradient-to-r from-[#D49313] to-[#593102] transition-all duration-500 ${isCurrent ? "w-full" : isCompleted ? "w-full opacity-60" : "w-0"
                                                 }`}

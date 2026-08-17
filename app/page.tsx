@@ -8,6 +8,7 @@ import ImpactSection from "@/sections/home/ImpactSection";
 import GiftSetSection from "@/sections/home/GiftSetSection";
 import HoneyProcessSection from "@/sections/home/HoneyProcessSection";
 import HappyCustomersSection from "@/sections/home/HappyCustomersSection";
+import InfluencerConnectSection from "@/sections/home/InfluencerConnectSection";
 import Footer from "@/components/layout/Footer";
 
 
@@ -24,6 +25,7 @@ export default function Home() {
       <GiftSetSection />
       <HoneyProcessSection />
       <HappyCustomersSection />
+      <InfluencerConnectSection />
       <Footer />
     </>
   );

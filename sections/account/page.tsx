@@ -767,6 +767,7 @@ export default function MyOrdersPage() {
                                                             src={order.image}
                                                             alt={order.productTitle}
                                                             fill
+                                                            sizes="64px"
                                                             className="object-contain p-1.5"
                                                         />
                                                     </div>

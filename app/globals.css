@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -8,23 +9,18 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans), "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: var(--font-averia), "Averia Serif Libre", Georgia, Cambria, serif;
+  --font-sans: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-h1,
-h2,
-h3,
-h4,
-.font-serif {
-  font-family: var(--font-averia), "Averia Serif Libre", Georgia, serif !important;
-  letter-spacing: -0.015em;
+*, body, p, span, a, button, input, select, textarea, div, h1, h2, h3, h4, h5, h6, .font-serif, .font-sans {
+  font-family: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 .app-shell h1.font-serif,
 .app-shell h2.font-serif:not([class*="text-base"]):not([class*="text-lg"]):not([class*="text-xl"]):not([class*="text-[17px]"]):not([class*="text-[18px]"]):not([class*="text-[19px]"]):not([class*="text-[20px]"]):not([class*="text-[22px]"]) {
   color: #241F1C !important;
-  font-family: var(--font-averia), "Averia Serif Libre", Georgia, serif !important;
+  font-family: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   letter-spacing: -0.015em !important;
 }
 
@@ -34,7 +30,7 @@ h4,
 .app-shell h2.font-serif:not([class*="text-base"]):not([class*="text-lg"]):not([class*="text-xl"]):not([class*="text-[17px]"]):not([class*="text-[18px]"]):not([class*="text-[19px]"]):not([class*="text-[20px]"]):not([class*="text-[22px]"]) .font-serif {
   background-image: none !important;
   color: #F4511E !important;
-  font-family: var(--font-averia), "Averia Serif Libre", Georgia, serif !important;
+  font-family: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-style: normal !important;
   letter-spacing: -0.015em !important;
   -webkit-text-fill-color: #F4511E !important;
@@ -69,7 +65,7 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-dm-sans), "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Google Sans Flex", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   margin: 0;
   overscroll-behavior-x: none;
 }

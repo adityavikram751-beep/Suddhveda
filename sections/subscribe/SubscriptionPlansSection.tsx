@@ -1,11 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Check, Percent, Truck, Sparkles, Box, Gift, Heart, Crown, ArrowRight } from "lucide-react";
+import { Check, Percent, Truck, Sparkles, Box, Gift, Heart, Crown, ArrowRight, Loader2, Calendar, ShieldCheck, Award, Clock, Headphones } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
+import { API_BASE_URL } from "@/lib/auth";
 
-const subscriptionPlans = [
+interface PlanItem {
+    id: string;
+    name: string;
+    tagline: string;
+    detail: string;
+    totalWeight: string;
+    idealFor: string;
+    price: number;
+    mrp: number;
+    isPopular?: boolean;
+    badge?: string;
+    btnColor: string;
+    borderColor: string;
+    cardBg: string;
+    image: string;
+}
+
+const subscriberBenefits8 = [
+    { title: "Seasonal Fresh Harvests", subtitle: "6 bi-monthly doorstep deliveries", icon: Calendar },
+    { title: "Lab Tested Purity", subtitle: "Zero added sugar or preservatives", icon: Award },
+    { title: "Free Pan-India Delivery", subtitle: "Zero shipping fee on every shipment", icon: Truck },
+    { title: "Prepaid Member Savings", subtitle: "Save up to 15% on annual plans", icon: Percent },
+    { title: "Priority Harvest Access", subtitle: "Get rare & limited floral honey first", icon: Sparkles },
+    { title: "Free Royal Samples", subtitle: "Surprise gift samples in every box", icon: Gift },
+    { title: "Flexible Schedule", subtitle: "Pause, skip or modify dates anytime", icon: Clock },
+    { title: "Eco Glass Packaging", subtitle: "Airtight luxury glass jar protection", icon: Box },
+];
+
+const fallbackPlans: PlanItem[] = [
     {
         id: "sub-discovery",
         name: "DISCOVERY PLAN",
@@ -54,15 +83,67 @@ const subscriptionPlans = [
 ];
 
 export default function SubscriptionPlansSection() {
-    const { addToCart } = useCart();
+    const { addToCart, openCart } = useCart();
+    const [plans, setPlans] = useState<PlanItem[]>([]);
+    const [loadingApi, setLoadingApi] = useState<boolean>(true);
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
     const [addedPlan, setAddedPlan] = useState<string | null>(null);
 
-    const handleSelectPlan = async (plan: typeof subscriptionPlans[0]) => {
+    useEffect(() => {
+        const fetchPlans = async () => {
+            try {
+                setLoadingApi(true);
+                const res = await fetch(`${API_BASE_URL}/api/subscripation/plan/all-plans`);
+                if (!res.ok) throw new Error("Failed to fetch subscription plans");
+
+                const data = await res.json();
+                const rawList = data.data || data.plans || data || [];
+
+                if (Array.isArray(rawList) && rawList.length > 0) {
+                    const formattedPlans: PlanItem[] = rawList
+                        .filter((item: any) => item.isActive !== false)
+                        .map((item: any) => ({
+                            id: item._id || item.id,
+                            name: item.name || "HONEY PLAN",
+                            tagline: item.description || item.badge || "Subscription Plan",
+                            detail: item.packageLabel || `${item.quantityPerJar || 250} ${item.quantityUnit || 'g'} × ${item.numberOfJars || 6} Jars`,
+                            totalWeight: `Total: ${item.totalQuantity || 1.5} ${(item.totalQuantityUnit || 'kg').toUpperCase()} Honey`,
+                            idealFor: item.idealFor || "Perfect for everyday honey use",
+                            price: item.price || 0,
+                            mrp: item.originalPrice || item.mrp || item.price || 0,
+                            badge: item.badge,
+                            isPopular: Boolean(item.isPopular || item.badge === "MOST POPULAR"),
+                            btnColor: "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white",
+                            borderColor: Boolean(item.isPopular || item.badge === "MOST POPULAR") ? "border-[#D49313]" : "border-[#EADCC9]",
+                            cardBg: Boolean(item.isPopular || item.badge === "MOST POPULAR") ? "bg-[#FFFDF7]" : "bg-white",
+                            image: item.image || "/giftset.png",
+                        }));
+
+                    setPlans(formattedPlans);
+                } else {
+                    setPlans(fallbackPlans);
+                }
+            } catch (err) {
+                console.error("Error fetching subscription plans:", err);
+                setPlans(fallbackPlans);
+            } finally {
+                setLoadingApi(false);
+            }
+        };
+
+        fetchPlans();
+    }, []);
+
+    const handleSelectPlan = async (plan: PlanItem) => {
         try {
             setLoadingPlan(plan.id);
-            await addToCart(plan.id, "sub-var-default");
+            try {
+                await addToCart(plan.id, "sub-var-default");
+            } catch (err) {
+                console.log("Cart notice for subscription plan:", err);
+            }
             setAddedPlan(plan.id);
+            if (openCart) openCart();
             setTimeout(() => setAddedPlan(null), 3000);
         } catch (err) {
             console.error("Error subscribing:", err);
@@ -71,32 +152,46 @@ export default function SubscriptionPlansSection() {
         }
     };
 
+    const totalCards = plans.length + 1;
+    const gridColsClass =
+        totalCards === 2
+            ? "grid-cols-1 md:grid-cols-2 max-w-[840px] mx-auto gap-6"
+            : totalCards === 3
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-[1160px] mx-auto gap-6"
+            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-7";
+
     return (
-        <section id="subscription-plans" className="py-16 sm:py-24 bg-gradient-to-b from-[#FAF6F0] via-[#FFFDF8] to-[#FAF6F0] relative overflow-hidden">
+        <section id="subscription-plans" className="py-14 sm:py-24 bg-gradient-to-b from-[#FAF6F0] via-[#FFFDF8] to-[#FAF6F0] relative overflow-hidden">
             <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 text-center relative z-10">
 
                 {/* Section Heading */}
-                <h2 className="text-[34px] sm:text-[44px] md:text-[48px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
+                <h2 className="text-[28px] sm:text-[44px] md:text-[48px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
                     CHOOSE YOUR SUBSCRIPTION PLAN
                 </h2>
 
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3.5 rounded-full" />
+                <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3 sm:my-3.5 rounded-full" />
 
-                <p className="text-[#6E5D4F] text-base sm:text-lg font-medium">
+                <p className="text-[#6E5D4F] text-sm sm:text-lg font-medium max-w-xl mx-auto">
                     Select the perfect honey quantity for your household or gifting needs.
                 </p>
 
-                {/* Plans Grid - All 4 Cards Side-By-Side (bagal bagal mai) */}
-                <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 items-stretch">
-                    {subscriptionPlans.map((plan) => (
+                {/* Plans Grid */}
+                {loadingApi ? (
+                    <div className="py-16 text-center flex flex-col items-center justify-center gap-3">
+                        <Loader2 size={36} className="text-[#D49313] animate-spin" />
+                        <p className="text-sm font-semibold text-[#6E5D4F]">Loading subscription plans...</p>
+                    </div>
+                ) : (
+                    <div className={`mt-10 sm:mt-14 grid ${gridColsClass} items-stretch`}>
+                        {plans.map((plan) => (
                         <div
                             key={plan.id}
-                            className={`relative flex flex-col justify-between rounded-3xl border-2 ${plan.borderColor} ${plan.cardBg} p-6 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full`}
+                            className={`relative flex flex-col justify-between rounded-3xl border-2 ${plan.borderColor} ${plan.cardBg} p-5 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full`}
                         >
                             {/* Most Popular Ribbon */}
                             {plan.isPopular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#593102] px-4 py-1 text-[11px] font-black uppercase tracking-widest text-[#FFD700] shadow-md border border-[#D49313]/50">
+                                <div className="absolute -top-3.5 sm:-top-4 left-1/2 -translate-x-1/2 z-20">
+                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#593102] px-3.5 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#FFD700] shadow-md border border-[#D49313]/50">
                                         <Crown size={12} /> MOST POPULAR
                                     </span>
                                 </div>
@@ -116,6 +211,7 @@ export default function SubscriptionPlansSection() {
                                         src={plan.image}
                                         alt={plan.name}
                                         fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                         className="object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
                                     />
                                 </div>
@@ -171,79 +267,36 @@ export default function SubscriptionPlansSection() {
                         </div>
                     ))}
 
-                    {/* 4th Card: Subscriber Benefits - Same Side-By-Side Height & Alignment */}
-                    <div className="relative flex flex-col justify-between rounded-3xl border-2 border-[#EADCC9] bg-white p-6 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full">
-                        <div>
-                            <h3 className="font-serif text-lg sm:text-xl font-bold text-[#593102] tracking-wider uppercase border-b border-[#EADCC9] pb-3 text-center">
+                    {/* Subscriber Benefits Card - Spreads evenly to fill full card height */}
+                    <div className="relative flex flex-col justify-between rounded-3xl border-2 border-[#EADCC9] bg-white p-5 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full">
+                        <div className="flex flex-col h-full justify-between">
+                            <h3 className="font-serif text-lg sm:text-xl font-bold text-[#593102] tracking-wider uppercase border-b border-[#EADCC9] pb-3 text-center flex items-center justify-center gap-2">
+                                <Crown size={18} className="text-[#D49313]" />
                                 SUBSCRIBER BENEFITS
                             </h3>
 
-                            <ul className="mt-5 space-y-3.5 text-left text-xs sm:text-sm">
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Percent size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Save Up to 10-15%</p>
-                                        <p className="text-[11px] text-[#8D7F73]">Exclusive prepaid savings</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Truck size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Free Shipping</p>
-                                        <p className="text-[11px] text-[#8D7F73]">On all six deliveries</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Sparkles size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Priority Access</p>
-                                        <p className="text-[11px] text-[#8D7F73]">Get new harvests first</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Box size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Reserved Stock</p>
-                                        <p className="text-[11px] text-[#8D7F73]">Your honey is reserved</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Gift size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Premium Packaging</p>
-                                        <p className="text-[11px] text-[#8D7F73]">Beautifully packed every time</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                        <Heart size={14} />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-[#593102]">Exclusive Rewards</p>
-                                        <p className="text-[11px] text-[#8D7F73]">Special offers, gifts &amp; more</p>
-                                    </div>
-                                </li>
+                            <ul className="mt-4 sm:mt-5 space-y-4 sm:space-y-4.5 text-left text-xs sm:text-sm flex-1 flex flex-col justify-between">
+                                {subscriberBenefits8.map((b, idx) => {
+                                    const BIcon = b.icon;
+                                    return (
+                                        <li key={idx} className="flex items-center gap-3">
+                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
+                                                <BIcon size={14} />
+                                            </div>
+                                            <div className="leading-tight">
+                                                <p className="font-bold text-[#593102] text-[13px] sm:text-[14px]">{b.title}</p>
+                                                <p className="text-[11px] sm:text-xs text-[#8D7F73] font-medium">{b.subtitle}</p>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </div>
                     </div>
                 </div>
+            )}
 
-            </div>
-        </section>
-    );
+        </div>
+    </section>
+);
 }

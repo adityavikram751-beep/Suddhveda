@@ -107,7 +107,7 @@ export default function Hero() {
 
             {/* Floating Cards (Top-Left Positioned) */}
             <div className="absolute left-2 sm:left-4 top-8 flex flex-col gap-3 z-20">
-              
+
               {/* Card 1 */}
               <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-md border border-[#F2ECE4] w-[155px] py-2.5 px-3.5 flex items-center gap-2.5 text-left">
                 <div className="text-[#B37B1B] shrink-0">

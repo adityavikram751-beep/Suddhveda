@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-import { Averia_Serif_Libre, DM_Sans } from "next/font/google";
+import { Instrument_Sans } from "next/font/google";
 import CartProvider from "@/components/cart/CartProvider";
 import "./globals.css";
 
-const averia = Averia_Serif_Libre({
-  variable: "--font-averia",
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -28,10 +21,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${averia.variable} ${dmSans.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         <CartProvider>
           <div className="app-shell">{children}</div>

@@ -134,7 +134,7 @@ export default function HoneyJourneySection() {
                     </div>
 
                     {/* Timeline 6 Step Nodes */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8 relative z-10">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-8 relative z-10">
                         {journeyItems.map((item, index) => {
                             const isCurrent = index === activeIndex;
                             const isCompleted = index <= activeIndex;
@@ -146,9 +146,9 @@ export default function HoneyJourneySection() {
                                     className="flex flex-col items-center group cursor-pointer"
                                 >
                                     {/* Month Header with Animated Gold Highlight */}
-                                    <div className="mb-3.5 flex items-center gap-1.5">
-                                        <span className={`font-serif text-sm font-black tracking-widest uppercase transition-all duration-300 ${isCurrent
-                                            ? "text-[#D49313] scale-110 font-black"
+                                    <div className="mb-2 sm:mb-3.5 flex items-center gap-1.5">
+                                        <span className={`font-serif text-xs sm:text-sm font-black tracking-widest uppercase transition-all duration-300 ${isCurrent
+                                            ? "text-[#D49313] scale-105 sm:scale-110 font-black"
                                             : isCompleted
                                                 ? "text-[#593102]"
                                                 : "text-[#8D7F73]"
@@ -159,8 +159,8 @@ export default function HoneyJourneySection() {
 
                                     {/* Thumbnail Circle Frame with Glowing Ring */}
                                     <div
-                                        className={`relative h-28 w-28 sm:h-32 sm:w-32 rounded-full border-4 transition-all duration-500 flex items-center justify-center overflow-hidden ${isCurrent
-                                            ? "border-[#D49313] scale-112 shadow-[0_12px_32px_rgba(212,147,19,0.5)] ring-4 ring-[#D49313]/30 bg-white"
+                                        className={`relative h-24 w-24 sm:h-32 sm:w-32 rounded-full border-3 sm:border-4 transition-all duration-500 flex items-center justify-center overflow-hidden ${isCurrent
+                                            ? "border-[#D49313] scale-108 sm:scale-112 shadow-[0_8px_24px_rgba(212,147,19,0.4)] ring-4 ring-[#D49313]/30 bg-white"
                                             : isCompleted
                                                 ? "border-[#D49313]/80 shadow-md ring-2 ring-[#D49313]/20 bg-white"
                                                 : "border-white shadow-sm bg-white/70 opacity-65 group-hover:opacity-100 group-hover:scale-105"
@@ -175,8 +175,8 @@ export default function HoneyJourneySection() {
 
                                         {/* Completed Checkmark Badge */}
                                         {isCompleted && (
-                                            <div className="absolute top-1.5 right-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-[#D49313] text-white shadow-md border-2 border-white">
-                                                <Check size={12} strokeWidth={3} />
+                                            <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#D49313] text-white shadow-md border-2 border-white">
+                                                <Check size={11} strokeWidth={3} className="sm:w-3 sm:h-3" />
                                             </div>
                                         )}
 
@@ -187,13 +187,13 @@ export default function HoneyJourneySection() {
                                     </div>
 
                                     {/* Honey Variety Title */}
-                                    <h3 className={`mt-4 font-serif text-base sm:text-lg font-bold leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
+                                    <h3 className={`mt-2.5 sm:mt-4 font-serif text-sm sm:text-lg font-bold leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
                                         }`}>
                                         {item.title}
                                     </h3>
 
                                     {/* Collection Badge */}
-                                    <span className={`mt-2 inline-block rounded-full px-3 py-1 text-[11px] font-bold ${item.bgColor} ${item.textColor} border ${item.borderColor} transition-all duration-300 ${isCurrent ? "scale-105 shadow-sm ring-2 ring-[#D49313]/30" : ""
+                                    <span className={`mt-1.5 sm:mt-2 inline-block rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold ${item.bgColor} ${item.textColor} border ${item.borderColor} transition-all duration-300 ${isCurrent ? "scale-105 shadow-sm ring-2 ring-[#D49313]/30" : ""
                                         }`}>
                                         {item.collection}
                                     </span>
