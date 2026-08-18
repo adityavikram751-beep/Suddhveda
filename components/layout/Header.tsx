@@ -44,7 +44,7 @@ export default function Header() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [wishlistCount, setWishlistCount] = useState<number>(0);
   const [cartCount, setCartCount] = useState<number>(0);
-  const { openCart } = useCart();
+  const { openCart, itemCount: ctxItemCount } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   const [shopMenuOpen, setShopMenuOpen] = useState(false);
@@ -91,29 +91,27 @@ export default function Header() {
     };
   }, [apiProducts]);
 
-  // ✅ Fetch wishlist count with 401 Session Expiry Check
+  // ---------- Fetch Wishlist Count ----------
   const fetchWishlistCount = async () => {
     try {
       const sessionData = getStoredSession();
       if (!sessionData) {
-        setWishlistCount(0);
+        const { getGuestWishlist } = await import("@/lib/wishlist");
+        const guestIds = getGuestWishlist();
+        setWishlistCount(guestIds.length);
         return;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/wishlist/product-count`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
-      // 🔴 AGAR COOKIE EXPIRE HO GAYI HOGI TOH BACKEND 401 DEGA -> SESSION CLEAR KAR DO
       if (res.status === 401) {
-        clearSession();
-        setSession(null);
-        setWishlistCount(0);
-        setCartCount(0);
+        const { getGuestWishlist } = await import("@/lib/wishlist");
+        const guestIds = getGuestWishlist();
+        setWishlistCount(guestIds.length);
         return;
       }
 
@@ -135,52 +133,31 @@ export default function Header() {
         count = data.data.totalItems;
       } else if (data?.totalItems !== undefined) {
         count = data.totalItems;
-      } else {
-        for (const key of Object.keys(data)) {
-          if (typeof data[key] === 'number') {
-            count = data[key];
-            break;
-          }
-          if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
-            for (const subKey of Object.keys(data[key])) {
-              if (typeof data[key][subKey] === 'number') {
-                count = data[key][subKey];
-                break;
-              }
-            }
-          }
-        }
       }
-
       setWishlistCount(count);
     } catch (error) {
-      setWishlistCount(0);
+      const { getGuestWishlist } = await import("@/lib/wishlist");
+      setWishlistCount(getGuestWishlist().length);
     }
   };
 
-  // ✅ Fetch cart count with 401 Session Expiry Check
+  // ---------- Fetch Cart Count ----------
   const fetchCartCount = async () => {
     try {
       const sessionData = getStoredSession();
       if (!sessionData) {
-        setCartCount(0);
+        setCartCount(ctxItemCount);
         return;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/cart/count`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
-      // 🔴 AGAR COOKIE EXPIRE HO GAYI HOGI TOH BACKEND 401 DEGA -> SESSION CLEAR KAR DO
       if (res.status === 401) {
-        clearSession();
-        setSession(null);
-        setWishlistCount(0);
-        setCartCount(0);
+        setCartCount(ctxItemCount);
         return;
       }
 
@@ -208,26 +185,11 @@ export default function Header() {
         count = data.data.total;
       } else if (data?.total !== undefined) {
         count = data.total;
-      } else {
-        for (const key of Object.keys(data)) {
-          if (typeof data[key] === 'number') {
-            count = data[key];
-            break;
-          }
-          if (data[key] && typeof data[key] === 'object' && data[key] !== null) {
-            for (const subKey of Object.keys(data[key])) {
-              if (typeof data[key][subKey] === 'number') {
-                count = data[key][subKey];
-                break;
-              }
-            }
-          }
-        }
       }
 
       setCartCount(count);
     } catch (error) {
-      setCartCount(0);
+      setCartCount(ctxItemCount);
     }
   };
 
@@ -247,9 +209,7 @@ export default function Header() {
       await fetch(`${API_BASE_URL}/api/users/logout`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
     } catch (error) {
       console.error("Logout API error:", error);
@@ -276,13 +236,8 @@ export default function Header() {
     async function syncSession() {
       const sessionData = await ensureValidSession();
       setSession(sessionData);
-      if (sessionData) {
-        fetchWishlistCount();
-        fetchCartCount();
-      } else {
-        setWishlistCount(0);
-        setCartCount(0);
-      }
+      fetchWishlistCount();
+      fetchCartCount();
     }
 
     function closeOnOutsideClick(event: MouseEvent) {
@@ -343,25 +298,9 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const sessionData = getStoredSession();
-    if (sessionData) {
-      const timer = setTimeout(() => {
-        fetchWishlistCount();
-        fetchCartCount();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [pathname]);
-
-  useEffect(() => {
-    if (session) {
-      fetchWishlistCount();
-      fetchCartCount();
-    } else {
-      setWishlistCount(0);
-      setCartCount(0);
-    }
-  }, [session]);
+    fetchWishlistCount();
+    fetchCartCount();
+  }, [pathname, session]);
 
   useEffect(() => {
     function updatePadding() {
@@ -381,7 +320,7 @@ export default function Header() {
       window.removeEventListener("resize", updatePadding);
       observer.disconnect();
     };
-  }, [open]);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -410,12 +349,8 @@ export default function Header() {
     setAccountOpen((value) => !value);
   }
 
-  function handleWishlistClick(e: React.MouseEvent) {
+  function handleWishlistClick() {
     setOpen(false);
-    if (!session && !getStoredSession()) {
-      e.preventDefault();
-      router.push("/login?redirect=/wishlist");
-    }
   }
 
   return (
@@ -491,17 +426,15 @@ export default function Header() {
                       />
                     </Link>
 
-                    {/* 🟢 Premium Shop Mega Menu Popup UI */}
+                    {/* Premium Shop Mega Menu Popup UI */}
                     {shopMenuOpen && (
                       <div
                         className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[960px] max-w-[95vw] z-50 transition-all duration-300 animate-in fade-in slide-in-from-top-2"
                         onMouseEnter={() => setShopMenuOpen(true)}
                       >
                         <div className="relative overflow-hidden rounded-3xl border border-[#E8DED1] bg-[#FFFDF9] p-8 sm:p-10 shadow-[0_30px_70px_-15px_rgba(89,49,2,0.18)]">
-                          {/* Top Golden Brand Accent Bar */}
                           <div className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-[#D89B00] via-[#593102] to-[#D89B00]" />
 
-                          {/* Top Header Title & View All Link */}
                           <div className="mb-6 flex items-center justify-between border-b border-[#F0E4D0] pb-4">
                             <Link
                               href="/shop"
@@ -586,28 +519,21 @@ export default function Header() {
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Fennel Honey</Link>
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Jamun Honey</Link>
                                     <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Mustard Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#Eucalyptus Honey">Eucalyptus Honey</Link>
-                                   </>
+                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Eucalyptus Honey</Link>
+                                  </>
                                 )}
                               </div>
                             </div>
 
                             {/* Featured Honey Jars Spotlight Box */}
-                            <div className="col-span-4 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-[#F6EDE2] to-[#EBE0CE] p-4 border border-[#E5DACB] shadow-inner relative overflow-hidden group/card">
-                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#593102] bg-white/80 backdrop-blur-xs px-2.5 py-0.5 rounded-full w-fit">
-                                Raw & Organic
-                              </span>
-                              <div className="relative h-[130px] w-full my-2">
-                                <Image
-                                  src="/Upcoming.png"
-                                  alt="ShuddhVeda Pure Honey Jars"
-                                  fill
-                                  className="object-contain transition-transform duration-500 group-hover/card:scale-105"
-                                />
-                              </div>
-                              <span className="text-[12px] font-bold text-[#593102] text-center block">
-                                Directly From Natural Hives 🍯
-                              </span>
+                            <div className="col-span-4 relative rounded-2xl overflow-hidden border border-[#D49313]/40 shadow-md group/card min-h-[190px] h-full flex items-center justify-center bg-white">
+                              <Image
+                                src="/shop 2.png"
+                                alt="ShuddhVeda Pure Honey"
+                                fill
+                                priority
+                                className="object-cover object-center transition-transform duration-500 group-hover/card:scale-105 rounded-2xl"
+                              />
                             </div>
                           </div>
                         </div>
@@ -692,7 +618,7 @@ export default function Header() {
               )}
             </div>
 
-                <button
+            <button
               type="button"
               onClick={openCart}
               className="relative text-[#7A3F10] transition hover:text-[#D89B00]"
@@ -709,7 +635,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* MOBILE SIDE NAVIGATION DRAWER (Slides from Left) */}
+        {/* MOBILE SIDE NAVIGATION DRAWER */}
         {open && (
           <div
             className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md lg:hidden animate-in fade-in duration-300 transition-all touch-none overscroll-contain"
@@ -725,9 +651,6 @@ export default function Header() {
               onClick={(e) => e.stopPropagation()}
               onTouchMove={(e) => e.stopPropagation()}
             >
-              {/* VIP Glow Accent */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
-
               {/* Drawer Header */}
               <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-20 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
                 <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2.5">
@@ -755,10 +678,8 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* Drawer Content Body */}
+              {/* Drawer Body */}
               <div className="flex-1 overflow-y-auto p-4 space-y-5">
-                
-                {/* User Profile / Account Welcome Banner */}
                 {session ? (
                   <div className="relative overflow-hidden rounded-2xl border border-[#EADCC9] bg-gradient-to-br from-[#FFFDF9] via-white to-[#FAF5EC] p-3.5 shadow-2xs">
                     <div className="flex items-center gap-3">
@@ -838,7 +759,6 @@ export default function Header() {
                               </button>
                             </div>
 
-                            {/* Expandable Shop Submenu */}
                             {mobileShopOpen && (
                               <div className="p-3.5 bg-[#FAF5EC] border-t border-[#EADCC9]/60 space-y-3">
                                 <Link
@@ -852,7 +772,6 @@ export default function Header() {
                                   View All Honey Collections &rarr;
                                 </Link>
 
-                                {/* Multi-Flora */}
                                 <div>
                                   <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
                                     Multi-Flora Honey
@@ -891,7 +810,6 @@ export default function Header() {
                                   </div>
                                 </div>
 
-                                {/* Mono-Flora */}
                                 <div>
                                   <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
                                     Mono-Flora Honey
@@ -953,7 +871,7 @@ export default function Header() {
                   </nav>
                 </div>
 
-                {/* Quick Action Shortcuts */}
+                {/* Quick Access */}
                 <div className="pt-3 space-y-2 border-t border-[#EADCC9]/80">
                   <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#8D7F73] px-2 block mb-1">
                     Quick Access
@@ -997,7 +915,7 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* VIP Quality Tagline Card */}
+                {/* Tagline Card */}
                 <div className="rounded-2xl bg-[#FAF0DC]/80 border border-[#D49313]/30 p-3 text-center">
                   <p className="text-[11px] font-black text-[#593102] uppercase tracking-wider">
                     🌿 Raw, Pure &amp; Cold Extracted
@@ -1006,7 +924,6 @@ export default function Header() {
                     Direct from natural hives to your home
                   </p>
                 </div>
-
               </div>
             </div>
           </div>

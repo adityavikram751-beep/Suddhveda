@@ -71,120 +71,169 @@ export default function WishlistPage() {
       setLoading(true);
       setApiError(null);
 
-      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const session = getStoredSession();
+      if (session) {
+        // Logged in user -> sync any guest items first
+        const { syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
+        await syncGuestWishlistOnLogin();
 
-      if (res.status === 401) {
-        redirectToLogin();
-        return;
+        const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+          method: "GET",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          let products: ApiWishlistItem[] = [];
+          if (data?.data?.products && Array.isArray(data.data.products)) {
+            products = data.data.products;
+          }
+
+          const formattedItems = products.reduce<WishlistItem[]>((acc, item) => {
+            const product = item.productId;
+            if (!product || typeof product !== 'object') return acc;
+
+            const title = product?.product_name || product?.name || product?.title || '';
+            if (!title.trim()) return acc;
+
+            const variants = getProductVariants(product);
+            const firstVariant = variants[0] || {};
+
+            let weightStr = '';
+            if (firstVariant.weight && firstVariant.unit) {
+              weightStr = `${firstVariant.weight}${firstVariant.unit}`;
+            } else if (firstVariant.weight) {
+              weightStr = `${firstVariant.weight}`;
+            }
+
+            const brand = product?.brand || '';
+            const floral = product?.floral_source || '';
+            const image = getPrimaryImage(product) || '';
+            const price = firstVariant.price ?? 0;
+            const mrp = firstVariant.mrp ?? 0;
+            const discount = firstVariant.discount_value ?? 0;
+
+            acc.push({
+              id: item._id || product?._id || '',
+              productId: product?._id || '',
+              variantId: firstVariant._id || variants[0]?._id || '',
+              title: title.trim(),
+              brand,
+              floral_source: floral,
+              weight: weightStr,
+              image,
+              price,
+              mrp,
+              discount,
+              addedAt: item.addedAt || new Date().toISOString(),
+            });
+            return acc;
+          }, []);
+
+          setWishlistItems(formattedItems);
+          updateWishlistCount(formattedItems.length);
+          return;
+        }
       }
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch wishlist: ${res.status}`);
-      }
+      // Guest User -> Fetch details for IDs in localStorage
+      const { getGuestWishlist } = await import("@/lib/wishlist");
+      const guestIds = getGuestWishlist();
 
-      const data = await res.json();
-      let products: ApiWishlistItem[] = [];
-      if (data?.data?.products && Array.isArray(data.data.products)) {
-        products = data.data.products;
-      } else {
+      if (guestIds.length === 0) {
         setWishlistItems([]);
-        setLoading(false);
         updateWishlistCount(0);
         return;
       }
 
-      const formattedItems = products.reduce<WishlistItem[]>((acc, item) => {
-        const product = item.productId;
-        if (!product || typeof product !== 'object') return acc;
+      const res = await fetch(`${API_BASE_URL}/api/products`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch products");
+      const data = await res.json();
+      const allProducts = data?.data || data?.products || (Array.isArray(data) ? data : []);
 
-        const title = product?.product_name || product?.name || product?.title || '';
-        if (!title.trim()) return acc;
+      const formattedGuestItems = allProducts
+        .filter((prod: any) => guestIds.includes(String(prod._id || prod.id)))
+        .map((product: any) => {
+          const title = product.product_name || product.name || product.title || "Honey Product";
+          const variants = getProductVariants(product);
+          const firstVariant = variants[0] || {};
+          const weightStr = firstVariant.weight ? `${firstVariant.weight}${firstVariant.unit || "g"}` : "";
+          const image = getPrimaryImage(product) || "/placeholder.png";
 
-        const variants = getProductVariants(product);
-        const firstVariant = variants[0] || {};
-
-        let weightStr = '';
-        if (firstVariant.weight && firstVariant.unit) {
-          weightStr = `${firstVariant.weight}${firstVariant.unit}`;
-        } else if (firstVariant.weight) {
-          weightStr = `${firstVariant.weight}`;
-        }
-
-        const brand = product?.brand || '';
-        const floral = product?.floral_source || '';
-        const image = getPrimaryImage(product) || '';
-        const price = firstVariant.price ?? 0;
-        const mrp = firstVariant.mrp ?? 0;
-        const discount = firstVariant.discount_value ?? 0;
-
-        acc.push({
-          id: item._id || product?._id || '',
-          productId: product?._id || '',
-          variantId: firstVariant._id || variants[0]?._id || '',
-          title: title.trim(),
-          brand,
-          floral_source: floral,
-          weight: weightStr,
-          image,
-          price,
-          mrp,
-          discount,
-          addedAt: item.addedAt || new Date().toISOString(),
+          return {
+            id: String(product._id || product.id),
+            productId: String(product._id || product.id),
+            variantId: firstVariant._id || "",
+            title,
+            brand: product.brand || "ShudhVeda",
+            floral_source: product.floral_source || "",
+            weight: weightStr,
+            image,
+            price: firstVariant.price ?? product.price ?? 0,
+            mrp: firstVariant.mrp ?? 0,
+            discount: firstVariant.discount_value ?? 0,
+            addedAt: new Date().toISOString(),
+          };
         });
-        return acc;
-      }, []);
 
-      setWishlistItems(formattedItems);
-      updateWishlistCount(formattedItems.length);
-      
+      setWishlistItems(formattedGuestItems);
+      updateWishlistCount(formattedGuestItems.length);
+
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      setApiError(error instanceof Error ? error.message : "Couldn't load wishlist items");
-      showToast("Couldn't load wishlist items");
+      setWishlistItems([]);
+      updateWishlistCount(0);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!getStoredSession()) {
-      router.replace("/login?redirect=/wishlist");
-      return;
-    }
     fetchWishlist();
-  }, [router]);
+
+    const handleAuthChanged = async () => {
+      await fetchWishlist();
+    };
+
+    window.addEventListener("sudhveda-auth-changed", handleAuthChanged);
+    return () => {
+      window.removeEventListener("sudhveda-auth-changed", handleAuthChanged);
+    };
+  }, []);
 
   const removeItem = async (productId: string) => {
     try {
       setApiError(null);
-      const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      const session = getStoredSession();
+      if (session) {
+        const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
 
-      if (res.status === 401) {
-        redirectToLogin();
-        return;
+        if (res.ok) {
+          const newItems = wishlistItems.filter((item) => item.productId !== productId);
+          setWishlistItems(newItems);
+          updateWishlistCount(newItems.length);
+          showToast("Item removed from wishlist");
+          return;
+        }
       }
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to remove item from wishlist");
-      }
-
+      // Guest remove
+      const { toggleGuestWishlist } = await import("@/lib/wishlist");
+      toggleGuestWishlist(productId);
       const newItems = wishlistItems.filter((item) => item.productId !== productId);
       setWishlistItems(newItems);
       updateWishlistCount(newItems.length);
       showToast("Item removed from wishlist");
     } catch (error) {
       console.error("Error removing item:", error);
-      showToast(error instanceof Error ? error.message : "Couldn't remove item");
-      fetchWishlist();
+      showToast("Couldn't remove item");
     }
   };
 
@@ -192,29 +241,23 @@ export default function WishlistPage() {
     if (wishlistItems.length === 0) return;
     try {
       setApiError(null);
-      const res = await fetch(`${API_BASE_URL}/api/wishlist/clear`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (res.status === 401) {
-        redirectToLogin();
-        return;
+      const session = getStoredSession();
+      if (session) {
+        await fetch(`${API_BASE_URL}/api/wishlist/clear`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
       }
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to clear wishlist");
-      }
-
+      const { saveGuestWishlist } = await import("@/lib/wishlist");
+      saveGuestWishlist([]);
       setWishlistItems([]);
       updateWishlistCount(0);
       showToast("Wishlist cleared");
     } catch (error) {
       console.error("Error clearing wishlist:", error);
-      showToast(error instanceof Error ? error.message : "Couldn't clear wishlist");
-      fetchWishlist();
+      showToast("Couldn't clear wishlist");
     }
   };
 

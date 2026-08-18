@@ -65,12 +65,6 @@ type LocationData = {
 export default function Cart() {
     const router = useRouter();
 
-    useEffect(() => {
-        if (!getStoredSession()) {
-            router.replace("/login?redirect=/cart");
-        }
-    }, [router]);
-
     const {
         cartItems,
         addToCart,

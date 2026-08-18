@@ -17,7 +17,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
-import { getCategoryName, getProductImages, getProductVariants } from "@/lib/api-products";
+import { getCategoryName, getProductImages, getProductVariants, getPrimaryImage, getProductName } from "@/lib/api-products";
 
 const accordionSections = [
   {
@@ -69,7 +69,7 @@ export default function ProductDetailPage({
   product: any;
   recommendations?: any[];
 }) {
-  const { cartItems, fetchCart, openCart, updateQuantity } = useCart();
+  const { cartItems, fetchCart, openCart, updateQuantity, addToCart } = useCart();
   const router = useRouter();
 
   // Recommendations Carousel Ref & Auto-scroll state
@@ -240,41 +240,35 @@ export default function ProductDetailPage({
 
   // ---------------- API FUNCTIONS ---------------- //
 
-  // 1. Add to Cart Function
+  // 1. Add to Cart Function (Guest & Logged-In)
   const handleAddToCart = async (redirect = false) => {
     if (!selectedVariant) return;
 
     try {
       setBtnLoading(true);
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product._id,
-          selectedWeight: selectedVariant._id,
-          quantity: selectedQty,
-        }),
+      const weightLabel = selectedVariant.weight ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+      const price = selectedVariant.price ?? product.price ?? 0;
+      const image = getPrimaryImage(product) || "/placeholder.png";
+
+      // Call context addToCart (handles guest localStorage fallback)
+      await addToCart(product._id, selectedVariant._id, {
+        type: "NORMAL",
+        productId: product._id,
+        variantId: selectedVariant._id,
+        productName: getProductName(product),
+        image,
+        price,
+        weight: weightLabel,
       });
 
-      if (res.status === 401) {
-        redirectToLogin();
-        return;
-      }
+      setSelectedQty(1);
+      window.dispatchEvent(new Event("cart-updated"));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
-      if (res.ok) {
-        await fetchCart();
-        setSelectedQty(1);
-        window.dispatchEvent(new Event("cart-updated"));
-        window.dispatchEvent(new CustomEvent("trigger-live-update"));
-
-        if (redirect) {
-          router.push("/cart");
-        } else if (openCart) {
-          openCart();
-        }
+      if (redirect) {
+        router.push("/cart");
+      } else if (openCart) {
+        openCart();
       }
     } catch (err) {
       console.error("Failed to update cart:", err);
@@ -283,7 +277,7 @@ export default function ProductDetailPage({
     }
   };
 
-  // 2. Wishlist Toggle Function (Add / Remove)
+  // 2. Wishlist Toggle Function (Guest & Logged-In)
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
 
@@ -296,7 +290,10 @@ export default function ProductDetailPage({
         });
 
         if (res.status === 401) {
-          redirectToLogin();
+          const { toggleGuestWishlist } = await import("@/lib/wishlist");
+          const result = toggleGuestWishlist(productId);
+          setWishlistIds(result.wishlistIds);
+          showToastMessage("Removed from wishlist ❌", "success");
           return;
         }
 
@@ -318,7 +315,10 @@ export default function ProductDetailPage({
         });
 
         if (res.status === 401) {
-          redirectToLogin();
+          const { toggleGuestWishlist } = await import("@/lib/wishlist");
+          const result = toggleGuestWishlist(productId);
+          setWishlistIds(result.wishlistIds);
+          showToastMessage("Added to wishlist! ❤️", "success");
           return;
         }
 
@@ -334,8 +334,10 @@ export default function ProductDetailPage({
         }
       }
     } catch (err) {
-      console.error("Error toggling wishlist:", err);
-      showToastMessage("Something went wrong", "error");
+      const { toggleGuestWishlist } = await import("@/lib/wishlist");
+      const result = toggleGuestWishlist(productId);
+      setWishlistIds(result.wishlistIds);
+      showToastMessage(isWishlisted ? "Removed from wishlist ❌" : "Added to wishlist! ❤️", "success");
     }
   };
 
@@ -533,7 +535,7 @@ export default function ProductDetailPage({
 
             {/* Price Block */}
             <div className="space-y-1 bg-[#FAF6F0]/60 p-4 rounded-2xl border border-[#EADCC9]/80">
-              <div className="relative inline-flex items-center text-[14px] text-[#7A6A5C] font-medium line-through decoration-gray-400">
+              <div className="relative inline-flex items-center text-[14px] text-[#FA4B1B] font-normal line-through decoration-[#FA4B1B]">
                 <span>M.R.P ₹{currentMrp}</span>
               </div>
               <div className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight pt-1">

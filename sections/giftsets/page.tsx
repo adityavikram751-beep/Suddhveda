@@ -9,10 +9,10 @@ export default function Hero() {
     <section className="bg-white overflow-hidden border-b border-[#EADCC9]/50">
       <div className="max-w-[1400px] mx-auto w-full px-6 lg:px-8 py-12 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-28 items-center">
-          
+
           {/* LEFT CONTENT */}
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-            
+
             {/* Gift Collection Subtitle Tag */}
             <div className="flex items-center gap-3 mb-4">
               <span className="w-8 h-[1px] bg-[#D49313] hidden lg:inline-block"></span>
@@ -62,29 +62,16 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* RIGHT – IMAGE CARD */}
-          <div className="relative flex justify-center lg:justify-start w-full mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[440px]">
-              {/* Photo card */}
-              <div className="relative aspect-square w-full overflow-hidden rounded-[24px] shadow-xl border-2 border-[#EADCC9]/80 lg:rotate-2">
-                <Image
-                  src="/hero.png"
-                  alt="ShudhVeda Himalayan Forest Bloom Gift Set"
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Floating badge card */}
-              <div className="absolute -bottom-6 left-4 sm:-left-10 max-w-[260px] rounded-2xl bg-[#FAF6F0]/95 backdrop-blur-md border border-[#EADCC9] px-5 py-4 shadow-xl hidden sm:block">
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#D49313] flex items-center gap-1.5">
-                  <Sparkles size={13} /> Limited Edition
-                </p>
-                <p className="mt-1 font-serif text-[17px] font-bold leading-snug text-[#593102]">
-                  The Himalayan Forest Bloom Gift Set
-                </p>
-              </div>
+          {/* RIGHT – IMAGE CARD (EXACT BORDER FIT & ZERO CROPPING) */}
+          <div className="relative flex justify-center items-center w-full mt-6 lg:mt-0">
+            <div className="relative w-full max-w-[640px] aspect-[16/10.4] overflow-hidden rounded-[28px] shadow-[0_20px_50px_rgba(212,147,19,0.22)] border-2 border-[#D49313] bg-white group">
+              <Image
+                src="/home 2.png"
+                alt="ShudhVeda Himalayan Forest Bloom Gift Set"
+                fill
+                priority
+                className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 rounded-[26px]"
+              />
             </div>
           </div>
 

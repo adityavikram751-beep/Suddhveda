@@ -14,7 +14,7 @@ export default function ShopHero() {
 
         <div className="relative max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            
+
             {/* LEFT CONTENT */}
             <div className="lg:col-span-6 flex flex-col items-start">
               {/* Breadcrumb */}
@@ -26,16 +26,8 @@ export default function ShopHero() {
                 <span className="text-[#593102] font-bold">Shop</span>
               </div>
 
-              {/* Luxury Category Pill Tag */}
-              <div className="mt-3.5 inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
-                <Sparkles size={14} className="text-[#D49313]" />
-                <span className="text-[12px] font-extrabold text-[#593102] uppercase tracking-wider">
-                  RAW &amp; ORGANIC
-                </span>
-              </div>
-
               {/* Heading */}
-              <h1 className="mt-4 font-serif text-[40px] sm:text-[50px] lg:text-[58px] font-extrabold leading-[1.12] text-[#593102] tracking-tight">
+              <h1 className="mt-3.5 font-serif text-[40px] sm:text-[50px] lg:text-[58px] font-extrabold leading-[1.12] text-[#593102] tracking-tight">
                 Shop Pure{" "}
                 <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
                   Honey
@@ -48,28 +40,22 @@ export default function ShopHero() {
               </p>
             </div>
 
-            {/* RIGHT IMAGE CARD - FULL BOX COVER */}
+            {/* RIGHT IMAGE CARD - EDGE-TO-EDGE FULL IMAGE (NO WHITE BANDS / NO CUTTING) */}
             <div className="lg:col-span-6 relative w-full flex justify-center">
-              <div className="relative w-full max-w-[640px] xl:max-w-[660px] h-[240px] sm:h-[300px] lg:h-[320px] rounded-3xl overflow-hidden border-2 border-[#D49313]/50 shadow-2xl group bg-white">
-                
-                {/* Product Image Fills Entire Box */}
+              <div className="relative w-full max-w-[640px] xl:max-w-[660px] aspect-[16/9.5] lg:h-[360px] rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#D49313]/60 shadow-xl group bg-white">
+
+                {/* Product Image - Edge to Edge 100% Full Fit */}
                 <Image
-                  src="/shopsection.png"
+                  src="/shop.png"
                   alt="ShudhVeda Honey Jars"
                   fill
                   priority
                   className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                 />
 
-                {/* Floating Badge (Top Left Pill) */}
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md border border-[#D49313]/50 rounded-full px-4 py-2 shadow-lg flex items-center gap-2 z-20">
-                  <Sparkles size={16} className="text-[#D49313]" />
-                  <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
-                </div>
-
                 {/* Floating Badge (Bottom Right Pill) */}
-                <div className="absolute bottom-4 right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-5 py-2.5 shadow-xl flex items-center gap-2 z-20 border border-[#FFD700]/40">
-                  <span className="font-black text-[13px] uppercase tracking-wider">Signature Collection</span>
+                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-3.5 py-1.5 sm:px-5 sm:py-2.5 shadow-xl flex items-center gap-1.5 sm:gap-2 z-20 border border-[#FFD700]/30">
+                  <span className="font-black text-[10px] sm:text-[13px] uppercase tracking-wider">SIGNATURE COLLECTION</span>
                 </div>
               </div>
             </div>
@@ -82,7 +68,7 @@ export default function ShopHero() {
       <section className="bg-white border-b border-[#EADCC9]/60 py-8 lg:py-10">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            
+
             {/* Feature 1 */}
             <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] border border-[#D49313]/30 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all">
               <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/40">

@@ -81,7 +81,7 @@ type CartItemDetail =
 type CartContextValue = {
   cartItems: Record<string, CartItemDetail>;
   itemCount: number;
-  addToCart: (productId: string, variantId: string) => Promise<void>;
+  addToCart: (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>) => Promise<void>;
   updateQuantity: (productId: string, variantId: string, change: number) => Promise<void>;
   updateCustomQuantity: (cartItemId: string, change: number) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
@@ -108,10 +108,76 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [toastProduct, setToastProduct] = useState<{ title: string; weight: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ---------- Guest Cart LocalStorage Helpers ----------
+  const GUEST_CART_KEY = "sudhveda_guest_cart";
+
+  const getGuestCart = useCallback((): Record<string, CartItemDetail> => {
+    if (typeof window === "undefined") return {};
+    try {
+      const stored = localStorage.getItem(GUEST_CART_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const saveGuestCart = useCallback((items: Record<string, CartItemDetail>) => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
+      setCartItems(items);
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
+    } catch (err) {
+      console.error("Failed to save guest cart:", err);
+    }
+  }, []);
+
+  // ---------- Sync Guest Cart to Backend on Login ----------
+  const syncGuestCartOnLogin = useCallback(async () => {
+    const guestItems = getGuestCart();
+    const keys = Object.keys(guestItems);
+    if (keys.length === 0) return;
+
+    console.log("🛒 Found guest cart items in localStorage! Syncing to backend cart API...", guestItems);
+
+    let syncedCount = 0;
+
+    for (const key of keys) {
+      const item = guestItems[key];
+      if (item.type === "NORMAL" && item.productId && item.variantId) {
+        try {
+          await authFetch(`${API_BASE_URL}/api/cart/add`, {
+            method: "POST",
+            body: JSON.stringify({
+              productId: item.productId,
+              selectedWeight: item.variantId,
+              quantity: item.quantity || 1,
+            }),
+          });
+          console.log(`✅ Successfully synced ${item.productName} (Qty: ${item.quantity}) to database!`);
+          syncedCount++;
+        } catch (err) {
+          console.error(`Failed to sync guest cart item ${item.productName}:`, err);
+        }
+      }
+    }
+
+    // Clear local guest cart after successful database sync
+    if (syncedCount > 0 && typeof window !== "undefined") {
+      console.log("🧹 Clearing sudhveda_guest_cart from localStorage after database sync!");
+      localStorage.removeItem(GUEST_CART_KEY);
+    }
+  }, [getGuestCart]);
+
+  // ---------- Fetch Cart (Backend or Guest) ----------
   const fetchCart = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await authFetch(`${API_BASE_URL}/api/cart`);
+      
+      // If user is logged in, sync any remaining guest items
+      await syncGuestCartOnLogin();
+
       const items = Array.isArray(data)
         ? data
         : data.items || data.data || [];
@@ -133,14 +199,10 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        // Support multiple API shapes:
-        // - product._id / variant._id (old)
-        // - product.productId / variant.variantId (new)
         const product = item.product || {};
         const variant = item.variant || product.variant || {};
 
         const cartItemId = item.cartItemId || item._id || String(Math.random());
-
         const productId = product._id || product.productId || product.id || "";
         const variantId = variant._id || variant.variantId || variant.id || "";
         const productName = product.product_name || product.productName || product.name || "Product";
@@ -168,13 +230,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       setCartItems(newCartItems);
       return newCartItems;
     } catch (err) {
-      console.error("Failed to fetch cart:", err);
-      setCartItems({});
-      return {};
+      // User is not logged in / Guest -> Return guest cart from localStorage
+      const guestItems = getGuestCart();
+      setCartItems(guestItems);
+      return guestItems;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [syncGuestCartOnLogin, getGuestCart]);
 
   useEffect(() => {
     fetchCart();
@@ -183,9 +246,18 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       fetchCart();
     };
 
+    const handleAuthChanged = async () => {
+      console.log("🔐 User Auth Changed! Triggering automatic cart & wishlist sync...");
+      const { syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
+      await syncGuestWishlistOnLogin();
+      await fetchCart();
+    };
+
     window.addEventListener("trigger-live-update", handleLiveCartUpdate);
+    window.addEventListener("sudhveda-auth-changed", handleAuthChanged);
     return () => {
       window.removeEventListener("trigger-live-update", handleLiveCartUpdate);
+      window.removeEventListener("sudhveda-auth-changed", handleAuthChanged);
     };
   }, [fetchCart]);
 
@@ -195,17 +267,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [isCartOpen, fetchCart]);
 
-  // ✅ FIX: Background scroll lock + blur effect (NO SPINNER)
+  // Lock Body Scroll when Cart Drawer is Open
   useEffect(() => {
     if (isCartOpen) {
       const scrollY = window.scrollY;
-
-      // Lock body scroll
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
-
     } else {
       const scrollY = document.body.style.top;
       document.body.style.position = "";
@@ -226,8 +295,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [isCartOpen]);
 
-  // ---------- Add to Cart ----------
-  const addToCart = async (productId: string, variantId: string) => {
+  // ---------- Add to Cart (Handles both Logged-In & Guest users) ----------
+  const addToCart = async (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>) => {
     try {
       await authFetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
@@ -238,8 +307,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         }),
       });
       const updatedCart = await fetchCart();
-
-      window.dispatchEvent(new CustomEvent('trigger-live-update'));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
       const added = Object.values(updatedCart).find(
         (item): item is Extract<CartItemDetail, { type: "NORMAL" }> =>
@@ -249,7 +317,37 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         setToastProduct({ title: added.productName, weight: added.weight });
       }
     } catch (err) {
-      console.error("Add to cart error:", err);
+      // User is guest -> Store item in guest cart localStorage
+      console.log("🛒 User not logged in, saving item to guest cart in localStorage...");
+      const guestItems = getGuestCart();
+      const cartItemId = `guest_${productId}_${variantId}`;
+
+      const existing = guestItems[cartItemId];
+      if (existing && existing.type === "NORMAL") {
+        guestItems[cartItemId] = {
+          ...existing,
+          quantity: existing.quantity + 1,
+        };
+      } else {
+        guestItems[cartItemId] = {
+          type: "NORMAL",
+          cartItemId,
+          productId,
+          variantId,
+          productName: productDetails?.productName || "Honey Product",
+          categoryName: productDetails?.type === "NORMAL" ? productDetails.categoryName : "Honey",
+          image: productDetails?.image || "/placeholder.png",
+          price: productDetails?.price || 0,
+          weight: (productDetails?.type === "NORMAL" ? productDetails.weight : "") || "",
+          quantity: 1,
+        };
+      }
+
+      saveGuestCart(guestItems);
+      setToastProduct({
+        title: guestItems[cartItemId].productName,
+        weight: guestItems[cartItemId].type === "NORMAL" ? guestItems[cartItemId].weight : "",
+      });
     }
   };
 
@@ -289,10 +387,19 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         }),
       });
       await fetchCart();
-      window.dispatchEvent(new CustomEvent('trigger-live-update'));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
-      console.error("Update quantity error:", err);
-      setCartItems(previousCartItems);
+      // Guest update
+      const guestItems = getGuestCart();
+      if (guestItems[item.cartItemId]) {
+        guestItems[item.cartItemId].quantity = Math.max(
+          guestItems[item.cartItemId].quantity + change,
+          1
+        );
+        saveGuestCart(guestItems);
+      } else {
+        setCartItems(previousCartItems);
+      }
     }
   };
 
@@ -330,10 +437,15 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         }),
       });
       await fetchCart();
-      window.dispatchEvent(new CustomEvent('trigger-live-update'));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
-      console.error("Update custom quantity error:", err);
-      setCartItems(previousCartItems);
+      const guestItems = getGuestCart();
+      if (guestItems[cartItemId]) {
+        guestItems[cartItemId].quantity = Math.max(guestItems[cartItemId].quantity + change, 1);
+        saveGuestCart(guestItems);
+      } else {
+        setCartItems(previousCartItems);
+      }
     }
   };
 
@@ -353,22 +465,20 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ itemId: cartItemId }),
       });
       await fetchCart();
-      window.dispatchEvent(new CustomEvent('trigger-live-update'));
+      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
-      console.error("Remove item error:", err);
-      setCartItems(previousCartItems);
+      const guestItems = getGuestCart();
+      if (guestItems[cartItemId]) {
+        delete guestItems[cartItemId];
+        saveGuestCart(guestItems);
+      } else {
+        setCartItems(previousCartItems);
+      }
     }
   };
 
-  // ---------- Open/Close Cart ----------
+  // ---------- Open/Close Cart (No Forced Login Redirect) ----------
   const openCart = useCallback(() => {
-    if (!getStoredSession()) {
-      if (typeof window !== "undefined") {
-        const currentPath = `${window.location.pathname || "/"}${window.location.search || ""}`;
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-      }
-      return;
-    }
     setIsCartOpen(true);
   }, []);
 

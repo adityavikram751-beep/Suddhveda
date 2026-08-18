@@ -26,19 +26,19 @@ const features: Feature[] = [
   },
   {
     id: 2,
-    image: "/honneycart.png",
+    image: "/craft.png",
     title: "Crafted with Care",
     description: "Handled with care to preserve purity.",
   },
   {
     id: 3,
-    image: "/wishlist.png",
+    image: "/hygene.png",
     title: "Packed Hygienically",
     description: "Sealed to retain freshness and nutrients.",
   },
   {
     id: 4,
-    image: "/wishlist1.png",
+    image: "/safely.png",
     title: "Delivered Safely",
     description: "Secure delivery to your doorstep.",
   },
@@ -154,9 +154,8 @@ export default function GiftSetSection() {
                     <div className="w-8 h-8 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
                       <FiChevronDown
                         size={18}
-                        className={`text-[#D49313] transition-transform duration-300 ${
-                          expandedId === faq.id ? "rotate-180" : ""
-                        }`}
+                        className={`text-[#D49313] transition-transform duration-300 ${expandedId === faq.id ? "rotate-180" : ""
+                          }`}
                       />
                     </div>
                   </button>

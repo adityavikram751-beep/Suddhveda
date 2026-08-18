@@ -345,7 +345,7 @@ export default function Footer() {
         {/* ================= Desktop Bottom Footer ================= */}
         <div className="hidden lg:flex mt-10 border-t border-white/15 pt-6 items-center justify-between">
           <p className="text-[13px] text-[#D9C8BA]">
-            © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with 🍯 in India.
+            © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with in India.
           </p>
 
           <div className="flex items-center gap-2 text-[13px] text-[#D9C8BA]">

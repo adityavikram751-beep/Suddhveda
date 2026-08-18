@@ -142,7 +142,7 @@ export default function ProductDetailPage() {
                   ₹{product.price}
                 </span>
                 {product.originalPrice && (
-                  <div className="text-[16px] text-[#8D7F73] line-through">
+                  <div className="text-[16px] text-[#FA4B1B] font-normal line-through">
                     M.R.P: ₹{product.originalPrice}
                   </div>
                 )}

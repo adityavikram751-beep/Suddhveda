@@ -89,7 +89,7 @@ export default function Hero() {
           <div className="relative flex justify-center lg:justify-end w-full mt-6 lg:mt-0">
             <div className="relative flex justify-center lg:justify-end items-center w-full h-[320px] sm:h-[400px] md:h-[480px] lg:h-[650px]">
               <Image
-                src="/hero.png"
+                src="/home 1.png"
                 alt="ShuddhaVeda Natural Honey Jar"
                 width={1800}
                 height={1800}

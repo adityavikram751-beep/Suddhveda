@@ -97,14 +97,14 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[380px] sm:min-h-[400px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[20px] border border-[#EADCC9] bg-white p-3.5 sm:p-4 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:border-[#D49313]/60 hover:shadow-md mx-auto"
+      className="relative flex h-full min-h-[420px] sm:min-h-[450px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:border-[#D49313]/60 hover:shadow-md mx-auto"
     >
       {/* Wishlist Button (Top Left) */}
       <button
         type="button"
         onClick={handleWishlistClick}
         aria-label="Wishlist"
-        className="absolute left-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
+        className="absolute left-3.5 top-3.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
       >
         <Heart
           size={16}
@@ -118,15 +118,15 @@ export default function ProductCardShop({
 
       {/* Dynamic Badge (Top Right) */}
       {badge && (
-        <div className="absolute right-3 top-3 z-20">
-          <span className="rounded-full bg-gradient-to-r from-[#D49313] to-[#8F590A] px-2.5 py-0.5 text-[10px] font-black text-white shadow-md uppercase tracking-wider">
+        <div className="absolute right-3.5 top-3.5 z-20 max-w-[calc(100%-56px)]">
+          <span className="inline-block rounded-full bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] px-3.5 py-1 text-[11px] font-extrabold text-white shadow-md uppercase tracking-wider border border-white/20 whitespace-nowrap truncate">
             {badge}
           </span>
         </div>
       )}
 
       {/* Dynamic Product Image */}
-      <div className="relative h-[170px] sm:h-[190px] w-full overflow-hidden shrink-0 flex items-center justify-center">
+      <div className="relative mt-3 h-[185px] sm:h-[205px] w-full overflow-hidden shrink-0 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
@@ -137,7 +137,7 @@ export default function ProductCardShop({
       </div>
 
       {/* Text Content & Details */}
-      <div className="mt-3.5 flex flex-col flex-1 justify-between text-center">
+      <div className="mt-4 flex flex-col flex-1 justify-between text-center">
         <div>
           {/* Dynamic Title with Fixed Equal Height */}
           <div className="h-[44px] sm:h-[48px] flex items-center justify-center">
@@ -152,18 +152,20 @@ export default function ProductCardShop({
           </div>
 
           {/* Dynamic Price Row */}
-          <div className="mt-2 text-[14px] sm:text-[15px] font-bold text-[#593102] flex items-center justify-center gap-1.5">
+          <div className="mt-3.5 mb-1 flex items-center justify-center gap-2">
             {oldPrice && oldPrice > price ? (
-              <span className="line-through text-[#B09077] font-normal text-[12px]">
+              <span className="line-through text-[#FA4B1B] font-normal text-[13px] sm:text-[14px]">
                 ₹{oldPrice}
               </span>
             ) : null}
-            <span className="font-black text-[#593102] text-[16px]">From ₹{price}</span>
+            <span className="font-extrabold text-[#593102] text-[17px] sm:text-[18px] tracking-tight">
+              From ₹{price}
+            </span>
           </div>
 
           {/* Dynamic Weight Variants */}
           {variants.length > 0 && (
-            <div className="mt-2.5 flex items-center justify-center gap-1.5 flex-wrap">
+            <div className="mt-3 mb-1 flex items-center justify-center gap-2 flex-wrap">
               {variants.map((variant, index) => {
                 const variantId = getVariantId(variant);
                 const uniqueKey = variantId || `variant-${index}`;
@@ -173,10 +175,11 @@ export default function ProductCardShop({
                     key={uniqueKey}
                     type="button"
                     onClick={(e) => handleVariantClick(variantId, e)}
-                    className={`rounded-md border px-2.5 py-0.5 text-[11px] font-bold transition-all cursor-pointer ${selected
-                        ? "border-[#593102] bg-[#593102] text-white shadow-xs scale-105"
-                        : "border-[#E5DBCB] bg-white text-[#5C4033] hover:border-[#593102]"
-                      }`}
+                    className={`rounded-lg border px-3 py-1 text-[12px] sm:text-[13px] font-extrabold transition-all duration-200 cursor-pointer ${
+                      selected
+                        ? "border-[#FA4B1B] bg-[#FA4B1B] text-white shadow-md scale-105"
+                        : "border-[#EADCC9] bg-white text-[#5C4033] hover:border-[#FA4B1B] hover:text-[#FA4B1B]"
+                    }`}
                   >
                     {getVariantLabel(variant)}
                   </button>
@@ -187,14 +190,14 @@ export default function ProductCardShop({
         </div>
 
         {/* Buy Now Button */}
-        <div className="mt-3.5 flex justify-center">
+        <div className="mt-4 pb-1 flex justify-center">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onOpenDetails();
             }}
-            className="h-[44px] w-[148px] rounded-md bg-[#FA4B1B] text-white font-bold text-[17px] shadow-xs transition-colors hover:bg-[#E64216] cursor-pointer flex items-center justify-center active:scale-98"
+            className="h-[46px] w-full max-w-[160px] rounded-xl bg-[#FA4B1B] hover:bg-[#E64216] text-white font-extrabold text-[16px] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer flex items-center justify-center active:scale-98 border border-white/20"
           >
             Buy Now
           </button>

@@ -2,27 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { Crown, Sparkles } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 import {
   type ApiProduct,
-  getCategoryName,
-  getPrimaryImage,
   getProductId,
   getProductName,
   getProductVariants,
   getProductsFromResponse,
   getVariantId,
-  getVariantLabel,
   normalizeProduct,
 } from "@/lib/api-products";
 
 // ---------- Main Component ----------
 export default function HoneySelection() {
   const router = useRouter();
-  const { updateQuantity } = useCart();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -40,23 +36,35 @@ export default function HoneySelection() {
       if (res.ok) {
         const data = await res.json();
         const wishlistProducts = data?.data?.products || [];
-        const ids = wishlistProducts.map((item: any) => {
-          if (item.productId && typeof item.productId === "object") {
-            return item.productId._id;
-          }
-          return item.productId || item._id;
-        }).filter(Boolean).map(String);
+        const ids = wishlistProducts
+          .map((item: any) => {
+            if (item.productId && typeof item.productId === "object") {
+              return item.productId._id;
+            }
+            return item.productId || item._id;
+          })
+          .filter(Boolean)
+          .map(String);
         setWishlistIds(ids);
         window.dispatchEvent(
           new CustomEvent("wishlist-count-update", { detail: { count: ids.length } })
         );
+      } else {
+        const { getGuestWishlist } = await import("@/lib/wishlist");
+        const guestIds = getGuestWishlist();
+        setWishlistIds(guestIds);
+        window.dispatchEvent(
+          new CustomEvent("wishlist-count-update", { detail: { count: guestIds.length } })
+        );
       }
     } catch (err) {
-      console.error("Error fetching wishlist:", err);
+      const { getGuestWishlist } = await import("@/lib/wishlist");
+      const guestIds = getGuestWishlist();
+      setWishlistIds(guestIds);
     }
   };
 
-  // ---------- Fetch Products (using helper) ----------
+  // ---------- Fetch Products ----------
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -65,9 +73,7 @@ export default function HoneySelection() {
       });
       if (!res.ok) throw new Error("Failed to fetch products");
       const result = await res.json();
-      // ✅ Use helper to get array of ApiProduct
       const productList = getProductsFromResponse(result);
-      console.log("✅ Products loaded:", productList.length); // debug
       setProducts(productList);
     } catch (err) {
       console.error("Error loading products:", err);
@@ -79,16 +85,27 @@ export default function HoneySelection() {
   useEffect(() => {
     fetchProducts();
     fetchWishlist();
+
+    const handleWishlistChange = () => {
+      import("@/lib/wishlist").then(({ getGuestWishlist }) => {
+        setWishlistIds(getGuestWishlist());
+      });
+    };
+
+    window.addEventListener("wishlist-count-update", handleWishlistChange);
+    return () => {
+      window.removeEventListener("wishlist-count-update", handleWishlistChange);
+    };
   }, []);
 
-  // ---------- Auto Slide for Mobile / Tablet (< 1024px) ----------
+  // ---------- Auto Slide for Mobile ----------
   useEffect(() => {
     if (products.length === 0) return;
 
     let currentIndex = 0;
     const interval = setInterval(() => {
       if (window.innerWidth < 1024 && sliderRef.current) {
-        const maxLen = products.length; // ab saare dikhenge
+        const maxLen = products.length;
         currentIndex = (currentIndex + 1) % maxLen;
         const cardWidth = sliderRef.current.offsetWidth;
         sliderRef.current.scrollTo({
@@ -115,36 +132,29 @@ export default function HoneySelection() {
     return selectedVariants[productId] || getVariantId(variants[0]);
   };
 
-  // ---------- Add to Cart ----------
+  // ---------- Add to Cart (Guest & Logged-In) ----------
   const handleAddToCart = async (product: ApiProduct) => {
     const productId = getProductId(product);
     const variantId = getSelectedVariantId(product);
     if (!variantId) return;
 
+    const variants = getProductVariants(product);
+    const selectedVariant = variants.find((v) => getVariantId(v) === variantId) || variants[0];
+    const weightLabel = selectedVariant ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+    const price = selectedVariant?.price || product.price || 0;
+    const image = product.image?.image_url || product.image?.url || "/placeholder.png";
+
     try {
       setActionLoading(productId);
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId,
-          selectedWeight: variantId,
-          quantity: 1,
-        }),
+      await addToCart(productId, variantId, {
+        type: "NORMAL",
+        productId,
+        variantId,
+        productName: getProductName(product),
+        image,
+        price,
+        weight: weightLabel,
       });
-
-      if (res.status === 401) {
-        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
-        return;
-      }
-
-      if (!res.ok) throw new Error("Failed to add to cart");
-
-      // Update cart context
-      updateQuantity(productId, variantId, 1);
-      window.dispatchEvent(new Event("cart-updated"));
-      window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
       console.error("Error in Add to Cart:", err);
     } finally {
@@ -152,19 +162,14 @@ export default function HoneySelection() {
     }
   };
 
-  // ---------- Wishlist Toggle ----------
+  // ---------- Wishlist Toggle (Guest & Logged-In) ----------
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
-    const prevIds = wishlistIds;
     const nextIds = isWishlisted
       ? wishlistIds.filter((id) => id !== productId)
       : [...wishlistIds, productId];
 
-    // Optimistic update
     setWishlistIds(nextIds);
-    window.dispatchEvent(
-      new CustomEvent("wishlist-count-update", { detail: { count: nextIds.length } })
-    );
 
     try {
       const res = await fetch(
@@ -177,24 +182,22 @@ export default function HoneySelection() {
       );
 
       if (res.status === 401) {
-        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+        const { toggleGuestWishlist } = await import("@/lib/wishlist");
+        const res = toggleGuestWishlist(productId);
+        setWishlistIds(res.wishlistIds);
         return;
       }
 
-      if (!res.ok && !(isWishlisted && res.status === 404)) {
-        throw new Error("Wishlist update failed");
-      }
-    } catch (err) {
-      console.error("Error toggling wishlist:", err);
-      // Revert on error
-      setWishlistIds(prevIds);
       window.dispatchEvent(
-        new CustomEvent("wishlist-count-update", { detail: { count: prevIds.length } })
+        new CustomEvent("wishlist-count-update", { detail: { count: nextIds.length } })
       );
+    } catch (err) {
+      const { toggleGuestWishlist } = await import("@/lib/wishlist");
+      const res = toggleGuestWishlist(productId);
+      setWishlistIds(res.wishlistIds);
     }
   };
 
-  // Dummy functions for ProductCardShop (not used in this context)
   const dummyHandler = () => {};
 
   // ---------- Render ----------
@@ -226,7 +229,6 @@ export default function HoneySelection() {
               ref={sliderRef}
               className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
             >
-              {/* ✅ Saare products dikhenge – slice hata diya */}
               {products.map((product) => {
                 const productId = getProductId(product);
                 const variants = getProductVariants(product);
@@ -273,16 +275,6 @@ export default function HoneySelection() {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .scrollbar-none::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-none {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </section>
   );
 }

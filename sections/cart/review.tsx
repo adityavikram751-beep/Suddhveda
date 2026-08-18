@@ -161,8 +161,8 @@ export default function ReviewPage() {
             parsed?.id === "express"
               ? "Delivery in 1-2 business days"
               : parsed?.id === "priority"
-              ? "Delivery by tomorrow"
-              : "Delivery in 3-5 business days"
+                ? "Delivery by tomorrow"
+                : "Delivery in 3-5 business days"
           );
         } catch (e) {
           console.error("Error parsing saved shipping method", e);
@@ -313,7 +313,7 @@ export default function ReviewPage() {
   };
 
   const handlePlaceOrder = () => {
-    router.push("/order-confirmation");
+    router.push("/payment");
   };
 
   if (!isMounted) {
@@ -324,7 +324,7 @@ export default function ReviewPage() {
     <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
       <div className="mx-auto max-w-[1410px] px-4 md:px-6">
         <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
-          
+
           {/* Left Column - Scrollable */}
           <section className="flex flex-col gap-7">
             {/* Header */}
@@ -345,56 +345,53 @@ export default function ReviewPage() {
               />
             </header>
 
-           
-                       {/* Stepper */}
-                       <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
-                         <div className="flex items-center justify-between gap-1 sm:gap-2">
-                           {steps.map((step) => {
-                             const isDone = step.id < 3;
-                             const isActive = step.id === 3;
-                             return (
-                               <div key={step.id} className="flex min-w-0 flex-1 items-center">
-                                 <div className="flex min-w-0 items-center gap-1 sm:gap-3">
-                                   <span
-                                     className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${
-                                       isDone
-                                         ? "border-[#77AE61] bg-white text-[#77AE61]"
-                                         : isActive
-                                         ? "border-[#D18500] bg-[#D18500] text-white"
-                                         : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                                     }`}
-                                   >
-                                     {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
-                                   </span>
-                                   <span
-                                     className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
-                                       isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
-                                     }`}
-                                   />
-                                   <div className="min-w-0">
-                                     <p
-                                       className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
-                                         isActive ? "text-[#D18500]" : "text-[#2F241C]"
-                                       }`}
-                                     >
-                                       {step.title}
-                                     </p>
-                                     <p className="hidden sm:block mt-0.5 sm:mt-1 truncate text-[10px] sm:text-[12px] leading-tight text-[#596273]">
-                                       {step.subtitle}
-                                     </p>
-                                   </div>
-                                 </div>
-                                 {step.id < steps.length && (
-                                   <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
-                                     &rsaquo;
-                                   </span>
-                                 )}
-                               </div>
-                             );
-                           })}
-                         </div>
-                       </div>
-           
+
+            {/* Stepper */}
+            <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
+              <div className="flex items-center justify-between gap-1 sm:gap-2">
+                {steps.map((step) => {
+                  const isDone = step.id < 3;
+                  const isActive = step.id === 3;
+                  return (
+                    <div key={step.id} className="flex min-w-0 flex-1 items-center">
+                      <div className="flex min-w-0 items-center gap-1 sm:gap-3">
+                        <span
+                          className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${isDone
+                              ? "border-[#77AE61] bg-white text-[#77AE61]"
+                              : isActive
+                                ? "border-[#D18500] bg-[#D18500] text-white"
+                                : "border-[#F0DDC8] bg-white text-[#2F241C]"
+                            }`}
+                        >
+                          {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
+                        </span>
+                        <span
+                          className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
+                            }`}
+                        />
+                        <div className="min-w-0">
+                          <p
+                            className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                              }`}
+                          >
+                            {step.title}
+                          </p>
+                          <p className="hidden sm:block mt-0.5 sm:mt-1 truncate text-[10px] sm:text-[12px] leading-tight text-[#596273]">
+                            {step.subtitle}
+                          </p>
+                        </div>
+                      </div>
+                      {step.id < steps.length && (
+                        <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
+                          &rsaquo;
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
 
             {/* Delivery Details */}
             <section className="rounded-xl border border-[#E8E4DE] bg-white p-6 shadow-sm">

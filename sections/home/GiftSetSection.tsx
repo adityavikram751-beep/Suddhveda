@@ -13,7 +13,7 @@ export default function GiftSetSection() {
 
       <div className="relative max-w-[1440px] mx-auto px-6 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
+
           {/* LEFT COLUMN - Text & Highlights */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             {/* VIP Pill Badge */}
@@ -82,12 +82,12 @@ export default function GiftSetSection() {
             </div>
 
             {/* Action CTA */}
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <Link
                 href="/giftsets"
-                className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-black text-[16px] uppercase tracking-wider px-9 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-[#FFD700]/30 cursor-pointer active:scale-98"
+                className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-black text-[15px] sm:text-[16px] uppercase tracking-wider px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-[#FFD700]/30 cursor-pointer active:scale-98 w-full sm:w-auto"
               >
-                <Sparkles size={20} className="text-[#FFD700]" />
+                <Gift size={20} className="text-[#FFD700]" />
                 Build Custom Gift Box
                 <ChevronRight size={20} />
               </Link>
@@ -95,13 +95,13 @@ export default function GiftSetSection() {
           </div>
 
           {/* RIGHT COLUMN - Heroic Image Showcase */}
-          <div className="lg:col-span-5 relative flex justify-center items-center">
-            <div className="relative w-full max-w-[540px] h-[360px] sm:h-[440px] lg:h-[480px] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] p-3 shadow-xl flex items-center justify-center group">
-              
+          <div className="lg:col-span-5 relative flex justify-center items-center w-full">
+            <div className="relative w-full max-w-[540px] h-[280px] sm:h-[420px] lg:h-[480px] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] p-3 shadow-xl flex items-center justify-center group">
+
               {/* Product Image - 100% Full Visibility (No Cutting) */}
               <div className="relative w-full h-full flex items-center justify-center">
                 <Image
-                  src="/giftset.png"
+                  src="/home 2.png"
                   alt="ShudhVeda Royal Gift Set"
                   fill
                   className="object-contain p-2 group-hover:scale-105 transition-transform duration-700 drop-shadow-xl"
@@ -110,15 +110,15 @@ export default function GiftSetSection() {
               </div>
 
               {/* Floating Badge (Top Left Pill) */}
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-[#D49313]/50 rounded-full px-4 py-2 shadow-md flex items-center gap-2 z-20">
-                <ShieldCheck size={18} className="text-[#D49313]" />
-                <span className="font-black text-[#593102] text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-md border border-[#D49313]/50 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 shadow-md flex items-center gap-1.5 sm:gap-2 z-20">
+                <ShieldCheck size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
+                <span className="font-black text-[#593102] text-[10px] sm:text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
               </div>
 
               {/* Floating Badge (Bottom Right Pill) */}
-              <div className="absolute bottom-4 right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-5 py-2.5 shadow-lg flex items-center gap-2 z-20 border border-[#FFD700]/40">
-                <Sparkles size={16} className="text-[#FFD700]" />
-                <span className="font-black text-[13px] uppercase tracking-wider">Royal Gift Box</span>
+              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-3.5 py-2 sm:px-5 sm:py-2.5 shadow-lg flex items-center gap-1.5 sm:gap-2 z-20 border border-[#FFD700]/40">
+                <Gift size={16} className="text-[#FFD700]" />
+                <span className="font-black text-[11px] sm:text-[13px] uppercase tracking-wider">Royal Gift Box</span>
               </div>
 
             </div>

@@ -39,7 +39,7 @@ export default function ImpactSection() {
             <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group bg-black">
               <video
                 ref={videoRef}
-                src="/"
+                src="https://res.cloudinary.com/anjp8e9i/video/upload/v1786972510/0817_1_ztof9t"
                 poster="/move1.png"
                 muted
                 controls
@@ -68,12 +68,7 @@ export default function ImpactSection() {
               )}
 
               {/* Floating Quality Badge */}
-              {!hasStarted && (
-                <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full border border-[#D49313]/40 shadow-md flex items-center gap-2 z-10 pointer-events-none">
-                  <Sparkles size={16} className="text-[#D49313]" />
-                  <span className="font-extrabold text-[12px] text-[#593102] uppercase tracking-wider">Traditional Beekeeping</span>
-                </div>
-              )}
+
             </div>
           </div>
 

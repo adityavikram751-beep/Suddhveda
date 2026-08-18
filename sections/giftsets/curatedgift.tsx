@@ -416,58 +416,63 @@ export default function CuratedGift() {
 
         {/* ================= CARDS GRID ================= */}
         {loadingBoxes ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+          <div className="max-w-[1180px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white/80 rounded-[32px] border-2 border-[#E8D5BA] h-[520px] animate-pulse shadow-sm"
+                className="bg-white/80 rounded-[20px] border border-[#E8D5BA] h-[460px] animate-pulse shadow-sm"
               />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
-            {giftBoxes.map((box) => (
+          <div className="max-w-[1180px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {giftBoxes.map((box, idx) => (
               <div
                 key={box._id}
-                className="bg-[#FDF9F3] border-2 border-[#E8D5BA]/80 rounded-[32px] overflow-hidden shadow-[0_10px_35px_rgba(89,49,2,0.06)] hover:shadow-[0_22px_55px_rgba(89,49,2,0.16)] hover:border-[#D49313] transition-all duration-500 group flex flex-col hover:-translate-y-2 relative"
+                className="bg-[#FAF5EF] border border-[#E8D5BA]/80 rounded-[20px] overflow-hidden shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative"
               >
-                {/* Image Container */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-[#FAF0DC] to-[#FDF5E9]">
+                {/* Image Container — Aspect Square */}
+                <div className="relative aspect-square w-full overflow-hidden bg-[#F5EEE6]">
                   <Image
                     src={box.image || "/honneycart.png"}
                     alt={box.name}
                     fill
-                    className="object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = "/honneycart.png";
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
                 {/* Content Details */}
-                <div className="p-7 sm:p-8 flex flex-col flex-1 text-center bg-[#FAF6F0]/90 relative">
-                  <h3 className="font-serif text-[24px] sm:text-[28px] font-bold text-[#593102] leading-tight group-hover:text-[#D49313] transition-colors">
+                <div className="p-4 sm:p-5 flex flex-col flex-1 text-center bg-[#FAF5EF]">
+                  <h3 className="font-serif text-[19px] sm:text-[21px] font-extrabold text-[#2F241C] leading-tight text-center group-hover:text-[#D49313] transition-colors">
                     {box.name}
                   </h3>
 
-                  <div className="mt-3 inline-flex items-center justify-center gap-2 text-[#593102] text-[13px] font-bold bg-[#FAF0DC] border border-[#E8D5BA] px-4 py-1.5 rounded-full w-max mx-auto shadow-2xs">
-                    <span>🫙</span> {box.jar_count} Jars Selection Pack
-                  </div>
-
-                  <p className="mt-4 text-[14px] sm:text-[15px] text-[#8D7F73] leading-relaxed line-clamp-2 font-medium">
+                  <p className="mt-2 text-[13px] text-[#7A6A5C] leading-relaxed line-clamp-2 font-normal text-center max-w-[280px] mx-auto">
                     {box.description || "Hand-crafted luxury gift set packed with pure organic raw honey."}
                   </p>
 
-                  <div className="mt-auto pt-7">
+                  <div className="mt-auto pt-3.5 flex flex-col items-center">
+                    {box.price ? (
+                      <div className="flex items-center justify-center gap-2 mb-2.5">
+                        <span className="line-through text-[#A39284] text-[13px] font-medium">
+                          ₹{Math.round(box.price * 1.25)}
+                        </span>
+                        <span className="text-[17px] font-bold text-[#2F241C]">
+                          ₹{box.price}
+                        </span>
+                      </div>
+                    ) : null}
+
                     <button
                       type="button"
                       onClick={() => openCustomizationModal(box)}
-                      className="w-full py-4 bg-gradient-to-r from-[#593102] via-[#7A4505] to-[#593102] hover:from-[#D49313] hover:via-[#B87D0E] hover:to-[#593102] text-white font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg hover:shadow-xl cursor-pointer text-[15px] sm:text-[16px] tracking-wide active:scale-98"
+                      className="w-full max-w-[210px] mx-auto py-2 px-4 bg-[#FF4E11] hover:bg-[#E04007] text-white font-bold rounded-md transition-all duration-200 flex items-center justify-center shadow-2xs cursor-pointer text-[12.5px] tracking-wide active:scale-98"
                     >
-                      <Sparkles size={19} className="text-[#FFD700]" />
-                      Customize &amp; Add to Cart
+                      Customize Gift Box
                     </button>
                   </div>
                 </div>
@@ -558,7 +563,7 @@ export default function CuratedGift() {
                       </h4>
                       <p className="text-[12px] sm:text-[14px] text-[#FAF0DC]/85 mt-1 font-medium">
                         {filledCount === activeGiftBox.jar_count ? (
-                          <span>All slots filled! Click &apos;Add Gift Box to Cart&apos; below.</span>
+                          <span>All slots filled! Click &apos;Proceed to Checkout&apos; below.</span>
                         ) : (
                           <span>Tap any honey flavor from the list below to fill slot #{filledCount + 1}.</span>
                         )}
@@ -738,11 +743,11 @@ export default function CuratedGift() {
               >
                 {addingToCart ? (
                   <>
-                    <Loader2 className="animate-spin" size={20} /> Adding to Cart...
+                    <Loader2 className="animate-spin" size={20} /> Processing...
                   </>
                 ) : (
                   <>
-                    <ShoppingBag size={20} /> Add Gift Box to Cart
+                    <ShoppingBag size={20} /> Proceed to Checkout
                   </>
                 )}
               </button>

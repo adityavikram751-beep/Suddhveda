@@ -47,15 +47,15 @@ export default function OurValues() {
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
           {/* LEFT IMAGE + QUOTE */}
-          <div className="relative w-full h-full rounded-2xl overflow-hidden min-h-[560px] shadow-lg group cursor-pointer border-2 border-white">
+          <div className="relative w-full h-[460px] sm:h-[520px] lg:h-full lg:min-h-[560px] rounded-3xl overflow-hidden shadow-2xl group cursor-pointer border-2 border-[#D49313]/60 bg-white flex items-center justify-center">
             <Image
-              src="/honeyprocess.png"
+              src="/beehoney.png"
               alt="Beekeeper pouring honey into jars"
               fill
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="object-contain p-1 transition-transform duration-700 ease-out group-hover:scale-105"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-6 sm:p-8">
-              <div className="inline-flex items-center gap-1.5 text-[#FFD700] text-[11px] font-black uppercase tracking-[0.18em] bg-black/40 px-3 py-1 rounded-full mb-3 border border-[#FFD700]/30">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 sm:p-8 z-10 rounded-b-3xl">
+              <div className="inline-flex items-center gap-1.5 text-[#FFD700] text-[11px] font-black uppercase tracking-[0.18em] bg-black/40 px-3 py-1 rounded-full mb-3 border border-[#FFD700]/30 backdrop-blur-xs">
                 <Sparkles size={13} />
                 <span>OUR MISSION</span>
               </div>

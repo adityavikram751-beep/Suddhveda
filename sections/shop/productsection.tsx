@@ -39,7 +39,7 @@ const defaultFilters: ProductFilters = {
 };
 
 export default function ShopPage() {
-  const { updateQuantity } = useCart();
+  const { updateQuantity, addToCart } = useCart();
   const router = useRouter();
   const sliderRef = useRef<HTMLDivElement>(null);
 
@@ -279,25 +279,22 @@ export default function ShopPage() {
       return;
     }
 
+    const variants = getProductVariants(product);
+    const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || variants[0];
+    const weightLabel = selectedVariant ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+    const price = selectedVariant?.price || product.price || 0;
+    const image = product.image?.image_url || product.image?.url || "/placeholder.png";
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId,
-          selectedWeight: selectedVariantId,
-          quantity: 1,
-        }),
+      await addToCart(productId, selectedVariantId, {
+        type: "NORMAL",
+        productId,
+        variantId: selectedVariantId,
+        productName: getProductName(product),
+        image,
+        price,
+        weight: weightLabel,
       });
-
-      if (res.status === 401) {
-        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
-        return;
-      }
-
-      if (!res.ok) throw new Error("Failed to add to cart");
-
       window.dispatchEvent(new Event("cart-updated"));
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (error) {
@@ -308,7 +305,6 @@ export default function ShopPage() {
 
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
-    const prevIds = wishlistIds;
     const nextIds = isWishlisted
       ? wishlistIds.filter((id) => id !== productId)
       : [...wishlistIds, productId];
@@ -327,20 +323,18 @@ export default function ShopPage() {
       );
 
       if (res.status === 401) {
-        router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+        const { toggleGuestWishlist } = await import("@/lib/wishlist");
+        const res = toggleGuestWishlist(productId);
+        setWishlistIds(res.wishlistIds);
         return;
       }
 
-      if (!res.ok && !(isWishlisted && res.status === 404)) {
-        throw new Error("Wishlist update failed");
-      }
-
       showToast(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
-    } catch (err) {
-      console.error("Error toggling wishlist:", err);
-      setWishlistIds(prevIds);
-      window.dispatchEvent(new CustomEvent("wishlist-count-update", { detail: { count: prevIds.length } }));
-      showToast("Wishlist update failed");
+    } catch (error) {
+      const { toggleGuestWishlist } = await import("@/lib/wishlist");
+      const res = toggleGuestWishlist(productId);
+      setWishlistIds(res.wishlistIds);
+      showToast("Updated wishlist");
     }
   };
 
@@ -364,17 +358,15 @@ export default function ShopPage() {
   }
 
   const promoBannerComponent = (
-    <div className="mt-6 overflow-hidden rounded-[14px] bg-[#593102] px-5 pb-5 pt-6 text-center text-white">
-      <h3 className="font-serif text-[22px] font-medium leading-tight">
-        Raw Honey.
-        <br />
-        <span className="text-white/80">Pure You.</span>
+    <div className="mt-6 overflow-hidden rounded-[24px] bg-[#593102] px-5 pt-6 pb-10 text-center text-white shadow-xl border-2 border-[#D49313]/30">
+      <h3 className="font-serif text-[19px] sm:text-[21px] font-medium leading-tight whitespace-nowrap">
+        Raw Honey. <span className="text-white/80">Pure You.</span>
       </h3>
-      <p className="mx-auto mt-3 max-w-[210px] text-[12px] leading-5 text-white/70">
+      <p className="mx-auto mt-2.5 max-w-[210px] text-[12px] leading-5 text-white/70">
         Boost your wellness with nature&apos;s sweetest gift.
       </p>
-      <div className="relative mt-6 h-[280px] w-full overflow-hidden rounded-[12px]">
-        <Image src="/Promo.png" alt="Bee on flower" fill priority className="object-contain" />
+      <div className="relative mt-5 h-[275px] sm:h-[300px] w-full overflow-hidden rounded-[16px] border border-[#D49313]/40 shadow-sm">
+        <Image src="/shop 2.png" alt="Raw Honey Pure You" fill priority className="object-cover object-center group-hover:scale-105 transition-transform duration-700" />
       </div>
     </div>
   );
