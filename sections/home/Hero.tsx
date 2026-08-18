@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiGift, FiPackage, FiShoppingCart } from "react-icons/fi";
+import { FiGift, FiPackage, FiShoppingCart, FiShoppingBag } from "react-icons/fi";
 import { TbLeaf } from "react-icons/tb";
 
 function FssaiBadge() {
@@ -91,24 +91,35 @@ export default function Hero() {
     <section className="bg-[#FAF6F0] overflow-hidden lg:min-h-[720px] relative">
       <div className="max-w-[1440px] -m-2 mx-auto w-full px-4 sm:px-6 lg:pl-8 lg:pr-16 pt-6 pb-12 lg:pb-0">
 
-        {/* Mobile & Tablet Layout (< 1024px): Center aligned text and buttons, image at bottom */}
+        {/* Mobile Layout (< 1024px) */}
         <div className="flex flex-col lg:hidden items-center text-center space-y-6">
 
           {/* VIP Royal Badge */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-2 border-[#D49313]/60 rounded-full px-5 py-2 text-[#593102] text-[13px] font-black tracking-widest uppercase bg-gradient-to-r from-[#FAF0DC] via-[#FFE3AA] to-[#FAF0DC] shadow-md backdrop-blur-md">
-            <span className="text-[#D49313] text-[15px]"></span>
+          <div className="inline-flex items-center justify-center gap-x-2.5 border border-[#E5B548] rounded-full px-6 py-1.5 text-[#593102] text-[12px] sm:text-[13px] font-black tracking-widest uppercase bg-[#FAF0DC]/90 shadow-2xs">
             <span>RAW</span>
             <span className="text-[#D49313] font-bold">•</span>
-            <span>Natural</span>
+            <span>NATURAL</span>
             <span className="text-[#D49313] font-bold">•</span>
-            <span>Unprocessed</span>
+            <span>UNPROCESSED</span>
+          </div>
+
+          {/* Image below RAW NATURAL UNPROCESSED badge */}
+          <div className="relative w-full max-w-[440px] pt-1">
+            <Image
+              src="/home 1.png"
+              alt="ShudhVeda Natural Honey Jar"
+              width={1200}
+              height={1200}
+              priority
+              className="w-full h-auto object-contain rounded-2xl drop-shadow-md"
+            />
           </div>
 
           {/* Heading */}
-          <h1 className="text-[36px] sm:text-[44px] leading-[1.14] font-serif text-[#593102] tracking-tight font-bold">
+          <h1 className="text-[26px] sm:text-[38px] leading-[1.2] font-serif text-[#593102] tracking-tight font-extrabold px-2">
             Experience Nature&apos;s Purest Honey,
             <br />
-            <span className="inline-block pr-3 overflow-visible bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic">
+            <span className="text-[#F4511E] font-serif">
               Straight From The Farm Hive
             </span>
           </h1>
@@ -120,8 +131,26 @@ export default function Hero() {
             Ethically harvested, raw and unprocessed organic honey crafted by nature and delivered fresh from trusted beekeepers to your home.
           </p>
 
-          {/* 4 Feature Circles - Image Inside Circle, Text Below */}
-          <div className="grid grid-cols-4 gap-2 sm:gap-6 mt-4 w-full max-w-[540px]">
+          {/* Mobile Buttons */}
+          <div className="flex flex-col gap-3.5 w-full max-w-[420px] pt-1">
+            <Link
+              href="/shop"
+              className="bg-[#F9531E] hover:bg-[#E04515] transition-all duration-300 text-white h-[52px] rounded-2xl flex items-center justify-center gap-2.5 font-extrabold text-[15px] sm:text-[16px] shadow-md hover:shadow-lg cursor-pointer w-full uppercase tracking-wider active:scale-98"
+            >
+              <FiShoppingBag size={20} className="text-white" />
+              SHOP THE COLLECTION
+            </Link>
+            <Link
+              href="/giftsets"
+              className="border-2 border-[#D49313] text-[#593102] hover:bg-[#FAF0DC] transition-all duration-300 h-[52px] rounded-2xl flex items-center justify-center gap-2.5 font-extrabold text-[14px] sm:text-[15px] cursor-pointer w-full bg-white shadow-sm uppercase tracking-wider active:scale-98"
+            >
+              <FiGift size={19} className="text-[#D49313]" />
+              PERSONALIZE YOUR BOX
+            </Link>
+          </div>
+
+          {/* 4 Feature Circles */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-6 pt-2 w-full max-w-[540px]">
             <div className="flex flex-col items-center text-center group cursor-pointer">
               <FssaiBadge />
               <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
@@ -148,44 +177,6 @@ export default function Hero() {
               <span className="text-[#593102] text-[10px] sm:text-[12px] font-black leading-tight mt-2.5 uppercase tracking-tight">
                 LAB<br />TESTED
               </span>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col gap-3.5 w-full max-w-[420px] pt-2">
-            <Link
-              href="/shop"
-              className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] transition-all duration-500 text-white h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-black text-[16px] shadow-lg hover:shadow-xl cursor-pointer w-full uppercase tracking-wider border border-[#FFD700]/30 active:scale-98"
-            >
-              <FiShoppingCart size={19} className="text-[#FFD700]" />
-              Shop Now
-            </Link>
-            <Link
-              href="/giftsets"
-              className="border-2 border-[#593102] text-[#593102] hover:bg-[#593102] hover:text-white transition-all duration-300 h-[52px] rounded-xl flex items-center justify-center gap-2.5 font-black text-[15px] cursor-pointer w-full bg-white/90 shadow-xs uppercase tracking-wider"
-            >
-              <FiGift size={18} />
-              Explore Gift Sets
-            </Link>
-          </div>
-
-          {/* Image with Floating Cards */}
-          <div className="relative w-full max-w-[500px] pt-4">
-            <Image
-              src="/home 1.png"
-              alt="ShudhVeda Natural Honey Jar"
-              width={1200}
-              height={1200}
-              priority
-              className="w-full h-auto object-contain rounded-2xl"
-            />
-
-            {/* Floating Cards (Top-Left Positioned) */}
-            <div className="absolute left-2 sm:left-4 top-8 flex flex-col gap-3 z-20">
-
-              {/* Card 1 */}
-
-
             </div>
           </div>
 
@@ -257,7 +248,7 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons (Original Desktop Buttons) */}
             <div className="flex flex-row gap-5 mt-10">
               <Link
                 href="/shop"

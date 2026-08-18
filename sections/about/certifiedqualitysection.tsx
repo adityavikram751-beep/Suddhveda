@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Sparkles, ShieldCheck, Award } from "lucide-react";
+import { ShieldCheck, Award } from "lucide-react";
 
 const features = [
   {
@@ -50,7 +50,6 @@ export default function CertifiedQualitySection() {
 
             {/* Subtitle Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-3 self-start">
-              <Sparkles size={14} className="text-[#D49313]" />
               <span>CERTIFIED PURITY</span>
             </div>
 

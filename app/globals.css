@@ -53,6 +53,8 @@ h6,
   -webkit-text-fill-color: #F4511E !important;
 }
 
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #FCF4E8;
@@ -127,6 +129,8 @@ a[class*="hover:from-"]:hover[class*="text-white"] {
   background-image: none !important;
   background-color: #E94816 !important;
 }
+
+
 
 /* ========================= */
 /* TOP BAR */

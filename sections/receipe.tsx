@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, X, Sparkles, HelpCircle } from "lucide-react";
+import { Play, X, HelpCircle } from "lucide-react";
 import { FiChevronRight, FiChevronDown } from "react-icons/fi";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -186,7 +186,6 @@ export default function RecipesPage() {
           <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-                <Sparkles size={13} className="text-[#D49313]" />
                 <span>RECIPES &amp; WELLNESS</span>
               </div>
               <h1 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif font-extrabold text-[#593102] leading-tight">
@@ -245,7 +244,6 @@ export default function RecipesPage() {
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-              <Sparkles size={13} className="text-[#D49313]" />
               <span>RECIPES &amp; WELLNESS</span>
             </div>
             <h1 className="text-[28px] sm:text-[34px] md:text-[42px] font-serif font-extrabold text-[#593102] leading-tight">

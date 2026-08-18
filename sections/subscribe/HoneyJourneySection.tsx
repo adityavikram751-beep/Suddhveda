@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Check, Play, Pause, ChevronLeft, ChevronRight, Sparkles, Calendar, Award } from "lucide-react";
+import { Check, Play, Pause, ChevronLeft, ChevronRight, Calendar, Award } from "lucide-react";
 
 const journeyItems = [
     {

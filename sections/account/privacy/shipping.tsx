@@ -20,7 +20,6 @@ import {
     Menu,
     X,
     ArrowLeft,
-    Sparkles,
 } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
@@ -242,7 +241,7 @@ export default function ShippingPolicyPage() {
                             <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-10 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
                                 <div className="flex items-center gap-2">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313] border border-[#D49313]/30">
-                                        <Sparkles size={16} />
+                                        <Settings size={16} />
                                     </div>
                                     <h3 className="font-serif text-base font-extrabold text-[#593102] tracking-tight">Account Navigation</h3>
                                 </div>

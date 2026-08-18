@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Box, Sparkles, BookOpen, Star, Layers, QrCode } from "lucide-react";
+import { Box, BookOpen, Star, Layers, QrCode } from "lucide-react";
 
 export default function WhatsInsideSection() {
     return (
@@ -34,7 +34,7 @@ export default function WhatsInsideSection() {
                                 <p className="text-xs text-[#8D7F73]">Know the exact origin &amp; batch</p>
                             </div>
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <Sparkles size={22} />
+                                <Star size={22} />
                             </div>
                         </div>
 
@@ -105,7 +105,7 @@ export default function WhatsInsideSection() {
                         </div>
 
                         <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <Sparkles size={20} className="text-[#D49313] shrink-0" />
+                            <Star size={20} className="text-[#D49313] shrink-0" />
                             <div>
                                 <h4 className="font-bold text-sm text-[#593102]">Floral Source &amp; Harvest</h4>
                                 <p className="text-[11px] text-[#8D7F73]">Know exact origin &amp; batch</p>

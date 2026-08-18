@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Check, Percent, Truck, Sparkles, Box, Gift, Heart, Crown, ArrowRight, Loader2, Calendar, ShieldCheck, Award, Clock, Headphones } from "lucide-react";
+import { Check, Percent, Truck, Box, Gift, Heart, Crown, ArrowRight, Loader2, Calendar, ShieldCheck, Award, Clock, Headphones, Star } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -28,7 +28,7 @@ const subscriberBenefits8 = [
     { title: "Lab Tested Purity", subtitle: "Zero added sugar or preservatives", icon: Award },
     { title: "Free Pan-India Delivery", subtitle: "Zero shipping fee on every shipment", icon: Truck },
     { title: "Prepaid Member Savings", subtitle: "Save up to 15% on annual plans", icon: Percent },
-    { title: "Priority Harvest Access", subtitle: "Get rare & limited floral honey first", icon: Sparkles },
+    { title: "Priority Harvest Access", subtitle: "Get rare & limited floral honey first", icon: Star },
     { title: "Free Royal Samples", subtitle: "Surprise gift samples in every box", icon: Gift },
     { title: "Flexible Schedule", subtitle: "Pause, skip or modify dates anytime", icon: Clock },
     { title: "Eco Glass Packaging", subtitle: "Airtight luxury glass jar protection", icon: Box },

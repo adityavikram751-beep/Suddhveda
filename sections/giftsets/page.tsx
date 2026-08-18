@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Gift, ShoppingBag, Sparkles } from "lucide-react";
+import { Gift, ShoppingBag } from "lucide-react";
 
 export default function Hero() {
   return (

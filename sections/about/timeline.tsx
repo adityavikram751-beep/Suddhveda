@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 
 const timeline = [
@@ -7,7 +8,7 @@ const timeline = [
     year: "2018",
     title: "The Beginning",
     desc: "Our journey began with a passion for bees and a desire to create something pure.",
-    image: "/bigin 2.png",
+    image: "/bigin2.png",
   },
   {
     year: "2019",
@@ -28,6 +29,47 @@ const timeline = [
     image: "/trusted.png",
   },
 ];
+
+function TimelineItem({ item }: { item: typeof timeline[0] }) {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="relative z-10 flex flex-col items-center text-center px-2 sm:px-4 group cursor-pointer">
+      {/* Icon Wrapper with Mobile Right Dashed Line */}
+      <div className="relative flex items-center justify-center">
+        <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full border border-[#D49313]/70 bg-white flex items-center justify-center shadow-2xs transition-all duration-300 z-10 overflow-hidden relative group-hover:border-[#D49313] group-hover:scale-105 p-3.5 sm:p-4">
+          {!imgError ? (
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              className="object-contain p-3.5 sm:p-4 transition-transform duration-500 group-hover:scale-110"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className="text-[#593102] text-xs font-black uppercase tracking-wider">{item.year}</span>
+          )}
+        </div>
+
+        {/* Mobile Right-Side Dashed Line */}
+        <div className="lg:hidden absolute left-full w-12 sm:w-20 border-t border-dashed border-[#D49313]/70 ml-1" />
+      </div>
+
+      {/* Content */}
+      <h3 className="mt-5 font-serif text-[19px] sm:text-[21px] font-extrabold text-[#593102] group-hover:text-[#D49313] transition-colors">
+        {item.title}
+      </h3>
+
+      <p className="mt-2.5 text-[13.5px] sm:text-[14.5px] leading-[1.65] text-[#7A6A5C] font-medium max-w-[280px]">
+        {item.desc}
+      </p>
+
+      <span className="mt-4 text-[#D49313] font-black text-[13px] tracking-wider uppercase">
+        {item.year}
+      </span>
+    </div>
+  );
+}
 
 export default function Timeline() {
   return (
@@ -59,38 +101,7 @@ export default function Timeline() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-14">
             {timeline.map((item) => (
-              <div
-                key={item.title}
-                className="relative z-10 flex flex-col items-center text-center px-2 sm:px-4 group cursor-pointer"
-              >
-                {/* Icon Wrapper with Mobile Right Dashed Line */}
-                <div className="relative flex items-center justify-center">
-                  <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full border border-[#D49313]/70 bg-white flex items-center justify-center shadow-2xs transition-all duration-300 z-10 overflow-hidden relative group-hover:border-[#D49313] group-hover:scale-105 p-3.5 sm:p-4">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-contain p-3.5 sm:p-4 transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-
-                  {/* Mobile Right-Side Dashed Line */}
-                  <div className="lg:hidden absolute left-full w-12 sm:w-20 border-t border-dashed border-[#D49313]/70 ml-1" />
-                </div>
-
-                {/* Content */}
-                <h3 className="mt-5 font-serif text-[19px] sm:text-[21px] font-extrabold text-[#593102] group-hover:text-[#D49313] transition-colors">
-                  {item.title}
-                </h3>
-
-                <p className="mt-2.5 text-[13.5px] sm:text-[14.5px] leading-[1.65] text-[#7A6A5C] font-medium max-w-[280px]">
-                  {item.desc}
-                </p>
-
-                <span className="mt-4 text-[#D49313] font-black text-[13px] tracking-wider uppercase">
-                  {item.year}
-                </span>
-              </div>
+              <TimelineItem key={item.title} item={item} />
             ))}
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Crown, CreditCard, CalendarCheck, Sparkles, RotateCcw, ArrowRight } from "lucide-react";
+import { Check, Crown, CreditCard, CalendarCheck, Star, RotateCcw, ArrowRight } from "lucide-react";
 
 const steps = [
     {
@@ -29,7 +29,7 @@ const steps = [
         number: "04",
         title: "RECEIVE & UNBOX",
         description: "Unbox rare raw honey varieties delivered straight to your doorstep.",
-        icon: Sparkles,
+        icon: Star,
         badge: "STEP 4",
     },
     {
@@ -65,7 +65,6 @@ export default function HowItWorksSection() {
 
                 {/* Section Subtitle Badge */}
                 <div className="inline-flex items-center gap-2 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 text-xs font-black tracking-widest uppercase text-[#593102] shadow-2xs mb-3">
-                    <Sparkles size={14} className="text-[#D49313]" />
                     <span>SIMPLE 5-STEP EXPERIENCE</span>
                 </div>
 

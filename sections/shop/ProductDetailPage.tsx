@@ -251,15 +251,21 @@ export default function ProductDetailPage({
       const image = getPrimaryImage(product) || "/placeholder.png";
 
       // Call context addToCart (handles guest localStorage fallback)
-      await addToCart(product._id, selectedVariant._id, {
-        type: "NORMAL",
-        productId: product._id,
-        variantId: selectedVariant._id,
-        productName: getProductName(product),
-        image,
-        price,
-        weight: weightLabel,
-      });
+      await addToCart(
+        product._id,
+        selectedVariant._id,
+        {
+          type: "NORMAL",
+          productId: product._id,
+          variantId: selectedVariant._id,
+          productName: getProductName(product),
+          image,
+          price,
+          weight: weightLabel,
+          quantity: selectedQty,
+        },
+        selectedQty
+      );
 
       setSelectedQty(1);
       window.dispatchEvent(new Event("cart-updated"));
@@ -620,9 +626,14 @@ export default function ProductDetailPage({
               </div>
             )}
 
-            {/* Quantity & Cart Actions */}
+            {/* Quantity & Cart Actions (Desktop) */}
             <div className="hidden lg:block space-y-4 pt-2">
-              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+              <div className="flex items-center justify-between max-w-xl">
+                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+                <span className="text-[14px] font-extrabold text-[#D49313]">
+                  Total: ₹{currentPrice * selectedQty}
+                </span>
+              </div>
 
               <div className="flex gap-4 max-w-xl">
                 {/* Quantity Buttons */}
@@ -648,9 +659,18 @@ export default function ProductDetailPage({
                 <button
                   disabled={btnLoading}
                   onClick={() => handleAddToCart(false)}
-                  className="flex-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[15px] tracking-wider uppercase disabled:opacity-50 shadow-md hover:shadow-xl cursor-pointer border border-[#FFD700]/30 active:scale-98 flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#FAF0DC] hover:bg-[#F5E6CC] text-[#593102] h-[56px] rounded-2xl font-extrabold transition-all duration-300 text-[14px] tracking-wider uppercase disabled:opacity-50 text-center border-2 border-[#D49313] cursor-pointer shadow-xs active:scale-98"
                 >
-                  {btnLoading ? "ADDING..." : "ADD TO CART"}
+                  {btnLoading ? "ADDING..." : `ADD TO CART · ₹${currentPrice * selectedQty}`}
+                </button>
+
+                {/* Buy Now Button */}
+                <button
+                  disabled={btnLoading}
+                  onClick={() => handleAddToCart(true)}
+                  className="flex-1 bg-[#F9531E] hover:bg-[#E04515] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[14px] tracking-wider uppercase disabled:opacity-50 text-center shadow-md hover:shadow-xl cursor-pointer active:scale-98"
+                >
+                  BUY NOW
                 </button>
               </div>
             </div>
@@ -825,31 +845,36 @@ export default function ProductDetailPage({
       )}
 
       {/* MOBILE STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EADCC9] p-3.5 lg:hidden shadow-2xl z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EADCC9] p-3 sm:p-3.5 lg:hidden shadow-[0_-10px_25px_rgba(0,0,0,0.1)] z-50">
         <div className="flex items-center gap-3">
-          <div className="flex items-center border border-[#EADCC9] rounded-xl overflow-hidden bg-white shadow-2xs">
+          {/* Quantity Controls */}
+          <div className="flex items-center border-2 border-[#EADCC9] rounded-2xl overflow-hidden bg-white shadow-2xs shrink-0">
             <button
               onClick={decrementQty}
-              className="px-3 py-2 hover:bg-gray-50 text-[#593102] font-extrabold text-lg cursor-pointer"
+              className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer"
+              aria-label="Decrease quantity"
             >
               −
             </button>
-            <span className="px-3 py-2 text-sm font-extrabold min-w-[30px] text-center text-[#593102]">
+            <span className="px-2.5 py-2.5 text-sm font-black min-w-[32px] text-center text-[#593102]">
               {selectedQty}
             </span>
             <button
               onClick={incrementQty}
-              className="px-3 py-2 hover:bg-gray-50 text-[#593102] font-extrabold text-lg cursor-pointer"
+              className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer"
+              aria-label="Increase quantity"
             >
               +
             </button>
           </div>
+
+          {/* Add to Cart Button with Dynamic Total Price */}
           <button
             disabled={btnLoading}
-            onClick={() => handleAddToCart(true)}
-            className="flex-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white py-3.5 rounded-2xl font-black text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer border border-[#FFD700]/30 active:scale-98"
+            onClick={() => handleAddToCart(false)}
+            className="flex-1 bg-[#F9531E] hover:bg-[#E04515] text-white py-3.5 px-3 rounded-2xl font-black text-[13px] sm:text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer transition-all active:scale-98 flex items-center justify-center gap-1.5"
           >
-            Buy Now · ₹{currentPrice}
+            {btnLoading ? "ADDING..." : `ADD TO CART - ₹${currentPrice * selectedQty}`}
           </button>
         </div>
       </div>

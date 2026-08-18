@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Star, StarHalf, Sparkles, Quote } from "lucide-react";
+import { Star, StarHalf, Quote } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
 type Review = {
@@ -149,7 +149,6 @@ export default function RealReview() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-wider mb-3 shadow-2xs">
-            <Sparkles size={14} className="text-[#D49313]" />
             <span>REAL TESTIMONIALS</span>
           </div>
 

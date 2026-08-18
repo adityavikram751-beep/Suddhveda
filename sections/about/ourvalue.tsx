@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Star, Heart, Eye, Users, Globe, ShieldCheck, Sparkles } from "lucide-react";
+import { Star, Heart, Eye, Users, Globe, ShieldCheck } from "lucide-react";
 
 const values = [
   {
@@ -56,7 +56,6 @@ export default function OurValues() {
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 sm:p-8 z-10 rounded-b-3xl">
               <div className="inline-flex items-center gap-1.5 text-[#FFD700] text-[11px] font-black uppercase tracking-[0.18em] bg-black/40 px-3 py-1 rounded-full mb-3 border border-[#FFD700]/30 backdrop-blur-xs">
-                <Sparkles size={13} />
                 <span>OUR MISSION</span>
               </div>
               <p className="text-white text-[15px] sm:text-[17px] leading-[1.65] italic font-serif">
@@ -78,7 +77,6 @@ export default function OurValues() {
           <div className="flex flex-col justify-center h-full">
             {/* Subtitle Pill Tag */}
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2.5 self-start">
-              <Sparkles size={13} className="text-[#D49313]" />
               <span>OUR VALUES</span>
             </div>
 

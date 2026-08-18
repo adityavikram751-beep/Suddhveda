@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Sparkles, Gift } from "lucide-react";
+import { Gift } from "lucide-react";
 
 const occasions = [
   {
@@ -53,7 +53,6 @@ export default function GiftsForEveryOccasion() {
         {/* Heading */}
         <div className="text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-wider mb-4 shadow-2xs">
-            <Sparkles size={14} className="text-[#D49313]" />
             <span>CELEBRATE IN STYLE</span>
           </div>
 

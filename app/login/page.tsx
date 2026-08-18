@@ -153,8 +153,8 @@ function LoginForm() {
 
       <main className="h-screen w-full bg-[#FFF8EF] overflow-hidden">
         <div className="grid h-full w-full grid-cols-1 bg-white lg:grid-cols-2">
-          {/* Image Column – full height */}
-          <div className="relative h-full w-full">
+          {/* Image Column – hidden on mobile, visible on desktop */}
+          <div className="hidden lg:block relative h-full w-full">
             <Image
               src="/loginpage.png"
               alt="Shuddhveda honey jar with honeycomb and bees"

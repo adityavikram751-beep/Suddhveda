@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, ShieldCheck, Heart, Leaf, ShoppingBag } from "lucide-react";
+import { ShieldCheck, Heart, Leaf, ShoppingBag } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -19,7 +19,6 @@ export default function Hero() {
 
             {/* Subtitle Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-              <Sparkles size={14} className="text-[#D49313]" />
               <span>OUR STORY</span>
             </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { HandHeart, ShieldCheck, Sparkles } from "lucide-react";
+import { HandHeart, ShieldCheck } from "lucide-react";
 
 // Custom headset-support icon
 const HeadsetIcon = ({ size = 28, strokeWidth = 1.8, className = "" }) => (
@@ -73,7 +73,6 @@ export default function Hero() {
 
             {/* Subtitle Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-4">
-              <Sparkles size={14} className="text-[#D49313]" />
               <span>GET IN TOUCH</span>
             </div>
 

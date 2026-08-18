@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2, Sparkles } from "lucide-react";
+import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
 
@@ -348,7 +348,6 @@ export default function WishlistPage() {
         <div className="flex items-center justify-between mt-2">
           <div>
             <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-              <Sparkles size={13} className="text-[#D49313]" />
               <span>SAVED FAVORITES</span>
             </div>
             <h1 className="text-[28px] sm:text-[38px] font-serif font-extrabold text-[#593102] flex items-center gap-2.5 sm:gap-3">

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiUser, FiBox, FiDroplet } from "react-icons/fi";
 import { GiBee } from "react-icons/gi";
-import { Sparkles, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 export default function ImpactSection() {
   const router = useRouter();

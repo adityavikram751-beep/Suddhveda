@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Gift, Loader2, Minus, Plus, ShoppingBag, Sparkles, X } from "lucide-react";
+import { Check, Gift, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 
 // ================= TYPES =================
@@ -759,7 +759,7 @@ export default function CuratedGift() {
       {/* Floating Top Notification Banner */}
       {toastMessage && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#593102] text-white px-6 py-3.5 rounded-full shadow-2xl text-[14px] sm:text-[15px] font-semibold flex items-center gap-2.5 animate-in slide-in-from-top duration-300 border-2 border-[#D49313] max-w-[92vw] sm:max-w-lg text-center backdrop-blur-md">
-          <Sparkles size={18} className="text-[#D49313] shrink-0" />
+          <Gift size={18} className="text-[#D49313] shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}

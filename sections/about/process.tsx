@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Sparkles } from "lucide-react";
+
 
 const steps = [
   {
@@ -42,6 +43,26 @@ const steps = [
   },
 ];
 
+function ProcessStepIcon({ icon, title, step }: { icon: string; title: string; step: string }) {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="relative z-10 w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] rounded-full border-2 border-[#D49313]/70 bg-white flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:shadow-2xl group-hover:scale-108 group-hover:border-[#593102] transition-all duration-500 relative">
+      {!imgError ? (
+        <Image
+          src={icon}
+          alt={title}
+          fill
+          className="object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[#593102] text-xs font-black uppercase tracking-wider">{step}</span>
+      )}
+    </div>
+  );
+}
+
 export default function BeekeepingProcess() {
   return (
     <section className="relative bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] border-y border-[#EADCC9]/50 py-16 lg:py-24 overflow-hidden mt-10 lg:mt-14">
@@ -53,7 +74,6 @@ export default function BeekeepingProcess() {
         {/* Heading */}
         <div className="text-center max-w-[1050px] mx-auto mb-12 lg:mb-16">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-3">
-            <Sparkles size={14} className="text-[#D49313]" />
             <span>OUR BEEKEEPING PROCESS</span>
           </div>
 
@@ -94,15 +114,8 @@ export default function BeekeepingProcess() {
                     STEP {item.step}
                   </span>
 
-                  {/* Icon Circle — 100% Full Cover Circle Frame with Gold Border */}
-                  <div className="relative z-10 w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] rounded-full border-2 border-[#D49313]/70 bg-white flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:shadow-2xl group-hover:scale-108 group-hover:border-[#593102] transition-all duration-500 relative">
-                    <Image
-                      src={item.icon}
-                      alt={item.title}
-                      fill
-                      className="object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
+                  {/* Icon Circle */}
+                  <ProcessStepIcon icon={item.icon} title={item.title} step={item.step} />
 
                   <h3 className="mt-4 font-serif font-bold text-[14px] sm:text-[15px] tracking-wide text-[#593102] group-hover:text-[#D49313] transition-colors uppercase">
                     {item.title}
@@ -125,20 +138,13 @@ export default function BeekeepingProcess() {
                   STEP {item.step}
                 </span>
 
-                {/* Icon wrapper with left and right dashed lines - PERFECTLY CENTERED */}
+                {/* Icon wrapper with left and right dashed lines */}
                 <div className="relative flex items-center justify-center w-full">
                   {/* Left Dashed Line */}
                   <div className="absolute left-0 right-[calc(50%+45px)] top-1/2 border-t-2 border-dashed border-[#D49313]/70 -translate-y-1/2" />
 
                   {/* Icon Circle */}
-                  <div className="relative z-10 w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] rounded-full border-2 border-[#D49313]/70 bg-white flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-108 transition-all relative">
-                    <Image
-                      src={item.icon}
-                      alt={item.title}
-                      fill
-                      className="object-cover rounded-full"
-                    />
-                  </div>
+                  <ProcessStepIcon icon={item.icon} title={item.title} step={item.step} />
 
                   {/* Right Dashed Line */}
                   <div className="absolute left-[calc(50%+45px)] right-0 top-1/2 border-t-2 border-dashed border-[#D49313]/70 -translate-y-1/2" />

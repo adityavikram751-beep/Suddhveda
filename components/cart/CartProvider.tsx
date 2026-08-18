@@ -81,7 +81,7 @@ type CartItemDetail =
 type CartContextValue = {
   cartItems: Record<string, CartItemDetail>;
   itemCount: number;
-  addToCart: (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>) => Promise<void>;
+  addToCart: (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>, quantityToAdd?: number) => Promise<void>;
   updateQuantity: (productId: string, variantId: string, change: number) => Promise<void>;
   updateCustomQuantity: (cartItemId: string, change: number) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
@@ -296,14 +296,21 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   }, [isCartOpen]);
 
   // ---------- Add to Cart (Handles both Logged-In & Guest users) ----------
-  const addToCart = async (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>) => {
+  const addToCart = async (
+    productId: string,
+    variantId: string,
+    productDetails?: Partial<CartItemDetail>,
+    quantityToAdd?: number
+  ) => {
+    const qtyToAdd = quantityToAdd || (productDetails as any)?.quantity || 1;
+
     try {
       await authFetch(`${API_BASE_URL}/api/cart/add`, {
         method: "POST",
         body: JSON.stringify({
           productId,
           selectedWeight: variantId,
-          quantity: 1,
+          quantity: qtyToAdd,
         }),
       });
       const updatedCart = await fetchCart();
@@ -326,7 +333,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       if (existing && existing.type === "NORMAL") {
         guestItems[cartItemId] = {
           ...existing,
-          quantity: existing.quantity + 1,
+          quantity: existing.quantity + qtyToAdd,
         };
       } else {
         guestItems[cartItemId] = {
@@ -339,7 +346,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           image: productDetails?.image || "/placeholder.png",
           price: productDetails?.price || 0,
           weight: (productDetails?.type === "NORMAL" ? productDetails.weight : "") || "",
-          quantity: 1,
+          quantity: qtyToAdd,
         };
       }
 

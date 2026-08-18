@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
-import { Sparkles } from "lucide-react";
 
 interface Faq {
   question: string;
@@ -94,7 +93,6 @@ export default function FaqSection() {
         {/* Heading */}
         <div className="text-center mb-10 lg:mb-14">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-3">
-            <Sparkles size={14} className="text-[#D49313]" />
             <span>FREQUENTLY ASKED QUESTIONS</span>
           </div>
 

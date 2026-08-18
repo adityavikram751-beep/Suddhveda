@@ -15,7 +15,6 @@ import {
   X,
   Loader2,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
@@ -312,7 +311,7 @@ export default function EditProfilePage() {
               <div className="sticky top-0 bg-[#FFFDF9]/95 backdrop-blur-md z-10 flex items-center justify-between p-4 px-5 border-b border-[#EADCC9]/80 shadow-2xs">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313] border border-[#D49313]/30">
-                    <Sparkles size={16} />
+                    <Settings size={16} />
                   </div>
                   <h3 className="font-serif text-base font-extrabold text-[#593102] tracking-tight">Account Navigation</h3>
                 </div>
@@ -341,7 +340,6 @@ export default function EditProfilePage() {
             {/* Header */}
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-                <Sparkles size={13} className="text-[#D49313]" />
                 <span>PROFILE SETTINGS</span>
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#593102]">

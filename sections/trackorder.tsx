@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Truck, Home, Copy, ExternalLink, Package, Sparkles, MapPin, CheckCircle2 } from "lucide-react";
+import { Check, Truck, Home, Copy, ExternalLink, Package, MapPin, CheckCircle2 } from "lucide-react";
 
 // ---- Sample data (replace with API data) ----
 const order = {
@@ -71,7 +71,6 @@ export default function TrackOrderPage() {
         {/* Header */}
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-2">
-            <Sparkles size={13} className="text-[#D49313]" />
             <span>LIVE SHIPMENT TRACKING</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#593102]">
@@ -193,7 +192,6 @@ export default function TrackOrderPage() {
           {/* Timeline */}
           <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-6 shadow-xs">
             <div className="flex items-center gap-2 pb-4 border-b border-[#EADCC9]/60 mb-4">
-              <Sparkles size={18} className="text-[#D49313]" />
               <h2 className="font-serif text-lg font-bold text-[#593102]">Tracking Activity</h2>
             </div>
             <ul className="space-y-5">

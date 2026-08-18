@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Gift, Sparkles, ChevronRight, ShieldCheck, Heart, Truck, Award } from "lucide-react";
+import { Gift, ChevronRight, ShieldCheck, Heart, Truck, Award } from "lucide-react";
 
 export default function GiftSetSection() {
   return (

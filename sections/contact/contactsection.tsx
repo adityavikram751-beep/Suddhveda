@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
 import { FiPhone, FiMail, FiMapPin, FiArrowUp, FiChevronDown } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
-import { Sparkles } from "lucide-react";
+
 import { useState, useEffect } from "react";
 
 interface LocationData {
@@ -194,7 +194,6 @@ export default function ContactSection() {
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 bg-[#FAF0DC] border border-[#D49313]/40 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase text-[#593102] tracking-[0.16em] mb-2">
-                <Sparkles size={12} className="text-[#D49313]" />
                 <span>WE&apos;D LOVE TO</span>
               </div>
               <h2 className="text-[28px] sm:text-[34px] font-serif font-extrabold text-[#593102] mt-1 mb-6">

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Zap, BadgeCheck, Tag, Package, Sparkles } from "lucide-react";
+import { ChevronRight, Zap, BadgeCheck, Tag, Package } from "lucide-react";
 
 export default function ShopHero() {
   return (
