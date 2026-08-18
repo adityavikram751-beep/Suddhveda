@@ -29,7 +29,7 @@ jobs:
             git reset --hard origin/main
 
             echo "Installing dependencies..."
-            npm ci
+            npm i
 
             echo "Building Next.js..."
             npm run build
