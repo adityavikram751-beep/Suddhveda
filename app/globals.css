@@ -13,7 +13,24 @@
   --font-serif: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-*, body, p, span, a, button, input, select, textarea, div, h1, h2, h3, h4, h5, h6, .font-serif, .font-sans {
+*,
+body,
+p,
+span,
+a,
+button,
+input,
+select,
+textarea,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-serif,
+.font-sans {
   font-family: var(--font-instrument-sans), "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
