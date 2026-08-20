@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,20 @@ function formatOrderTime(date: Date) {
 export default function OrderConfirmation() {
   const router = useRouter();
   const { cartItems } = useCart();
+  const [order, setOrder] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedOrder = localStorage.getItem("latest_order");
+      if (savedOrder) {
+        try {
+          setOrder(JSON.parse(savedOrder));
+        } catch (e) {
+          console.error("Error parsing latest_order", e);
+        }
+      }
+    }
+  }, []);
 
   // ----- FIX: Safely extract quantity from cartItems -----
   const cartProducts = allProducts

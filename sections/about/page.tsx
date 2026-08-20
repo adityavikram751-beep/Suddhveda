@@ -77,9 +77,9 @@ export default function Hero() {
             {/* CTA Button with Link */}
             <Link
               href="/shop"
-              className="mt-8 lg:mt-10 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[52px] w-full lg:w-auto px-8 rounded-2xl font-black text-[14px] tracking-wider uppercase inline-flex items-center justify-center gap-2.5 shadow-lg hover:shadow-2xl transition-all duration-300 border border-[#FFD700]/30 active:scale-98 cursor-pointer"
+              className="mt-7 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-xs sm:text-sm font-black tracking-wider uppercase px-6 sm:px-7 h-[42px] rounded-2xl cursor-pointer shadow-sm transition-all hover:scale-105 active:scale-95 inline-flex items-center justify-center gap-2"
             >
-              <ShoppingBag size={18} />
+              <ShoppingBag size={16} />
               <span>EXPLORE OUR PRODUCTS</span>
             </Link>
           </div>

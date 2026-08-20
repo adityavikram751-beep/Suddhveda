@@ -42,24 +42,7 @@ export default function Hero() {
               Beautifully curated premium honey gift boxes, crafted to make every occasion memorable with organic purity and artisanal essence.
             </p>
 
-            {/* Buttons with Working Links */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full sm:w-auto">
-              <Link
-                href="/shop"
-                className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[50px] w-full sm:w-auto px-8 rounded-xl font-extrabold text-[13px] tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md hover:shadow-xl transition-all border border-[#FFD700]/30 active:scale-98 cursor-pointer"
-              >
-                <ShoppingBag size={17} />
-                <span>SHOP THE COLLECTION</span>
-              </Link>
 
-              <a
-                href="#curated-gift-boxes"
-                className="border-2 border-[#D49313] text-[#593102] hover:bg-[#FAF0DC] hover:text-[#593102] transition-all h-[50px] w-full sm:w-auto px-8 rounded-xl font-extrabold text-[13px] tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-xs cursor-pointer active:scale-98"
-              >
-                <Gift size={17} className="text-[#D49313]" />
-                <span>PERSONALIZE YOUR BOX</span>
-              </a>
-            </div>
           </div>
 
           {/* RIGHT – IMAGE CARD (EXACT BORDER FIT & ZERO CROPPING) */}

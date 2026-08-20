@@ -97,8 +97,9 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[420px] sm:min-h-[450px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9] bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:border-[#D49313]/60 hover:shadow-md mx-auto"
+      className="relative flex h-full min-h-[420px] sm:min-h-[450px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border-0 bg-white p-4 sm:p-5 shadow-none transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 mx-auto"
     >
+
       {/* Wishlist Button (Top Left) */}
       <button
         type="button"
@@ -115,15 +116,6 @@ export default function ProductCardShop({
           }
         />
       </button>
-
-      {/* Dynamic Badge (Top Right) */}
-      {badge && (
-        <div className="absolute right-3.5 top-3.5 z-20 max-w-[calc(100%-56px)]">
-          <span className="inline-block rounded-full bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] px-3.5 py-1 text-[11px] font-extrabold text-white shadow-md uppercase tracking-wider border border-white/20 whitespace-nowrap truncate">
-            {badge}
-          </span>
-        </div>
-      )}
 
       {/* Dynamic Product Image */}
       <div className="relative mt-3 h-[185px] sm:h-[205px] w-full overflow-hidden shrink-0 flex items-center justify-center">

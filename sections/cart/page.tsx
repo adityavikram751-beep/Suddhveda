@@ -97,6 +97,39 @@ export default function Cart() {
     const recommendationScrollerRefs = useRef<Array<HTMLDivElement | null>>([]);
     const [isFooterVisible, setIsFooterVisible] = useState(false);
 
+    const [appliedCouponsList, setAppliedCouponsList] = useState<any[]>([]);
+
+    useEffect(() => {
+        const checkCoupons = () => {
+            if (typeof window !== "undefined") {
+                const stored = localStorage.getItem("applied_coupons");
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed)) {
+                            setAppliedCouponsList(parsed);
+                        }
+                    } catch (e) {
+                        console.error("Error parsing applied_coupons", e);
+                    }
+                } else {
+                    setAppliedCouponsList([]);
+                }
+            }
+        };
+
+        checkCoupons();
+        window.addEventListener("focus", checkCoupons);
+        window.addEventListener("storage", checkCoupons);
+        const interval = setInterval(checkCoupons, 500);
+
+        return () => {
+            window.removeEventListener("focus", checkCoupons);
+            window.removeEventListener("storage", checkCoupons);
+            clearInterval(interval);
+        };
+    }, []);
+
     // Observe footer and toggle sticky behavior for the sidebar
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -405,6 +438,26 @@ export default function Cart() {
                             ) : (
                                 cartProducts.map((product) => {
                                     const selected = isItemSelected(product.cartItemId);
+                                    const itemSubtotal = product.price * product.quantity;
+
+                                    const matchingCoupon = appliedCouponsList.find((c: any) =>
+                                        c.targetItemId ? c.targetItemId === product.cartItemId : false
+                                    );
+
+                                    let itemCouponDiscount = 0;
+                                    if (selected && matchingCoupon) {
+                                        let d = 0;
+                                        if (matchingCoupon.discountPercentage && matchingCoupon.discountPercentage > 0) {
+                                            d = Math.round((itemSubtotal * matchingCoupon.discountPercentage) / 100);
+                                        } else if (matchingCoupon.flatDiscount && matchingCoupon.flatDiscount > 0) {
+                                            d = matchingCoupon.flatDiscount;
+                                        } else {
+                                            d = matchingCoupon.calculatedDiscount || 0;
+                                        }
+                                        itemCouponDiscount = Math.min(d, itemSubtotal);
+                                    }
+                                    const itemFinalTotal = Math.max(itemSubtotal - itemCouponDiscount, 0);
+
                                     return (
                                         <div
                                             key={product.cartItemId}
@@ -423,7 +476,7 @@ export default function Cart() {
                                                 />
                                                 <div className="relative h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
                                                     <Image
-                                                        src={product.image}
+                                                        src={product.image && product.image.trim() !== "" ? product.image : "/giftset.png"}
                                                         alt={product.productName}
                                                         fill
                                                         className="object-contain p-1.5"
@@ -443,10 +496,6 @@ export default function Cart() {
                                                             ? product.weight
                                                             : product.customMessage || "Gift box"}
                                                     </p>
-                                                    <span className="inline-flex w-fit items-center gap-1 rounded-full bg-emerald-50 border border-emerald-300 px-2 py-0.5 text-[9px] sm:text-[10px] font-black text-emerald-800 mt-0.5">
-                                                        <Check size={10} className="stroke-[3]" />
-                                                        Raw &amp; Unfiltered
-                                                    </span>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeItem(product.cartItemId)}
@@ -483,9 +532,20 @@ export default function Cart() {
 
                                             <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:block">
                                                 <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Total</span>
-                                                <p className="font-serif text-[16px] sm:text-[19px] font-extrabold text-[#593102]">
-                                                    ₹{product.price * product.quantity}
-                                                </p>
+                                                {itemCouponDiscount > 0 ? (
+                                                    <div className="flex flex-col items-end md:items-start">
+                                                        <span className="text-[13px] text-[#8D7F73] line-through font-semibold">
+                                                            ₹{itemSubtotal}
+                                                        </span>
+                                                        <span className="font-serif text-[17px] sm:text-[20px] font-black text-emerald-700">
+                                                            ₹{itemFinalTotal}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <p className="font-serif text-[16px] sm:text-[19px] font-extrabold text-[#593102]">
+                                                        ₹{itemSubtotal}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     );

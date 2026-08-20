@@ -192,7 +192,7 @@ export default function UpcomingProduct() {
                 href={banner.pre_order_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 w-full max-w-[260px] bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold py-3.5 px-8 rounded-2xl transition-all duration-500 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-98 text-center text-[15px] uppercase tracking-wider cursor-pointer border border-[#FFD700]/40"
+                className="mt-5 w-full max-w-[180px] h-[38px] inline-flex items-center justify-center bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold rounded-xl transition-all duration-500 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 text-center text-xs uppercase tracking-wider cursor-pointer border border-[#FFD700]/40"
               >
                 Pre-Order Now
               </a>
@@ -263,7 +263,7 @@ export default function UpcomingProduct() {
                   href={banner.pre_order_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 w-full block bg-[#593102] hover:bg-[#C68B2C] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] text-center text-[14px] uppercase tracking-wider cursor-pointer"
+                  className="mt-4 w-full max-w-[200px] mx-auto h-[38px] flex items-center justify-center bg-[#593102] hover:bg-[#C68B2C] text-white font-semibold rounded-lg transition-all duration-300 shadow-md text-center text-xs uppercase tracking-wider cursor-pointer"
                 >
                   Pre-Order Now
                 </a>

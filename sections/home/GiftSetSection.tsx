@@ -85,41 +85,27 @@ export default function GiftSetSection() {
             <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <Link
                 href="/giftsets"
-                className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-black text-[15px] sm:text-[16px] uppercase tracking-wider px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-[#FFD700]/30 cursor-pointer active:scale-98 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-[#FA4B1B] hover:bg-[#E64216] text-white font-black text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 h-[42px] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer w-full sm:w-auto"
               >
-                <Gift size={20} className="text-[#FFD700]" />
-                Build Custom Gift Box
-                <ChevronRight size={20} />
+                <span>BUILD CUSTOM GIFT BOX</span>
+                <ChevronRight size={16} className="stroke-[2.5]" />
               </Link>
             </div>
           </div>
 
           {/* RIGHT COLUMN - Heroic Image Showcase */}
           <div className="lg:col-span-5 relative flex justify-center items-center w-full">
-            <div className="relative w-full max-w-[540px] h-[280px] sm:h-[420px] lg:h-[480px] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6F0] to-[#F7ECE0] p-3 shadow-xl flex items-center justify-center group">
+            <div className="relative w-full max-w-[560px] lg:max-w-[580px] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-[#FFFDF9] shadow-xl group">
 
-              {/* Product Image - 100% Full Visibility (No Cutting) */}
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src="/home 2.png"
-                  alt="ShudhVeda Royal Gift Set"
-                  fill
-                  className="object-contain p-2 group-hover:scale-105 transition-transform duration-700 drop-shadow-xl"
-                  priority
-                />
-              </div>
-
-              {/* Floating Badge (Top Left Pill) */}
-              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-white/95 backdrop-blur-md border border-[#D49313]/50 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 shadow-md flex items-center gap-1.5 sm:gap-2 z-20">
-                <ShieldCheck size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                <span className="font-black text-[#593102] text-[10px] sm:text-[12px] uppercase tracking-wider">Raw &amp; Organic</span>
-              </div>
-
-              {/* Floating Badge (Bottom Right Pill) */}
-              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white rounded-full px-3.5 py-2 sm:px-5 sm:py-2.5 shadow-lg flex items-center gap-1.5 sm:gap-2 z-20 border border-[#FFD700]/40">
-                <Gift size={16} className="text-[#FFD700]" />
-                <span className="font-black text-[11px] sm:text-[13px] uppercase tracking-wider">Royal Gift Box</span>
-              </div>
+              {/* Product Image - Exact Image Dimensions (No Empty Space & No Cut) */}
+              <Image
+                src="/home 2.png"
+                alt="ShudhVeda Royal Gift Set"
+                width={800}
+                height={600}
+                className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 block"
+                priority
+              />
 
             </div>
           </div>

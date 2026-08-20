@@ -128,7 +128,7 @@ export default function PaymentPage() {
         return {
           id: item.giftCartItemId || item._id,
           cartItemId: item.giftCartItemId || item._id,
-          title: `🎁 ${giftBox.name || "Gift Box"}`,
+          title: `${giftBox.name || "Gift Box"}`,
           weight: `${item.totalWeight || 0}g`,
           price: item.totalAmount || 0,
           quantity: item.quantity || 1,

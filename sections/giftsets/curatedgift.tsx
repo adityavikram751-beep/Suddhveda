@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Check, Gift, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
+import { useCart } from "@/components/cart/CartProvider";
 
 // ================= TYPES =================
 type GiftBox = {
@@ -22,6 +23,7 @@ type SelectedProduct = {
   selectedWeight: string;
   name: string;
   image: string;
+  price?: number;
 };
 
 type HoneyProduct = {
@@ -35,6 +37,7 @@ type HoneyProduct = {
 
 export default function CuratedGift() {
   const router = useRouter();
+  const { fetchCart, openCart } = useCart();
   const [giftBoxes, setGiftBoxes] = useState<GiftBox[]>([]);
   const [loadingBoxes, setLoadingBoxes] = useState(true);
 
@@ -115,27 +118,11 @@ export default function CuratedGift() {
     setLoadingProducts(true);
 
     try {
-      // Use GET method for /api/products/weight?weight=250
-      let res = await fetch(`${API_BASE_URL}/api/products/weight?weight=250`, {
+      // Fetch working clean endpoint: GET /api/products
+      let res = await fetch(`${API_BASE_URL}/api/products`, {
         method: "GET",
         credentials: "include",
       });
-
-      // Fallback 1: GET /api/products/weight
-      if (!res.ok) {
-        res = await fetch(`${API_BASE_URL}/api/products/weight`, {
-          method: "GET",
-          credentials: "include",
-        });
-      }
-
-      // Fallback 2: GET /api/products
-      if (!res.ok) {
-        res = await fetch(`${API_BASE_URL}/api/products`, {
-          method: "GET",
-          credentials: "include",
-        });
-      }
 
       if (res.ok) {
         const data = await res.json();
@@ -156,37 +143,47 @@ export default function CuratedGift() {
           );
 
           let selectedWeight = "";
+          // 1. Direct variant object fields
           if (item?.variant?.variantId) {
             selectedWeight = String(item.variant.variantId);
           } else if (item?.variant?._id) {
             selectedWeight = String(item.variant._id);
-          } else if (typeof item?.selectedWeight === "string" && item.selectedWeight) {
-            selectedWeight = item.selectedWeight;
-          } else if (item?.selectedWeight?._id) {
-            selectedWeight = String(item.selectedWeight._id);
-          } else if (Array.isArray(item?.weights) && item.weights.length > 0) {
-            const w250 = item.weights.find(
-              (w: any) => String(w.weight) === "250" || w.weight === 250
-            );
-            selectedWeight = String(
-              (w250 || item.weights[0]).variantId || (w250 || item.weights[0])._id || (w250 || item.weights[0]).id || ""
-            );
-          } else if (Array.isArray(item?.variants) && item.variants.length > 0) {
-            const v250 = item.variants.find(
-              (v: any) => String(v.weight) === "250" || v.weight === 250
-            );
-            selectedWeight = String(
-              (v250 || item.variants[0]).variantId || (v250 || item.variants[0])._id || (v250 || item.variants[0]).id || ""
-            );
-          } else if (Array.isArray(item?.variantDocumentId) && item.variantDocumentId.length > 0) {
-            const v250 = item.variantDocumentId.find(
-              (v: any) => String(v.weight) === "250" || v.weight === 250
-            );
-            selectedWeight = String(
-              (v250 || item.variantDocumentId[0]).variantId || (v250 || item.variantDocumentId[0])._id || (v250 || item.variantDocumentId[0]).id || ""
-            );
-          } else {
-            selectedWeight = productId;
+          } else if (item?.variant?.id) {
+            selectedWeight = String(item.variant.id);
+          }
+
+          // 2. Check variant arrays (variantDocumentId, variants, weights)
+          if (!selectedWeight) {
+            const arr = Array.isArray(item?.variantDocumentId) && item.variantDocumentId.length > 0
+              ? item.variantDocumentId
+              : Array.isArray(item?.variants) && item.variants.length > 0
+                ? item.variants
+                : Array.isArray(item?.weights) && item.weights.length > 0
+                  ? item.weights
+                  : [];
+
+            if (arr.length > 0) {
+              const v250 = arr.find(
+                (v: any) => String(v?.weight || v?.size || v?.unit) === "250" || v?.weight === 250
+              ) || arr[0];
+
+              selectedWeight = String(
+                v250?.variantId || v250?._id || v250?.id || v250?.variant_id || ""
+              );
+            }
+          }
+
+          // 3. Fallback direct properties if present
+          if (!selectedWeight) {
+            if (typeof item?.selectedWeight === "string" && item.selectedWeight) {
+              selectedWeight = item.selectedWeight;
+            } else if (item?.selectedWeight?._id) {
+              selectedWeight = String(item.selectedWeight._id);
+            } else if (item?.selectedWeight?.variantId) {
+              selectedWeight = String(item.selectedWeight.variantId);
+            } else {
+              selectedWeight = productId;
+            }
           }
 
           const name = item?.product_name || item?.name || item?.title || "Natural Honey";
@@ -195,13 +192,52 @@ export default function CuratedGift() {
             ? (images[0]?.image_url || images[0] || "/honneycart.png")
             : (item?.image_url || item?.image || "/honneycart.png");
 
+          const parseNum = (val: any) => {
+            if (val === undefined || val === null) return 0;
+            const n = Number(val);
+            return !isNaN(n) && n > 0 ? n : 0;
+          };
+
+          let realPrice = parseNum(item?.variant?.price) ||
+            parseNum(item?.variant?.salePrice) ||
+            parseNum(item?.variant?.mrp) ||
+            parseNum(item?.price) ||
+            parseNum(item?.salePrice) ||
+            parseNum(item?.product_price) ||
+            parseNum(item?.mrp);
+
+          if (!realPrice) {
+            const arr = Array.isArray(item?.variantDocumentId) && item.variantDocumentId.length > 0
+              ? item.variantDocumentId
+              : Array.isArray(item?.variants) && item.variants.length > 0
+                ? item.variants
+                : Array.isArray(item?.weights) && item.weights.length > 0
+                  ? item.weights
+                  : [];
+
+            if (arr.length > 0) {
+              const v250 = arr.find(
+                (v: any) => String(v?.weight || v?.size || v?.unit) === "250" || v?.weight === 250
+              ) || arr[0];
+
+              realPrice = parseNum(v250?.price) ||
+                parseNum(v250?.salePrice) ||
+                parseNum(v250?.mrp) ||
+                parseNum(v250?.product_price);
+            }
+          }
+
+          if (!realPrice && giftBox?.price && giftBox?.jar_count) {
+            realPrice = Math.round(giftBox.price / giftBox.jar_count);
+          }
+
           return {
             _id: productId,
             name,
             image,
             productId,
             selectedWeight,
-            price: item?.variant?.price || item?.price || 0,
+            price: realPrice,
           };
         });
 
@@ -232,6 +268,7 @@ export default function CuratedGift() {
       selectedWeight: product.selectedWeight,
       name: product.name,
       image: product.image,
+      price: product.price,
     };
     setSelectedSlots(updated);
 
@@ -254,8 +291,8 @@ export default function CuratedGift() {
   };
 
   const showToast = (msg: string, type: "success" | "warning" | "info" = "info") => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3200);
+    // Toast messages disabled per user request
+    return;
   };
 
   // ---------- Add Customize Gift Box to Cart ----------
@@ -272,19 +309,18 @@ export default function CuratedGift() {
     try {
       setAddingToCart(true);
 
-      const firstProduct = selectedSlots[0];
       const payload = {
         giftBoxId: activeGiftBox._id,
         quantity: 1,
-        products: selectedSlots.map((slot) => ({
-          productId: slot!.productId,
-          selectedWeight: slot!.selectedWeight,
-        })),
-        productId: firstProduct?.productId || activeGiftBox._id,
-        selectedWeight: firstProduct?.selectedWeight || "",
+        products: selectedSlots
+          .filter((slot): slot is SelectedProduct => slot !== null)
+          .map((slot) => ({
+            productId: slot.productId,
+            selectedWeight: slot.selectedWeight,
+          })),
       };
 
-      // Extract Auth Token if present in cookies or localStorage
+      // Extract Auth Token
       const token = typeof document !== "undefined"
         ? (document.cookie.match(/(^| )sudhveda_token=([^;]+)/)?.[2] ||
           document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
@@ -292,95 +328,76 @@ export default function CuratedGift() {
           localStorage.getItem("sudhveda_token") || "")
         : "";
 
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) {
-        headers["Authorization"] = `Bearer ${decodeURIComponent(token)}`;
-      }
-
-      const candidateEndpoints = [
-        `${API_BASE_URL}/api/cart/add-customize/giftbox`,
-        `${API_BASE_URL}/api/cart/add/customize-product`,
-        `${API_BASE_URL}/api/cart/customize-giftbox`,
-        `${API_BASE_URL}/api/cart/add-customize-giftbox`,
-        `${API_BASE_URL}/api/cart/add/giftbox`,
-      ];
-
       let success = false;
-      let lastErrorMessage = "";
 
-      // Try customize endpoints first
-      for (const endpoint of candidateEndpoints) {
+      // 1. If user is logged in, post directly to single official API: POST /api/cart/add-customize/giftbox
+      if (token) {
         try {
-          const attempt = await fetch(endpoint, {
+          const res = await fetch(`${API_BASE_URL}/api/cart/add-customize/giftbox`, {
             method: "POST",
             credentials: "include",
-            headers,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${decodeURIComponent(token)}`,
+            },
             body: JSON.stringify(payload),
           });
 
-          if (attempt.ok) {
+          if (res.ok) {
             success = true;
-            break;
-          } else if (attempt.status === 401) {
-            router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
-            return;
-          } else if (attempt.status !== 404) {
-            const errJson = await attempt.json().catch(() => ({}));
-            lastErrorMessage = errJson.message || "";
           }
         } catch (e) {
-          // ignore
+          console.error("API call failed, falling back to guest local cart:", e);
         }
       }
 
-      // If customize endpoints fail (404/route not found), submit selected jars to /api/cart/add
-      if (!success) {
-        let anyAdded = false;
-        for (const slot of selectedSlots) {
-          if (!slot || !slot.productId || !slot.selectedWeight) continue;
-          try {
-            const addRes = await fetch(`${API_BASE_URL}/api/cart/add`, {
-              method: "POST",
-              credentials: "include",
-              headers,
-              body: JSON.stringify({
-                productId: slot.productId,
-                selectedWeight: slot.selectedWeight,
-                quantity: 1,
-              }),
-            });
+      // 2. If guest user / unauthenticated or API failed -> Save to localStorage (sudhveda_guest_cart)
+      if (!success && typeof window !== "undefined") {
+        try {
+          const GUEST_CART_KEY = "sudhveda_guest_cart";
+          const stored = localStorage.getItem(GUEST_CART_KEY);
+          const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
 
-            if (addRes.status === 401) {
-              router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
-              return;
-            }
-            if (addRes.ok) {
-              anyAdded = true;
-            }
-          } catch (e) {
-            // ignore
-          }
-        }
+          const cartItemId = `guest_gift_${activeGiftBox._id}_${Date.now()}`;
+          const giftBoxTotalPrice = selectedSlots.reduce((acc, slot) => acc + (slot?.price || 0), 0) || activeGiftBox.price || 0;
 
-        if (anyAdded) {
-          success = true;
+          guestItems[cartItemId] = {
+            type: "CUSTOM",
+            cartItemId,
+            productName: activeGiftBox.name,
+            image: activeGiftBox.image || "/honneycart.png",
+            price: giftBoxTotalPrice,
+            quantity: 1,
+            giftBoxPayload: payload,
+          };
+
+          localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
+        } catch (err) {
+          console.error("Failed to save guest gift cart to localStorage:", err);
         }
       }
 
-      if (!success) {
-        throw new Error(lastErrorMessage || "Failed to add gift box to cart");
+      // 3. Refresh Global Cart Provider State & Open Side Cart Drawer
+      if (fetchCart) {
+        await fetchCart().catch(() => {});
       }
-
-      // Success
       window.dispatchEvent(new Event("cart-updated"));
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
-      showToast(`✨ ${activeGiftBox.name} added to cart successfully!`, "success");
+
       setActiveGiftBox(null);
+      if (openCart) {
+        openCart();
+      } else {
+        router.push("/cart");
+      }
     } catch (err) {
-      console.error("Error adding gift box to cart:", err);
-      showToast(err instanceof Error ? err.message : "Error adding to cart", "warning");
+      console.error("Error in handleAddGiftBoxToCart:", err);
+      setActiveGiftBox(null);
+      if (openCart) {
+        openCart();
+      } else {
+        router.push("/cart");
+      }
     } finally {
       setAddingToCart(false);
     }
@@ -425,59 +442,68 @@ export default function CuratedGift() {
             ))}
           </div>
         ) : (
-          <div className="max-w-[1180px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {giftBoxes.map((box, idx) => (
-              <div
-                key={box._id}
-                className="bg-[#FAF5EF] border border-[#E8D5BA]/80 rounded-[20px] overflow-hidden shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative"
-              >
-                {/* Image Container — Aspect Square */}
-                <div className="relative aspect-square w-full overflow-hidden bg-[#F5EEE6]">
-                  <Image
-                    src={box.image || "/honneycart.png"}
-                    alt={box.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/honneycart.png";
-                    }}
-                  />
-                </div>
+          <div className="max-w-[1000px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-center">
+            {giftBoxes.map((box) => {
+              const jarText = box.jar_count ? `${box.jar_count}x250g` : "Custom Set";
 
-                {/* Content Details */}
-                <div className="p-4 sm:p-5 flex flex-col flex-1 text-center bg-[#FAF5EF]">
-                  <h3 className="font-serif text-[19px] sm:text-[21px] font-extrabold text-[#2F241C] leading-tight text-center group-hover:text-[#D49313] transition-colors">
-                    {box.name}
-                  </h3>
+              return (
+                <div
+                  key={box._id}
+                  className="bg-[#FFFDF9] border border-[#EADCC9] rounded-[24px] overflow-hidden shadow-xs hover:shadow-lg hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative max-w-[310px] sm:max-w-none mx-auto w-full"
+                >
+                  {/* Top Image Banner Area */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F7F0E6]">
+                    <Image
+                      src={box.image || "/honneycart.png"}
+                      alt={box.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/honneycart.png";
+                      }}
+                    />
+                  </div>
 
-                  <p className="mt-2 text-[13px] text-[#7A6A5C] leading-relaxed line-clamp-2 font-normal text-center max-w-[280px] mx-auto">
-                    {box.description || "Hand-crafted luxury gift set packed with pure organic raw honey."}
-                  </p>
+                  {/* Content Body */}
+                  <div className="p-4 sm:p-5 flex flex-col flex-1 bg-[#FFFDF9]">
+                    {/* Title */}
+                    <div className="text-center sm:text-left">
+                      <h3 className="font-serif text-[18px] sm:text-[19px] font-bold text-[#3D260F] leading-tight">
+                        {box.name}
+                      </h3>
+                    </div>
 
-                  <div className="mt-auto pt-3.5 flex flex-col items-center">
-                    {box.price ? (
-                      <div className="flex items-center justify-center gap-2 mb-2.5">
-                        <span className="line-through text-[#A39284] text-[13px] font-medium">
-                          ₹{Math.round(box.price * 1.25)}
-                        </span>
-                        <span className="text-[17px] font-bold text-[#2F241C]">
-                          ₹{box.price}
-                        </span>
-                      </div>
-                    ) : null}
+                    {/* Dynamic API Description */}
+                    <div className="mt-3.5 border-t border-[#EADCC9]/50 pt-3 min-h-[54px]">
+                      {box.description ? (
+                        <p className="text-[13px] text-[#7A6A5C] leading-relaxed line-clamp-2 font-medium text-left">
+                          {box.description}
+                        </p>
+                      ) : (
+                        <ul className="space-y-1.5 text-[12.5px] text-[#7A6A5C] font-medium">
+                          <li className="flex items-center gap-2">
+                            <span className="text-[#C87F17] font-bold">•</span>
+                            <span>{box.jar_count ? `${box.jar_count} Pure Honey Jars` : "Custom Honey Set"}</span>
+                          </li>
+                        </ul>
+                      )}
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => openCustomizationModal(box)}
-                      className="w-full max-w-[210px] mx-auto py-2 px-4 bg-[#FF4E11] hover:bg-[#E04007] text-white font-bold rounded-md transition-all duration-200 flex items-center justify-center shadow-2xs cursor-pointer text-[12.5px] tracking-wide active:scale-98"
-                    >
-                      Customize Gift Box
-                    </button>
+                    {/* Bottom Action Row */}
+                    <div className="mt-5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => openCustomizationModal(box)}
+                        className="w-full h-[42px] bg-[#FA4B1B] hover:bg-[#E64216] text-white font-extrabold rounded-2xl transition-all duration-200 text-[13px] tracking-wide shadow-sm active:scale-98 cursor-pointer flex items-center justify-center"
+                      >
+                        Customize Gift Box
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -489,13 +515,13 @@ export default function CuratedGift() {
           onClick={() => setActiveGiftBox(null)}
         >
           <div
-            className="relative w-full max-w-4xl bg-gradient-to-b from-[#FDF9F3] to-[#FAF0DC]/30 border-2 border-[#E8D5BA] rounded-[32px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.35)] flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+            className="relative w-full max-w-2xl bg-gradient-to-b from-[#FDF9F3] to-[#FAF0DC]/30 border-2 border-[#E8D5BA] rounded-[28px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.35)] flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Sticky Header */}
-            <div className="p-5 sm:p-6 bg-gradient-to-r from-[#FAF0DC] via-[#FDF5E9] to-[#FAF0DC] border-b border-[#E8D5BA] flex items-center justify-between shadow-xs">
-              <div className="flex items-center gap-4">
-                <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-[#D49313] bg-white flex-shrink-0 shadow-md">
+            <div className="p-4 sm:p-5 bg-white border-b border-[#E8D5BA] flex items-center justify-between shadow-xs">
+              <div className="flex items-center gap-3.5">
+                <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#D49313]/40 bg-[#FAF6F0] flex-shrink-0 shadow-xs">
                   <Image
                     src={activeGiftBox.image || "/honneycart.png"}
                     alt={activeGiftBox.name}
@@ -504,16 +530,11 @@ export default function CuratedGift() {
                   />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-extrabold uppercase tracking-wider bg-[#593102] text-white px-2.5 py-0.5 rounded-full">
-                      Step 1 of 2
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-[22px] sm:text-[26px] font-bold text-[#593102] mt-0.5">
+                  <h3 className="font-serif text-[19px] sm:text-[21px] font-bold text-[#3D260F]">
                     Customize {activeGiftBox.name}
                   </h3>
-                  <p className="text-[13px] sm:text-[14px] text-[#8D7F73] font-medium">
-                    Pick any {activeGiftBox.jar_count} pure 250g honey jars below
+                  <p className="text-[12px] sm:text-[12.5px] text-[#7A6A5C] font-medium">
+                    Pick any {activeGiftBox.jar_count} honey jars below ({filledCount}/{activeGiftBox.jar_count} Selected)
                   </p>
                 </div>
               </div>
@@ -521,103 +542,37 @@ export default function CuratedGift() {
               <button
                 type="button"
                 onClick={() => setActiveGiftBox(null)}
-                className="w-11 h-11 rounded-full bg-white/90 hover:bg-white text-[#593102] hover:text-red-600 flex items-center justify-center transition-colors shadow-md cursor-pointer border border-[#E8D5BA]"
+                className="w-9 h-9 rounded-full bg-[#FAF6F0] hover:bg-[#FAF0DC] text-[#3D260F] hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer border border-[#E8D5BA]"
                 title="Close modal"
               >
-                <X size={22} />
+                <X size={19} />
               </button>
             </div>
 
             {/* Modal Body: Scrollable */}
-            <div className="p-5 sm:p-8 overflow-y-auto overscroll-contain scroll-smooth touch-pan-y flex-1 space-y-7">
-
-              {/* LIVE JAR COUNTER & PROGRESS CARD */}
-              <div className="bg-gradient-to-r from-[#593102] via-[#7A4505] to-[#593102] text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-[#D49313]/30 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#D49313]/10 rounded-full blur-2xl pointer-events-none" />
-
-                <div className="relative flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg transition-transform duration-300 ${filledCount === activeGiftBox.jar_count
-                        ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white scale-105 animate-pulse"
-                        : "bg-[#FAF0DC] text-[#593102] border-2 border-[#D49313]"
-                        }`}
-                    >
-                      {filledCount === activeGiftBox.jar_count ? "✓" : "🫙"}
-                    </div>
-
-                    <div>
-                      <h4 className="font-bold text-[16px] sm:text-[19px] leading-tight">
-                        {filledCount === activeGiftBox.jar_count ? (
-                          <span className="text-green-300 font-extrabold flex items-center gap-2">
-                            🎉 Perfect! All {activeGiftBox.jar_count} Jars Selected
-                          </span>
-                        ) : (
-                          <span>
-                            {filledCount} Jar(s) Selected •{" "}
-                            <span className="text-[#FFD700] font-extrabold underline decoration-[#FFD700]/50 underline-offset-4">
-                              {activeGiftBox.jar_count - filledCount} More Jar(s) Remaining
-                            </span>
-                          </span>
-                        )}
-                      </h4>
-                      <p className="text-[12px] sm:text-[14px] text-[#FAF0DC]/85 mt-1 font-medium">
-                        {filledCount === activeGiftBox.jar_count ? (
-                          <span>All slots filled! Click &apos;Proceed to Checkout&apos; below.</span>
-                        ) : (
-                          <span>Tap any honey flavor from the list below to fill slot #{filledCount + 1}.</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[13px] font-extrabold px-4 py-2 rounded-full border shadow-md ${filledCount === activeGiftBox.jar_count
-                        ? "bg-green-500 text-white border-green-400"
-                        : "bg-[#FAF0DC] text-[#593102] border-[#D49313]"
-                        }`}
-                    >
-                      {filledCount} / {activeGiftBox.jar_count} Jars
-                    </span>
-                  </div>
-                </div>
-
-                {/* Progress Bar Line */}
-                <div className="w-full bg-white/20 h-3 rounded-full mt-4 overflow-hidden border border-white/10 p-0.5">
-                  <div
-                    className={`h-full transition-all duration-500 rounded-full shadow-md ${filledCount === activeGiftBox.jar_count
-                      ? "bg-gradient-to-r from-green-400 to-emerald-500"
-                      : "bg-gradient-to-r from-[#FFD700] to-[#D49313]"
-                      }`}
-                    style={{
-                      width: `${(filledCount / activeGiftBox.jar_count) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
+            <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain scroll-smooth touch-pan-y flex-1 space-y-5 bg-[#FAF7F2]">
 
               {/* SELECTED SLOTS BAR */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[15px] font-extrabold text-[#593102] uppercase tracking-wider flex items-center gap-2">
-                    <Gift size={16} className="text-[#D49313]" />
-                    Your Box Slots ({filledCount}/{activeGiftBox.jar_count})
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-[13px] font-extrabold text-[#3D260F] uppercase tracking-wider flex items-center gap-2">
+                    <Gift size={15} className="text-[#C87F17]" />
+                    Selected Jars ({filledCount}/{activeGiftBox.jar_count})
                   </span>
                   {filledCount === activeGiftBox.jar_count && (
-                    <span className="text-[13px] font-bold text-green-800 bg-green-100 border border-green-300 px-3.5 py-1 rounded-full flex items-center gap-1.5 shadow-2xs">
-                      <Check size={15} /> Ready for Cart
+                    <span className="text-[11.5px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                      <Check size={13} /> Ready for Cart
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {selectedSlots.map((slot, idx) => (
                     <div
                       key={idx}
-                      className={`relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center min-h-[130px] ${slot
-                        ? "bg-white border-[#D49313] shadow-md hover:shadow-lg"
-                        : "bg-[#FAF6F0]/80 border-dashed border-[#E8D5BA] hover:border-[#D49313]/60"
+                      className={`relative p-2.5 rounded-xl border transition-all flex flex-col items-center justify-center text-center min-h-[110px] ${slot
+                        ? "bg-white border-[#C87F17] shadow-xs"
+                        : "bg-white/60 border-dashed border-[#E8D5BA]"
                         }`}
                     >
                       {slot ? (
@@ -625,12 +580,12 @@ export default function CuratedGift() {
                           <button
                             type="button"
                             onClick={() => handleRemoveSlot(idx)}
-                            className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs cursor-pointer"
+                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
                             title="Remove this jar"
                           >
-                            <X size={15} />
+                            <X size={12} />
                           </button>
-                          <div className="relative w-14 h-14 mb-1.5">
+                          <div className="relative w-11 h-11 mb-1">
                             <Image
                               src={slot.image}
                               alt={slot.name}
@@ -638,18 +593,18 @@ export default function CuratedGift() {
                               className="object-contain"
                             />
                           </div>
-                          <span className="text-[12px] font-bold text-[#593102] line-clamp-1">
+                          <span className="text-[11px] font-bold text-[#3D260F] line-clamp-1">
                             {slot.name}
                           </span>
-                          <span className="text-[10px] text-green-700 font-semibold bg-green-50 px-2 py-0.5 rounded-full mt-0.5">
+                          <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full mt-0.5">
                             Jar #{idx + 1}
                           </span>
                         </>
                       ) : (
                         <div className="flex flex-col items-center justify-center text-[#8D7F73]">
-                          <span className="text-[24px] mb-1 opacity-70">🫙</span>
-                          <span className="text-[12px] font-bold text-[#593102]">Slot #{idx + 1}</span>
-                          <span className="text-[10px] opacity-75 mt-0.5">Tap item below</span>
+                          <span className="text-[18px] mb-0.5 opacity-70">🫙</span>
+                          <span className="text-[11px] font-bold text-[#3D260F]">Slot #{idx + 1}</span>
+                          <span className="text-[9.5px] opacity-75">Tap flavor below</span>
                         </div>
                       )}
                     </div>
@@ -659,57 +614,67 @@ export default function CuratedGift() {
 
               {/* AVAILABLE PRODUCTS GRID */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[15px] font-extrabold text-[#593102] uppercase tracking-wider">
-                    Select 250g Honey Flavors
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="text-[12.5px] sm:text-[13px] font-extrabold text-[#3D260F] uppercase tracking-wider">
+                    Select Honey Flavors
                   </h4>
-                  <span className="text-[12px] text-[#8D7F73] font-semibold">
-                    {availableProducts.length} Premium Flavors
+                  <span className="text-[11.5px] text-[#8D7F73] font-semibold">
+                    {availableProducts.length} Flavors Available
                   </span>
                 </div>
 
                 {loadingProducts ? (
-                  <div className="flex items-center justify-center py-16">
-                    <Loader2 className="animate-spin text-[#D49313]" size={36} />
+                  <div className="flex items-center justify-center py-10">
+                    <Loader2 className="animate-spin text-[#C87F17]" size={30} />
                   </div>
                 ) : availableProducts.length === 0 ? (
-                  <div className="text-center py-12 bg-white rounded-3xl border border-[#E8D5BA]">
-                    <p className="text-gray-500 font-medium">No 250g honey flavors available right now</p>
+                  <div className="text-center py-8 bg-white rounded-xl border border-[#E8D5BA]">
+                    <p className="text-gray-500 text-[12.5px] font-medium">No honey flavors available right now</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
                     {availableProducts.map((item) => {
                       const isSlotFull = filledCount === activeGiftBox.jar_count;
 
                       return (
                         <div
                           key={item.productId}
-                          onClick={() => handleSelectProduct(item)}
-                          className={`p-4 sm:p-5 rounded-2xl bg-white border-2 border-[#E8D5BA]/80 hover:border-[#D49313] flex flex-col items-center text-center transition-all duration-300 cursor-pointer group hover:shadow-lg relative overflow-hidden ${isSlotFull ? "opacity-90" : "hover:-translate-y-1"
+                          onClick={() => {
+                            if (!isSlotFull) handleSelectProduct(item);
+                          }}
+                          className={`p-3 rounded-xl bg-white border border-[#EADCC9] flex flex-col items-center text-center transition-all duration-300 relative overflow-hidden ${isSlotFull
+                            ? "opacity-60 cursor-not-allowed border-gray-200"
+                            : "hover:border-[#C87F17] hover:shadow-md cursor-pointer hover:-translate-y-0.5 group"
                             }`}
                         >
-                          <div className="relative w-22 h-22 mb-2">
+                          <div className="relative w-14 h-14 sm:w-16 sm:h-16 mb-1">
                             <Image
                               src={item.image}
                               alt={item.name}
                               fill
-                              className="object-contain group-hover:scale-108 transition-transform duration-300"
+                              className="object-contain transition-transform duration-300 group-hover:scale-105"
                             />
                           </div>
 
-                          <h5 className="text-[13px] sm:text-[14px] font-bold text-[#593102] line-clamp-2 leading-tight min-h-[36px] flex items-center justify-center">
+                          <h5 className="text-[11.5px] sm:text-[12px] font-bold text-[#3D260F] line-clamp-2 leading-tight min-h-[28px] flex items-center justify-center">
                             {item.name}
                           </h5>
 
-                          <span className="mt-2 text-[11px] text-[#D49313] font-bold bg-[#FAF0DC] border border-[#E8D5BA] px-3 py-0.5 rounded-full">
-                            250g Honey Jar
-                          </span>
+                          {item.price && item.price > 0 ? (
+                            <span className="text-[12px] sm:text-[12.5px] font-extrabold text-[#3D260F] mt-1 font-sans">
+                              ₹{item.price}
+                            </span>
+                          ) : null}
 
                           <button
                             type="button"
-                            className="mt-3.5 px-3 py-2 bg-[#FAF6F0] group-hover:bg-[#593102] text-[#593102] group-hover:text-white text-[12px] font-bold rounded-xl transition-all w-full flex items-center justify-center gap-1.5 shadow-2xs group-hover:shadow-md"
+                            disabled={isSlotFull}
+                            className={`mt-2 py-1 px-3 text-[11px] font-bold rounded-lg transition-all w-full flex items-center justify-center ${isSlotFull
+                              ? "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
+                              : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-2xs cursor-pointer"
+                              }`}
                           >
-                            <Plus size={15} /> Add to Box
+                            {isSlotFull ? "Full" : "Add"}
                           </button>
                         </div>
                       );
@@ -720,34 +685,42 @@ export default function CuratedGift() {
             </div>
 
             {/* Modal Sticky Footer */}
-            <div className="p-5 sm:p-6 bg-gradient-to-r from-[#FAF0DC] via-[#FDF5E9] to-[#FAF0DC] border-t border-[#E8D5BA] flex items-center justify-between flex-wrap gap-4 shadow-lg">
-              <div className="hidden sm:block">
-                <span className="text-[12px] text-[#8D7F73] font-bold uppercase tracking-wider block">
-                  Gift Box Status
+            <div className="p-4 sm:p-4.5 bg-white border-t border-[#E8D5BA] flex items-center justify-between flex-wrap gap-3 shadow-lg">
+              <div>
+                <span className="text-[10.5px] text-[#8D7F73] font-bold uppercase tracking-wider block">
+                  Gift Box Total
                 </span>
-                <span className="text-[15px] font-extrabold text-[#593102]">
-                  {filledCount === activeGiftBox.jar_count
-                    ? `Ready (${filledCount}/${activeGiftBox.jar_count} Jars Selected)`
-                    : `Incomplete (${filledCount}/${activeGiftBox.jar_count} Jars Selected)`}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[20px] sm:text-[22px] font-extrabold text-[#3D260F] font-sans">
+                    ₹{
+                      (() => {
+                        const sum = selectedSlots.reduce((acc, slot) => acc + (slot?.price || 0), 0);
+                        return sum.toLocaleString("en-IN");
+                      })()
+                    }
+                  </span>
+                  <span className="text-[11.5px] font-bold text-[#7A6A5C]">
+                    ({filledCount}/{activeGiftBox.jar_count} Jars)
+                  </span>
+                </div>
               </div>
 
               <button
                 type="button"
                 disabled={filledCount < activeGiftBox.jar_count || addingToCart}
                 onClick={handleAddGiftBoxToCart}
-                className={`w-full sm:w-auto px-9 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2.5 cursor-pointer text-[16px] tracking-wide shadow-lg ${filledCount === activeGiftBox.jar_count && !addingToCart
-                  ? "bg-gradient-to-r from-[#593102] via-[#7A4505] to-[#593102] hover:from-[#D49313] hover:to-[#593102] text-white hover:shadow-xl hover:scale-[1.02] active:scale-98"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                className={`w-full sm:w-auto px-7 py-2.5 sm:py-3 rounded-xl font-black transition-all flex items-center justify-center gap-2 cursor-pointer text-[13.5px] uppercase tracking-wider shadow-md ${filledCount === activeGiftBox.jar_count && !addingToCart
+                  ? "bg-[#FA4B1B] hover:bg-[#E64216] text-white hover:scale-105 active:scale-95"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
                   }`}
               >
                 {addingToCart ? (
                   <>
-                    <Loader2 className="animate-spin" size={20} /> Processing...
+                    <Loader2 className="animate-spin" size={17} /> Adding...
                   </>
                 ) : (
                   <>
-                    <ShoppingBag size={20} /> Proceed to Checkout
+                    <ShoppingBag size={17} /> Add to Cart
                   </>
                 )}
               </button>
@@ -756,13 +729,7 @@ export default function CuratedGift() {
         </div>
       )}
 
-      {/* Floating Top Notification Banner */}
-      {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-[#593102] text-white px-6 py-3.5 rounded-full shadow-2xl text-[14px] sm:text-[15px] font-semibold flex items-center gap-2.5 animate-in slide-in-from-top duration-300 border-2 border-[#D49313] max-w-[92vw] sm:max-w-lg text-center backdrop-blur-md">
-          <Gift size={18} className="text-[#D49313] shrink-0" />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+
     </section>
   );
 }

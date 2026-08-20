@@ -72,13 +72,10 @@ export default function CertifiedQualitySection() {
               {features.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm border-2 border-[#EADCC9]/80 rounded-[22px] p-4 sm:p-5 flex flex-col items-center text-center shadow-xs hover:shadow-xl hover:border-[#D49313] hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden"
+                  className="bg-white/80 backdrop-blur-sm border-2 border-[#EADCC9]/80 rounded-[22px] p-4 sm:p-5 flex flex-col items-center text-center shadow-xs relative overflow-hidden"
                 >
-                  {/* Top Hover Line */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#D49313] to-[#593102] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
                   {/* Icon Box Container - Original Box Size with Full Image Fill */}
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-[#D49313]/40 overflow-hidden shadow-2xs mb-2.5 transition-transform duration-300 group-hover:scale-108 shrink-0 bg-white">
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-[#D49313]/40 overflow-hidden shadow-2xs mb-2.5 shrink-0 bg-white">
                     <Image
                       src={item.icon}
                       alt={item.title}
@@ -88,7 +85,7 @@ export default function CertifiedQualitySection() {
                   </div>
 
                   {/* Title */}
-                  <h4 className="text-[11.5px] sm:text-[13px] font-extrabold text-[#593102] group-hover:text-[#D49313] transition-colors tracking-wide uppercase font-serif leading-tight">
+                  <h4 className="text-[11.5px] sm:text-[13px] font-extrabold text-[#593102] tracking-wide uppercase font-serif leading-tight">
                     {item.title}
                   </h4>
                   <span className="text-[10px] font-bold text-[#8D7F73] mt-0.5">
@@ -100,14 +97,12 @@ export default function CertifiedQualitySection() {
           </div>
 
           {/* RIGHT SHOWCASE PHOTO */}
-          <div className="lg:col-span-5 relative flex justify-center lg:justify-end w-full h-full">
-            <div className="relative w-full max-w-[540px] h-[400px] sm:h-[480px] lg:h-full lg:min-h-[520px] rounded-[28px] overflow-hidden border-2 border-[#D49313]/60 shadow-2xl group bg-white p-2">
-              <Image
+          <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end w-full pt-6 lg:pt-10">
+            <div className="relative w-full max-w-[620px] rounded-[24px] overflow-hidden border-2 border-[#D49313]/70 shadow-[0_20px_50px_rgba(89,49,2,0.15)]">
+              <img
                 src="/shop 3.png"
                 alt="Certified Quality ShudhVeda Honey"
-                fill
-                priority
-                className="object-contain transition-transform duration-700 ease-out group-hover:scale-105 rounded-[24px]"
+                className="w-full h-auto block rounded-[22px]"
               />
             </div>
           </div>

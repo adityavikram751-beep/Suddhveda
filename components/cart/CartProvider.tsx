@@ -107,6 +107,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastProduct, setToastProduct] = useState<{ title: string; weight: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [apiCartCount, setApiCartCount] = useState<number | null>(null);
 
   // ---------- Guest Cart LocalStorage Helpers ----------
   const GUEST_CART_KEY = "sudhveda_guest_cart";
@@ -158,6 +159,17 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           syncedCount++;
         } catch (err) {
           console.error(`Failed to sync guest cart item ${item.productName}:`, err);
+        }
+      } else if (item.type === "CUSTOM" && (item as any).giftBoxPayload) {
+        try {
+          await authFetch(`${API_BASE_URL}/api/cart/add-customize/giftbox`, {
+            method: "POST",
+            body: JSON.stringify((item as any).giftBoxPayload),
+          });
+          console.log(`✅ Successfully synced guest gift box ${(item as any).productName} to database!`);
+          syncedCount++;
+        } catch (err) {
+          console.error(`Failed to sync guest gift box item ${(item as any).productName}:`, err);
         }
       }
     }
@@ -227,12 +239,48 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         };
       });
 
+      // Also fetch official backend cart count from GET /api/cart/count
+      try {
+        const countData = await authFetch(`${API_BASE_URL}/api/cart/count`).catch(() => null);
+        if (countData) {
+          let count = 0;
+          if (typeof countData?.data?.totalCount === "number") {
+            count = countData.data.totalCount;
+          } else if (typeof countData?.totalCount === "number") {
+            count = countData.totalCount;
+          } else if (countData?.data?.cartCount !== undefined || countData?.data?.giftCartCount !== undefined) {
+            count = (Number(countData.data?.cartCount) || 0) + (Number(countData.data?.giftCartCount) || 0);
+          } else if (countData?.data?.count !== undefined) {
+            count = countData.data.count;
+          } else if (countData?.count !== undefined) {
+            count = countData.count;
+          } else if (countData?.data?.totalItems !== undefined) {
+            count = countData.data.totalItems;
+          } else if (countData?.totalItems !== undefined) {
+            count = countData.totalItems;
+          } else if (countData?.data?.total !== undefined) {
+            count = countData.data.total;
+          } else if (countData?.total !== undefined) {
+            count = countData.total;
+          }
+
+          if (count > 0) {
+            setApiCartCount(count);
+          } else {
+            setApiCartCount(null);
+          }
+        }
+      } catch (e) {
+        setApiCartCount(null);
+      }
+
       setCartItems(newCartItems);
       return newCartItems;
     } catch (err) {
       // User is not logged in / Guest -> Return guest cart from localStorage
       const guestItems = getGuestCart();
       setCartItems(guestItems);
+      setApiCartCount(null);
       return guestItems;
     } finally {
       setIsLoading(false);
@@ -498,7 +546,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     return Object.values(cartItems);
   }, [cartItems]);
 
-  const itemCount = cartProducts.reduce((sum, p) => sum + p.quantity, 0);
+  const localItemCount = cartProducts.reduce((sum, p) => sum + p.quantity, 0);
+  const itemCount = apiCartCount !== null && apiCartCount > 0 ? apiCartCount : localItemCount;
   const subtotal = cartProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
   const saved = cartProducts.reduce(
     (sum, p) =>

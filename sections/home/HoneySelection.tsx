@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
@@ -229,20 +231,28 @@ export default function HoneySelection() {
               ref={sliderRef}
               className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
             >
-              {products.map((product) => {
+              {products.map((product, idx) => {
                 const productId = getProductId(product);
                 const variants = getProductVariants(product);
                 const selectedVariantId = getSelectedVariantId(product);
                 const normalized = normalizeProduct(product, selectedVariantId);
 
+                const cardBadge = (product as any).product_name
+                  ? (product as any).product_name.toUpperCase()
+                  : normalized.title
+                  ? `${normalized.title.toUpperCase()}`
+                  : "RAW HONEY";
+
                 return (
                   <div
                     key={productId}
-                    className="w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center"
+                    className={`w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center ${
+                      idx >= 4 ? "lg:hidden" : ""
+                    }`}
                   >
                     <div className="w-full max-w-[340px] lg:max-w-none">
                       <ProductCardShop
-                        badge={normalized.badge}
+                        badge={cardBadge}
                         image={normalized.image}
                         title={normalized.title}
                         subtitle={normalized.subtitle}
@@ -271,6 +281,17 @@ export default function HoneySelection() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Shop All Range Button Below 4 Cards */}
+            <div className="mt-9 sm:mt-11 flex justify-center px-4">
+              <Link
+                href="/shop"
+                className="w-full max-w-[280px] sm:max-w-[320px] h-[48px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[#FDF0DF] hover:bg-[#FBE4C6] text-[#3D260F] text-sm sm:text-base font-semibold tracking-wide border border-[#EADBCC] shadow-2xs transition-all active:scale-98 cursor-pointer"
+              >
+                <span>Shop All Range</span>
+                <ChevronRight size={18} className="text-[#3D260F] stroke-[2.5]" />
+              </Link>
             </div>
           </div>
         )}

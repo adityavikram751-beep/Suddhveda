@@ -140,10 +140,10 @@ export default function ImpactSection() {
             <button
               type="button"
               onClick={() => router.push("/about")}
-              className="mt-9 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] transition-all duration-500 text-white text-[15px] font-black tracking-wider uppercase px-9 py-4 rounded-2xl cursor-pointer shadow-lg hover:shadow-xl border border-[#FFD700]/30 active:scale-98 flex items-center gap-2"
+              className="mt-7 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-xs sm:text-sm font-black tracking-wider uppercase px-6 sm:px-7 h-[42px] rounded-2xl cursor-pointer shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
             >
-              Know More About Us
-              <ChevronRight size={18} />
+              <span>KNOW MORE ABOUT US</span>
+              <ChevronRight size={16} />
             </button>
           </div>
 

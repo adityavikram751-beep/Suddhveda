@@ -102,7 +102,7 @@ export default function ReviewPage() {
         return {
           id: item.giftCartItemId || item._id,
           cartItemId: item.giftCartItemId || item._id,
-          title: `🎁 ${giftBox.name || "Gift Box"}`,
+          title: `${giftBox.name || "Gift Box"}`,
           weight: `${item.totalWeight || 0}g`,
           price: item.totalAmount || 0,
           quantity: item.quantity || 1,
@@ -312,8 +312,59 @@ export default function ReviewPage() {
     router.push("/shipping");
   };
 
-  const handlePlaceOrder = () => {
-    router.push("/payment");
+  const handlePlaceOrder = async () => {
+    try {
+      const selectedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment_method") || "" : "";
+      const isCod = selectedPayment.toUpperCase() === "COD" || selectedPayment.toLowerCase().includes("cash");
+
+      const shippingAddress = (address as any) || {};
+      const orderProducts = cartProducts.map((p: any) => ({
+        cartItemId: p.cartItemId || p.id,
+        productId: p.id,
+        title: p.title,
+        weight: p.weight,
+        price: p.price,
+        quantity: p.quantity,
+        image: p.image,
+        type: p.type || "NORMAL",
+      }));
+
+      const newOrder = {
+        orderId: `ORD-${Date.now().toString().slice(-6)}`,
+        createdAt: new Date().toISOString(),
+        paymentMethod: isCod ? "COD" : selectedPayment || "Online Payment",
+        paymentStatus: isCod ? "Pay on Delivery (COD)" : "Paid",
+        shippingAddress: {
+          name: shippingAddress.name || shippingAddress.fullName || "Customer",
+          phone: shippingAddress.phone || shippingAddress.phoneNumber || "",
+          addressLine: shippingAddress.line || shippingAddress.addressLine1 || "",
+          city: shippingAddress.city || "",
+          state: shippingAddress.state || "",
+          pincode: shippingAddress.pincode || shippingAddress.zipCode || "",
+        },
+        items: orderProducts,
+        pricing: {
+          subtotal,
+          shipping: 0,
+          saved,
+          couponDiscount,
+          codFee: isCod ? 50 : 0,
+          total: Math.max(subtotal - couponDiscount, 0) + (isCod ? 50 : 0),
+        },
+      };
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("latest_order", JSON.stringify(newOrder));
+      }
+
+      if (isCod) {
+        router.push("/thank");
+      } else {
+        router.push("/payment");
+      }
+    } catch (e) {
+      router.push("/payment");
+    }
   };
 
   if (!isMounted) {

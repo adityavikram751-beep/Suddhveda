@@ -340,7 +340,7 @@ export default function ShopPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
+      <main className="flex min-h-screen items-center justify-center bg-[#FAF7F2]">
         <Loader2 className="h-10 w-10 animate-spin text-[#593102]" />
       </main>
     );
@@ -348,7 +348,7 @@ export default function ShopPage() {
 
   if (error && products.length === 0) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-white text-center">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#FAF7F2] text-center">
         <p className="text-red-600">Error: {error}</p>
         <button onClick={fetchProducts} className="rounded bg-[#593102] px-5 py-2 text-white">
           Try Again
@@ -466,7 +466,7 @@ export default function ShopPage() {
   );
 
   return (
-    <main className="bg-white text-[#2F241C]">
+    <main className="bg-[#FAF7F2] text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
       <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-6 lg:pb-12 sm:px-6 lg:px-8">
         
