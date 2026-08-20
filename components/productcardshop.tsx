@@ -111,8 +111,8 @@ export default function ProductCardShop({
           size={16}
           className={
             isWishlisted
-              ? "fill-[#FF6F3C] text-[#FF6F3C]"
-              : "text-[#7C6E63] hover:text-[#593102]"
+              ? "fill-[#FA4B1B] text-[#FA4B1B]"
+              : "text-[#7C6E63] hover:text-[#FA4B1B]"
           }
         />
       </button>

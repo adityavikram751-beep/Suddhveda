@@ -511,8 +511,8 @@ export default function ProductDetailPage({
                     <Heart
                       size={20}
                       className={`transition-colors ${wishlistIds.includes(product._id)
-                          ? "fill-[#D49313] text-[#D49313]"
-                          : "text-gray-400 hover:text-[#D49313]"
+                          ? "fill-[#FA4B1B] text-[#FA4B1B]"
+                          : "text-gray-400 hover:text-[#FA4B1B]"
                         }`}
                     />
                   </button>

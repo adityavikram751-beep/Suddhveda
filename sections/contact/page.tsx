@@ -76,14 +76,12 @@ export default function Hero() {
               <span>GET IN TOUCH</span>
             </div>
 
-            {/* Heading */}
-            <h1 className="mt-2 font-serif text-[#593102] leading-[1.08] text-[38px] sm:text-[50px] lg:text-[72px] font-extrabold tracking-tight">
+            {/* Heading - Balanced & Responsive */}
+            <h1 className="mt-2 font-serif text-[#593102] leading-[1.15] text-[30px] sm:text-[44px] md:text-[52px] lg:text-[62px] font-extrabold tracking-tight">
               Let&apos;s Start a{" "}
-              <span className="italic bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent">
-                Sweet
+              <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent block sm:inline">
+                Sweet Conversation.
               </span>
-              <br />
-              Conversation.
             </h1>
 
             {/* Description */}
@@ -101,13 +99,13 @@ export default function Hero() {
                 return (
                   <div
                     key={index}
-                    className="group flex flex-row lg:flex-col items-center lg:items-center justify-start lg:justify-center p-4 lg:p-4 h-auto lg:h-[160px] rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-sm gap-4 lg:gap-2.5 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-[#D49313] cursor-pointer"
+                    className="flex flex-row lg:flex-col items-center lg:items-center justify-start lg:justify-center p-4 lg:p-4 h-auto lg:h-[160px] rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-sm gap-4 lg:gap-2.5 shadow-xs"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] group-hover:bg-gradient-to-r group-hover:from-[#D49313] group-hover:to-[#593102] group-hover:text-white transition-all shrink-0 shadow-2xs">
+                    <div className="w-12 h-12 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] shrink-0 shadow-2xs">
                       <Icon size={24} strokeWidth={1.8} />
                     </div>
 
-                    <p className="text-left lg:text-center text-[13.5px] lg:text-[14px] leading-[1.4] font-serif font-bold text-[#593102] group-hover:text-[#D49313] transition-colors">
+                    <p className="text-left lg:text-center text-[13.5px] lg:text-[14px] leading-[1.4] font-serif font-bold text-[#593102]">
                       {item.title}
                     </p>
                   </div>

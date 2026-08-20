@@ -56,8 +56,8 @@ export default function WishlistPage() {
   };
 
   const updateWishlistCount = (count: number) => {
-    window.dispatchEvent(new CustomEvent('wishlist-count-update', { 
-      detail: { count } 
+    window.dispatchEvent(new CustomEvent('wishlist-count-update', {
+      detail: { count }
     }));
   };
 
@@ -343,7 +343,7 @@ export default function WishlistPage() {
   return (
     <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] min-h-screen py-8 sm:py-12 border-b border-[#EADCC9]/50">
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-10">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between mt-2">
           <div>
@@ -352,7 +352,7 @@ export default function WishlistPage() {
             </div>
             <h1 className="text-[28px] sm:text-[38px] font-serif font-extrabold text-[#593102] flex items-center gap-2.5 sm:gap-3">
               My Wishlist{" "}
-              <Heart size={28} className="text-[#D49313] fill-[#D49313] shrink-0" />
+              <Heart size={28} className="text-[#FA4B1B] fill-[#FA4B1B] shrink-0" />
             </h1>
             <p className="text-[14px] sm:text-[16px] text-[#6E5D4F] font-medium mt-1">
               Save your favorite artisanal honey &amp; gift sets to purchase anytime.
@@ -389,7 +389,7 @@ export default function WishlistPage() {
             </div>
           ) : wishlistItems.length === 0 ? (
             <div className="py-16 sm:py-20 text-center">
-              <Heart size={44} className="mx-auto text-[#D49313]/40 mb-4" />
+              <Heart size={44} className="mx-auto text-[#FA4B1B]/40 mb-4" />
               <p className="text-[17px] font-serif font-bold text-[#593102]">Your wishlist is currently empty.</p>
               <p className="text-[14px] text-[#6E5D4F] mt-1 font-medium">Explore our collection to add your favorite pure honey products.</p>
               <Link href="/shop" className="inline-flex items-center gap-2 mt-5 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-bold text-[14px] px-7 py-3 rounded-2xl tracking-wider uppercase shadow-md transition-all duration-300">
@@ -400,7 +400,7 @@ export default function WishlistPage() {
             <div className="divide-y divide-[#EADCC9]/60">
               {wishlistItems.map((item) => (
                 <div key={item.id} className="py-4 sm:py-6">
-                  
+
                   {/* MOBILE RESPONSIVE LAYOUT */}
                   <div className="block sm:hidden relative bg-white border border-[#EADCC9] rounded-2xl p-4 shadow-xs">
                     <button
@@ -413,7 +413,7 @@ export default function WishlistPage() {
 
                     <div className="flex items-start gap-3.5">
                       {item.image && (
-                        <div 
+                        <div
                           className="relative w-20 h-20 rounded-xl bg-[#FAF5EC] shrink-0 overflow-hidden cursor-pointer border border-[#EADCC9]/50"
                           onClick={() => navigateToProduct(item.productId)}
                         >
@@ -422,17 +422,12 @@ export default function WishlistPage() {
                       )}
 
                       <div className="flex-1 min-w-0 pr-6">
-                        <h3 
+                        <h3
                           onClick={() => navigateToProduct(item.productId)}
                           className="font-serif text-[16px] font-bold text-[#593102] leading-snug cursor-pointer line-clamp-1"
                         >
                           {item.title}
                         </h3>
-                        {(item.brand || item.floral_source) && (
-                          <p className="text-[13px] text-[#6E5D4F] font-medium mt-0.5 truncate">
-                            {[item.brand, item.floral_source].filter(Boolean).join(' • ')}
-                          </p>
-                        )}
                         {item.weight && (
                           <p className="text-[12px] text-[#8D7F73] font-medium mt-0.5">{item.weight}</p>
                         )}
@@ -457,12 +452,12 @@ export default function WishlistPage() {
                       <button
                         onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
                         disabled={actionLoading === item.productId}
-                        className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white text-[13px] font-bold px-4 py-2.5 rounded-xl transition-all duration-300 shadow-xs disabled:opacity-50 cursor-pointer uppercase tracking-wider"
+                        className="flex items-center justify-center gap-1.5 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[12px] font-extrabold px-4 h-[38px] rounded-xl transition-colors shadow-xs disabled:opacity-50 cursor-pointer uppercase tracking-wide"
                       >
                         {actionLoading === item.productId ? (
-                          <Loader2 size={15} className="animate-spin" />
+                          <Loader2 size={14} className="animate-spin" />
                         ) : (
-                          <ShoppingCart size={15} />
+                          <ShoppingCart size={14} />
                         )}
                         {actionLoading === item.productId ? "Moving..." : "Move to Cart"}
                       </button>
@@ -481,11 +476,6 @@ export default function WishlistPage() {
                         <p className="font-serif text-[17px] font-bold text-[#593102] hover:text-[#D49313] transition-colors truncate">
                           {item.title}
                         </p>
-                        {(item.brand || item.floral_source) && (
-                          <p className="text-[14px] text-[#6E5D4F] font-medium">
-                            {[item.brand, item.floral_source].filter(Boolean).join(' • ')}
-                          </p>
-                        )}
                         {item.weight && (
                           <p className="text-[13px] text-[#8D7F73] font-medium">{item.weight}</p>
                         )}
@@ -511,12 +501,12 @@ export default function WishlistPage() {
                         <button
                           onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
                           disabled={actionLoading === item.productId}
-                          className="shrink-0 flex items-center justify-center gap-2 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white text-[13.5px] font-bold px-6 py-3 rounded-2xl transition-all duration-300 shadow-md border border-[#FFD700]/30 cursor-pointer uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="shrink-0 flex items-center justify-center gap-1.5 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[12px] font-extrabold px-5 h-[38px] rounded-xl transition-colors shadow-xs cursor-pointer uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {actionLoading === item.productId ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={14} className="animate-spin" />
                           ) : (
-                            <ShoppingCart size={16} />
+                            <ShoppingCart size={14} />
                           )}
                           {actionLoading === item.productId ? "Moving..." : "Move to Cart"}
                         </button>
@@ -535,7 +525,7 @@ export default function WishlistPage() {
         </div>
 
         {/* Refer Box */}
-        <div className="bg-gradient-to-r from-[#FAF0DC] via-[#FEF8F4] to-[#FAF5EC] border-2 border-[#D49313]/30 rounded-3xl p-6 sm:p-8 mt-8 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        {/* <div className="bg-gradient-to-r from-[#FAF0DC] via-[#FEF8F4] to-[#FAF5EC] border-2 border-[#D49313]/30 rounded-3xl p-6 sm:p-8 mt-8 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto relative z-10">
             <Image src="/wishlist1.png" alt="Refer and earn" width={110} height={110} className="shrink-0 w-20 h-20 sm:w-[110px] sm:h-[110px] object-contain" />
             <div>
@@ -549,7 +539,7 @@ export default function WishlistPage() {
             </div>
           </div>
           <Image src="/gift.png" alt="Gift" width={140} height={140} className="hidden lg:block shrink-0 object-contain relative z-10" />
-        </div>
+        </div> */}
       </div>
 
       {toast && (

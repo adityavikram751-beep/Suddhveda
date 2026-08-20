@@ -883,7 +883,7 @@ export default function Header() {
                     className="flex items-center justify-between rounded-2xl bg-white/90 p-3 px-4 border border-[#EADCC9]/80 text-[#593102] font-bold text-sm hover:border-[#D49313] transition shadow-2xs"
                   >
                     <span className="flex items-center gap-2.5">
-                      <FiHeart size={18} className="text-[#D49313]" />
+                      <FiHeart size={18} className="text-[#FA4B1B] fill-[#FA4B1B]" />
                       My Wishlist
                     </span>
                     {wishlistCount > 0 && (

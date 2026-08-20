@@ -292,10 +292,10 @@ export default function ContactSection() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[50px] px-8 rounded-xl flex items-center justify-center gap-2.5 font-bold text-[14px] tracking-wider uppercase shadow-md transition-all duration-300 border border-[#FFD700]/30 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                    className="bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[40px] px-5 sm:px-6 rounded-xl flex items-center justify-center gap-2 font-extrabold text-[12px] sm:text-[13px] tracking-wide uppercase shadow-xs transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
-                    <FiArrowUp size={16} className="rotate-45" />
+                    <FiArrowUp size={14} className="rotate-45" />
                   </button>
 
                   <div className="flex items-center gap-2 text-[12.5px] text-[#D49313] font-bold">
