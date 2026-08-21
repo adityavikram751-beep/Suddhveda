@@ -202,7 +202,7 @@ export default function Checkout() {
             const parsed = JSON.parse(stored);
             if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
             if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
-          } catch (e) {}
+          } catch (e) { }
         } else if (apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
           setAppliedCouponCode(apiCode);
@@ -261,11 +261,11 @@ export default function Checkout() {
     }
   };
 
-function getTokenFromCookie(): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
-  return match ? decodeURIComponent(match[2]) : null;
-}
+  function getTokenFromCookie(): string | null {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : null;
+  }
 
   const fetchAddresses = async () => {
     try {
@@ -625,21 +625,19 @@ function Stepper({ activeStep }: { activeStep: number }) {
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
               <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                 <span
-                  className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${
-                    isDone
+                  className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${isDone
                       ? "border-[#77AE61] bg-white text-[#77AE61]"
                       : isActive
                         ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                         : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                  }`}
+                    }`}
                 >
                   {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
                 <div className="min-w-0">
                   <p
-                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
-                      isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
-                    }`}
+                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
+                      }`}
                   >
                     {step.title}
                   </p>
@@ -867,8 +865,8 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onD
               key={address.id}
               onClick={() => onSelect(address.id)}
               className={`cursor-pointer rounded-[14px] border p-4 sm:p-5 text-left transition-colors ${isSelected
-                  ? "border-[#593102] bg-[#FFF8EF] shadow-sm ring-1 ring-[#593102]"
-                  : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
+                ? "border-[#593102] bg-[#FFF8EF] shadow-sm ring-1 ring-[#593102]"
+                : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
                 }`}
             >
               <div className="flex items-center justify-between">
