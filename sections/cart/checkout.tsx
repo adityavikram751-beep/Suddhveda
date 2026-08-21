@@ -22,8 +22,8 @@ const freeDeliveryTarget = 2000;
 const steps = [
   { id: 1, title: "Address", subtitle: "Add delivery address" },
   { id: 2, title: "Shipping", subtitle: "Choose shipping method" },
-  { id: 3, title: "Payment", subtitle: "Select payment option" },
-  { id: 4, title: "Review", subtitle: "Review & place order" },
+  { id: 3, title: "Review", subtitle: "Review & confirm order" },
+  { id: 4, title: "Payment", subtitle: "Select payment option" },
 ] as const;
 
 type Address = {
@@ -602,19 +602,19 @@ function Stepper({ activeStep }: { activeStep: number }) {
                   className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${isDone
                       ? "border-[#77AE61] bg-white text-[#77AE61]"
                       : isActive
-                        ? "border-[#D18500] bg-[#D18500] text-white"
+                        ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                         : "border-[#F0DDC8] bg-white text-[#2F241C]"
                     }`}
                 >
                   {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
                 <span
-                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
+                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#F24E1E]" : "bg-[#F0DDC8]"
                     }`}
                 />
                 <div className="min-w-0">
                   <p
-                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
                       }`}
                   >
                     {step.title}
@@ -625,7 +625,7 @@ function Stepper({ activeStep }: { activeStep: number }) {
                 </div>
               </div>
               {step.id < steps.length && (
-                <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
+                <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                   &rsaquo;
                 </span>
               )}
@@ -736,11 +736,11 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
           />
         </div>
 
-        <div className="mt-5 sm:mt-6 flex justify-end">
+        <div className="mt-5 sm:mt-6 flex justify-center sm:justify-end">
           <button
             type="button"
             onClick={onSave}
-            className="flex h-11 sm:h-12 items-center gap-2 rounded-xl bg-[#EA580C] hover:bg-[#C94717] px-6 text-[14px] font-semibold text-white transition-colors w-full sm:w-auto justify-center cursor-pointer shadow-md"
+            className="flex h-[42px] px-6 w-auto items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
           >
             {buttonLabel}
             <ArrowRight size={16} />
@@ -966,13 +966,16 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
       {/* Button + Saving Badge + Need Help - neeche attach */}
       <div className="mt-auto space-y-3 sm:space-y-4 pb-4">
         {selectedAddressId && (
-          <button
-            type="button"
-            onClick={onProceedDirectly}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#EA580C] text-[15px] font-semibold text-white shadow-md hover:bg-[#C94717] transition-colors cursor-pointer"
-          >
-            Proceed with Selected Address <ArrowRight size={16} />
-          </button>
+          <div className="flex justify-center my-4 sm:my-5">
+            <button
+              type="button"
+              onClick={onProceedDirectly}
+              className="flex h-[42px] px-6 w-auto max-w-[280px] items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
+            >
+              Proceed with Selected Address
+              <ArrowRight size={16} />
+            </button>
+          </div>
         )}
 
         <div className="rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">

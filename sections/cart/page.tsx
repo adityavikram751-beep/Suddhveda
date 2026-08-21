@@ -425,8 +425,8 @@ export default function Cart() {
                             </div>
                         </div>
 
-                        {/* Cart items list with max-height scroll (shows 1.5 cards, rest scroll) */}
-                        <div className="mt-4 space-y-4 max-h-[360px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        {/* Cart items list with max-height scroll (shows 2 cards, rest scroll) */}
+                        <div className="mt-4 space-y-4 max-h-[250px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
                                 <div className="rounded-2xl border-2 border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
                                     Loading your cart...
@@ -1050,11 +1050,6 @@ export function OrderSummaryWithCoupons({
                             </span>
                         )}
                     </span>
-                    {isCouponSectionOpen ? (
-                        <ChevronUp size={16} className="text-[#8D7F73]" />
-                    ) : (
-                        <ChevronDown size={16} className="text-[#8D7F73]" />
-                    )}
                 </button>
 
                 {isCouponSectionOpen && (
@@ -1172,46 +1167,6 @@ export function OrderSummaryWithCoupons({
                                         </div>
                                     )}
                                 </div>
-
-                                {/* Applied coupons summary */}
-                                <div
-                                    className={`rounded-xl p-2.5 border ${appliedCoupons.length > 0
-                                        ? "bg-[#FAF0DC]/70 border-[#D49313]/40"
-                                        : "bg-[#FAF5EC]/50 border-[#EADCC9]"
-                                        }`}
-                                >
-                                    <p className="text-[10px] font-black text-[#593102] uppercase tracking-[0.1em] mb-1.5">
-                                        Applied Coupons
-                                    </p>
-                                    {appliedCoupons.length > 0 ? (
-                                        <div className="space-y-1.5">
-                                            {appliedCoupons.map((c) => (
-                                                <div key={c.code} className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <Check size={12} className="text-emerald-700 stroke-[3]" />
-                                                        <span className="text-[11px] font-black text-[#593102]">
-                                                            {c.code}
-                                                        </span>
-                                                        <span className="text-[10px] text-emerald-700 font-extrabold">
-                                                            -₹{(c.calculatedDiscount || 0).toLocaleString("en-IN")}
-                                                        </span>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeCoupon(c.offerId, c.code)}
-                                                        className="text-[10px] font-black text-red-500 hover:underline cursor-pointer"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-0.5 text-[10px] text-[#8D7F73] font-semibold">
-                                            No coupons applied yet
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1219,29 +1174,75 @@ export function OrderSummaryWithCoupons({
             </div>
 
             {/* Checkout Button */}
-            <div className="px-5 py-5 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4">
+            <div className="px-5 py-4 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4 flex flex-col items-center gap-3.5">
                 <Link
                     href="/checkout"
-                    className="flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-extrabold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 active:scale-[0.98] cursor-pointer"
+                    className="flex h-[42px] w-full max-w-[240px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
                 >
-                    <Lock size={15} className="fill-white stroke-[2.5]" />
                     PROCEED TO CHECKOUT
                 </Link>
 
-                {/* Trust row */}
-                <div className="mt-4 flex items-center justify-center gap-5 text-[11px] font-bold text-[#6E5D4F]">
-                    <span className="flex items-center gap-1.5">
-                        <Truck size={13} className="text-[#D49313]" />
-                        Free delivery
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <ShieldCheck size={13} className="text-emerald-700" />
-                        Secure checkout
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <Check size={13} className="text-emerald-700 stroke-[3]" />
-                        100% raw &amp; natural honey
-                    </span>
+                {/* 4 Certification Badges */}
+                <div className="grid grid-cols-4 gap-1.5 text-center pt-2.5 border-t border-[#EADCC9]/60 w-full max-w-[280px]">
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                            <Image
+                                src="/fssai.png"
+                                alt="FSSAI APPROVED"
+                                width={32}
+                                height={32}
+                                className="object-contain w-full h-full"
+                            />
+                        </div>
+                        <span className="text-[8.5px] font-black text-[#593102] uppercase tracking-wider leading-tight">
+                            FSSAI<br />APPROVED
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                            <Image
+                                src="/iso-.png"
+                                alt="22000 : 2015"
+                                width={32}
+                                height={32}
+                                className="object-contain w-full h-full"
+                            />
+                        </div>
+                        <span className="text-[8.5px] font-black text-[#593102] uppercase tracking-wider leading-tight">
+                            22000 : 2015
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                            <Image
+                                src="/natural.webp"
+                                alt="PURE & NATURAL"
+                                width={32}
+                                height={32}
+                                className="object-contain w-full h-full"
+                            />
+                        </div>
+                        <span className="text-[8.5px] font-black text-[#593102] uppercase tracking-wider leading-tight">
+                            PURE &<br />NATURAL
+                        </span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                            <Image
+                                src="/lab..webp"
+                                alt="LAB TESTED"
+                                width={32}
+                                height={32}
+                                className="object-contain w-full h-full"
+                            />
+                        </div>
+                        <span className="text-[8.5px] font-black text-[#593102] uppercase tracking-wider leading-tight">
+                            LAB<br />TESTED
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

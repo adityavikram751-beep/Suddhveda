@@ -765,13 +765,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="flex justify-center">
             <Link
               href="/cart"
               onClick={() => setIsCartOpen(false)}
-              className="flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 cursor-pointer"
+              className="flex h-[42px] w-full max-w-[240px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
             >
-              View Full Cart
+              VIEW FULL CART
             </Link>
           </div>
 

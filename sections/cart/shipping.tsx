@@ -25,7 +25,7 @@ const freeDeliveryTarget = 2000;
 const steps = [
   { id: 1, title: "Address", subtitle: "Add delivery address" },
   { id: 2, title: "Shipping", subtitle: "Choose shipping method" },
-  { id: 3, title: "Review", subtitle: "Review & place order" },
+  { id: 3, title: "Review", subtitle: "Review & confirm order" },
   { id: 4, title: "Payment", subtitle: "Select payment option" },
 ] as const;
 
@@ -296,7 +296,7 @@ export default function PaymentPage() {
                             isDone
                               ? "border-[#77AE61] bg-white text-[#77AE61]"
                               : isActive
-                              ? "border-[#D18500] bg-[#D18500] text-white"
+                              ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                               : "border-[#F0DDC8] bg-white text-[#2F241C]"
                           }`}
                         >
@@ -304,13 +304,13 @@ export default function PaymentPage() {
                         </span>
                         <span
                           className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
-                            isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
+                            isDone ? "bg-[#77AE61]" : isActive ? "bg-[#F24E1E]" : "bg-[#F0DDC8]"
                           }`}
                         />
                         <div className="min-w-0">
                           <p
                             className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
-                              isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                              isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
                             }`}
                           >
                             {step.title}
@@ -321,7 +321,7 @@ export default function PaymentPage() {
                         </div>
                       </div>
                       {step.id < steps.length && (
-                        <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
+                        <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                           &rsaquo;
                         </span>
                       )}
@@ -345,21 +345,21 @@ export default function PaymentPage() {
                       key={method.id}
                       className={`flex min-h-[112px] cursor-pointer items-center justify-between rounded-lg border bg-white px-5 py-5 transition ${
                         isSelected
-                          ? "border-[#E08600] shadow-[0_0_0_1px_rgba(224,134,0,0.08)]"
-                          : "border-[#E8E4DE] hover:border-[#F0B761]"
+                          ? "border-[#F24E1E] shadow-[0_0_0_1px_rgba(242,78,30,0.15)] bg-[#FFF8EF]"
+                          : "border-[#E8E4DE] hover:border-[#F24E1E]/50"
                       }`}
                     >
                       <div className="flex min-w-0 items-center gap-5">
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                             isSelected
-                              ? "border-[#D98200] bg-[#D98200]"
+                              ? "border-[#F24E1E] bg-[#F24E1E]"
                               : "border-[#8D99A8] bg-white"
                           }`}
                         >
                           {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
                         </span>
-                        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#FFF5E8] text-[#DF8500]">
+                        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#FFF0EB] text-[#F24E1E]">
                           {method.icon}
                         </span>
                         <span className="min-w-0">
@@ -370,7 +370,7 @@ export default function PaymentPage() {
                             {method.description}
                           </span>
                           {method.id === "cod" && subtotal > 0 && (
-                            <span className="mt-1 block text-[12px] font-semibold text-[#D18500]">
+                            <span className="mt-1 block text-[12px] font-semibold text-[#F24E1E]">
                               + ₹{Math.round(subtotal * codChargePercent).toLocaleString("en-IN")} COD charge
                             </span>
                           )}
@@ -391,27 +391,27 @@ export default function PaymentPage() {
               </div>
 
               <div className="mt-4 flex items-center gap-3 bg-white/30 px-4 py-3 text-[14px] text-[#586274]">
-                <LockKeyhole size={16} className="shrink-0 text-[#D18500]" />
+                <LockKeyhole size={16} className="shrink-0 text-[#F24E1E]" />
                 <p>Your payment information is safe and encrypted with us.</p>
               </div>
             </div>
 
-            <div className="mt-auto flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-auto flex flex-col gap-3 pt-6 my-4 sm:my-5 sm:flex-row sm:items-center sm:justify-between">
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-auto sm:min-w-[220px]"
+                className="flex h-[42px] w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-xl border border-[#F24E1E] bg-white text-[12px] font-extrabold uppercase tracking-wider text-[#F24E1E] hover:bg-[#FFF0EB] transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap"
               >
-                <ArrowLeft size={18} />
-                Back to Adress
+                <ArrowLeft size={16} />
+                Back to Address
               </button>
               <button
                 type="button"
                 onClick={handleContinue}
-                className="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#C97B00] px-8 text-[15px] font-medium text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#B97100] sm:w-auto sm:min-w-[260px]"
+                className="flex h-[42px] px-6 w-auto items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
               >
                 Continue to Review
-                <ArrowRight size={18} />
+                <ArrowRight size={16} />
               </button>
             </div>
           </section>
@@ -480,7 +480,7 @@ export default function PaymentPage() {
                     </div>
                   )}
                   {selectedMethod === "cod" && codCharge > 0 && (
-                    <div className="flex justify-between text-[#D18500] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
+                    <div className="flex justify-between text-[#F24E1E] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
                       <span>COD Charge</span>
                       <span>+ ₹{codCharge.toLocaleString("en-IN")}</span>
                     </div>
