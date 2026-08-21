@@ -1,30 +1,25 @@
 "use client";
 
-import Image from "next/image";
-import { FiGift, FiTruck, FiShield, FiPackage, FiPercent, FiAward } from "react-icons/fi";
-import { Calendar, ArrowRight, Crown } from "lucide-react";
-
 export default function HeroSection({ onScrollToPlans }: { onScrollToPlans: () => void }) {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#FAF6F0] via-[#FFFDF8] to-[#FAF6F0] pt-4 pb-8 sm:pt-6 sm:pb-10 lg:pt-8 lg:pb-12 border-b border-[#EADCC9]/60 text-[#2F241C]">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#FAF6F0] via-[#FFFDF8] to-[#FAF6F0] pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24 border-b border-[#EADCC9]/60 text-[#2F241C] min-h-[540px] lg:min-h-[640px] flex items-center">
             {/* Ambient Background Warm Glows */}
             <div className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-[#D49313]/10 blur-3xl pointer-events-none" />
             <div className="absolute -right-20 bottom-0 h-96 w-96 rounded-full bg-[#593102]/10 blur-3xl pointer-events-none" />
 
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 relative z-10">
+            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 relative z-10 w-full">
                 <div className="grid gap-8 sm:gap-12 lg:grid-cols-12 lg:items-center">
 
-                    {/* Left Column: Text Content & Features */}
+                    {/* Left Column: Text Content */}
                     <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left">
 
-                        {/* Royalty VIP Badge */}
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#FAF0DC] border border-[#D49313]/50 px-3.5 sm:px-4 py-1.5 text-[10px] sm:text-xs font-black tracking-widest uppercase text-[#593102] shadow-2xs max-w-full truncate">
-                            <Crown size={14} className="text-[#D49313] shrink-0" />
+                        {/* Subtitle Pill Badge - Without Icon */}
+                        <div className="inline-flex items-center gap-2 rounded-full bg-[#FAF0DC] border border-[#D49313]/50 px-4 sm:px-5 py-1.5 text-[10px] sm:text-xs font-black tracking-widest uppercase text-[#593102] shadow-2xs max-w-full truncate">
                             <span className="truncate">SHUDDHVEDA ANNUAL SUBSCRIPTION</span>
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-[30px] sm:text-[48px] lg:text-[58px] leading-[1.15] sm:leading-[1.12] font-serif font-bold text-[#593102] tracking-tight">
+                        <h1 className="text-[32px] sm:text-[50px] lg:text-[62px] leading-[1.15] sm:leading-[1.12] font-serif font-bold text-[#593102] tracking-tight">
                             ANNUAL HONEY <br className="hidden sm:inline" />
                             <span className="inline-block bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic ml-1 sm:ml-0">
                                 SUBSCRIPTION
@@ -41,106 +36,25 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans: () =
                             Discover six premium honey varieties, carefully sourced from different floral origins, delivered to your doorstep throughout the year.
                         </p>
 
-                        {/* 5 Feature Badges Grid */}
-                        <div className="pt-2 grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-4">
-                            <div className="group flex flex-col items-center text-center gap-1.5 sm:gap-2 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#EADCC9] shadow-2xs hover:border-[#D49313] hover:shadow-md transition-all duration-300">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#D49313]/30 flex items-center justify-center text-[#593102] bg-[#FAF0DC] text-xs font-black shrink-0">
-                                    <FiAward size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                                </div>
-                                <span className="text-[#593102] text-[10px] sm:text-[11px] font-bold leading-tight">
-                                    One Payment for the Year
-                                </span>
-                            </div>
-
-                            <div className="group flex flex-col items-center text-center gap-1.5 sm:gap-2 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#EADCC9] shadow-2xs hover:border-[#D49313] hover:shadow-md transition-all duration-300">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#D49313]/30 flex items-center justify-center text-[#593102] bg-[#FAF0DC] text-xs font-black shrink-0">
-                                    <FiTruck size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                                </div>
-                                <span className="text-[#593102] text-[10px] sm:text-[11px] font-bold leading-tight">
-                                    Six Premium Deliveries
-                                </span>
-                            </div>
-
-                            <div className="group flex flex-col items-center text-center gap-1.5 sm:gap-2 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#EADCC9] shadow-2xs hover:border-[#D49313] hover:shadow-md transition-all duration-300">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#D49313]/30 flex items-center justify-center text-[#593102] bg-[#FAF0DC] text-xs font-black shrink-0">
-                                    <FiPackage size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                                </div>
-                                <span className="text-[#593102] text-[10px] sm:text-[11px] font-bold leading-tight">
-                                    Free Shipping
-                                </span>
-                            </div>
-
-                            <div className="group flex flex-col items-center text-center gap-1.5 sm:gap-2 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#EADCC9] shadow-2xs hover:border-[#D49313] hover:shadow-md transition-all duration-300">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#D49313]/30 flex items-center justify-center text-[#593102] bg-[#FAF0DC] text-xs font-black shrink-0">
-                                    <FiPercent size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                                </div>
-                                <span className="text-[#593102] text-[10px] sm:text-[11px] font-bold leading-tight">
-                                    Prepaid Savings
-                                </span>
-                            </div>
-
-                            <div className="col-span-2 sm:col-span-1 group flex flex-col items-center text-center gap-1.5 sm:gap-2 p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#EADCC9] shadow-2xs hover:border-[#D49313] hover:shadow-md transition-all duration-300">
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#D49313]/30 flex items-center justify-center text-[#593102] bg-[#FAF0DC] text-xs font-black shrink-0">
-                                    <FiShield size={16} className="text-[#D49313] sm:w-[18px] sm:h-[18px]" />
-                                </div>
-                                <span className="text-[#593102] text-[10px] sm:text-[11px] font-bold leading-tight">
-                                    Exclusive Member Benefits
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* CTA Button & Subtag */}
-                        <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                        {/* CTA Button - Compact & Sleek (No Icon) */}
+                        <div className="pt-3 sm:pt-4 flex items-center gap-3 sm:gap-4">
                             <button
                                 onClick={onScrollToPlans}
-                                className="w-full sm:w-auto bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white h-[48px] sm:h-[54px] px-8 sm:px-9 rounded-xl flex items-center justify-center gap-3 font-extrabold text-[14px] sm:text-[15px] shadow-lg hover:shadow-xl cursor-pointer uppercase tracking-wider border border-[#FFD700]/30 transition-all duration-500 transform hover:-translate-y-0.5 active:scale-98 group"
+                                className="bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[46px] px-8 sm:px-9 rounded-xl flex items-center justify-center font-extrabold text-[13.5px] sm:text-[14.5px] shadow-md cursor-pointer uppercase tracking-wider transition-colors active:scale-98"
                             >
-                                <FiGift size={18} className="text-[#FFD700]" />
                                 <span>SUBSCRIBE NOW</span>
-                                <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
                             </button>
-
-                            <span className="text-xs sm:text-sm font-semibold text-[#6E5D4F] flex items-center justify-center gap-1.5 bg-white/90 border border-[#EADCC9] px-3.5 py-2 rounded-xl text-center">
-                                🎁 Perfect for you or your loved ones!
-                            </span>
                         </div>
                     </div>
 
-                    {/* Right Column: Royal Honey Box Image Frame */}
+                    {/* Right Column: Full Image in Single Golden Border */}
                     <div className="lg:col-span-5 relative flex justify-center items-center mt-2 sm:mt-0">
-                        <div className="relative w-full max-w-[480px] h-[280px] sm:h-[440px] rounded-3xl bg-gradient-to-tr from-[#FAF0DC] via-white to-[#FAF6F0] p-4 sm:p-6 shadow-2xl border-2 border-[#D49313]/40 flex items-center justify-center group overflow-hidden">
-                            <div className="relative z-10 w-full h-full flex items-center justify-center">
-                                <Image
-                                    src="/honneycart.png"
-                                    alt="ShuddhVeda Honey Subscription Box & Jar"
-                                    width={380}
-                                    height={380}
-                                    className="object-contain max-h-full transition-transform duration-700 group-hover:scale-105"
-                                    priority
-                                />
-                            </div>
-
-                            {/* Floating Glass Badge Top Right */}
-                            <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-20 rounded-xl sm:rounded-2xl bg-white/95 backdrop-blur-md border border-[#EADCC9] px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-lg flex items-center gap-2">
-                                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-[#593102] text-white shrink-0">
-                                    <Calendar size={14} className="sm:w-4 sm:h-4" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-[9px] sm:text-[10px] font-black uppercase text-[#8D7F73]">Frequency</p>
-                                    <p className="text-[11px] sm:text-xs font-extrabold text-[#593102]">6 Deliveries / Year</p>
-                                </div>
-                            </div>
-
-                            {/* Floating Glass Badge Bottom Left */}
-                            <div className="absolute bottom-2.5 left-2.5 sm:bottom-4 sm:left-4 z-20 rounded-xl sm:rounded-2xl bg-white/95 backdrop-blur-md border border-[#EADCC9] px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-lg flex items-center gap-2">
-                                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg sm:rounded-xl bg-[#D49313] text-white shrink-0">
-                                    <FiShield size={14} className="sm:w-4 sm:h-4" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-[9px] sm:text-[10px] font-black uppercase text-[#8D7F73]">100% Pure</p>
-                                    <p className="text-[11px] sm:text-xs font-extrabold text-[#593102]">Raw &amp; Unfiltered</p>
-                                </div>
-                            </div>
+                        <div className="relative w-full max-w-[500px] rounded-[24px] overflow-hidden border-2 border-[#D49313]/70 shadow-lg">
+                            <img
+                                src="/home 1.png"
+                                alt="ShuddhVeda Honey Jar"
+                                className="w-full h-auto block rounded-[22px]"
+                            />
                         </div>
                     </div>
 
@@ -149,4 +63,3 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans: () =
         </section>
     );
 }
-

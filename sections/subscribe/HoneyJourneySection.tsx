@@ -113,7 +113,7 @@ export default function HoneyJourneySection() {
                     YOUR ANNUAL HONEY JOURNEY
                 </h2>
 
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3.5 rounded-full" />
+                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#FA4B1B] to-transparent mx-auto my-3.5 rounded-full" />
 
                 <p className="text-[#6E5D4F] text-base sm:text-lg font-medium">
                     Six unique seasonal harvests delivered directly to your doorstep throughout the year.
@@ -128,7 +128,7 @@ export default function HoneyJourneySection() {
                     {/* Horizontal Gold Progress Line */}
                     <div className="hidden lg:block absolute top-[92px] left-[8%] right-[8%] h-1.5 bg-[#FAF0DC] rounded-full z-0 overflow-hidden border border-[#EADCC9]/70 shadow-inner">
                         <div
-                            className="h-full bg-gradient-to-r from-[#D49313] via-[#F59E0B] to-[#593102] transition-all duration-700 ease-out rounded-full"
+                            className="h-full bg-gradient-to-r from-[#FA4B1B] via-[#FF6F3C] to-[#FA4B1B] transition-all duration-700 ease-out rounded-full"
                             style={{ width: `${(activeIndex / (journeyItems.length - 1)) * 100}%` }}
                         />
                     </div>
@@ -148,7 +148,7 @@ export default function HoneyJourneySection() {
                                     {/* Month Header with Animated Gold Highlight */}
                                     <div className="mb-2 sm:mb-3.5 flex items-center gap-1.5">
                                         <span className={`font-serif text-xs sm:text-sm font-black tracking-widest uppercase transition-all duration-300 ${isCurrent
-                                            ? "text-[#D49313] scale-105 sm:scale-110 font-black"
+                                            ? "text-[#FA4B1B] scale-105 sm:scale-110 font-black"
                                             : isCompleted
                                                 ? "text-[#593102]"
                                                 : "text-[#8D7F73]"
@@ -160,9 +160,9 @@ export default function HoneyJourneySection() {
                                     {/* Thumbnail Circle Frame with Glowing Ring */}
                                     <div
                                         className={`relative h-24 w-24 sm:h-32 sm:w-32 rounded-full border-3 sm:border-4 transition-all duration-500 flex items-center justify-center overflow-hidden ${isCurrent
-                                            ? "border-[#D49313] scale-108 sm:scale-112 shadow-[0_8px_24px_rgba(212,147,19,0.4)] ring-4 ring-[#D49313]/30 bg-white"
+                                            ? "border-[#FA4B1B] scale-108 sm:scale-112 shadow-[0_8px_24px_rgba(250,75,27,0.4)] ring-4 ring-[#FA4B1B]/30 bg-white"
                                             : isCompleted
-                                                ? "border-[#D49313]/80 shadow-md ring-2 ring-[#D49313]/20 bg-white"
+                                                ? "border-[#FA4B1B]/80 shadow-md ring-2 ring-[#FA4B1B]/20 bg-white"
                                                 : "border-white shadow-sm bg-white/70 opacity-65 group-hover:opacity-100 group-hover:scale-105"
                                             }`}
                                     >
@@ -175,25 +175,25 @@ export default function HoneyJourneySection() {
 
                                         {/* Completed Checkmark Badge */}
                                         {isCompleted && (
-                                            <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#D49313] text-white shadow-md border-2 border-white">
+                                            <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#FA4B1B] text-white shadow-md border-2 border-white">
                                                 <Check size={11} strokeWidth={3} className="sm:w-3 sm:h-3" />
                                             </div>
                                         )}
 
                                         {/* Active Pulsing Halo */}
                                         {isCurrent && (
-                                            <div className="absolute inset-0 rounded-full border-2 border-[#FFD700] animate-ping pointer-events-none opacity-50" />
+                                            <div className="absolute inset-0 rounded-full border-2 border-[#FA4B1B] animate-ping pointer-events-none opacity-50" />
                                         )}
                                     </div>
 
                                     {/* Honey Variety Title */}
-                                    <h3 className={`mt-2.5 sm:mt-4 font-serif text-sm sm:text-lg font-bold leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
+                                    <h3 className={`mt-2.5 sm:mt-4 font-serif text-sm sm:text-lg font-bold leading-snug transition-colors duration-300 ${isCurrent ? "text-[#FA4B1B]" : "text-[#593102]"
                                         }`}>
                                         {item.title}
                                     </h3>
 
                                     {/* Collection Badge */}
-                                    <span className={`mt-1.5 sm:mt-2 inline-block rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold ${item.bgColor} ${item.textColor} border ${item.borderColor} transition-all duration-300 ${isCurrent ? "scale-105 shadow-sm ring-2 ring-[#D49313]/30" : ""
+                                    <span className={`mt-1.5 sm:mt-2 inline-block rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold ${item.bgColor} ${item.textColor} border ${item.borderColor} transition-all duration-300 ${isCurrent ? "scale-105 shadow-sm ring-2 ring-[#FA4B1B]/30" : ""
                                         }`}>
                                         {item.collection}
                                     </span>

@@ -427,7 +427,7 @@ export default function ProductDetailPage({
   if (!product) return null;
 
   return (
-    <main className="bg-white min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth">
+    <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth">
       <div className="max-w-[1350px] mx-auto px-4 py-3 sm:py-4">
         {/* MAIN GRID - DESKTOP STICKY GALLERY */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -627,20 +627,15 @@ export default function ProductDetailPage({
             )}
 
             {/* Quantity & Cart Actions (Desktop) */}
-            <div className="hidden lg:block space-y-4 pt-2">
-              <div className="flex items-center justify-between max-w-xl">
-                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
-                <span className="text-[14px] font-extrabold text-[#D49313]">
-                  Total: ₹{currentPrice * selectedQty}
-                </span>
-              </div>
+            <div className="hidden lg:block space-y-3 pt-2">
+              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
 
-              <div className="flex gap-4 max-w-xl">
+              <div className="flex items-center gap-3 max-w-xl">
                 {/* Quantity Buttons */}
-                <div className="flex items-center border border-[#EADCC9] rounded-2xl bg-white w-[160px] h-[56px] px-3 shadow-2xs">
+                <div className="flex items-center border border-[#EADCC9] rounded-xl bg-white w-[140px] h-[46px] px-3 shadow-2xs">
                   <button
                     onClick={decrementQty}
-                    className="p-2 text-[#593102] hover:text-[#D49313] text-2xl font-semibold cursor-pointer"
+                    className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer"
                   >
                     −
                   </button>
@@ -649,74 +644,20 @@ export default function ProductDetailPage({
                   </span>
                   <button
                     onClick={incrementQty}
-                    className="p-2 text-[#593102] hover:text-[#D49313] text-2xl font-semibold cursor-pointer"
+                    className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer"
                   >
                     +
                   </button>
                 </div>
 
-                {/* Add To Cart Button */}
+                {/* Single Primary Add To Cart Button - Slightly Larger */}
                 <button
                   disabled={btnLoading}
                   onClick={() => handleAddToCart(false)}
-                  className="flex-1 bg-[#FAF0DC] hover:bg-[#F5E6CC] text-[#593102] h-[56px] rounded-2xl font-extrabold transition-all duration-300 text-[14px] tracking-wider uppercase disabled:opacity-50 text-center border-2 border-[#D49313] cursor-pointer shadow-xs active:scale-98"
+                  className="flex-1 max-w-[320px] bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase disabled:opacity-50 text-center shadow-sm cursor-pointer active:scale-98"
                 >
                   {btnLoading ? "ADDING..." : `ADD TO CART · ₹${currentPrice * selectedQty}`}
                 </button>
-
-                {/* Buy Now Button */}
-                <button
-                  disabled={btnLoading}
-                  onClick={() => handleAddToCart(true)}
-                  className="flex-1 bg-[#F9531E] hover:bg-[#E04515] text-white h-[56px] rounded-2xl font-black transition-all duration-300 text-[14px] tracking-wider uppercase disabled:opacity-50 text-center shadow-md hover:shadow-xl cursor-pointer active:scale-98"
-                >
-                  BUY NOW
-                </button>
-              </div>
-            </div>
-
-            {/* Weather Alert */}
-            <div className="bg-[#FFF8F5] border-l-[3px] border-[#FF6F3C] p-4 sm:p-5 flex items-start gap-3 max-w-xl rounded-r">
-              <p className="text-[13px] text-[#555555] font-normal leading-relaxed">
-                <strong>Weather Alert:</strong> Due to heavy rainfall, please expect
-                slight delays in deliveries. Thank you for your patience!
-              </p>
-            </div>
-
-            {/* Source Info */}
-            <p className="text-[13px] text-[#6F6F6F] font-normal italic pt-1 max-w-xl">
-              {getCategoryName(product)}
-            </p>
-
-            {/* Tasting Notes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 border border-[#E8E2D5] bg-white overflow-hidden max-w-xl rounded-sm">
-              <div className="p-4 sm:p-5 sm:border-r border-b border-[#E8E2D5]">
-                <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="9" strokeDasharray="3 3" /></svg>}
-                  label="AROMA"
-                  value="Tropical, fruity"
-                />
-              </div>
-              <div className="p-4 sm:p-5 border-b border-[#E8E2D5]">
-                <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><line x1="5" y1="9" x2="19" y2="15" /><line x1="5" y1="15" x2="19" y2="15" /></svg>}
-                  label="TASTE NOTE"
-                  value="Fruity, sweet, tropical"
-                />
-              </div>
-              <div className="p-4 sm:p-5 sm:border-r border-b sm:border-b-0 border-[#E8E2D5]">
-                <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><circle cx="12" cy="12" r="8" /></svg>}
-                  label="SWEETNESS"
-                  value="Sweetest, rich aftertaste"
-                />
-              </div>
-              <div className="p-4 sm:p-5">
-                <TastingItem
-                  icon={<svg viewBox="0 0 24 24" className="w-[18px] h-[18px] text-gray-700 fill-none stroke-current stroke-2"><path d="M12 3v3M12 18v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M3 12h3M18 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" /></svg>}
-                  label="CRYSTALLIZATION"
-                  value="Might crystallize"
-                />
               </div>
             </div>
 
@@ -872,7 +813,7 @@ export default function ProductDetailPage({
           <button
             disabled={btnLoading}
             onClick={() => handleAddToCart(false)}
-            className="flex-1 bg-[#F9531E] hover:bg-[#E04515] text-white py-3.5 px-3 rounded-2xl font-black text-[13px] sm:text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer transition-all active:scale-98 flex items-center justify-center gap-1.5"
+            className="flex-1 bg-[#FA4B1B] hover:bg-[#E64216] text-white py-3.5 px-3 rounded-2xl font-extrabold text-[13px] sm:text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer transition-all active:scale-98 flex items-center justify-center gap-1.5"
           >
             {btnLoading ? "ADDING..." : `ADD TO CART - ₹${currentPrice * selectedQty}`}
           </button>

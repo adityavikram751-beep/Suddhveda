@@ -23,15 +23,13 @@ interface PlanItem {
     image: string;
 }
 
-const subscriberBenefits8 = [
+const subscriberBenefits6 = [
     { title: "Seasonal Fresh Harvests", subtitle: "6 bi-monthly doorstep deliveries", icon: Calendar },
     { title: "Lab Tested Purity", subtitle: "Zero added sugar or preservatives", icon: Award },
     { title: "Free Pan-India Delivery", subtitle: "Zero shipping fee on every shipment", icon: Truck },
     { title: "Prepaid Member Savings", subtitle: "Save up to 15% on annual plans", icon: Percent },
     { title: "Priority Harvest Access", subtitle: "Get rare & limited floral honey first", icon: Star },
     { title: "Free Royal Samples", subtitle: "Surprise gift samples in every box", icon: Gift },
-    { title: "Flexible Schedule", subtitle: "Pause, skip or modify dates anytime", icon: Clock },
-    { title: "Eco Glass Packaging", subtitle: "Airtight luxury glass jar protection", icon: Box },
 ];
 
 export default function SubscriptionPlansSection() {
@@ -196,39 +194,33 @@ export default function SubscriptionPlansSection() {
                             </div>
 
                             {/* Choose Plan Button */}
-                            <div className="mt-6">
+                            <div className="mt-5">
                                 <button
                                     onClick={() => handleSelectPlan(plan)}
                                     disabled={loadingPlan === plan.id}
-                                    className={`w-full h-12 rounded-xl text-xs font-extrabold uppercase tracking-wider text-white transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2 ${plan.btnColor}`}
+                                    className="w-full h-[40px] rounded-xl text-[13px] font-extrabold uppercase tracking-wider text-white bg-[#FA4B1B] hover:bg-[#E64216] transition-all shadow-sm active:scale-98 cursor-pointer flex items-center justify-center"
                                 >
                                     {loadingPlan === plan.id ? (
                                         "Adding..."
                                     ) : addedPlan === plan.id ? (
-                                        <>
-                                            <Check size={16} /> Added to Cart
-                                        </>
+                                        "Added to Cart"
                                     ) : (
-                                        <>
-                                            <span>CHOOSE PLAN</span>
-                                            <ArrowRight size={14} />
-                                        </>
+                                        "CHOOSE PLAN"
                                     )}
                                 </button>
                             </div>
                         </div>
                     ))}
 
-                    {/* Subscriber Benefits Card - Spreads evenly to fill full card height */}
+                    {/* Subscriber Benefits Card - Spreads evenly to fill card height */}
                     <div className="relative flex flex-col justify-between rounded-3xl border-2 border-[#EADCC9] bg-white p-5 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full">
                         <div className="flex flex-col h-full justify-between">
-                            <h3 className="font-serif text-lg sm:text-xl font-bold text-[#593102] tracking-wider uppercase border-b border-[#EADCC9] pb-3 text-center flex items-center justify-center gap-2">
-                                <Crown size={18} className="text-[#D49313]" />
+                            <h3 className="font-serif text-base sm:text-[17px] font-extrabold text-[#593102] tracking-wide uppercase border-b border-[#EADCC9] pb-3 text-center truncate">
                                 SUBSCRIBER BENEFITS
                             </h3>
 
-                            <ul className="mt-4 sm:mt-5 space-y-4 sm:space-y-4.5 text-left text-xs sm:text-sm flex-1 flex flex-col justify-between">
-                                {subscriberBenefits8.map((b, idx) => {
+                            <ul className="mt-4 flex-1 flex flex-col justify-between py-1 text-left text-xs sm:text-sm">
+                                {subscriberBenefits6.map((b, idx) => {
                                     const BIcon = b.icon;
                                     return (
                                         <li key={idx} className="flex items-center gap-3">
