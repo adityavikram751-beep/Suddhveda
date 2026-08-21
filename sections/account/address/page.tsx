@@ -352,6 +352,7 @@ function AddressModal({
                                 placeholder="India"
                                 className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
                             />
+                        </div>
                     </div>
 
                     <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">

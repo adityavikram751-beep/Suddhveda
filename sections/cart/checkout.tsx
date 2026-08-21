@@ -626,10 +626,10 @@ function Stepper({ activeStep }: { activeStep: number }) {
               <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                 <span
                   className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${isDone
-                      ? "border-[#77AE61] bg-white text-[#77AE61]"
-                      : isActive
-                        ? "border-[#F24E1E] bg-[#F24E1E] text-white"
-                        : "border-[#F0DDC8] bg-white text-[#2F241C]"
+                    ? "border-[#77AE61] bg-white text-[#77AE61]"
+                    : isActive
+                      ? "border-[#F24E1E] bg-[#F24E1E] text-white"
+                      : "border-[#F0DDC8] bg-white text-[#2F241C]"
                     }`}
                 >
                   {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
