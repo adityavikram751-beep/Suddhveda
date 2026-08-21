@@ -20,6 +20,8 @@ import {
   LockKeyhole,
   ChevronDown,
   ChevronUp,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -93,6 +95,9 @@ export default function ReviewPage() {
   const [codCharge, setCodCharge] = useState<number>(0);
 
   const [location, setLocation] = useState<LocationData | null>(null);
+
+  const [rawApiCartItems, setRawApiCartItems] = useState<any[]>([]);
+  const [placingOrder, setPlacingOrder] = useState<boolean>(false);
 
   const mapCartItemsToProducts = (items: any) => {
     const rawItems = Array.isArray(items) ? items : Object.values(items || {});
@@ -217,6 +222,7 @@ export default function ReviewPage() {
       }
 
       const items = data.items || data.data?.items || (Array.isArray(data.data) ? data.data : []) || [];
+      setRawApiCartItems(items);
       const mapped = mapCartItemsToProducts(items);
       if (mapped.length > 0) {
         setCartProducts(mapped);
@@ -303,7 +309,8 @@ export default function ReviewPage() {
     return sum + cappedPerUnit * p.quantity;
   }, 0);
 
-  const computedCodCharge = paymentLabel.toLowerCase().includes("cash on delivery") || paymentLabel.toLowerCase().includes("cod") ? Math.round(subtotal * 0.25) : 0;
+  const isCod = paymentLabel.toLowerCase().includes("cash on delivery") || paymentLabel.toLowerCase().includes("cod");
+  const computedCodCharge = isCod ? Math.round(subtotal * 0.25) : 0;
   const total = Math.max(subtotal + deliveryCharge - couponDiscount + computedCodCharge, 0);
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
@@ -312,58 +319,236 @@ export default function ReviewPage() {
     router.push("/shipping");
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (typeof window !== "undefined" && (window as any).Razorpay) {
+        return resolve(true);
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePlaceOrder = async () => {
+    if (placingOrder) return;
     try {
-      const selectedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment_method") || "" : "";
-      const isCod = selectedPayment.toUpperCase() === "COD" || selectedPayment.toLowerCase().includes("cash");
+      setPlacingOrder(true);
+      const storedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment") || "" : "";
+      const isCodMode = storedPayment.toLowerCase() === "cod" || paymentLabel.toLowerCase().includes("cash");
 
-      const shippingAddress = (address as any) || {};
-      const orderProducts = cartProducts.map((p: any) => ({
-        cartItemId: p.cartItemId || p.id,
-        productId: p.id,
-        title: p.title,
-        weight: p.weight,
-        price: p.price,
-        quantity: p.quantity,
-        image: p.image,
-        type: p.type || "NORMAL",
-      }));
-
-      const newOrder = {
-        orderId: `ORD-${Date.now().toString().slice(-6)}`,
-        createdAt: new Date().toISOString(),
-        paymentMethod: isCod ? "COD" : selectedPayment || "Online Payment",
-        paymentStatus: isCod ? "Pay on Delivery (COD)" : "Paid",
-        shippingAddress: {
-          name: shippingAddress.name || shippingAddress.fullName || "Customer",
-          phone: shippingAddress.phone || shippingAddress.phoneNumber || "",
-          addressLine: shippingAddress.line || shippingAddress.addressLine1 || "",
-          city: shippingAddress.city || "",
-          state: shippingAddress.state || "",
-          pincode: shippingAddress.pincode || shippingAddress.zipCode || "",
-        },
-        items: orderProducts,
-        pricing: {
-          subtotal,
-          shipping: 0,
-          saved,
-          couponDiscount,
-          codFee: isCod ? 50 : 0,
-          total: Math.max(subtotal - couponDiscount, 0) + (isCod ? 50 : 0),
-        },
+      const shippingAddressObj = {
+        full_name: address?.name || "Customer",
+        phone: address?.phone || "",
+        address_line1: address?.line || "",
+        address_line2: "",
+        city: address?.city || "",
+        state: address?.state || "",
+        pincode: address?.pincode || "",
+        country: "India",
       };
 
+      let billingAddressObj = shippingAddressObj;
       if (typeof window !== "undefined") {
-        localStorage.setItem("latest_order", JSON.stringify(newOrder));
+        const storedBilling = localStorage.getItem("selected_billing_address") || localStorage.getItem("billing_address");
+        if (storedBilling) {
+          try {
+            const parsedBilling = JSON.parse(storedBilling);
+            billingAddressObj = {
+              full_name: parsedBilling.name || parsedBilling.full_name || address?.name || "Customer",
+              phone: parsedBilling.phone || address?.phone || "",
+              address_line1: parsedBilling.line || parsedBilling.address_line1 || address?.line || "",
+              address_line2: parsedBilling.address_line2 || "",
+              city: parsedBilling.city || address?.city || "",
+              state: parsedBilling.state || address?.state || "",
+              pincode: parsedBilling.pincode || address?.pincode || "",
+              country: "India",
+            };
+          } catch (e) {
+            console.error("Error parsing billing address:", e);
+          }
+        }
       }
 
-      if (isCod) {
+      const formattedItems = rawApiCartItems.length > 0 ? rawApiCartItems : cartProducts.map((p: any) => ({
+        type: p.type || "NORMAL",
+        product_details: {
+          cartItemId: p.cartItemId || p.id,
+          product: {
+            _id: p.id,
+            product_name: p.title || "Pure Honey",
+            brand: "SudhVeda Honey",
+            description: "Raw and organic honey collected directly from natural hives.",
+            image: {
+              image_url: p.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg"
+            },
+            variant: {
+              _id: p.variantId || p.id,
+              weight: parseInt(p.weight) || 250,
+              price: p.price || 0,
+              mrp: p.oldPrice || p.price || 0,
+              save: Math.max((p.oldPrice || p.price) - p.price, 0)
+            }
+          },
+          coupon: appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null,
+          totalAmount: (p.price || 0) * (p.quantity || 1),
+          couponDiscount: couponDiscount || 0,
+          finalAmount: Math.max((p.price || 0) * (p.quantity || 1) - (couponDiscount || 0), 0),
+          totalWeight: (parseInt(p.weight) || 250) * (p.quantity || 1),
+          totalsave: Math.max((p.oldPrice || p.price) - p.price, 0) * (p.quantity || 1)
+        },
+        quantity: p.quantity || 1,
+        reserved_quantity: p.quantity || 1
+      }));
+
+      const payload = {
+        items: formattedItems,
+        finalAmount: total,
+        coupon_code: appliedCouponCode || null,
+        couponDiscount: couponDiscount,
+        coupon: appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null,
+        shipping_address: shippingAddressObj,
+        billing_address: billingAddressObj,
+        payment_mode: isCodMode || isCod ? "cod" : (storedPayment || "upi"),
+        customer_note: "Please deliver during daytime.",
+      };
+
+      if (isCodMode || isCod) {
+        // COD selected: DO NOT call API on Review page button!
+        // Go directly to Thanks page & pass payload to be created on Thanks page.
+        const codOrder = {
+          orderId: `ORD-${Date.now().toString().slice(-6)}`,
+          createdAt: new Date().toISOString(),
+          paymentMethod: "Cash on Delivery (COD)",
+          paymentStatus: "Pay on Delivery (COD)",
+          shippingAddress: {
+            name: address?.name || "Customer",
+            phone: address?.phone || "",
+            addressLine: address?.line || "",
+            city: address?.city || "",
+            state: address?.state || "",
+            pincode: address?.pincode || "",
+          },
+          items: cartProducts,
+          pricing: { subtotal, saved, couponDiscount, codFee: computedCodCharge, total },
+        };
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("latest_order", JSON.stringify(codOrder));
+          localStorage.setItem("pending_cod_payload", JSON.stringify(payload));
+        }
+        router.push("/thank");
+        return;
+      }
+
+      // Online / UPI selected: CALL API ON REVIEW PAGE & OPEN RAZORPAY
+      const res = await fetch(`${API_BASE_URL}/api/order/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok || data.success) {
+        if (data.payment_required && data.razorpay) {
+          await loadRazorpayScript();
+          if (typeof window !== "undefined" && (window as any).Razorpay) {
+            const options = {
+              key: data.razorpay.key_id,
+              amount: data.razorpay.amount,
+              currency: data.razorpay.currency || "INR",
+              name: "SudhVeda Honey",
+              description: "Honey Order",
+              order_id: data.razorpay.order_id,
+              handler: function (response: any) {
+                const finalOrder = {
+                  orderId: data.group?.group_id || data.orders?.[0]?.order_id || `ORD-${Date.now().toString().slice(-6)}`,
+                  createdAt: new Date().toISOString(),
+                  paymentMethod: "Online Payment (Razorpay)",
+                  paymentStatus: "Paid",
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  shippingAddress: {
+                    name: address?.name || "Customer",
+                    phone: address?.phone || "",
+                    addressLine: address?.line || "",
+                    city: address?.city || "",
+                    state: address?.state || "",
+                    pincode: address?.pincode || "",
+                  },
+                  items: cartProducts,
+                  pricing: { subtotal, saved, couponDiscount, codFee: 0, total },
+                };
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("latest_order", JSON.stringify(finalOrder));
+                }
+                router.push("/thank");
+              },
+              prefill: {
+                name: address?.name || "",
+                contact: address?.phone || "",
+              },
+              theme: { color: "#F24E1E" },
+            };
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
+            setPlacingOrder(false);
+            return;
+          }
+        }
+
+        // Direct Online order success fallback
+        const finalOrder = {
+          orderId: data.group?.group_id || data.orders?.[0]?.order_id || `ORD-${Date.now().toString().slice(-6)}`,
+          createdAt: new Date().toISOString(),
+          paymentMethod: "Online Payment",
+          paymentStatus: "Paid",
+          shippingAddress: {
+            name: address?.name || "Customer",
+            phone: address?.phone || "",
+            addressLine: address?.line || "",
+            city: address?.city || "",
+            state: address?.state || "",
+            pincode: address?.pincode || "",
+          },
+          items: cartProducts,
+          pricing: { subtotal, saved, couponDiscount, codFee: 0, total },
+        };
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("latest_order", JSON.stringify(finalOrder));
+        }
         router.push("/thank");
       } else {
-        router.push("/payment");
+        alert(data.message || "Failed to create order. Please try again.");
       }
-    } catch (e) {
-      router.push("/payment");
+    } catch (e: any) {
+      console.error("Error creating order:", e);
+      const fallbackOrder = {
+        orderId: `ORD-${Date.now().toString().slice(-6)}`,
+        createdAt: new Date().toISOString(),
+        paymentMethod: isCod ? "Cash on Delivery (COD)" : "Online Payment",
+        paymentStatus: isCod ? "Pay on Delivery (COD)" : "Paid",
+        shippingAddress: {
+          name: address?.name || "Customer",
+          phone: address?.phone || "",
+          addressLine: address?.line || "",
+          city: address?.city || "",
+          state: address?.state || "",
+          pincode: address?.pincode || "",
+        },
+        items: cartProducts,
+        pricing: { subtotal, saved, couponDiscount, codFee: isCod ? computedCodCharge : 0, total },
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("latest_order", JSON.stringify(fallbackOrder));
+      }
+      router.push("/thank");
+    } finally {
+      setPlacingOrder(false);
     }
   };
 
@@ -379,7 +564,7 @@ export default function ReviewPage() {
           {/* Left Column - Scrollable */}
           <section className="flex flex-col gap-7">
             {/* Header */}
-            <header className="relative pr-28">
+            <header className="relative pr-1 sm:pr-28">
               <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                 Review &amp; Place Order
               </h1>
@@ -400,29 +585,30 @@ export default function ReviewPage() {
             {/* Stepper */}
             <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
               <div className="flex items-center justify-between gap-1 sm:gap-2">
-                {steps.map((step) => {
+                {[
+                  { id: 1, title: "Address", subtitle: "Add delivery address" },
+                  { id: 2, title: "Shipping", subtitle: "Choose shipping method" },
+                  { id: 3, title: "Review", subtitle: "Review & confirm order" },
+                  { id: 4, title: isCod ? "Thanks" : "Payment", subtitle: isCod ? "Order confirmation" : "Select payment option" },
+                ].map((step) => {
                   const isDone = step.id < 3;
                   const isActive = step.id === 3;
                   return (
                     <div key={step.id} className="flex min-w-0 flex-1 items-center">
                       <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                         <span
-                          className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${isDone
-                              ? "border-[#77AE61] bg-white text-[#77AE61]"
-                              : isActive
-                                ? "border-[#D18500] bg-[#D18500] text-white"
-                                : "border-[#F0DDC8] bg-white text-[#2F241C]"
+                          className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${isDone
+                            ? "border-[#77AE61] bg-white text-[#77AE61]"
+                            : isActive
+                              ? "border-[#F24E1E] bg-[#F24E1E] text-white"
+                              : "border-[#F0DDC8] bg-white text-[#2F241C]"
                             }`}
                         >
-                          {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
+                          {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                         </span>
-                        <span
-                          className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#D18500]" : "bg-[#F0DDC8]"
-                            }`}
-                        />
                         <div className="min-w-0">
                           <p
-                            className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                            className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
                               }`}
                           >
                             {step.title}
@@ -433,7 +619,7 @@ export default function ReviewPage() {
                         </div>
                       </div>
                       {step.id < steps.length && (
-                        <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F0A33A]">
+                        <span className="mx-0.5 sm:mx-3 shrink-0 text-[16px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                           &rsaquo;
                         </span>
                       )}
@@ -531,23 +717,23 @@ export default function ReviewPage() {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-auto sm:min-w-[220px]"
+                className="flex h-[42px] w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-xl border border-[#F24E1E] bg-white text-[12px] font-extrabold uppercase tracking-wider text-[#F24E1E] hover:bg-[#FFF0EB] transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap"
               >
-                <ArrowLeft size={18} />
+                <ArrowLeft size={16} />
                 Back to Shipping
               </button>
               <button
                 type="button"
+                disabled={placingOrder}
                 onClick={handlePlaceOrder}
-                className="flex h-14 w-full items-center justify-center gap-3 whitespace-nowrap rounded-md bg-[#E17C00] px-8 text-[20px] font-bold text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#C96F00] sm:w-[340px]"
+                className="flex h-[42px] px-6 w-auto items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ShoppingBag size={20} />
-                Place Order
-                <span>₹{total.toLocaleString("en-IN")}</span>
+                {placingOrder ? "Processing..." : isCod ? "Place Order" : "Proceed to Payment"}
+                <ArrowRight size={16} />
               </button>
             </div>
           </section>
@@ -593,10 +779,6 @@ export default function ReviewPage() {
                   <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <strong className="text-[#0BA445]">{deliveryCharge === 0 ? "FREE" : `₹${deliveryCharge}`}</strong>
-                </div>
-                <div className="flex justify-between">
                   <span>You Save</span>
                   <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
                 </div>
@@ -621,7 +803,7 @@ export default function ReviewPage() {
                   </div>
                 )}
                 {computedCodCharge > 0 && (
-                  <div className="flex justify-between text-[#D18500] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
+                  <div className="flex justify-between text-[#F24E1E] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
                     <span>COD Charge</span>
                     <span>+ ₹{computedCodCharge.toLocaleString("en-IN")}</span>
                   </div>

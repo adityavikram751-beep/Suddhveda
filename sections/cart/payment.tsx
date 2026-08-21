@@ -16,6 +16,7 @@ import {
     ArrowRight,
     Copy,
     Check,
+    X,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts } from "@/lib/shop-data";
@@ -25,7 +26,7 @@ const freeDeliveryTarget = 2000;
 const steps = [
     { id: 1, title: "Address", subtitle: "Add delivery address" },
     { id: 2, title: "Shipping", subtitle: "Choose shipping method" },
-    { id: 3, title: "Review", subtitle: "Review & place order" },
+    { id: 3, title: "Review", subtitle: "Review & confirm order" },
     { id: 4, title: "Payment", subtitle: "Select payment option" },
 ] as const;
 
@@ -132,11 +133,11 @@ export default function PaymentPage() {
                     {/* Left Column */}
                     <section className="flex h-full flex-col gap-8">
                         {/* Header */}
-                        <header className="relative pr-28">
+                        <header className="relative pr-1 sm:pr-28">
                             <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                                 Payment
                             </h1>
-                            <p className="mt-4 text-[16px] text-[#5D6778] md:text-[18px]">
+                            <p className="mt-4 text-[16px] text-[#5D6778]">
                                 Almost there! Just a few more details to get your pure honey.
                             </p>
                             <Image
@@ -150,41 +151,41 @@ export default function PaymentPage() {
                         </header>
 
                         {/* Progress Steps */}
-                        <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-3 py-4 shadow-sm md:px-4">
-                            <div className="flex items-center justify-between gap-2">
+                        <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
+                            <div className="flex items-center justify-between gap-1 sm:gap-2">
                                 {steps.map((step, index) => {
                                     const isDone = step.id < 4;
                                     const isActive = step.id === 4;
 
                                     return (
                                         <div key={step.id} className="flex min-w-0 flex-1 items-center">
-                                            <div className="flex min-w-0 items-center gap-3">
+                                            <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                                                 <span
-                                                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-[16px] font-bold ${
+                                                    className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${
                                                         isDone
                                                             ? "border-[#77AE61] bg-white text-[#77AE61]"
                                                             : isActive
-                                                            ? "border-[#D18500] bg-[#D18500] text-white"
+                                                            ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                                                             : "border-[#F0DDC8] bg-white text-[#2F241C]"
                                                     }`}
                                                 >
-                                                    {isDone ? <CheckCircle2 size={28} strokeWidth={1.8} /> : step.id}
+                                                    {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                                                 </span>
-                                                <div className="hidden min-w-0 sm:block">
+                                                <div className="min-w-0">
                                                     <p
-                                                        className={`text-[15px] font-semibold leading-tight ${
-                                                            isActive ? "text-[#D18500]" : "text-[#2F241C]"
+                                                        className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
+                                                            isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
                                                         }`}
                                                     >
                                                         {step.title}
                                                     </p>
-                                                    <p className="mt-1 truncate text-[12px] leading-tight text-[#596273]">
+                                                    <p className="hidden sm:block mt-0.5 sm:mt-1 truncate text-[10px] sm:text-[12px] leading-tight text-[#596273]">
                                                         {step.subtitle}
                                                     </p>
                                                 </div>
                                             </div>
                                             {index < steps.length - 1 && (
-                                                <span className="mx-3 hidden shrink-0 text-[26px] leading-none text-[#F0A33A] md:block">
+                                                <span className="mx-0.5 sm:mx-3 shrink-0 text-[16px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                                                     &rsaquo;
                                                 </span>
                                             )}
@@ -327,22 +328,22 @@ export default function PaymentPage() {
                         </div>
 
                         {/* Navigation Buttons */}
-                        <div className="mt-auto flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="mt-auto flex flex-col gap-3 pt-6 my-4 sm:my-5 sm:flex-row sm:items-center sm:justify-between">
                             <button
                                 type="button"
-                                onClick={handleBack}
-                                className="flex h-12 w-full items-center justify-center gap-2 rounded-md border border-[#E08600] bg-white px-8 text-[15px] font-medium text-[#D18500] transition hover:bg-[#FFF5E8] sm:w-[220px]"
+                                onClick={() => router.push("/review")}
+                                className="flex h-[42px] w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-xl border border-[#F24E1E] bg-white text-[12px] font-extrabold uppercase tracking-wider text-[#F24E1E] hover:bg-[#FFF0EB] transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap"
                             >
-                                <ArrowLeft size={18} />
+                                <ArrowLeft size={16} />
                                 Back to Review
                             </button>
                             <button
                                 type="button"
                                 onClick={handleContinue}
-                                className="flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#C97B00] px-8 text-[15px] font-medium text-white shadow-[0_12px_22px_rgba(201,123,0,0.18)] transition hover:bg-[#B97100] sm:w-[260px]"
+                                className="flex h-[42px] px-6 w-auto items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
                             >
-                                Continue to Thanks
-                                <ArrowRight size={18} />
+                                Place Order
+                                <ArrowRight size={16} />
                             </button>
                         </div>
                     </section>
@@ -396,10 +397,6 @@ export default function PaymentPage() {
                                     <strong className="text-[#593102]">
                                         ₹{subtotal.toLocaleString("en-IN")}
                                     </strong>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Shipping</span>
-                                    <strong className="text-[#0BA445]">FREE</strong>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>You Save</span>

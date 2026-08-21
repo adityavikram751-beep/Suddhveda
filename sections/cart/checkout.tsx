@@ -13,6 +13,7 @@ import {
   Clock,
   ArrowRight,
   CheckCircle2,
+  X,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -81,6 +82,7 @@ export default function Checkout() {
   });
   const [isPincodeVerified, setIsPincodeVerified] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+  const [showAddressForm, setShowAddressForm] = useState<boolean>(false);
 
   const formRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
@@ -393,6 +395,7 @@ function getTokenFromCookie(): string | null {
     populateForm(address);
     setEditingAddressId(address.id);
     setSelectedAddressId(address.id);
+    setShowAddressForm(true);
     if (typeof window !== "undefined") {
       localStorage.setItem("selected_address_id", address.id);
     }
@@ -415,6 +418,7 @@ function getTokenFromCookie(): string | null {
     setEditingAddressId(null);
     setIsPincodeVerified(false);
     setSelectedAddressId("");
+    setShowAddressForm(true);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
@@ -528,16 +532,36 @@ function getTokenFromCookie(): string | null {
               onDelete={deleteAddressFromAPI}
             />
 
-            <DeliveryAddressForm
-              ref={formRef}
-              formData={formData}
-              setFormData={setFormData}
-              isPincodeVerified={isPincodeVerified}
-              onVerifyPincode={handleVerifyPincode}
-              onSave={handleSaveAddressAndContinue}
-              buttonLabel={getButtonLabel()}
-              isEditing={isEditing}
-            />
+            {/* Desktop View: Always show address form as originally */}
+            <div className="hidden sm:block">
+              <DeliveryAddressForm
+                ref={formRef}
+                formData={formData}
+                setFormData={setFormData}
+                isPincodeVerified={isPincodeVerified}
+                onVerifyPincode={handleVerifyPincode}
+                onSave={handleSaveAddressAndContinue}
+                buttonLabel={getButtonLabel()}
+                isEditing={isEditing}
+              />
+            </div>
+
+            {/* Mobile View: Toggle address form when + Add New or Edit is clicked */}
+            <div className="block sm:hidden">
+              {(addresses.length === 0 || showAddressForm) && (
+                <DeliveryAddressForm
+                  ref={formRef}
+                  formData={formData}
+                  setFormData={setFormData}
+                  isPincodeVerified={isPincodeVerified}
+                  onVerifyPincode={handleVerifyPincode}
+                  onSave={handleSaveAddressAndContinue}
+                  buttonLabel={getButtonLabel()}
+                  isEditing={isEditing}
+                  onClose={addresses.length > 0 ? () => setShowAddressForm(false) : undefined}
+                />
+              )}
+            </div>
 
             <div className="h-6 sm:h-8" />
           </div>
@@ -572,17 +596,18 @@ function getTokenFromCookie(): string | null {
 
 function CheckoutHeader() {
   return (
-    <div className="relative mb-2 sm:mb-4">
+    <div className="relative mb-2 sm:mb-4 pr-1 sm:pr-28">
       <h1 className="font-serif text-[26px] sm:text-[34px] font-bold">Checkout</h1>
       <p className="mt-1 text-[13px] sm:text-[14px] text-[#7B8493]">
         Almost there! Just a few more details to get your pure honey.
       </p>
       <Image
-        src="/need.png"
-        alt="Honey illustration"
-        width={180}
-        height={70}
-        className="absolute right-0 -top-4 sm:-top-6 hidden sm:block object-contain"
+        src="/bee with honey bottle.png"
+        alt="Honey jar with bee"
+        width={110}
+        height={92}
+        className="absolute right-0 top-0 hidden object-contain sm:block"
+        priority
       />
     </div>
   );
@@ -599,23 +624,21 @@ function Stepper({ activeStep }: { activeStep: number }) {
             <div key={step.id} className="flex min-w-0 flex-1 items-center">
               <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                 <span
-                  className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${isDone
+                  className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${
+                    isDone
                       ? "border-[#77AE61] bg-white text-[#77AE61]"
                       : isActive
                         ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                         : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                    }`}
+                  }`}
                 >
-                  {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
+                  {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                 </span>
-                <span
-                  className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${isDone ? "bg-[#77AE61]" : isActive ? "bg-[#F24E1E]" : "bg-[#F0DDC8]"
-                    }`}
-                />
                 <div className="min-w-0">
                   <p
-                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
-                      }`}
+                    className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
+                      isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
+                    }`}
                   >
                     {step.title}
                   </p>
@@ -625,7 +648,7 @@ function Stepper({ activeStep }: { activeStep: number }) {
                 </div>
               </div>
               {step.id < steps.length && (
-                <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F24E1E]/60">
+                <span className="mx-0.5 sm:mx-3 shrink-0 text-[16px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                   &rsaquo;
                 </span>
               )}
@@ -645,6 +668,7 @@ type DeliveryAddressFormProps = {
   onSave: () => void;
   buttonLabel: string;
   isEditing: boolean;
+  onClose?: () => void;
 };
 
 const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>(
@@ -657,6 +681,7 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
       onSave,
       buttonLabel,
       isEditing,
+      onClose,
     },
     ref
   ) => {
@@ -666,9 +691,21 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
 
     return (
       <div ref={ref} className="rounded-[16px] border border-[#F2EFE9] bg-white p-5 sm:p-7">
-        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">
-          {isEditing ? "Edit Delivery Address" : "Or Add a New Address"}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">
+            {isEditing ? "Edit Delivery Address" : "Or Add a New Address"}
+          </h2>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex sm:hidden h-7 w-7 items-center justify-center rounded-full border border-[#2F241C]/30 bg-[#FFF8EF] text-[#2F241C] hover:border-[#F24E1E] hover:text-[#F24E1E] transition-all cursor-pointer shrink-0 active:scale-95"
+              aria-label="Close address form"
+            >
+              <X size={15} strokeWidth={2} />
+            </button>
+          )}
+        </div>
         <div className="mt-5 sm:mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
           <FormField
             label="Full Name"

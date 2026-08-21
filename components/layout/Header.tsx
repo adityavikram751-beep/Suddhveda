@@ -671,10 +671,10 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-full p-2 bg-[#FAF0DC] hover:bg-[#D49313] text-[#593102] hover:text-white transition-all shadow-2xs cursor-pointer active:scale-95 border border-[#D49313]/30"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2F241C]/40 bg-white text-[#2F241C] hover:border-[#F24E1E] hover:text-[#F24E1E] hover:bg-[#FFF0EB] transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
                   aria-label="Close navigation"
                 >
-                  <FiX size={18} strokeWidth={2.5} />
+                  <FiX size={18} />
                 </button>
               </div>
 
@@ -860,10 +860,8 @@ export default function Header() {
                           }`}
                         >
                           <span>{item.title}</span>
-                          {isActive ? (
+                          {isActive && (
                             <span className="h-2.5 w-2.5 rounded-full bg-[#D49313] shadow-xs" />
-                          ) : (
-                            <span className="text-[12px] text-[#8D7F73] font-normal">&rarr;</span>
                           )}
                         </Link>
                       );
@@ -913,16 +911,6 @@ export default function Header() {
                       Logout
                     </button>
                   )}
-                </div>
-
-                {/* Tagline Card */}
-                <div className="rounded-2xl bg-[#FAF0DC]/80 border border-[#D49313]/30 p-3 text-center">
-                  <p className="text-[11px] font-black text-[#593102] uppercase tracking-wider">
-                    🌿 Raw, Pure &amp; Cold Extracted
-                  </p>
-                  <p className="text-[10px] text-[#8D7F73] font-semibold mt-0.5">
-                    Direct from natural hives to your home
-                  </p>
                 </div>
               </div>
             </div>

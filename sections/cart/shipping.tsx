@@ -16,6 +16,7 @@ import {
   Wallet,
   Smartphone,
   LockKeyhole,
+  X,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -265,12 +266,12 @@ export default function PaymentPage() {
       <div className="mx-auto max-w-[1410px] px-4 md:px-6">
         <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
           <section className="flex h-full flex-col gap-8">
-            <header className="relative pr-28">
+            <header className="relative pr-1 sm:pr-28">
               <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
-                Shipping
+                Shipping Method
               </h1>
-              <p className="mt-4 text-[16px] text-[#5D6778] md:text-[18px]">
-                Almost there! Just choose how you&apos;d like to pay.
+              <p className="mt-4 text-[16px] text-[#5D6778]">
+                Select your preferred delivery speed and payment option.
               </p>
               <Image
                 src="/bee with honey bottle.png"
@@ -292,7 +293,7 @@ export default function PaymentPage() {
                     <div key={step.id} className="flex min-w-0 flex-1 items-center">
                       <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                         <span
-                          className={`hidden sm:flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[14px] sm:text-[16px] font-bold ${
+                          className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${
                             isDone
                               ? "border-[#77AE61] bg-white text-[#77AE61]"
                               : isActive
@@ -300,13 +301,8 @@ export default function PaymentPage() {
                               : "border-[#F0DDC8] bg-white text-[#2F241C]"
                           }`}
                         >
-                          {isDone ? <CheckCircle2 size={22} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
+                          {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
                         </span>
-                        <span
-                          className={`sm:hidden h-3 w-3 rounded-full shrink-0 ${
-                            isDone ? "bg-[#77AE61]" : isActive ? "bg-[#F24E1E]" : "bg-[#F0DDC8]"
-                          }`}
-                        />
                         <div className="min-w-0">
                           <p
                             className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
@@ -321,7 +317,7 @@ export default function PaymentPage() {
                         </div>
                       </div>
                       {step.id < steps.length && (
-                        <span className="mx-1 sm:mx-3 hidden sm:block shrink-0 text-[20px] sm:text-[26px] leading-none text-[#F24E1E]/60">
+                        <span className="mx-0.5 sm:mx-3 shrink-0 text-[16px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                           &rsaquo;
                         </span>
                       )}

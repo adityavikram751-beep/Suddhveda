@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts } from "@/lib/shop-data";
+import { API_BASE_URL } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -60,7 +61,31 @@ export default function OrderConfirmation() {
       const savedOrder = localStorage.getItem("latest_order");
       if (savedOrder) {
         try {
-          setOrder(JSON.parse(savedOrder));
+          const parsed = JSON.parse(savedOrder);
+          setOrder(parsed);
+
+          const pendingPayload = localStorage.getItem("pending_cod_payload");
+          if (pendingPayload) {
+            localStorage.removeItem("pending_cod_payload");
+            fetch(`${API_BASE_URL}/api/order/create`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: pendingPayload,
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.success || data.orders || data.group) {
+                  const realId = data.group?.group_id || data.orders?.[0]?.order_id;
+                  if (realId) {
+                    const updatedOrder = { ...parsed, orderId: realId };
+                    setOrder(updatedOrder);
+                    localStorage.setItem("latest_order", JSON.stringify(updatedOrder));
+                  }
+                }
+              })
+              .catch((err) => console.error("Error creating COD order on thank page:", err));
+          }
         } catch (e) {
           console.error("Error parsing latest_order", e);
         }
@@ -98,14 +123,23 @@ export default function OrderConfirmation() {
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
+  const orderItems = order?.items && order.items.length > 0
+    ? order.items
+    : visibleProducts;
+
+  const displaySubtotal = order?.pricing?.subtotal ?? subtotal;
+  const displaySaved = order?.pricing?.saved ?? saved;
+  const displayCodFee = order?.pricing?.codFee ?? 0;
+  const displayTotal = order?.pricing?.total ?? (displaySubtotal + displayCodFee);
+
   // Order meta info for the confirmation cards
-  const orderDate = new Date();
+  const orderDate = order?.createdAt ? new Date(order.createdAt) : new Date();
   const deliveryStart = new Date(orderDate);
   deliveryStart.setDate(deliveryStart.getDate() + 3);
   const deliveryEnd = new Date(orderDate);
   deliveryEnd.setDate(deliveryEnd.getDate() + 5);
 
-  const orderNumber = `SVN${Math.floor(1000000 + Math.random() * 8999999)}`;
+  const orderNumber = order?.orderId || `SVN${Math.floor(1000000 + Math.random() * 8999999)}`;
 
   const orderInfoItems = [
     {
@@ -128,8 +162,8 @@ export default function OrderConfirmation() {
     },
     {
       icon: Wallet,
-      label: "TOTAL PAID",
-      value: `₹${total.toLocaleString("en-IN")}`,
+      label: "TOTAL AMOUNT",
+      value: `₹${displayTotal.toLocaleString("en-IN")}`,
       valueClass: "text-[#187A37]",
     },
   ];
@@ -192,59 +226,56 @@ export default function OrderConfirmation() {
               </div>
             </div>
 
-            {/* What happens next? */}
-            <div className="flex flex-1 flex-col rounded-[16px] border border-[#F2EFE9] bg-white p-7">
-              <h2 className="font-serif text-[19px] font-bold">
-                What happens next?
-              </h2>
-              <div className="relative mt-8 grid grid-cols-2 gap-y-8 sm:grid-cols-4 sm:gap-y-0">
-                {/* Dotted connector line (desktop only) */}
-                <div className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-6 hidden border-t-2 border-dotted border-[#E3D9C8] sm:block" />
-
-                {orderSteps.map((step, index) => {
-                  const Icon = step.icon;
-                  const isActive = index === 0;
-                  return (
-                    <div
-                      key={step.id}
-                      className="relative flex flex-col items-center gap-2 text-center"
-                    >
-                      <div
-                        className={`z-10 flex h-12 w-12 items-center justify-center rounded-xl border-2 bg-white ${
-                          isActive
-                            ? "border-[#0BA445] text-[#0BA445]"
-                            : "border-[#EEF1F4] text-[#9AA3AF]"
-                        }`}
-                      >
-                        <Icon size={22} />
-                      </div>
-                      <p className="text-[14px] font-semibold">{step.label}</p>
-                      <p className="text-[12px] leading-snug text-[#9AA3AF]">
-                        {step.description}
+            {/* Delivery & Payment Details */}
+            {order?.shippingAddress && (
+              <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-6 shadow-sm">
+                <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#593102] mb-4">Delivery &amp; Payment Details</h2>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="flex items-start gap-3">
+                    <MapPin size={20} className="mt-1 text-[#F24E1E] shrink-0" />
+                    <div>
+                      <p className="text-[14px] font-bold text-[#2F241C]">Delivery Address</p>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-[#596273]">
+                        <strong className="text-[#2F241C]">{order.shippingAddress.name}</strong><br />
+                        {order.shippingAddress.addressLine}<br />
+                        {order.shippingAddress.city} - {order.shippingAddress.pincode}, {order.shippingAddress.state}<br />
+                        <span className="font-medium text-[#2F241C]">Phone:</span> {order.shippingAddress.phone}
                       </p>
                     </div>
-                  );
-                })}
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Wallet size={20} className="mt-1 text-[#F24E1E] shrink-0" />
+                    <div>
+                      <p className="text-[14px] font-bold text-[#2F241C]">Payment Method</p>
+                      <p className="mt-1.5 text-[13px] font-semibold text-[#187A37]">
+                        {order.paymentMethod || "Cash on Delivery (COD)"}
+                      </p>
+                      <p className="mt-1 text-[12px] text-[#6F7786]">
+                        Status: <span className="font-medium text-[#187A37]">{order.paymentStatus || "Pay on Delivery"}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
+            )}
 
-              {/* Continue Shopping + Track Order Buttons */}
-              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row sm:justify-between">
-                <Link
-                  href="/shop"
-                  className="flex h-12 items-center justify-center gap-2 rounded-lg border border-[#593102] px-6 text-[14px] font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
-                >
-                  <ShoppingCart size={16} />
-                  Continue Shopping
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleTrackOrder}
-                  className="flex h-12 items-center justify-center gap-2 rounded-lg bg-[#D18500] px-6 text-[14px] font-bold text-white hover:bg-[#B97100] transition"
-                >
-                  Track Your Order
-                  <ArrowRight size={16} />
-                </button>
-              </div>
+            {/* Continue Shopping + Track Order Buttons */}
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-between sm:items-center">
+              <Link
+                href="/shop"
+                className="flex h-[42px] px-6 items-center justify-center gap-2 rounded-xl border border-[#F24E1E] bg-white text-[12px] font-extrabold uppercase tracking-wider text-[#F24E1E] hover:bg-[#FFF0EB] transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap"
+              >
+                <ShoppingCart size={16} />
+                Continue Shopping
+              </Link>
+              <button
+                type="button"
+                onClick={handleTrackOrder}
+                className="flex h-[42px] px-6 items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
+              >
+                Track Your Order
+                <ArrowRight size={16} />
+              </button>
             </div>
           </section>
 
@@ -254,17 +285,17 @@ export default function OrderConfirmation() {
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
                 <span className="text-[12px] text-[#9AA3AF]">
-                  {visibleProducts.length} Items
+                  {orderItems.length} Items
                 </span>
               </div>
 
               <div className="mt-5 max-h-[280px] space-y-4 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#E3D3B4] [&::-webkit-scrollbar-track]:bg-transparent">
-                {visibleProducts.map((product) => (
-                  <div key={product.id} className="flex items-center gap-3">
+                {orderItems.map((product: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-3">
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
                       <Image
-                        src={product.image}
-                        alt={product.title}
+                        src={product.image || "/placeholder.png"}
+                        alt={product.title || "Product"}
                         fill
                         className="object-contain p-1.5"
                       />
@@ -272,13 +303,13 @@ export default function OrderConfirmation() {
                     <div className="flex-1">
                       <p className="text-[14px] font-semibold">{product.title}</p>
                       <p className="text-[11px] text-[#9AA3AF]">
-                        {product.weight.split(" - ")[0]} - Raw & Filtered
+                        {product.weight || "Raw & Filtered"}
                       </p>
                       <p className="text-[11px] text-[#9AA3AF]">
                         Qty: {product.quantity}
                       </p>
                     </div>
-                    <p className="text-[14px] font-bold">₹{product.price}</p>
+                    <p className="text-[14px] font-bold">₹{product.price * product.quantity}</p>
                   </div>
                 ))}
               </div>
@@ -287,21 +318,21 @@ export default function OrderConfirmation() {
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <strong className="text-[#593102]">
-                    ₹{subtotal.toLocaleString("en-IN")}
+                    ₹{displaySubtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <strong className="text-[#0BA445]">FREE</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span>You Save</span>
-                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span>Coupon Applied</span>
-                  <strong className="text-[#0BA445]">- ₹{saved}</strong>
-                </div>
+                {displaySaved > 0 && (
+                  <div className="flex justify-between">
+                    <span>You Save</span>
+                    <strong className="text-[#0BA445]">- ₹{displaySaved.toLocaleString("en-IN")}</strong>
+                  </div>
+                )}
+                {displayCodFee > 0 && (
+                  <div className="flex justify-between text-[#F24E1E] font-bold">
+                    <span>COD Charge</span>
+                    <span>+ ₹{displayCodFee.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
               </div>
 
               <div className="mt-6 flex items-end justify-between border-t border-[#EEF1F4] pt-6">
@@ -309,31 +340,7 @@ export default function OrderConfirmation() {
                   <p className="text-[21px] font-bold">Total</p>
                   <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                 </div>
-                <p className="font-serif text-[28px] font-bold">₹{subtotal.toLocaleString("en-IN")}</p>
-              </div>
-
-              {/* Savings and free delivery progress */}
-              <div className="mt-6 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-4">
-                <p className="flex items-center gap-2 text-[13px] font-semibold text-[#187A37]">
-                  <ShieldCheck size={16} /> You&apos;re saving ₹{saved} on this order!
-                </p>
-                {remaining > 0 && (
-                  <>
-                    <p className="mt-2 text-[12px] text-[#4C5362]">
-                      Add items worth ₹{remaining} more to get FREE delivery!
-                    </p>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#DDEFE0]">
-                      <div
-                        className="h-full rounded-full bg-[#0BA445]"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                    <div className="mt-1 flex justify-between text-[10px] text-[#9AA3AF]">
-                      <span>₹0</span>
-                      <span>₹{freeDeliveryTarget}</span>
-                    </div>
-                  </>
-                )}
+                <p className="font-serif text-[28px] font-bold">₹{displayTotal.toLocaleString("en-IN")}</p>
               </div>
 
               {/* Bottom block: Trust Badges + Need Help together in one cream box */}
