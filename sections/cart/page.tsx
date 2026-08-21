@@ -429,7 +429,7 @@ export default function Cart() {
                         <div className="mt-4 space-y-4 max-h-[250px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
                                 <div className="rounded-2xl border-2 border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
-                                    Loading your cart...
+                                    Loading your cart....
                                 </div>
                             ) : cartProducts.length === 0 ? (
                                 <div className="rounded-2xl border-2 border-dashed border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
@@ -461,11 +461,10 @@ export default function Cart() {
                                     return (
                                         <div
                                             key={product.cartItemId}
-                                            className={`group grid gap-4 rounded-2xl border-2 p-3.5 sm:p-5 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center overflow-hidden ${
-                                                selected
+                                            className={`group grid gap-4 rounded-2xl border-2 p-3.5 sm:p-5 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center overflow-hidden ${selected
                                                     ? "border-[#D49313] bg-white shadow-xs"
                                                     : "border-[#EADCC9]/70 bg-white/60 opacity-60"
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                                                 <input
@@ -1051,122 +1050,122 @@ export function OrderSummaryWithCoupons({
                 </div>
 
                 <div className="pb-4 pt-1 space-y-3">
-                        <div className="max-h-[340px] flex flex-col space-y-3">
-                            {/* Input row */}
-                            <div className="flex gap-2 shrink-0">
-                                <input
-                                    type="text"
-                                    placeholder="Enter coupon code"
-                                    value={couponCode}
-                                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                    className="flex-1 rounded-xl border border-[#EADCC9] bg-[#FAF5EC]/50 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#593102] placeholder:text-[#8D7F73] focus:border-[#D49313] focus:outline-none focus:ring-2 focus:ring-[#D49313]/20 transition-all"
-                                />
-                                <button
-                                    onClick={() => couponCode && applyCoupon(couponCode)}
-                                    disabled={couponLoading}
-                                    className="min-w-[90px] rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
-                                >
-                                    {couponLoading ? (
-                                        <>
-                                            <Loader2 size={14} className="animate-spin" />
-                                            Applying
-                                        </>
-                                    ) : (
-                                        "Apply"
-                                    )}
-                                </button>
-                            </div>
+                    <div className="max-h-[340px] flex flex-col space-y-3">
+                        {/* Input row */}
+                        <div className="flex gap-2 shrink-0">
+                            <input
+                                type="text"
+                                placeholder="Enter coupon code"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                className="flex-1 rounded-xl border border-[#EADCC9] bg-[#FAF5EC]/50 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#593102] placeholder:text-[#8D7F73] focus:border-[#D49313] focus:outline-none focus:ring-2 focus:ring-[#D49313]/20 transition-all"
+                            />
+                            <button
+                                onClick={() => couponCode && applyCoupon(couponCode)}
+                                disabled={couponLoading}
+                                className="min-w-[90px] rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
+                            >
+                                {couponLoading ? (
+                                    <>
+                                        <Loader2 size={14} className="animate-spin" />
+                                        Applying
+                                    </>
+                                ) : (
+                                    "Apply"
+                                )}
+                            </button>
+                        </div>
 
-                            {couponError && (
-                                <p className="text-[11px] font-bold text-red-500 shrink-0">{couponError}</p>
-                            )}
+                        {couponError && (
+                            <p className="text-[11px] font-bold text-red-500 shrink-0">{couponError}</p>
+                        )}
 
-                            {/* Scrollable content */}
-                            <div className="flex-1 overflow-y-auto space-y-3 min-h-0 pr-0.5">
-                                {/* Available coupons */}
-                                <div>
-                                    <p className="text-[10px] font-black text-[#8D7F73] uppercase tracking-[0.1em] mb-2">
-                                        Available Coupons
-                                    </p>
-                                    {coupons.length > 0 ? (
-                                        <div className="space-y-2">
-                                            {coupons.slice(0, 4).map((coupon) => {
-                                                const isApplied = appliedCoupons.some(
-                                                    (c) => c.code.toUpperCase() === coupon.code.toUpperCase()
-                                                );
-                                                return (
-                                                    <div
-                                                        key={coupon.offerId || coupon.code}
-                                                        className={`flex items-center justify-between rounded-xl border p-2.5 transition-all ${isApplied
-                                                            ? "border-emerald-500 bg-emerald-50/70"
-                                                            : "border-[#EADCC9] bg-white hover:border-[#D49313]/60 shadow-2xs"
-                                                            }`}
-                                                    >
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className="inline-block rounded-lg border border-dashed border-[#D49313]/50 bg-[#FAF0DC] px-2 py-0.5 text-[10px] font-black text-[#593102]">
-                                                                    {coupon.code}
+                        {/* Scrollable content */}
+                        <div className="flex-1 overflow-y-auto space-y-3 min-h-0 pr-0.5">
+                            {/* Available coupons */}
+                            <div>
+                                <p className="text-[10px] font-black text-[#8D7F73] uppercase tracking-[0.1em] mb-2">
+                                    Available Coupons
+                                </p>
+                                {coupons.length > 0 ? (
+                                    <div className="space-y-2">
+                                        {coupons.slice(0, 4).map((coupon) => {
+                                            const isApplied = appliedCoupons.some(
+                                                (c) => c.code.toUpperCase() === coupon.code.toUpperCase()
+                                            );
+                                            return (
+                                                <div
+                                                    key={coupon.offerId || coupon.code}
+                                                    className={`flex items-center justify-between rounded-xl border p-2.5 transition-all ${isApplied
+                                                        ? "border-emerald-500 bg-emerald-50/70"
+                                                        : "border-[#EADCC9] bg-white hover:border-[#D49313]/60 shadow-2xs"
+                                                        }`}
+                                                >
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <span className="inline-block rounded-lg border border-dashed border-[#D49313]/50 bg-[#FAF0DC] px-2 py-0.5 text-[10px] font-black text-[#593102]">
+                                                                {coupon.code}
+                                                            </span>
+                                                            {coupon.discountPercentage && coupon.discountPercentage > 0 ? (
+                                                                <span className="text-[10px] font-black text-emerald-700">
+                                                                    {coupon.discountPercentage}% OFF
                                                                 </span>
-                                                                {coupon.discountPercentage && coupon.discountPercentage > 0 ? (
-                                                                    <span className="text-[10px] font-black text-emerald-700">
-                                                                        {coupon.discountPercentage}% OFF
-                                                                    </span>
-                                                                ) : coupon.flatDiscount && coupon.flatDiscount > 0 ? (
-                                                                    <span className="text-[10px] font-black text-emerald-700">
-                                                                        ₹{coupon.flatDiscount} OFF
-                                                                    </span>
-                                                                ) : null}
-                                                            </div>
-                                                            <p className="text-[11px] text-[#6E5D4F] font-semibold mt-0.5 truncate">
-                                                                {coupon.desc}
-                                                            </p>
-                                                            {coupon.minOrder && (
-                                                                <p className="text-[9px] text-[#8D7F73] font-medium mt-0.5">
-                                                                    Min. order {coupon.minOrder}
-                                                                </p>
-                                                            )}
+                                                            ) : coupon.flatDiscount && coupon.flatDiscount > 0 ? (
+                                                                <span className="text-[10px] font-black text-emerald-700">
+                                                                    ₹{coupon.flatDiscount} OFF
+                                                                </span>
+                                                            ) : null}
                                                         </div>
-
-                                                        {isApplied ? (
-                                                            <div className="flex items-center gap-1.5 ml-2 shrink-0">
-                                                                <span className="flex items-center gap-0.5 text-[10px] font-black text-emerald-700">
-                                                                    <Check size={12} className="stroke-[3]" /> Applied
-                                                                </span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => removeCoupon(coupon.offerId, coupon.code)}
-                                                                    className="text-[10px] font-black text-red-500 hover:underline ml-0.5 cursor-pointer"
-                                                                >
-                                                                    ✕
-                                                                </button>
-                                                            </div>
-                                                        ) : (
-                                                            <button
-                                                                onClick={() => applyCoupon(coupon.code)}
-                                                                disabled={couponLoading}
-                                                                className="ml-2 shrink-0 rounded-lg border border-[#D49313]/40 px-3 py-1 text-[10px] font-black text-[#593102] hover:bg-[#FAF0DC] transition-colors cursor-pointer bg-white"
-                                                            >
-                                                                Apply
-                                                            </button>
+                                                        <p className="text-[11px] text-[#6E5D4F] font-semibold mt-0.5 truncate">
+                                                            {coupon.desc}
+                                                        </p>
+                                                        {coupon.minOrder && (
+                                                            <p className="text-[9px] text-[#8D7F73] font-medium mt-0.5">
+                                                                Min. order {coupon.minOrder}
+                                                            </p>
                                                         )}
                                                     </div>
-                                                );
-                                            })}
-                                            {coupons.length > 4 && (
-                                                <p className="text-[10px] text-[#8D7F73] font-semibold text-center pt-0.5">
-                                                    +{coupons.length - 4} more coupons available
-                                                </p>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-2 text-[11px] text-[#8D7F73] font-semibold">
-                                            No coupons available right now
-                                        </div>
-                                    )}
-                                </div>
+
+                                                    {isApplied ? (
+                                                        <div className="flex items-center gap-1.5 ml-2 shrink-0">
+                                                            <span className="flex items-center gap-0.5 text-[10px] font-black text-emerald-700">
+                                                                <Check size={12} className="stroke-[3]" /> Applied
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeCoupon(coupon.offerId, coupon.code)}
+                                                                className="text-[10px] font-black text-red-500 hover:underline ml-0.5 cursor-pointer"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => applyCoupon(coupon.code)}
+                                                            disabled={couponLoading}
+                                                            className="ml-2 shrink-0 rounded-lg border border-[#D49313]/40 px-3 py-1 text-[10px] font-black text-[#593102] hover:bg-[#FAF0DC] transition-colors cursor-pointer bg-white"
+                                                        >
+                                                            Apply
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                        {coupons.length > 4 && (
+                                            <p className="text-[10px] text-[#8D7F73] font-semibold text-center pt-0.5">
+                                                +{coupons.length - 4} more coupons available
+                                            </p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-2 text-[11px] text-[#8D7F73] font-semibold">
+                                        No coupons available right now
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
+                </div>
             </div>
 
             {/* Checkout Button */}
