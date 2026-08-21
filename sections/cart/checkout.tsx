@@ -197,7 +197,13 @@ export default function Checkout() {
 
       if (isMounted && typeof window !== "undefined") {
         const stored = localStorage.getItem("applied_coupon");
-        if (!stored && apiDiscount > 0) {
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
+            if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+          } catch (e) {}
+        } else if (apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
           setAppliedCouponCode(apiCode);
         }
