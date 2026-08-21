@@ -448,7 +448,7 @@ export default function Cart() {
                                     if (selected && matchingCoupon) {
                                         let d = 0;
                                         if (matchingCoupon.discountPercentage && matchingCoupon.discountPercentage > 0) {
-                                            d = Math.round((itemSubtotal * matchingCoupon.discountPercentage) / 100);
+                                            d = Number(((itemSubtotal * matchingCoupon.discountPercentage) / 100).toFixed(2));
                                         } else if (matchingCoupon.flatDiscount && matchingCoupon.flatDiscount > 0) {
                                             d = matchingCoupon.flatDiscount;
                                         } else {
@@ -638,6 +638,14 @@ type ApiCoupon = {
     calculatedDiscount?: number;
 };
 
+function formatPrice(val: number): string {
+    if (val === undefined || val === null || isNaN(val)) return "0";
+    if (val % 1 !== 0) {
+        return val.toFixed(2);
+    }
+    return val.toLocaleString("en-IN");
+}
+
 // ─── Order Summary with Permanent Back Navigation Fix ──────────────────
 
 export function OrderSummaryWithCoupons({
@@ -740,7 +748,7 @@ export function OrderSummaryWithCoupons({
                 cartData?.couponDiscount ?? cartData?.discountAmount ?? cartData?.discount ?? 0;
             const offerId = cartData?.appliedCoupon?._id || cartData?.appliedCoupon?.offerId || serverCode;
 
-            if (serverCode && serverDiscount > 0) {
+            if (serverCode && Number(serverDiscount) > 0) {
                 const upperServerCode = serverCode.toUpperCase();
                 if (!currentList.some((c) => c.code.toUpperCase() === upperServerCode)) {
                     const matched = coupons.find((c) => c.code.toUpperCase() === upperServerCode);
@@ -750,7 +758,7 @@ export function OrderSummaryWithCoupons({
                         desc: matched?.desc || "Applied Coupon",
                         minOrder: matched?.minOrder || "",
                         isAvailable: true,
-                        calculatedDiscount: Math.round(serverDiscount),
+                        calculatedDiscount: Number(Number(serverDiscount).toFixed(2)),
                         discountPercentage: matched?.discountPercentage,
                         flatDiscount: matched?.flatDiscount,
                     });
@@ -781,7 +789,7 @@ export function OrderSummaryWithCoupons({
         return appliedList.reduce((acc, coupon) => {
             let d = 0;
             if (coupon.discountPercentage && coupon.discountPercentage > 0) {
-                d = Math.round((currentSubtotal * coupon.discountPercentage) / 100);
+                d = Number(((currentSubtotal * coupon.discountPercentage) / 100).toFixed(2));
             } else if (coupon.flatDiscount && coupon.flatDiscount > 0) {
                 d = coupon.flatDiscount;
             } else {
@@ -799,7 +807,7 @@ export function OrderSummaryWithCoupons({
             const updatedList = appliedCoupons.map((c) => {
                 let d = 0;
                 if (c.discountPercentage && c.discountPercentage > 0) {
-                    d = Math.round((subtotal * c.discountPercentage) / 100);
+                    d = Number(((subtotal * c.discountPercentage) / 100).toFixed(2));
                 } else if (c.flatDiscount && c.flatDiscount > 0) {
                     d = c.flatDiscount;
                 } else {
@@ -873,7 +881,7 @@ export function OrderSummaryWithCoupons({
                 calculatedDiscount = matched.flatDiscount;
             }
 
-            const finalDiscount = Math.round(calculatedDiscount);
+            const finalDiscount = Number(calculatedDiscount.toFixed(2));
 
             const couponObj: ApiCoupon = {
                 offerId: matched?.offerId || data.offerId || data._id || data.data?._id || upperCode,
@@ -905,7 +913,7 @@ export function OrderSummaryWithCoupons({
                     discountPercentage: matched?.discountPercentage,
                     flatDiscount: matched?.flatDiscount,
                     calculatedDiscount: matched?.discountPercentage
-                        ? Math.round((subtotal * matched.discountPercentage) / 100)
+                        ? Number(((subtotal * matched.discountPercentage) / 100).toFixed(2))
                         : matched?.flatDiscount || 0,
                 };
 
@@ -1034,13 +1042,9 @@ export function OrderSummaryWithCoupons({
                 </div>
             </div>
 
-            {/* Coupon Section */}
+            {/* Coupon Section - Always open */}
             <div className="mt-4 border-t border-[#F5EEE3]">
-                <button
-                    type="button"
-                    onClick={() => setIsCouponSectionOpen(!isCouponSectionOpen)}
-                    className="flex w-full items-center justify-between px-2 py-3.5 text-[13px] font-bold text-[#593102] hover:bg-[#FAF7F0] transition-colors rounded-xl cursor-pointer"
-                >
+                <div className="flex w-full items-center justify-between px-2 py-3.5 text-[13px] font-bold text-[#593102]">
                     <span className="flex items-center gap-2">
                         <Gift size={16} className="text-[#D49313]" />
                         Apply Coupons
@@ -1050,10 +1054,9 @@ export function OrderSummaryWithCoupons({
                             </span>
                         )}
                     </span>
-                </button>
+                </div>
 
-                {isCouponSectionOpen && (
-                    <div className="pb-4 pt-1 space-y-3">
+                <div className="pb-4 pt-1 space-y-3">
                         <div className="max-h-[340px] flex flex-col space-y-3">
                             {/* Input row */}
                             <div className="flex gap-2 shrink-0">
@@ -1170,7 +1173,6 @@ export function OrderSummaryWithCoupons({
                             </div>
                         </div>
                     </div>
-                )}
             </div>
 
             {/* Checkout Button */}
