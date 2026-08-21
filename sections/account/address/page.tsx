@@ -29,6 +29,12 @@ interface Address {
     label: string;
     name: string;
     phone: string;
+    address_line1: string;
+    address_line2: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
     lines: string[];
     isDefault: boolean;
 }
@@ -38,7 +44,12 @@ interface AddressFormData {
     label: string;
     name: string;
     phone: string;
-    lines: string[];
+    address_line1: string;
+    address_line2: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
     isDefault: boolean;
 }
 
@@ -106,39 +117,21 @@ function AddressCard({
                 </div>
             </div>
 
-            <div className="mt-6 flex items-center justify-between gap-2 pt-3 border-t border-[#F0E2CC]/55">
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => onEdit(address)}
-                        className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#593102] transition"
-                    >
-                        <Pencil size={13} />
-                        Edit
-                    </button>
-                    <button
-                        onClick={() => onDelete(address.id)}
-                        className="flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-600 transition"
-                    >
-                        <Trash2 size={13} />
-                        Delete
-                    </button>
-                </div>
-
-                <div>
-                    {address.isDefault ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#593102]/10 px-3 py-1.5 text-xs font-bold text-[#593102]">
-                            <CheckCircle size={14} className="text-[#593102]" />
-                            Default Address
-                        </span>
-                    ) : (
-                        <button
-                            onClick={() => onSetDefault(address.id)}
-                            className="flex h-8 items-center justify-center rounded-lg border border-[#593102] px-3 text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
-                        >
-                            Set Default
-                        </button>
-                    )}
-                </div>
+            <div className="mt-6 flex items-center justify-start gap-3 pt-3 border-t border-[#F0E2CC]/55">
+                <button
+                    onClick={() => onEdit(address)}
+                    className="flex items-center gap-1 text-xs font-medium text-[#3C2015] hover:text-[#593102] transition"
+                >
+                    <Pencil size={13} />
+                    Edit
+                </button>
+                <button
+                    onClick={() => onDelete(address.id)}
+                    className="flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-600 transition"
+                >
+                    <Trash2 size={13} />
+                    Delete
+                </button>
             </div>
         </div>
     );
@@ -187,18 +180,26 @@ function AddressModal({
         label: "Home",
         name: "",
         phone: "",
-        lines: ["", ""],
+        address_line1: "",
+        address_line2: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: "India",
         isDefault: false,
     });
 
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
         } else {
-            document.body.style.overflow = "unset";
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
         }
         return () => {
-            document.body.style.overflow = "unset";
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
         };
     }, [isOpen]);
 
@@ -209,7 +210,12 @@ function AddressModal({
                 label: initialData.label,
                 name: initialData.name,
                 phone: initialData.phone,
-                lines: initialData.lines.length ? initialData.lines : ["", ""],
+                address_line1: initialData.address_line1 || "",
+                address_line2: initialData.address_line2 || "",
+                city: initialData.city || "",
+                state: initialData.state || "",
+                pincode: initialData.pincode || "",
+                country: initialData.country || "India",
                 isDefault: initialData.isDefault,
             });
         } else {
@@ -218,7 +224,12 @@ function AddressModal({
                 label: "Home",
                 name: "",
                 phone: "",
-                lines: ["", ""],
+                address_line1: "",
+                address_line2: "",
+                city: "",
+                state: "",
+                pincode: "",
+                country: "India",
                 isDefault: false,
             });
         }
@@ -226,30 +237,13 @@ function AddressModal({
 
     if (!isOpen) return null;
 
-    const handleLineChange = (index: number, value: string) => {
-        const newLines = [...form.lines];
-        newLines[index] = value;
-        setForm({ ...form, lines: newLines });
-    };
-
-    const addLine = () => {
-        setForm({ ...form, lines: [...form.lines, ""] });
-    };
-
-    const removeLine = (index: number) => {
-        if (form.lines.length <= 2) return;
-        const newLines = form.lines.filter((_, i) => i !== index);
-        setForm({ ...form, lines: newLines });
-    };
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const filteredLines = form.lines.filter((line) => line.trim() !== "");
-        if (filteredLines.length === 0) {
-            alert("Please add at least one address line.");
+        if (!form.address_line1.trim() || !form.city.trim() || !form.pincode.trim()) {
+            alert("Please fill all required address fields.");
             return;
         }
-        onSubmit({ ...form, lines: filteredLines });
+        onSubmit(form);
     };
 
     return (
@@ -276,112 +270,88 @@ function AddressModal({
                 </div>
 
                 <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-6 space-y-5 overflow-y-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
-                                Address Type
-                            </label>
-                            <select
-                                value={form.type}
-                                onChange={(e) =>
-                                    setForm({ ...form, type: e.target.value as AddressType })
-                                }
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
-                            >
-                                <option value="Home">🏠 Home</option>
-                                <option value="Office">💼 Office</option>
-                                <option value="Other">📍 Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
-                                Label
-                            </label>
-                            <input
-                                type="text"
-                                value={form.label}
-                                onChange={(e) => setForm({ ...form, label: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
-                                placeholder="My Home"
-                                required
-                            />
-                        </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
-                                placeholder="John Doe"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
-                                Phone
-                            </label>
-                            <input
-                                type="tel"
-                                value={form.phone}
-                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
-                                placeholder="+91 98765 43210"
-                                required
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                            Address Line 1 *
+                        </label>
+                        <input
+                            type="text"
+                            value={form.address_line1}
+                            onChange={(e) => setForm({ ...form, address_line1: e.target.value })}
+                            placeholder="Flat / House No., Building, Street"
+                            className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                            required
+                        />
                     </div>
 
                     <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
-                            Address
+                            Address Line 2 (Optional)
                         </label>
-                        {form.lines.map((line, idx) => (
-                            <div key={idx} className="flex items-center gap-2 mb-2">
-                                <input
-                                    type="text"
-                                    value={line}
-                                    onChange={(e) => handleLineChange(idx, e.target.value)}
-                                    placeholder={`Line ${idx + 1}`}
-                                    className="flex-1 rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
-                                />
-                                {form.lines.length > 2 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeLine(idx)}
-                                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-600 transition"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                        <button
-                            type="button"
-                            onClick={addLine}
-                            className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-[#593102] hover:text-[#C98715] transition"
-                        >
-                            <Plus size={16} />
-                            Add line
-                        </button>
+                        <input
+                            type="text"
+                            value={form.address_line2}
+                            onChange={(e) => setForm({ ...form, address_line2: e.target.value })}
+                            placeholder="Landmark, Area, Locality"
+                            className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                        />
                     </div>
 
-                    <div className="flex items-center gap-3 pt-1">
-                        <input
-                            type="checkbox"
-                            id="default-address"
-                            checked={form.isDefault}
-                            onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
-                            className="h-5 w-5 rounded border-[#D4C5B2] text-[#593102] focus:ring-2 focus:ring-[#593102]/40 accent-[#593102] cursor-pointer"
-                        />
-                        <label htmlFor="default-address" className="text-sm font-medium text-[#3C2015] cursor-pointer">
-                            Set as default
-                        </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                City *
+                            </label>
+                            <input
+                                type="text"
+                                value={form.city}
+                                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                                placeholder="Mumbai"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                State *
+                            </label>
+                            <input
+                                type="text"
+                                value={form.state}
+                                onChange={(e) => setForm({ ...form, state: e.target.value })}
+                                placeholder="Maharashtra"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                Pincode *
+                            </label>
+                            <input
+                                type="text"
+                                value={form.pincode}
+                                onChange={(e) => setForm({ ...form, pincode: e.target.value })}
+                                placeholder="400001"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                Country
+                            </label>
+                            <input
+                                type="text"
+                                value={form.country}
+                                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                                placeholder="India"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                            />
                     </div>
 
                     <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
@@ -670,8 +640,13 @@ export default function MyAddressesPage() {
     const fetchAddresses = async () => {
         try {
             setLoading(true);
+            const token = getTokenFromCookie();
             const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
                 credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
             });
 
             if (!res.ok) {
@@ -684,13 +659,13 @@ export default function MyAddressesPage() {
             }
 
             const data = await res.json();
-            const items = data.data || [];
+            const items = data.data || data.addresses || (Array.isArray(data) ? data : []) || [];
             const list = items.map((item: any) => {
                 const lines = [
                     item.address_line1,
                     item.address_line2,
-                    `${item.city}, ${item.state}`,
-                    `${item.pincode}, ${item.country}`,
+                    [item.city, item.state].filter(Boolean).join(", "),
+                    [item.pincode, item.country || "India"].filter(Boolean).join(", "),
                 ].filter(Boolean);
 
                 const typeMap: Record<string, AddressType> = {
@@ -701,11 +676,17 @@ export default function MyAddressesPage() {
                 const type = typeMap[item.address_type?.toLowerCase()] || "Other";
 
                 return {
-                    id: item._id,
+                    id: item._id || item.id || item.address_id,
                     type,
                     label: type,
-                    name: item.full_name || "",
-                    phone: item.phone || "",
+                    name: item.full_name || item.name || "",
+                    phone: item.phone || item.phone_number || "",
+                    address_line1: item.address_line1 || "",
+                    address_line2: item.address_line2 || "",
+                    city: item.city || "",
+                    state: item.state || "",
+                    pincode: item.pincode || "",
+                    country: item.country || "India",
                     lines,
                     isDefault: item.is_default || false,
                 };
@@ -725,25 +706,38 @@ export default function MyAddressesPage() {
         fetchAddresses();
     }, []);
 
+    useEffect(() => {
+        if (toast) {
+            const timer = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
+
     const addAddress = async (data: AddressFormData) => {
         try {
+            const defaultName = userData.fullName || getStoredSession()?.user?.name || "Customer";
+            const defaultPhone = userData.mobile || userData.phone || getStoredSession()?.user?.mobile || "";
             const payload = {
-                full_name: data.name,
-                phone: data.phone,
-                address_line1: data.lines[0] || "",
-                address_line2: data.lines[1] || "",
-                city: data.lines[2]?.split(",")[0]?.trim() || "",
-                state: data.lines[2]?.split(",")[1]?.trim() || "",
-                pincode: data.lines[3]?.split(",")[0]?.trim() || "",
-                country: data.lines[3]?.split(",")[1]?.trim() || "India",
-                address_type: data.type.toLowerCase(),
+                full_name: data.name || defaultName,
+                phone: data.phone || defaultPhone,
+                address_line1: data.address_line1,
+                address_line2: data.address_line2 || "",
+                city: data.city,
+                state: data.state,
+                pincode: data.pincode,
+                country: data.country || "India",
+                address_type: (data.type || "home").toLowerCase(),
                 is_default: data.isDefault,
             };
 
+            const token = getTokenFromCookie();
             const res = await fetch(`${API_BASE_URL}/api/addresses/add`, {
                 method: "POST",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify(payload),
             });
             if (!res.ok) {
@@ -760,23 +754,29 @@ export default function MyAddressesPage() {
 
     const updateAddress = async (id: string, data: AddressFormData) => {
         try {
+            const defaultName = userData.fullName || getStoredSession()?.user?.name || "Customer";
+            const defaultPhone = userData.mobile || userData.phone || getStoredSession()?.user?.mobile || "";
             const payload = {
-                full_name: data.name,
-                phone: data.phone,
-                address_line1: data.lines[0] || "",
-                address_line2: data.lines[1] || "",
-                city: data.lines[2]?.split(",")[0]?.trim() || "",
-                state: data.lines[2]?.split(",")[1]?.trim() || "",
-                pincode: data.lines[3]?.split(",")[0]?.trim() || "",
-                country: data.lines[3]?.split(",")[1]?.trim() || "India",
-                address_type: data.type.toLowerCase(),
+                full_name: data.name || defaultName,
+                phone: data.phone || defaultPhone,
+                address_line1: data.address_line1,
+                address_line2: data.address_line2 || "",
+                city: data.city,
+                state: data.state,
+                pincode: data.pincode,
+                country: data.country || "India",
+                address_type: (data.type || "home").toLowerCase(),
                 is_default: data.isDefault,
             };
 
+            const token = getTokenFromCookie();
             const res = await fetch(`${API_BASE_URL}/api/addresses/update/${id}`, {
                 method: "PUT",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify(payload),
             });
             if (!res.ok) {
@@ -795,9 +795,14 @@ export default function MyAddressesPage() {
     const deleteAddress = async (id: string) => {
         if (!confirm("Delete this address?")) return;
         try {
+            const token = getTokenFromCookie();
             const res = await fetch(`${API_BASE_URL}/api/addresses/delete/${id}`, {
                 method: "DELETE",
                 credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
             });
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
@@ -1035,15 +1040,29 @@ export default function MyAddressesPage() {
                 title={editingAddress ? "Edit Address" : "Add New Address"}
             />
 
-            {/* Toast */}
+            {/* Toast Notification */}
             {toast && (
-                <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl px-6 py-3 text-white shadow-lg flex items-center gap-3 ${
-                    toast.type === "success" ? "bg-green-600" : "bg-red-600"
-                }`}>
-                    <span>{toast.message}</span>
-                    <button onClick={() => setToast(null)} className="text-white/70 hover:text-white">
-                        <X size={16} />
-                    </button>
+                <div className="fixed top-24 left-1/2 z-[100] -translate-x-1/2 transition-all duration-300 animate-in fade-in slide-in-from-top-4">
+                    <div className="flex items-center gap-3.5 rounded-2xl border border-[#E7D3AE] bg-white/95 px-5 py-3.5 shadow-2xl backdrop-blur-md min-w-[280px] max-w-[90vw] sm:max-w-md">
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                            toast.type === "success" ? "bg-[#0BA445]/15 text-[#0BA445]" : "bg-red-500/15 text-red-500"
+                        }`}>
+                            {toast.type === "success" ? (
+                                <CheckCircle size={18} strokeWidth={2.5} />
+                            ) : (
+                                <X size={18} strokeWidth={2.5} />
+                            )}
+                        </div>
+                        <span className="flex-1 text-sm font-bold text-[#2F241C] capitalize">
+                            {toast.message}
+                        </span>
+                        <button
+                            onClick={() => setToast(null)}
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#8A7460] hover:bg-[#F0E2CC] hover:text-[#2F241C] transition-colors cursor-pointer"
+                        >
+                            <X size={15} />
+                        </button>
+                    </div>
                 </div>
             )}
         </section>
