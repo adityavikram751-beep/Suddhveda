@@ -241,6 +241,13 @@ export default function PaymentPage() {
     }
   }, [isMounted]);
 
+  const formatAmount = (num: number) => {
+    if (num % 1 !== 0) {
+      return num.toFixed(2);
+    }
+    return num.toLocaleString("en-IN");
+  };
+
   const subtotal = cartProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
   const saved = cartProducts.reduce((sum, p) => {
@@ -249,9 +256,12 @@ export default function PaymentPage() {
     return sum + cappedPerUnit * p.quantity;
   }, 0);
 
+  const netSubtotal = Math.max(subtotal - couponDiscount, 0);
   const codChargePercent = 0.25;
-  const codCharge = selectedMethod === "cod" ? Math.round(subtotal * codChargePercent) : 0;
-  const finalTotal = Math.max(subtotal + deliveryCharge - couponDiscount + codCharge, 0);
+  const rawCodCharge = selectedMethod === "cod" ? netSubtotal * codChargePercent : 0;
+  const codCharge = Number(rawCodCharge.toFixed(2));
+  const rawFinalTotal = Math.max(subtotal + deliveryCharge - couponDiscount + codCharge, 0);
+  const finalTotal = Number(rawFinalTotal.toFixed(2));
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
@@ -374,9 +384,9 @@ export default function PaymentPage() {
                           <span className="mt-1 block text-[14px] text-[#6F7786]">
                             {method.description}
                           </span>
-                          {method.id === "cod" && subtotal > 0 && (
+                          {method.id === "cod" && netSubtotal > 0 && (
                             <span className="mt-1 block text-[12px] font-semibold text-[#F24E1E]">
-                              + ₹{Math.round(subtotal * codChargePercent).toLocaleString("en-IN")} COD charge
+                              + ₹{formatAmount(Number((netSubtotal * codChargePercent).toFixed(2)))} COD charge
                             </span>
                           )}
                         </span>
@@ -487,7 +497,7 @@ export default function PaymentPage() {
                   {selectedMethod === "cod" && codCharge > 0 && (
                     <div className="flex justify-between text-[#F24E1E] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
                       <span>COD Charge</span>
-                      <span>+ ₹{codCharge.toLocaleString("en-IN")}</span>
+                      <span>+ ₹{formatAmount(codCharge)}</span>
                     </div>
                   )}
                 </div>
@@ -497,12 +507,12 @@ export default function PaymentPage() {
                     <p className="text-[18px] sm:text-[21px] font-bold">Total</p>
                     <p className="text-[9px] sm:text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                   </div>
-                  <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
+                  <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{formatAmount(finalTotal)}</p>
                 </div>
 
                 <div className="mt-4 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">
                   <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
-                    <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
+                    <ShieldCheck size={14} /> You&apos;re saving ₹{formatAmount(saved + couponDiscount)} on this order!
                   </p>
                 </div>
               </div>

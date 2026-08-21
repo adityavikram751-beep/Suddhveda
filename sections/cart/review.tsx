@@ -345,9 +345,19 @@ export default function ReviewPage() {
     return sum + cappedPerUnit * p.quantity;
   }, 0);
 
+  const formatAmount = (num: number) => {
+    if (num % 1 !== 0) {
+      return num.toFixed(2);
+    }
+    return num.toLocaleString("en-IN");
+  };
+
   const isCod = paymentLabel.toLowerCase().includes("cash on delivery") || paymentLabel.toLowerCase().includes("cod");
-  const computedCodCharge = isCod ? Math.round(subtotal * 0.25) : 0;
-  const total = Math.max(subtotal + deliveryCharge - couponDiscount + computedCodCharge, 0);
+  const netSubtotal = Math.max(subtotal - couponDiscount, 0);
+  const rawCodCharge = isCod ? netSubtotal * 0.25 : 0;
+  const computedCodCharge = Number(rawCodCharge.toFixed(2));
+  const rawTotal = Math.max(subtotal + deliveryCharge - couponDiscount + computedCodCharge, 0);
+  const total = Number(rawTotal.toFixed(2));
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
@@ -919,7 +929,7 @@ export default function ReviewPage() {
                 {computedCodCharge > 0 && (
                   <div className="flex justify-between text-[#F24E1E] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
                     <span>COD Charge</span>
-                    <span>+ ₹{computedCodCharge.toLocaleString("en-IN")}</span>
+                    <span>+ ₹{formatAmount(computedCodCharge)}</span>
                   </div>
                 )}
               </div>
@@ -930,13 +940,13 @@ export default function ReviewPage() {
                   <p className="text-[18px] sm:text-[21px] font-bold">Total</p>
                   <p className="text-[9px] sm:text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                 </div>
-                <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{total.toLocaleString("en-IN")}</p>
+                <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{formatAmount(total)}</p>
               </div>
 
               {/* Savings box */}
               <div className="mt-4 rounded-[14px] border border-[#D7F3D9] bg-[#F0FFF4] p-3 sm:p-4">
                 <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
-                  <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
+                  <ShieldCheck size={14} /> You&apos;re saving ₹{formatAmount(saved + couponDiscount)} on this order!
                 </p>
               </div>
 
