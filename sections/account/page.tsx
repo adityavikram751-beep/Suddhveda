@@ -409,6 +409,81 @@ export default function MyOrdersPage() {
         }
     };
 
+    const [ordersList, setOrdersList] = useState<Order[]>(allOrders);
+    const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
+
+    const fetchMyOrders = async () => {
+        try {
+            setLoadingOrders(true);
+            const token = getTokenFromCookie();
+            const res = await fetch(`${API_BASE_URL}/api/order/my-orders`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const rawList = data.data || data.orders || data.groups || (Array.isArray(data) ? data : []) || [];
+
+                const mappedOrders: Order[] = [];
+
+                rawList.forEach((group: any, gIdx: number) => {
+                    const groupOrders = group.orders || group.items || (Array.isArray(group) ? group : [group]);
+                    const groupOrderId = group.group_id || group.order_id || group._id || group.orderId || `ORD-${gIdx + 1}`;
+                    const groupCreatedAt = group.createdAt || group.created_at || new Date().toISOString();
+                    const formattedDate = new Date(groupCreatedAt).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                    });
+                    const paymentMethod = group.payment_mode === "cod" ? "COD" : (group.payment_mode ? group.payment_mode.toUpperCase() : "Online");
+
+                    if (Array.isArray(groupOrders) && groupOrders.length > 0) {
+                        groupOrders.forEach((item: any, iIdx: number) => {
+                            const pd = item.product_details || item;
+                            const prod = pd.product || item.product || {};
+                            const gift = pd.giftBox || item.giftBox || {};
+                            const title = item.type === "CUSTOM" ? (gift.name || "Custom Gift Box") : (prod.product_name || prod.name || item.title || "Pure Honey");
+                            const sub = item.type === "CUSTOM" ? "Gift Box" : (prod.variant?.weight ? `${prod.variant.weight}g` : "Standard");
+                            const img = typeof prod.image === "string" ? prod.image : (prod.image?.image_url || gift.image || "/Upcoming.png");
+                            const totalVal = item.finalAmount || pd.finalAmount || item.totalAmount || group.finalAmount || 0;
+                            const statusRaw = (group.status || item.status || "Processing").toLowerCase();
+                            let status: OrderStatus = "Processing";
+                            if (statusRaw.includes("deliver")) status = "Delivered";
+                            else if (statusRaw.includes("ship") || statusRaw.includes("transit")) status = "Shipped";
+
+                            mappedOrders.push({
+                                id: `${groupOrderId}-${iIdx}`,
+                                productTitle: title,
+                                productSub: sub,
+                                qty: item.quantity || 1,
+                                image: img,
+                                orderId: groupOrderId,
+                                orderedOn: formattedDate,
+                                paymentMethod: paymentMethod,
+                                totalAmount: `₹${totalVal.toLocaleString("en-IN")}`,
+                                status: status,
+                                statusNote: status === "Delivered" ? `Delivered on ${formattedDate}` : status === "Shipped" ? "In Transit" : "Your order is being processed",
+                            });
+                        });
+                    }
+                });
+
+                if (mappedOrders.length > 0) {
+                    setOrdersList(mappedOrders);
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching my-orders:", err);
+        } finally {
+            setLoadingOrders(false);
+        }
+    };
+
     useEffect(() => {
         function syncSession() {
             setSession(getStoredSession());
@@ -417,6 +492,7 @@ export default function MyOrdersPage() {
         window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
         window.addEventListener("storage", syncSession);
         fetchProfileDetails();
+        fetchMyOrders();
 
         return () => {
             window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
@@ -572,7 +648,7 @@ export default function MyOrdersPage() {
     }
 
     // ---------- Filter Orders by Search ----------
-    const filteredOrders = allOrders.filter((order) => {
+    const filteredOrders = ordersList.filter((order) => {
         const search = searchTerm.toLowerCase().trim();
         if (!search) return true;
         return (

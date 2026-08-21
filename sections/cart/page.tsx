@@ -560,27 +560,21 @@ export default function Cart() {
                     </section>
 
                     {/* RIGHT SIDEBAR */}
-                    <aside
-                        className={`w-full space-y-8 box-border lg:max-w-[420px] ${isFooterVisible ? "lg:static" : "lg:sticky lg:top-16"
-                            } self-end`}
-                    >
+                    <aside className="w-full box-border lg:max-w-[420px] lg:sticky lg:top-[112px] self-start">
                         <OrderSummaryWithCoupons
                             subtotal={subtotal}
                             saved={saved}
                             itemCount={selectedProducts.length}
                             selectedProducts={selectedProducts}
+                            location={location}
+                            locationLoading={locationLoading}
                         />
-                        {/* Desktop Help Panel */}
-                        <div className="hidden lg:block">
-                            <HelpPanel location={location} loading={locationLoading} />
-                        </div>
                     </aside>
                 </div>
 
-                {/* Mobile Recommendations + Help Panel */}
+                {/* Mobile Recommendations */}
                 <div className="lg:hidden mt-10 space-y-10">
                     {renderRecommendations(1)}
-                    <HelpPanel location={location} loading={locationLoading} />
                 </div>
             </div>
         </main>
@@ -653,11 +647,15 @@ export function OrderSummaryWithCoupons({
     saved,
     itemCount,
     selectedProducts = [],
+    location = null,
+    locationLoading = false,
 }: {
     subtotal: number;
     saved: number;
     itemCount: number;
     selectedProducts?: any[];
+    location?: LocationData | null;
+    locationLoading?: boolean;
 }) {
     const router = useRouter();
     const { fetchCart } = useCart() as any;
@@ -723,52 +721,48 @@ export function OrderSummaryWithCoupons({
         })();
     }, []);
 
-    // Back button hone par LocalStorage + API Sync
+    // Sync applied coupons directly from GET /api/cart response
     const syncCoupons = useCallback(async () => {
-        let currentList: ApiCoupon[] = [];
-
-        if (typeof window !== "undefined") {
-            const stored = localStorage.getItem("applied_coupons");
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        currentList = parsed;
-                    }
-                } catch (e) {
-                    console.error("Storage parse error", e);
-                }
-            }
-        }
-
         try {
             const cartData = await authFetch(`${API_BASE_URL}/api/cart`);
-            const serverCode = cartData?.appliedCoupon?.code || cartData?.couponCode;
+            const serverCode =
+                cartData?.appliedCoupon?.code ||
+                cartData?.couponCode ||
+                cartData?.coupon_code ||
+                cartData?.applied_coupon?.code ||
+                cartData?.coupon?.code;
             const serverDiscount =
-                cartData?.couponDiscount ?? cartData?.discountAmount ?? cartData?.discount ?? 0;
+                cartData?.couponDiscount ??
+                cartData?.discountAmount ??
+                cartData?.discount ??
+                cartData?.appliedCoupon?.discount ??
+                0;
             const offerId = cartData?.appliedCoupon?._id || cartData?.appliedCoupon?.offerId || serverCode;
 
             if (serverCode && Number(serverDiscount) > 0) {
                 const upperServerCode = serverCode.toUpperCase();
-                if (!currentList.some((c) => c.code.toUpperCase() === upperServerCode)) {
-                    const matched = coupons.find((c) => c.code.toUpperCase() === upperServerCode);
-                    currentList.push({
-                        offerId: matched?.offerId || offerId || upperServerCode,
-                        code: serverCode,
-                        desc: matched?.desc || "Applied Coupon",
-                        minOrder: matched?.minOrder || "",
-                        isAvailable: true,
-                        calculatedDiscount: Number(Number(serverDiscount).toFixed(2)),
-                        discountPercentage: matched?.discountPercentage,
-                        flatDiscount: matched?.flatDiscount,
-                    });
+                const matched = coupons.find((c) => c.code.toUpperCase() === upperServerCode);
+                const couponObj: ApiCoupon = {
+                    offerId: matched?.offerId || offerId || upperServerCode,
+                    code: serverCode,
+                    desc: matched?.desc || "Applied Coupon",
+                    minOrder: matched?.minOrder || "",
+                    isAvailable: true,
+                    calculatedDiscount: Number(Number(serverDiscount).toFixed(2)),
+                    discountPercentage: matched?.discountPercentage,
+                    flatDiscount: matched?.flatDiscount,
+                };
+                setAppliedCoupons([couponObj]);
+            } else {
+                setAppliedCoupons([]);
+                if (typeof window !== "undefined") {
+                    localStorage.removeItem("applied_coupons");
+                    localStorage.removeItem("applied_coupon");
                 }
             }
         } catch (err) {
             console.error("Cart sync error", err);
         }
-
-        setAppliedCoupons(currentList);
     }, [coupons]);
 
     useEffect(() => {
@@ -1245,6 +1239,11 @@ export function OrderSummaryWithCoupons({
                             LAB<br />TESTED
                         </span>
                     </div>
+                </div>
+
+                {/* Need Help Section Inside Order Summary */}
+                <div className="w-full pt-3 border-t border-[#EADCC9]/60">
+                    <HelpPanel location={location} loading={locationLoading} />
                 </div>
             </div>
         </div>

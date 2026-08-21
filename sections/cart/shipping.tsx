@@ -126,13 +126,16 @@ export default function PaymentPage() {
     return rawItems.map((item: any) => {
       if (item.type === "CUSTOM") {
         const giftBox = item.giftBox || {};
+        const qty = item.quantity || 1;
+        const totalAmt = item.totalAmount || 0;
+        const unitPrice = item.price || item.unitPrice || (totalAmt > 0 ? totalAmt / qty : 0);
         return {
           id: item.giftCartItemId || item._id,
           cartItemId: item.giftCartItemId || item._id,
           title: `${giftBox.name || "Gift Box"}`,
           weight: `${item.totalWeight || 0}g`,
-          price: item.totalAmount || 0,
-          quantity: item.quantity || 1,
+          price: unitPrice,
+          quantity: qty,
           image: giftBox.image || "/placeholder.png",
           oldPrice: 0,
           type: "CUSTOM",
@@ -270,8 +273,8 @@ export default function PaymentPage() {
   return (
     <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
       <div className="mx-auto max-w-[1410px] px-4 md:px-6">
-        <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
-          <section className="flex h-full flex-col gap-8">
+        <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
+          <section className="flex flex-col gap-8">
             <header className="relative pr-1 sm:pr-28">
               <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                 Shipping Method
@@ -419,7 +422,7 @@ export default function PaymentPage() {
           </section>
 
           {/* Order Summary Sidebar */}
-          <aside className="sticky top-6 flex h-full flex-col self-start">
+          <aside className="lg:sticky lg:top-[112px] self-start">
             <div className="flex w-full flex-1 flex-col justify-between rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
               <div>
                 <div className="flex items-center justify-between">
@@ -501,20 +504,98 @@ export default function PaymentPage() {
                   <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
                     <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
                   </p>
-                  {remaining > 0 && (
-                    <p className="mt-1.5 text-[11px] text-[#4C5362]">
-                      Add items worth ₹{remaining} more to get FREE delivery!
-                    </p>
-                  )}
                 </div>
               </div>
 
-              <div className="relative mt-6 pt-4 border-t border-[#EEF1F4]">
-                <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
-                <div className="mt-2 space-y-1.5 text-[14px] text-[#6F7786]">
-                  <p className="flex items-center gap-2"><Phone size={14} /> {location?.phone || "+91 98765 43210"}</p>
-                  <p className="flex items-center gap-2"><Mail size={14} /> {location?.email || "connect@honeyveda.in"}</p>
-                  <p className="flex items-center gap-2"><Clock size={14} /> {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}</p>
+              {/* 4 Certification Badges */}
+              <div className="grid grid-cols-4 gap-2 text-center pt-5 mt-5 border-t border-[#EEF1F4]">
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-11 h-11 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                    <Image
+                      src="/fssai.png"
+                      alt="FSSAI APPROVED"
+                      width={40}
+                      height={40}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-[#593102] uppercase tracking-wider leading-tight text-center">
+                    FSSAI<br />APPROVED
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-11 h-11 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                    <Image
+                      src="/iso-.png"
+                      alt="22000 : 2015"
+                      width={40}
+                      height={40}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-[#593102] uppercase tracking-wider leading-tight text-center">
+                    22000 : 2015
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-11 h-11 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                    <Image
+                      src="/natural.webp"
+                      alt="PURE & NATURAL"
+                      width={40}
+                      height={40}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-[#593102] uppercase tracking-wider leading-tight text-center">
+                    PURE &<br />NATURAL
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-11 h-11 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
+                    <Image
+                      src="/lab..webp"
+                      alt="LAB TESTED"
+                      width={40}
+                      height={40}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-[#593102] uppercase tracking-wider leading-tight text-center">
+                    LAB<br />TESTED
+                  </span>
+                </div>
+              </div>
+
+              {/* Need help */}
+              <div className="mt-4 w-full box-border flex items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs">
+                <div className="flex-1 space-y-2">
+                  <h2 className="font-serif text-[17px] font-extrabold text-[#593102]">Need help?</h2>
+                  <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
+                    <p className="flex items-center gap-2">
+                      <Phone size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Mail size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102] break-all">{location?.email || "hello@shuddhaveda.com"}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Clock size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102]">{location?.phone_timing || "Mon - Sat: 9AM - 6PM"}</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="relative w-[80px] h-[70px] shrink-0 hidden sm:block">
+                  <Image
+                    src="/need.png"
+                    alt="Honey dipper illustration"
+                    fill
+                    className="object-contain object-right-bottom"
+                  />
                 </div>
               </div>
             </div>

@@ -198,15 +198,18 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
       items.forEach((item: any) => {
         if (item.type === "CUSTOM") {
-          const cartItemId = item.giftCartItemId;
+          const cartItemId = item.giftCartItemId || item._id;
+          const qty = item.quantity || 1;
+          const totalAmt = item.totalAmount || 0;
+          const unitPrice = item.price || item.unitPrice || (totalAmt > 0 ? totalAmt / qty : 0);
           newCartItems[cartItemId] = {
             type: "CUSTOM",
             cartItemId,
             productName: item.giftBox?.name || "Gift Box",
             image: item.giftBox?.image || "/placeholder.png",
-            price: item.totalAmount || 0,
+            price: unitPrice,
             customMessage: item.customMessage,
-            quantity: item.quantity,
+            quantity: qty,
           };
           return;
         }

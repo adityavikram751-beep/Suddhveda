@@ -26,6 +26,27 @@ import {
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
 
+function getTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
+  if (match) return decodeURIComponent(match[2]);
+  const match2 = document.cookie.match(/(^| )token=([^;]+)/);
+  if (match2) return decodeURIComponent(match2[2]);
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token") || localStorage.getItem("sudhveda_token") || null;
+  }
+  return null;
+}
+
+function getStoredSession(): any {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = window.localStorage.getItem("sudhveda_auth_session");
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return null;
+}
+
 const freeDeliveryTarget = 2000;
 
 const steps = [
@@ -41,10 +62,13 @@ type Address = {
   isDefault: boolean;
   name: string;
   line: string;
+  address_line1: string;
+  address_line2: string;
   city: string;
   state: string;
   pincode: string;
   phone: string;
+  country: string;
 };
 
 type LocationData = {
@@ -58,15 +82,18 @@ type LocationData = {
 };
 
 const mapApiAddress = (item: any): Address => ({
-  id: item._id,
+  id: item._id || item.id || item.address_id || "",
   label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : "Other",
   isDefault: item.is_default || false,
-  name: item.full_name || "",
-  line: `${item.address_line1 || ""} ${item.address_line2 || ""}`.trim(),
+  name: item.full_name || item.name || "",
+  line: [item.address_line1, item.address_line2].filter(Boolean).join(", "),
+  address_line1: item.address_line1 || "",
+  address_line2: item.address_line2 || "",
   city: item.city || "",
   state: item.state || "",
   pincode: item.pincode || "",
-  phone: item.phone || "",
+  phone: item.phone || item.phone_number || item.mobile || "",
+  country: item.country || "India",
 });
 
 export default function ReviewPage() {
@@ -104,13 +131,16 @@ export default function ReviewPage() {
     return rawItems.map((item: any) => {
       if (item.type === "CUSTOM") {
         const giftBox = item.giftBox || {};
+        const qty = item.quantity || 1;
+        const totalAmt = item.totalAmount || 0;
+        const unitPrice = item.price || item.unitPrice || (totalAmt > 0 ? totalAmt / qty : 0);
         return {
           id: item.giftCartItemId || item._id,
           cartItemId: item.giftCartItemId || item._id,
           title: `${giftBox.name || "Gift Box"}`,
           weight: `${item.totalWeight || 0}g`,
-          price: item.totalAmount || 0,
-          quantity: item.quantity || 1,
+          price: unitPrice,
+          quantity: qty,
           image: giftBox.image || "/placeholder.png",
           oldPrice: 0,
           type: "CUSTOM",
@@ -215,7 +245,13 @@ export default function ReviewPage() {
 
       if (isMounted && typeof window !== "undefined") {
         const stored = localStorage.getItem("applied_coupon");
-        if (!stored && apiDiscount > 0) {
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
+            if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+          } catch (e) {}
+        } else if (apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
           setAppliedCouponCode(apiCode);
         }
@@ -339,75 +375,175 @@ export default function ReviewPage() {
       const storedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment") || "" : "";
       const isCodMode = storedPayment.toLowerCase() === "cod" || paymentLabel.toLowerCase().includes("cash");
 
+      const userPhone = address?.phone || getStoredSession()?.user?.mobile || getStoredSession()?.user?.phone || "9876543210";
+
       const shippingAddressObj = {
-        full_name: address?.name || "Customer",
-        phone: address?.phone || "",
-        address_line1: address?.line || "",
-        address_line2: "",
+        full_name: address?.name || getStoredSession()?.user?.name || "Customer",
+        phone: userPhone,
+        address_line1: address?.address_line1 || address?.line || "",
+        address_line2: address?.address_line2 || "",
         city: address?.city || "",
         state: address?.state || "",
         pincode: address?.pincode || "",
-        country: "India",
+        country: address?.country || "India",
       };
 
       let billingAddressObj = shippingAddressObj;
-      if (typeof window !== "undefined") {
-        const storedBilling = localStorage.getItem("selected_billing_address") || localStorage.getItem("billing_address");
-        if (storedBilling) {
-          try {
-            const parsedBilling = JSON.parse(storedBilling);
+      try {
+        const token = getTokenFromCookie();
+        const bRes = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        if (bRes.ok) {
+          const bData = await bRes.json();
+          const bItems = bData.data || bData.addresses || (Array.isArray(bData) ? bData : []) || [];
+          if (bItems.length > 0) {
+            const bItem = bItems.find((item: any) => item.is_default) || bItems[0];
             billingAddressObj = {
-              full_name: parsedBilling.name || parsedBilling.full_name || address?.name || "Customer",
-              phone: parsedBilling.phone || address?.phone || "",
-              address_line1: parsedBilling.line || parsedBilling.address_line1 || address?.line || "",
-              address_line2: parsedBilling.address_line2 || "",
-              city: parsedBilling.city || address?.city || "",
-              state: parsedBilling.state || address?.state || "",
-              pincode: parsedBilling.pincode || address?.pincode || "",
-              country: "India",
+              full_name: bItem.full_name || bItem.name || address?.name || "Customer",
+              phone: bItem.phone || bItem.phone_number || userPhone,
+              address_line1: bItem.address_line1 || "",
+              address_line2: bItem.address_line2 || "",
+              city: bItem.city || "",
+              state: bItem.state || "",
+              pincode: bItem.pincode || "",
+              country: bItem.country || "India",
             };
-          } catch (e) {
-            console.error("Error parsing billing address:", e);
           }
         }
+      } catch (e) {
+        console.error("Error fetching billing address:", e);
       }
 
-      const formattedItems = rawApiCartItems.length > 0 ? rawApiCartItems : cartProducts.map((p: any) => ({
-        type: p.type || "NORMAL",
-        product_details: {
-          cartItemId: p.cartItemId || p.id,
-          product: {
-            _id: p.id,
-            product_name: p.title || "Pure Honey",
-            brand: "SudhVeda Honey",
-            description: "Raw and organic honey collected directly from natural hives.",
-            image: {
-              image_url: p.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg"
+      const sourceItems = rawApiCartItems.length > 0 ? rawApiCartItems : cartProducts;
+
+      const formattedItems = sourceItems.map((item: any) => {
+        const isCustom = item.type === "CUSTOM";
+        const quantity = item.quantity || 1;
+        const reservedQuantity = item.reserved_quantity || quantity;
+
+        if (isCustom) {
+          const pd = item.product_details || item;
+          const giftBox = pd.giftBox || item.giftBox || {};
+          const rawProducts = pd.products || item.products || [];
+
+          const formattedProducts = rawProducts.map((p: any) => {
+            const prodObj = p.product || p;
+            const variantObj = p.variant || prodObj.variant || {};
+            const imgUrl =
+              typeof p.image === "string"
+                ? p.image
+                : p.image?.image_url || prodObj.image?.image_url || prodObj.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg";
+
+            return {
+              productId: p.productId || prodObj._id || prodObj.id || "",
+              product_name: prodObj.product_name || prodObj.productName || prodObj.name || p.product_name || "Honey",
+              brand: prodObj.brand || "SudhVeda Honey",
+              description: prodObj.description || "Raw and organic honey.",
+              image: {
+                image_url: imgUrl,
+              },
+              variant: {
+                _id: variantObj._id || variantObj.variantId || variantObj.id || "",
+                weight: variantObj.weight || 250,
+                price: variantObj.price || 0,
+                mrp: variantObj.mrp || variantObj.price || 0,
+                save: variantObj.save || 0,
+              },
+              reserved_quantity: p.reserved_quantity || 1,
+            };
+          });
+
+          const totalWeight = pd.totalWeight || item.totalWeight || 500;
+          const packingPrice = pd.packingPrice || item.packingPrice || giftBox.price || 0;
+          const totalAmount = pd.totalAmount || item.totalAmount || 0;
+          const itemCouponDiscount = pd.couponDiscount || 0;
+          const finalAmount = pd.finalAmount || Math.max(totalAmount - itemCouponDiscount, 0);
+          const totalsave = pd.totalsave || item.totalsave || 0;
+
+          return {
+            type: "CUSTOM",
+            product_details: {
+              giftCartItemId: pd.giftCartItemId || item.giftCartItemId || item.cartItemId || item._id || "",
+              giftBox: {
+                _id: giftBox._id || giftBox.id || "",
+                name: giftBox.name || "Gift Box",
+                image: typeof giftBox.image === "string" ? giftBox.image : (giftBox.image?.image_url || "/placeholder.png"),
+                price: giftBox.price || 0,
+              },
+              products: formattedProducts,
+              coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+              totalWeight: totalWeight,
+              packingPrice: packingPrice,
+              totalAmount: totalAmount,
+              couponDiscount: itemCouponDiscount,
+              finalAmount: finalAmount,
+              totalsave: totalsave,
             },
-            variant: {
-              _id: p.variantId || p.id,
-              weight: parseInt(p.weight) || 250,
-              price: p.price || 0,
-              mrp: p.oldPrice || p.price || 0,
-              save: Math.max((p.oldPrice || p.price) - p.price, 0)
-            }
-          },
-          coupon: appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null,
-          totalAmount: (p.price || 0) * (p.quantity || 1),
-          couponDiscount: couponDiscount || 0,
-          finalAmount: Math.max((p.price || 0) * (p.quantity || 1) - (couponDiscount || 0), 0),
-          totalWeight: (parseInt(p.weight) || 250) * (p.quantity || 1),
-          totalsave: Math.max((p.oldPrice || p.price) - p.price, 0) * (p.quantity || 1)
-        },
-        quantity: p.quantity || 1,
-        reserved_quantity: p.quantity || 1
-      }));
+            quantity: quantity,
+            reserved_quantity: reservedQuantity,
+          };
+        } else {
+          // NORMAL item
+          const pd = item.product_details || item;
+          const prodObj = pd.product || item.product || item;
+          const variantObj = pd.variant || prodObj.variant || item.variant || {};
+          const imgUrl =
+            typeof prodObj.image === "string"
+              ? prodObj.image
+              : (prodObj.image?.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg");
+
+          const totalAmount = pd.totalAmount || item.totalAmount || ((variantObj.price || item.price || 0) * quantity);
+          const itemCouponDiscount = pd.couponDiscount || 0;
+          const finalAmount = pd.finalAmount || Math.max(totalAmount - itemCouponDiscount, 0);
+          const totalWeight = pd.totalWeight || item.totalWeight || ((variantObj.weight || 250) * quantity);
+          const totalsave = pd.totalsave || item.totalsave || ((variantObj.save || 0) * quantity);
+
+          return {
+            type: "NORMAL",
+            product_details: {
+              cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
+              product: {
+                _id: prodObj._id || prodObj.productId || prodObj.id || item.productId || item.id || "",
+                product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Pure Honey",
+                brand: prodObj.brand || "SudhVeda Honey",
+                description: prodObj.description || "Raw and organic honey collected directly from natural hives.",
+                image: {
+                  image_url: imgUrl,
+                },
+                variant: {
+                  _id: variantObj._id || variantObj.variantId || variantObj.id || item.variantId || "",
+                  weight: variantObj.weight || parseInt(item.weight) || 250,
+                  price: variantObj.price || item.price || 0,
+                  mrp: variantObj.mrp || item.oldPrice || variantObj.price || item.price || 0,
+                  save: variantObj.save || Math.max((item.oldPrice || 0) - (item.price || 0), 0),
+                },
+              },
+              coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+              totalAmount: totalAmount,
+              couponDiscount: itemCouponDiscount,
+              finalAmount: finalAmount,
+              totalWeight: totalWeight,
+              totalsave: totalsave,
+            },
+            quantity: quantity,
+            reserved_quantity: reservedQuantity,
+          };
+        }
+      });
+
+      const calculatedFinalAmount = total > 0 ? total : formattedItems.reduce((sum: number, it: any) => sum + (it.product_details?.finalAmount || 0), 0);
 
       const payload = {
         items: formattedItems,
-        finalAmount: total,
+        finalAmount: calculatedFinalAmount,
+        couponCode: appliedCouponCode || null,
         coupon_code: appliedCouponCode || null,
-        couponDiscount: couponDiscount,
+        couponDiscount: couponDiscount || 0,
         coupon: appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null,
         shipping_address: shippingAddressObj,
         billing_address: billingAddressObj,
@@ -415,43 +551,18 @@ export default function ReviewPage() {
         customer_note: "Please deliver during daytime.",
       };
 
-      if (isCodMode || isCod) {
-        // COD selected: DO NOT call API on Review page button!
-        // Go directly to Thanks page & pass payload to be created on Thanks page.
-        const codOrder = {
-          orderId: `ORD-${Date.now().toString().slice(-6)}`,
-          createdAt: new Date().toISOString(),
-          paymentMethod: "Cash on Delivery (COD)",
-          paymentStatus: "Pay on Delivery (COD)",
-          shippingAddress: {
-            name: address?.name || "Customer",
-            phone: address?.phone || "",
-            addressLine: address?.line || "",
-            city: address?.city || "",
-            state: address?.state || "",
-            pincode: address?.pincode || "",
-          },
-          items: cartProducts,
-          pricing: { subtotal, saved, couponDiscount, codFee: computedCodCharge, total },
-        };
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("latest_order", JSON.stringify(codOrder));
-          localStorage.setItem("pending_cod_payload", JSON.stringify(payload));
-        }
-        router.push("/thank");
-        return;
-      }
-
-      // Online / UPI selected: CALL API ON REVIEW PAGE & OPEN RAZORPAY
+      const token = getTokenFromCookie();
       const res = await fetch(`${API_BASE_URL}/api/order/create`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         credentials: "include",
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok || data.success) {
         if (data.payment_required && data.razorpay) {
@@ -472,24 +583,25 @@ export default function ReviewPage() {
                   paymentStatus: "Paid",
                   razorpayPaymentId: response.razorpay_payment_id,
                   shippingAddress: {
-                    name: address?.name || "Customer",
-                    phone: address?.phone || "",
-                    addressLine: address?.line || "",
-                    city: address?.city || "",
-                    state: address?.state || "",
-                    pincode: address?.pincode || "",
+                    name: shippingAddressObj.full_name,
+                    phone: shippingAddressObj.phone,
+                    addressLine: shippingAddressObj.address_line1,
+                    city: shippingAddressObj.city,
+                    state: shippingAddressObj.state,
+                    pincode: shippingAddressObj.pincode,
                   },
                   items: cartProducts,
-                  pricing: { subtotal, saved, couponDiscount, codFee: 0, total },
+                  pricing: { subtotal, saved, couponDiscount, codFee: 0, total: calculatedFinalAmount },
                 };
                 if (typeof window !== "undefined") {
                   localStorage.setItem("latest_order", JSON.stringify(finalOrder));
+                  localStorage.removeItem("applied_coupon");
                 }
                 router.push("/thank");
               },
               prefill: {
-                name: address?.name || "",
-                contact: address?.phone || "",
+                name: shippingAddressObj.full_name,
+                contact: shippingAddressObj.phone,
               },
               theme: { color: "#F24E1E" },
             };
@@ -500,28 +612,30 @@ export default function ReviewPage() {
           }
         }
 
-        // Direct Online order success fallback
+        // COD or direct order success response
+        const orderId = data.group?.group_id || data.orders?.[0]?.order_id || data.orderId || data.order_id || `ORD-${Date.now().toString().slice(-6)}`;
         const finalOrder = {
-          orderId: data.group?.group_id || data.orders?.[0]?.order_id || `ORD-${Date.now().toString().slice(-6)}`,
+          orderId: orderId,
           createdAt: new Date().toISOString(),
-          paymentMethod: "Online Payment",
-          paymentStatus: "Paid",
+          paymentMethod: isCodMode || isCod ? "Cash on Delivery (COD)" : "Online Payment",
+          paymentStatus: isCodMode || isCod ? "Pay on Delivery (COD)" : "Completed",
           shippingAddress: {
-            name: address?.name || "Customer",
-            phone: address?.phone || "",
-            addressLine: address?.line || "",
-            city: address?.city || "",
-            state: address?.state || "",
-            pincode: address?.pincode || "",
+            name: shippingAddressObj.full_name,
+            phone: shippingAddressObj.phone,
+            addressLine: shippingAddressObj.address_line1,
+            city: shippingAddressObj.city,
+            state: shippingAddressObj.state,
+            pincode: shippingAddressObj.pincode,
           },
           items: cartProducts,
-          pricing: { subtotal, saved, couponDiscount, codFee: 0, total },
+          pricing: { subtotal, saved, couponDiscount, codFee: isCodMode || isCod ? computedCodCharge : 0, total: calculatedFinalAmount },
         };
-
         if (typeof window !== "undefined") {
           localStorage.setItem("latest_order", JSON.stringify(finalOrder));
+          localStorage.removeItem("applied_coupon");
         }
         router.push("/thank");
+        return;
       } else {
         alert(data.message || "Failed to create order. Please try again.");
       }
@@ -739,7 +853,7 @@ export default function ReviewPage() {
           </section>
 
           {/* Right Column - Order Summary */}
-          <aside className="lg:sticky lg:top-6 flex flex-col">
+          <aside className="lg:sticky lg:top-[112px] flex flex-col">
             <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between">
@@ -824,20 +938,34 @@ export default function ReviewPage() {
                 <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
                   <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
                 </p>
-                {remaining > 0 && (
-                  <p className="mt-1.5 text-[11px] text-[#4C5362]">
-                    Add items worth ₹{remaining} more to get FREE delivery!
-                  </p>
-                )}
               </div>
 
               {/* Need help */}
-              <div className="relative mt-6 pt-4 border-t border-[#EEF1F4]">
-                <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
-                <div className="mt-2 space-y-1.5 text-[14px] text-[#6F7786]">
-                  <p className="flex items-center gap-2"><Phone size={14} /> {location?.phone || "+91 98765 43210"}</p>
-                  <p className="flex items-center gap-2"><Mail size={14} /> {location?.email || "connect@honeyveda.in"}</p>
-                  <p className="flex items-center gap-2"><Clock size={14} /> {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}</p>
+              <div className="mt-4 w-full box-border flex items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs">
+                <div className="flex-1 space-y-2">
+                  <h2 className="font-serif text-[17px] font-extrabold text-[#593102]">Need help?</h2>
+                  <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
+                    <p className="flex items-center gap-2">
+                      <Phone size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Mail size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102] break-all">{location?.email || "hello@shuddhaveda.com"}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Clock size={14} className="text-[#D49313] shrink-0" />
+                      <span className="text-[#593102]">{location?.phone_timing || "Mon - Sat: 9AM - 6PM"}</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="relative w-[80px] h-[70px] shrink-0 hidden sm:block">
+                  <Image
+                    src="/need.png"
+                    alt="Honey dipper illustration"
+                    fill
+                    className="object-contain object-right-bottom"
+                  />
                 </div>
               </div>
             </div>

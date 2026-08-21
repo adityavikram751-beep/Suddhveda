@@ -50,15 +50,16 @@ export default function WhatsInsideSection() {
                     </div>
 
                     {/* Center Visual Graphic */}
-                    <div className="relative mx-auto w-full max-w-[380px] h-[260px] sm:h-[340px] rounded-3xl bg-gradient-to-b from-[#FAF5EC] to-white p-4 sm:p-6 border-2 border-[#EADCC9] flex items-center justify-center shadow-xl">
-                        <Image
-                            src="/honneycart.png"
-                            alt="Inside Every Delivery"
-                            width={320}
-                            height={320}
-                            style={{ width: "auto", height: "auto" }}
-                            className="object-contain max-h-full p-2"
-                        />
+                    <div className="relative mx-auto w-full max-w-[420px] h-[340px] sm:h-[420px] rounded-3xl bg-gradient-to-b from-[#FAF5EC] to-white border-2 border-[#EADCC9] flex items-center justify-center shadow-xl overflow-hidden group">
+                        <div className="relative w-full h-full">
+                            <Image
+                                src="/subscriber.png"
+                                alt="Inside Every Delivery"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                priority
+                            />
+                        </div>
                     </div>
 
                     {/* Right Column Badges */}

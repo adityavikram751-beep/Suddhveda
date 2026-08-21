@@ -130,7 +130,8 @@ export default function OrderConfirmation() {
   const displaySubtotal = order?.pricing?.subtotal ?? subtotal;
   const displaySaved = order?.pricing?.saved ?? saved;
   const displayCodFee = order?.pricing?.codFee ?? 0;
-  const displayTotal = order?.pricing?.total ?? (displaySubtotal + displayCodFee);
+  const displayCouponDiscount = order?.pricing?.couponDiscount ?? order?.couponDiscount ?? 0;
+  const displayTotal = order?.pricing?.total ?? (displaySubtotal + displayCodFee - displayCouponDiscount);
 
   // Order meta info for the confirmation cards
   const orderDate = order?.createdAt ? new Date(order.createdAt) : new Date();
@@ -175,9 +176,9 @@ export default function OrderConfirmation() {
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
-        <div className="grid items-stretch gap-8 lg:grid-cols-[1fr_420px]">
+        <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
           {/* LEFT COLUMN */}
-          <section className="flex h-full flex-col gap-6">
+          <section className="flex flex-col gap-6">
             {/* Success Header */}
             <div className="rounded-[16px] border border-[#D7F3D9] bg-[#F0FFF4] p-8 text-center">
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#0BA445] text-white">
@@ -280,7 +281,7 @@ export default function OrderConfirmation() {
           </section>
 
           {/* RIGHT COLUMN – Order Summary */}
-          <aside className="flex h-full flex-col">
+          <aside className="lg:sticky lg:top-[112px] self-start">
             <div className="w-full h-full flex flex-col rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
@@ -318,19 +319,25 @@ export default function OrderConfirmation() {
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <strong className="text-[#593102]">
-                    ₹{displaySubtotal.toLocaleString("en-IN")}
+                    ₹{typeof displaySubtotal === "number" && displaySubtotal % 1 !== 0 ? displaySubtotal.toFixed(2) : displaySubtotal.toLocaleString("en-IN")}
                   </strong>
                 </div>
                 {displaySaved > 0 && (
                   <div className="flex justify-between">
                     <span>You Save</span>
-                    <strong className="text-[#0BA445]">- ₹{displaySaved.toLocaleString("en-IN")}</strong>
+                    <strong className="text-[#0BA445]">- ₹{typeof displaySaved === "number" && displaySaved % 1 !== 0 ? displaySaved.toFixed(2) : displaySaved.toLocaleString("en-IN")}</strong>
+                  </div>
+                )}
+                {displayCouponDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-bold">
+                    <span>Coupon Discount</span>
+                    <span>- ₹{typeof displayCouponDiscount === "number" && displayCouponDiscount % 1 !== 0 ? displayCouponDiscount.toFixed(2) : displayCouponDiscount.toLocaleString("en-IN")}</span>
                   </div>
                 )}
                 {displayCodFee > 0 && (
                   <div className="flex justify-between text-[#F24E1E] font-bold">
                     <span>COD Charge</span>
-                    <span>+ ₹{displayCodFee.toLocaleString("en-IN")}</span>
+                    <span>+ ₹{typeof displayCodFee === "number" && displayCodFee % 1 !== 0 ? displayCodFee.toFixed(2) : displayCodFee.toLocaleString("en-IN")}</span>
                   </div>
                 )}
               </div>
@@ -340,7 +347,7 @@ export default function OrderConfirmation() {
                   <p className="text-[21px] font-bold">Total</p>
                   <p className="text-[10px] text-[#9AA3AF]">(Inclusive of all taxes)</p>
                 </div>
-                <p className="font-serif text-[28px] font-bold">₹{displayTotal.toLocaleString("en-IN")}</p>
+                <p className="font-serif text-[28px] font-bold">₹{typeof displayTotal === "number" && displayTotal % 1 !== 0 ? displayTotal.toFixed(2) : displayTotal.toLocaleString("en-IN")}</p>
               </div>
 
               {/* Bottom block: Trust Badges + Need Help together in one cream box */}
@@ -366,26 +373,30 @@ export default function OrderConfirmation() {
                   </div>
 
                   {/* Need Help */}
-                  <div className="relative mt-6">
-                    <h2 className="font-serif text-[19px] font-bold">Need help ?</h2>
-                    <div className="mt-3 space-y-2 text-[15px] text-[#6F7786]">
-                      <p className="flex items-center gap-2">
-                        <Phone size={16} className="text-[#593102]" /> +91 98765 43210
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Mail size={16} className="text-[#593102]" /> connect@honeyveda.in
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Clock size={16} className="text-[#593102]" /> Mon - Sat : 9AM - 7PM
-                      </p>
+                  <div className="mt-6 w-full box-border flex items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs">
+                    <div className="flex-1 space-y-2">
+                      <h2 className="font-serif text-[17px] font-extrabold text-[#593102]">Need help?</h2>
+                      <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
+                        <p className="flex items-center gap-2">
+                          <Phone size={14} className="text-[#D49313] shrink-0" />
+                          <span className="text-[#593102]">+91 98765 43210</span>
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <Mail size={14} className="text-[#D49313] shrink-0" />
+                          <span className="text-[#593102] break-all">connect@honeyveda.in</span>
+                        </p>
+                        <p className="flex items-center gap-2">
+                          <Clock size={14} className="text-[#D49313] shrink-0" />
+                          <span className="text-[#593102]">Mon - Sat: 9AM - 7PM</span>
+                        </p>
+                      </div>
                     </div>
-                    <div className="absolute bottom-0 right-0 opacity-100">
+                    <div className="relative w-[80px] h-[70px] shrink-0 hidden sm:block">
                       <Image
                         src="/need.png"
-                        alt="Honey illustration"
-                        width={200}
-                        height={90}
-                        className="object-contain"
+                        alt="Honey dipper illustration"
+                        fill
+                        className="object-contain object-right-bottom"
                       />
                     </div>
                   </div>

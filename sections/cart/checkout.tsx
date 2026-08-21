@@ -231,14 +231,17 @@ export default function Checkout() {
           });
         } else if (item.type === "CUSTOM") {
           const giftBox = item.giftBox || {};
+          const qty = item.quantity || 1;
+          const totalAmt = item.totalAmount || 0;
+          const unitPrice = item.price || item.unitPrice || (totalAmt > 0 ? totalAmt / qty : 0);
           products.push({
             id: item.giftCartItemId || item._id,
             cartItemId: item.giftCartItemId || item._id,
             variantId: '',
-            title: `Gift Box`,
+            title: giftBox.name || `Gift Box`,
             weight: `${item.totalWeight || 0}g`,
-            price: item.totalAmount || 0,
-            quantity: item.quantity || 1,
+            price: unitPrice,
+            quantity: qty,
             image: giftBox.image || "/placeholder.png",
             oldPrice: 0,
             type: "CUSTOM",
@@ -511,20 +514,11 @@ function getTokenFromCookie(): string | null {
   }
 
   return (
-    <main className="bg-[#FFF8EF] min-h-screen py-6 sm:py-10 text-[#2F241C]">
+    <main className="bg-[#FFF8EF] min-h-screen pt-8 sm:pt-12 pb-8 sm:pb-12 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-4 sm:px-5">
-        {/* 🔥 FIXED - items-stretch se dono side equal height */}
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-stretch">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-start">
 
-          <div
-            className="max-h-[calc(100vh-80px)] overflow-y-auto pr-1 sm:pr-2 space-y-6 sm:space-y-8"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
+          <div className="space-y-6 sm:space-y-8">
 
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
@@ -572,8 +566,8 @@ function getTokenFromCookie(): string | null {
             <div className="h-6 sm:h-8" />
           </div>
 
-          {/* 🔥 FIXED - self-stretch se full height */}
-          <aside className="sticky top-6 flex flex-col self-stretch">
+          {/* Order Summary Sidebar */}
+          <aside className="lg:sticky lg:top-[112px] self-start">
             <CheckoutOrderSummary
               products={cartProducts}
               subtotal={subtotal}
@@ -602,26 +596,27 @@ function getTokenFromCookie(): string | null {
 
 function CheckoutHeader() {
   return (
-    <div className="relative mb-2 sm:mb-4 pr-1 sm:pr-28">
-      <h1 className="font-serif text-[26px] sm:text-[34px] font-bold">Checkout</h1>
+    <div className="relative pt-4 pb-2 mb-6 sm:mb-12 pr-1 sm:pr-36 flex flex-col justify-center overflow-visible">
+      <h1 className="font-serif text-[26px] sm:text-[34px] font-bold text-[#201A18]">Checkout</h1>
       <p className="mt-1 text-[13px] sm:text-[14px] text-[#7B8493]">
         Almost there! Just a few more details to get your pure honey.
       </p>
-      <Image
-        src="/bee with honey bottle.png"
-        alt="Honey jar with bee"
-        width={110}
-        height={92}
-        className="absolute right-0 top-0 hidden object-contain sm:block"
-        priority
-      />
+      <div className="absolute right-0 top-3 hidden sm:block w-[120px] h-[95px]">
+        <Image
+          src="/bee with honey bottle.png"
+          alt="Honey jar with bee"
+          fill
+          className="object-contain object-right-top"
+          priority
+        />
+      </div>
     </div>
   );
 }
 
 function Stepper({ activeStep }: { activeStep: number }) {
   return (
-    <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm mb-2 sm:mb-4">
+    <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm mb-4 sm:mb-8">
       <div className="flex items-center justify-between gap-1 sm:gap-2">
         {steps.map((step) => {
           const isDone = step.id < activeStep;
@@ -771,11 +766,10 @@ const DeliveryAddressForm = forwardRef<HTMLDivElement, DeliveryAddressFormProps>
           <FormField
             label="State"
             required
-            placeholder="Select state"
+            placeholder="Enter state"
             name="state"
             value={formData.state}
             onChange={handleChange}
-            as="select"
           />
         </div>
 
@@ -937,7 +931,7 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
 
   return (
-    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-6 h-full">
+    <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col p-4 sm:p-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="font-serif text-[18px] sm:text-[20px] font-bold">Order Summary</h2>
@@ -1006,8 +1000,8 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
         <p className="font-serif text-[24px] sm:text-[28px] font-bold">₹{finalTotal.toLocaleString("en-IN")}</p>
       </div>
 
-      {/* Button + Saving Badge + Need Help - neeche attach */}
-      <div className="mt-auto space-y-3 sm:space-y-4 pb-4">
+      {/* Button + Saving Badge + Need Help */}
+      <div className="mt-4 space-y-3 sm:space-y-3.5">
         {selectedAddressId && (
           <div className="flex justify-center my-4 sm:my-5">
             <button
@@ -1025,17 +1019,33 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
           <p className="flex items-center gap-2 text-[12px] sm:text-[13px] font-semibold text-[#187A37]">
             <ShieldCheck size={14} /> You&apos;re saving ₹{(saved + couponDiscount).toLocaleString("en-IN")} on this order!
           </p>
-          {remaining > 0 && (
-            <p className="mt-1.5 text-[11px] text-[#4C5362]"></p>
-          )}
         </div>
 
-        <div>
-          <h2 className="font-serif text-[17px] sm:text-[19px] font-bold">Need help ?</h2>
-          <div className="mt-2 sm:mt-3 space-y-1.5 text-[14px] text-[#6F7786]">
-            <p className="flex items-center gap-2"><Phone size={14} /> {location?.phone || "+91 98765 43210"}</p>
-            <p className="flex items-center gap-2"><Mail size={14} /> {location?.email || "connect@honeyveda.in"}</p>
-            <p className="flex items-center gap-2"><Clock size={14} /> {location?.phone_timing || "Mon - Sat : 9AM - 6PM"}</p>
+        <div className="w-full box-border flex items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs">
+          <div className="flex-1 space-y-2">
+            <h2 className="font-serif text-[17px] font-extrabold text-[#593102]">Need help?</h2>
+            <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
+              <p className="flex items-center gap-2">
+                <Phone size={14} className="text-[#D49313] shrink-0" />
+                <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail size={14} className="text-[#D49313] shrink-0" />
+                <span className="text-[#593102] break-all">{location?.email || "hello@shuddhaveda.com"}</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock size={14} className="text-[#D49313] shrink-0" />
+                <span className="text-[#593102]">{location?.phone_timing || "Mon - Sat: 9AM - 6PM"}</span>
+              </p>
+            </div>
+          </div>
+          <div className="relative w-[80px] h-[70px] shrink-0 hidden sm:block">
+            <Image
+              src="/need.png"
+              alt="Honey dipper illustration"
+              fill
+              className="object-contain object-right-bottom"
+            />
           </div>
         </div>
       </div>

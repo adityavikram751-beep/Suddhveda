@@ -449,7 +449,8 @@ export default function CuratedGift() {
               return (
                 <div
                   key={box._id}
-                  className="bg-[#FFFDF9] border border-[#EADCC9] rounded-[24px] overflow-hidden shadow-xs hover:shadow-lg hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative max-w-[310px] sm:max-w-none mx-auto w-full"
+                  onClick={() => openCustomizationModal(box)}
+                  className="bg-[#FFFDF9] border border-[#EADCC9] rounded-[24px] overflow-hidden shadow-xs hover:shadow-lg hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative max-w-[310px] sm:max-w-none mx-auto w-full cursor-pointer"
                 >
                   {/* Top Image Banner Area */}
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F7F0E6]">
@@ -494,7 +495,10 @@ export default function CuratedGift() {
                     <div className="mt-5 pt-1">
                       <button
                         type="button"
-                        onClick={() => openCustomizationModal(box)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openCustomizationModal(box);
+                        }}
                         className="w-full h-[42px] bg-[#FA4B1B] hover:bg-[#E64216] text-white font-extrabold rounded-2xl transition-all duration-200 text-[13px] tracking-wide shadow-sm active:scale-98 cursor-pointer flex items-center justify-center"
                       >
                         Customize Gift Box
