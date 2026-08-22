@@ -38,18 +38,34 @@ const sidebarLinks = [
 
 type OrderStatus = "Processing" | "Delivered" | "Shipped" | "Cancelled" | "Pending";
 
+interface OrderItem {
+    title: string;
+    sub: string;
+    qty: number;
+    price: string;
+    image: string;
+}
+
+interface ShippingAddress {
+    name: string;
+    phone: string;
+    address: string;
+}
+
 interface Order {
     id: string;
-    productTitle: string;
-    productSub: string;
-    qty: number;
-    image: string;
     orderId: string;
     orderedOn: string;
     paymentMethod: string;
+    paymentStatus: string;
+    transactionId?: string;
+    items: OrderItem[];
+    subtotal: string;
+    shippingFee: string;
     totalAmount: string;
     status: OrderStatus;
     statusNote: string;
+    shippingAddress?: ShippingAddress;
 }
 
 // Desktop Header Constants
@@ -69,142 +85,55 @@ function getTokenFromCookie(): string | null {
 const allOrders: Order[] = [
     {
         id: "1",
-        productTitle: "Wild Forest Honey",
-        productSub: "500g",
-        qty: 1,
-        image: "/Upcoming.png",
         orderId: "SVN1256789",
         orderedOn: "12 May, 2024",
         paymentMethod: "UPI",
+        paymentStatus: "Paid",
+        transactionId: "TXN9849201",
+        items: [
+            {
+                title: "Wild Forest Honey",
+                sub: "500g",
+                qty: 1,
+                price: "₹1,549",
+                image: "/Upcoming.png",
+            },
+        ],
+        subtotal: "₹1,549",
+        shippingFee: "Free",
         totalAmount: "₹1,549",
         status: "Processing",
         statusNote: "Your order is being processed",
     },
     {
         id: "2",
-        productTitle: "Natural Honey",
-        productSub: "750g",
-        qty: 1,
-        image: "/Upcoming.png",
         orderId: "SVN1245601",
         orderedOn: "12 May, 2024",
         paymentMethod: "UPI",
+        paymentStatus: "Paid",
+        items: [
+            {
+                title: "Natural Honey",
+                sub: "750g",
+                qty: 1,
+                price: "₹899",
+                image: "/Upcoming.png",
+            },
+        ],
+        subtotal: "₹899",
+        shippingFee: "Free",
         totalAmount: "₹899",
         status: "Delivered",
         statusNote: "Delivered on 15 May, 2024",
     },
-    {
-        id: "3",
-        productTitle: "Honey Combo Pack",
-        productSub: "(3 x 250g)",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234789",
-        orderedOn: "10 May, 2024",
-        paymentMethod: "Credit Card",
-        totalAmount: "₹1,249",
-        status: "Shipped",
-        statusNote: "Expected delivery 16 May, 2024",
-    },
-    {
-        id: "4",
-        productTitle: "Organic Raw Honey",
-        productSub: "1kg",
-        qty: 2,
-        image: "/Upcoming.png",
-        orderId: "SVN1234567",
-        orderedOn: "15 May, 2024",
-        paymentMethod: "UPI",
-        totalAmount: "₹2,199",
-        status: "Delivered",
-        statusNote: "Delivered on 18 May, 2024",
-    },
-    {
-        id: "5",
-        productTitle: "Manuka Honey",
-        productSub: "250g",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234568",
-        orderedOn: "18 May, 2024",
-        paymentMethod: "Credit Card",
-        totalAmount: "₹3,499",
-        status: "Processing",
-        statusNote: "Your order is being processed",
-    },
-    {
-        id: "6",
-        productTitle: "Acacia Honey",
-        productSub: "500g",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234569",
-        orderedOn: "20 May, 2024",
-        paymentMethod: "UPI",
-        totalAmount: "₹1,199",
-        status: "Shipped",
-        statusNote: "Expected delivery 23 May, 2024",
-    },
-    {
-        id: "7",
-        productTitle: "Buckwheat Honey",
-        productSub: "750g",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234570",
-        orderedOn: "22 May, 2024",
-        paymentMethod: "Net Banking",
-        totalAmount: "₹1,499",
-        status: "Delivered",
-        statusNote: "Delivered on 25 May, 2024",
-    },
-    {
-        id: "8",
-        productTitle: "Clover Honey",
-        productSub: "500g",
-        qty: 2,
-        image: "/Upcoming.png",
-        orderId: "SVN1234571",
-        orderedOn: "25 May, 2024",
-        paymentMethod: "UPI",
-        totalAmount: "₹1,299",
-        status: "Processing",
-        statusNote: "Your order is being processed",
-    },
-    {
-        id: "9",
-        productTitle: "Eucalyptus Honey",
-        productSub: "250g",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234572",
-        orderedOn: "28 May, 2024",
-        paymentMethod: "Credit Card",
-        totalAmount: "₹899",
-        status: "Shipped",
-        statusNote: "Expected delivery 31 May, 2024",
-    },
-    {
-        id: "10",
-        productTitle: "Orange Blossom Honey",
-        productSub: "1kg",
-        qty: 1,
-        image: "/Upcoming.png",
-        orderId: "SVN1234573",
-        orderedOn: "30 May, 2024",
-        paymentMethod: "UPI",
-        totalAmount: "₹2,499",
-        status: "Delivered",
-        statusNote: "Delivered on 2 June, 2024",
-    },
 ];
 
 const statusStyles: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
-    Processing: { bg: "bg-[#FDECC8]", text: "text-[#B9740B]", icon: Clock },
-    Pending: { bg: "bg-[#FDECC8]", text: "text-[#B9740B]", icon: Clock },
-    Delivered: { bg: "bg-green-100", text: "text-green-700", icon: CheckCircle2 },
-    Shipped: { bg: "bg-blue-100", text: "text-blue-700", icon: Ship },
-    Cancelled: { bg: "bg-red-100", text: "text-red-700", icon: X },
+    Processing: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: Clock },
+    Pending: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: Clock },
+    Delivered: { bg: "bg-green-100 border border-green-300", text: "text-green-800", icon: CheckCircle2 },
+    Shipped: { bg: "bg-blue-100 border border-blue-300", text: "text-blue-800", icon: Ship },
+    Cancelled: { bg: "bg-red-100 border border-red-300", text: "text-red-800", icon: X },
 };
 
 function OrderActions({ order }: { order: Order }) {
@@ -293,10 +222,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
     return (
         <div className="space-y-4 w-full">
             <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs">
-                <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-white shadow-md">
-                        {initials}
-                    </div>
+                <div className="flex flex-col items-center text-center gap-1.5">
                     <p className="font-serif text-lg font-extrabold text-[#593102] capitalize">
                         {fullName}
                     </p>
@@ -325,7 +251,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive
-                                        ? "bg-[#FAF0DC] text-[#593102] font-bold border-l-4 border-[#D49313] shadow-xs"
+                                        ? "bg-[#FAF0DC] text-[#593102] font-extrabold shadow-xs"
                                         : "text-[#593102] hover:bg-[#FAF5EC] hover:text-[#D49313]"
                                     }
                                 `}
@@ -442,28 +368,55 @@ export default function MyOrdersPage() {
                 const mappedOrders: Order[] = [];
 
                 rawList.forEach((group: any, gIdx: number) => {
-                    const groupOrderId = String(group.group_id || group.order_id || group.orderId || group._id || `ORD-${gIdx + 1}`);
+                    const groupOrderId = String(
+                        group.order_id || group.group_id || group.orderId || group._id || `ORD-${gIdx + 1}`
+                    );
                     const groupCreatedAt = group.createdAt || group.created_at || group.date || new Date().toISOString();
                     const formattedDate = new Date(groupCreatedAt).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                     });
+
+                    // Payment details
                     const paymentMethodRaw = String(group.payment_mode || group.paymentMethod || group.payment_type || "COD");
                     const paymentMethod = paymentMethodRaw.toLowerCase() === "cod" ? "Cash on Delivery" : paymentMethodRaw.toUpperCase();
 
-                    const groupOrders = Array.isArray(group.orders)
-                        ? group.orders
-                        : Array.isArray(group.items)
+                    const paymentStatusRaw = String(
+                        group.payment_status ||
+                        group.paymentStatus ||
+                        (paymentMethodRaw.toLowerCase() === "cod" ? "Pending (COD)" : "Paid")
+                    );
+
+                    const transactionId = group.transaction_id || group.transactionId || group.payment_id || group.razorpay_payment_id || "";
+
+                    // Shipping Address details
+                    const addrObj = group.shipping_address || group.shippingAddress || group.address || group.delivery_address || {};
+                    const addrName = addrObj.full_name || addrObj.name || group.name || "";
+                    const addrPhone = addrObj.phone_number || addrObj.phone || group.phone || "";
+                    const addrLines = [
+                        addrObj.address_line1 || addrObj.line1 || "",
+                        addrObj.address_line2 || addrObj.line2 || "",
+                        [addrObj.city, addrObj.state].filter(Boolean).join(", "),
+                        [addrObj.pincode, addrObj.country].filter(Boolean).join("-"),
+                    ].filter(Boolean).join(", ");
+
+                    // Items list
+                    const rawItems = Array.isArray(group.items)
                         ? group.items
+                        : Array.isArray(group.orders)
+                        ? group.orders
                         : Array.isArray(group.order_items)
                         ? group.order_items
                         : Array.isArray(group.products)
                         ? group.products
                         : [group];
 
-                    if (Array.isArray(groupOrders) && groupOrders.length > 0) {
-                        groupOrders.forEach((item: any, iIdx: number) => {
+                    const itemsList: OrderItem[] = [];
+                    let groupTotalSum = 0;
+
+                    if (Array.isArray(rawItems) && rawItems.length > 0) {
+                        rawItems.forEach((item: any) => {
                             const pd = item.product_details || item.productDetails || item.product || item;
                             const prod = pd.product || item.product || pd;
                             const gift = pd.giftBox || item.giftBox || {};
@@ -494,36 +447,55 @@ export default function MyOrdersPage() {
                             }
 
                             const itemQty = item.quantity || item.qty || 1;
-                            const totalVal = Number(item.finalAmount || pd.finalAmount || item.totalAmount || item.price || group.finalAmount || group.totalAmount || group.total_amount || 0);
+                            const itemPrice = Number(item.finalAmount || pd.finalAmount || item.totalAmount || item.price || 0);
+                            groupTotalSum += itemPrice;
 
-                            const statusRaw = String(group.status || item.status || "Processing").toLowerCase();
-                            let status: OrderStatus = "Processing";
-                            if (statusRaw.includes("deliver")) status = "Delivered";
-                            else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
-                            else if (statusRaw.includes("cancel")) status = "Cancelled";
-                            else if (statusRaw.includes("pend")) status = "Pending";
-
-                            mappedOrders.push({
-                                id: `${groupOrderId}-${iIdx}`,
-                                productTitle: title,
-                                productSub: sub,
+                            itemsList.push({
+                                title,
+                                sub,
                                 qty: itemQty,
+                                price: itemPrice > 0 ? `₹${itemPrice.toLocaleString("en-IN")}` : "",
                                 image: img,
-                                orderId: groupOrderId,
-                                orderedOn: formattedDate,
-                                paymentMethod: paymentMethod,
-                                totalAmount: `₹${totalVal.toLocaleString("en-IN")}`,
-                                status: status,
-                                statusNote: status === "Delivered"
-                                    ? `Delivered on ${formattedDate}`
-                                    : status === "Shipped"
-                                    ? "In Transit"
-                                    : status === "Cancelled"
-                                    ? "Order Cancelled"
-                                    : "Your order is being processed",
                             });
                         });
                     }
+
+                    const groupFinalTotal = Number(group.finalAmount || group.totalAmount || group.total_amount || groupTotalSum);
+                    const subtotal = Number(group.subtotal || groupFinalTotal);
+                    const shippingFee = Number(group.shippingFee || group.shipping_fee || 0);
+
+                    const statusRaw = String(group.status || "Processing").toLowerCase();
+                    let status: OrderStatus = "Processing";
+                    if (statusRaw.includes("deliver")) status = "Delivered";
+                    else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
+                    else if (statusRaw.includes("cancel")) status = "Cancelled";
+                    else if (statusRaw.includes("pend")) status = "Pending";
+
+                    mappedOrders.push({
+                        id: `${groupOrderId}-${gIdx}`,
+                        orderId: groupOrderId,
+                        orderedOn: formattedDate,
+                        paymentMethod: paymentMethod,
+                        paymentStatus: paymentStatusRaw,
+                        transactionId: transactionId ? String(transactionId) : undefined,
+                        items: itemsList,
+                        subtotal: `₹${subtotal.toLocaleString("en-IN")}`,
+                        shippingFee: shippingFee > 0 ? `₹${shippingFee.toLocaleString("en-IN")}` : "Free",
+                        totalAmount: `₹${groupFinalTotal.toLocaleString("en-IN")}`,
+                        status: status,
+                        statusNote: status === "Delivered"
+                            ? `Delivered on ${formattedDate}`
+                            : status === "Shipped"
+                            ? "In Transit"
+                            : status === "Cancelled"
+                            ? "Order Cancelled"
+                            : "Your order is being processed",
+                        shippingAddress: (addrName || addrLines) ? {
+                            name: addrName,
+                            phone: addrPhone,
+                            address: addrLines,
+                        } : undefined,
+                    });
                 });
 
                 setOrdersList(mappedOrders);
@@ -703,9 +675,10 @@ export default function MyOrdersPage() {
         const search = searchTerm.toLowerCase().trim();
         if (!search) return true;
         return (
-            order.productTitle.toLowerCase().includes(search) ||
             order.orderId.toLowerCase().includes(search) ||
-            order.status.toLowerCase().includes(search)
+            order.status.toLowerCase().includes(search) ||
+            order.paymentMethod.toLowerCase().includes(search) ||
+            order.items.some((item) => item.title.toLowerCase().includes(search))
         );
     });
 
@@ -916,62 +889,127 @@ export default function MyOrdersPage() {
                                     return (
                                         <div
                                             key={order.id}
-                                            className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all"
+                                            className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/95 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all space-y-4"
                                         >
-                                            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                                                {/* Product */}
-                                                <div className="flex items-center gap-4 md:w-64">
-                                                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#FFF8EF]">
-                                                        <Image
-                                                            src={order.image}
-                                                            alt={order.productTitle}
-                                                            fill
-                                                            sizes="64px"
-                                                            className="object-contain p-1.5"
-                                                        />
+                                            {/* Top Header Bar */}
+                                            <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-[#EADCC9]/60">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313]">
+                                                        <Package size={18} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-serif text-base font-bold text-[#593102]">
-                                                            {order.productTitle}
-                                                        </p>
-                                                        <p className="text-xs text-[#6E5D4F] font-medium">{order.productSub}</p>
-                                                        <p className="mt-1 text-xs text-[#8D7F73] font-semibold">Qty: {order.qty}</p>
+                                                        <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
+                                                        <p className="text-sm font-extrabold text-[#593102]">{order.orderId}</p>
                                                     </div>
                                                 </div>
 
-                                                {/* Order ID */}
-                                                <div className="md:w-36">
-                                                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
-                                                    <p className="text-sm font-extrabold text-[#593102] mt-0.5">{order.orderId}</p>
-                                                    <p className="mt-2 text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Ordered on</p>
-                                                    <p className="text-xs font-bold text-[#593102] mt-0.5">{order.orderedOn}</p>
-                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="text-right">
+                                                        <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
+                                                        <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
+                                                    </div>
 
-                                                {/* Payment */}
-                                                <div className="md:w-32">
-                                                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Payment Method</p>
-                                                    <p className="text-xs font-bold text-[#593102] mt-0.5">{order.paymentMethod}</p>
-                                                    <p className="mt-2 text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Total Amount</p>
-                                                    <p className="text-sm font-extrabold text-[#593102] mt-0.5">{order.totalAmount}</p>
-                                                </div>
-
-                                                {/* Status */}
-                                                <div className="md:w-40">
+                                                    {/* Status Badge */}
                                                     {(() => {
                                                         const style = statusStyles[order.status] || statusStyles.Processing;
                                                         return (
-                                                            <span
-                                                                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}
-                                                            >
+                                                            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}>
                                                                 <StatusIcon size={13} />
                                                                 {order.status}
                                                             </span>
                                                         );
                                                     })()}
-                                                    <p className="mt-2 text-xs text-[#6E5D4F] font-medium">{order.statusNote}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Products List */}
+                                            <div className="space-y-2.5 pt-1">
+                                                {order.items.map((item, idx) => (
+                                                    <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-2xl bg-[#FAF5EC]/50 border border-[#EADCC9]/40">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white border border-[#EADCC9]/60">
+                                                                <Image
+                                                                    src={item.image}
+                                                                    alt={item.title}
+                                                                    fill
+                                                                    sizes="56px"
+                                                                    className="object-contain p-1"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-serif text-sm font-bold text-[#593102]">{item.title}</p>
+                                                                <p className="text-xs text-[#6E5D4F] font-medium">{item.sub}</p>
+                                                                <span className="inline-block mt-0.5 text-[11px] font-bold text-[#8D7F73]">Qty: {item.qty}</span>
+                                                            </div>
+                                                        </div>
+                                                        {item.price && (
+                                                            <p className="text-sm font-extrabold text-[#593102] shrink-0">{item.price}</p>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Payment & Address Summary Footer */}
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-3.5 border-t border-[#EADCC9]/60 text-xs">
+                                                {/* Payment Details */}
+                                                <div className="space-y-1 bg-[#FFFDF9] p-3 rounded-2xl border border-[#EADCC9]/60">
+                                                    <p className="font-extrabold uppercase tracking-wider text-[#8D7F73] text-[10px]">Payment Details</p>
+                                                    <div className="flex justify-between items-center text-[#593102] font-semibold pt-1">
+                                                        <span>Method:</span>
+                                                        <span className="font-bold">{order.paymentMethod}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-[#593102] font-semibold">
+                                                        <span>Status:</span>
+                                                        <span className={`font-extrabold ${order.paymentStatus.toLowerCase().includes("paid") ? "text-emerald-700" : "text-amber-700"}`}>
+                                                            {order.paymentStatus}
+                                                        </span>
+                                                    </div>
+                                                    {order.transactionId && (
+                                                        <div className="flex justify-between items-center text-[#8D7F73] pt-0.5">
+                                                            <span>Txn ID:</span>
+                                                            <span className="font-mono text-[11px] truncate max-w-[110px]">{order.transactionId}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
 
-                                                {/* Actions */}
+                                                {/* Shipping Address */}
+                                                <div className="space-y-1 bg-[#FFFDF9] p-3 rounded-2xl border border-[#EADCC9]/60">
+                                                    <p className="font-extrabold uppercase tracking-wider text-[#8D7F73] text-[10px]">Shipping Address</p>
+                                                    {order.shippingAddress ? (
+                                                        <>
+                                                            <p className="font-bold text-[#593102] truncate">{order.shippingAddress.name || "Customer"}</p>
+                                                            <p className="text-[#6E5D4F] line-clamp-2 leading-snug">{order.shippingAddress.address}</p>
+                                                            {order.shippingAddress.phone && (
+                                                                <p className="text-[#8D7F73] font-medium pt-0.5">📞 {order.shippingAddress.phone}</p>
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <p className="text-[#8D7F73] italic">Standard Delivery</p>
+                                                    )}
+                                                </div>
+
+                                                {/* Amount Breakdown */}
+                                                <div className="flex flex-col justify-between bg-[#FAF0DC]/60 p-3 rounded-2xl border border-[#D49313]/30">
+                                                    <div>
+                                                        <div className="flex justify-between text-[#6E5D4F]">
+                                                            <span>Subtotal:</span>
+                                                            <span className="font-bold text-[#593102]">{order.subtotal}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-[#6E5D4F]">
+                                                            <span>Shipping:</span>
+                                                            <span className="font-bold text-[#593102]">{order.shippingFee}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-sm font-extrabold text-[#593102] pt-1.5 border-t border-[#D49313]/30 mt-1">
+                                                            <span>Total Amount:</span>
+                                                            <span className="text-[#D49313]">{order.totalAmount}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Actions Bar */}
+                                            <div className="flex items-center justify-between pt-2 border-t border-[#EADCC9]/40">
+                                                <p className="text-xs text-[#6E5D4F] font-medium">{order.statusNote}</p>
                                                 <OrderActions order={order} />
                                             </div>
                                         </div>

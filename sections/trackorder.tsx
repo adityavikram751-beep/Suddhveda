@@ -9,6 +9,8 @@ const sampleOrder = {
   orderNumber: "SVN1256789",
   placedOn: "12 May, 2024 at 11:30 AM",
   status: "In Transit",
+  totalAmount: "₹1,549",
+  paymentMethod: "UPI",
   expectedDeliveryRange: "16 - 18 May, 2024",
   expectedDeliveryNote: "(3-5 business days)",
   steps: [
@@ -37,14 +39,14 @@ const sampleOrder = {
 function StepIcon({ state }: { state: string }) {
   if (state === "done") {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-r from-[#F24E1E] to-[#D93F13] text-white shadow-md">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-md">
         <Check className="h-5 w-5" strokeWidth={3} />
       </div>
     );
   }
   if (state === "current") {
     return (
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-r from-[#F24E1E] to-[#D93F13] text-white shadow-md ring-4 ring-[#FFE8E0] animate-pulse">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-md ring-4 ring-emerald-100 animate-pulse">
         <Truck className="h-5 w-5" />
       </div>
     );
@@ -84,11 +86,16 @@ export default function TrackOrderPage() {
             const createdAt = rawOrder.createdAt || rawOrder.created_at ? new Date(rawOrder.createdAt || rawOrder.created_at) : new Date();
             const placedStr = `${createdAt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} at ${createdAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true })}`;
             const addr = rawOrder.shipping_address || rawOrder.shippingAddress || {};
+            const totalVal = Number(rawOrder.finalAmount || rawOrder.totalAmount || rawOrder.total_amount || rawOrder.price || 0);
+            const paymentMethodRaw = String(rawOrder.payment_mode || rawOrder.paymentMethod || rawOrder.payment_type || "COD");
+            const paymentMethod = paymentMethodRaw.toLowerCase() === "cod" ? "Cash on Delivery" : paymentMethodRaw.toUpperCase();
 
             const dynamicOrder = {
               orderNumber: orderId,
               placedOn: placedStr,
               status: rawOrder.status || "Processing",
+              totalAmount: totalVal > 0 ? `₹${totalVal.toLocaleString("en-IN")}` : "₹1,549",
+              paymentMethod: paymentMethod,
               expectedDeliveryRange: "3 - 5 business days",
               expectedDeliveryNote: "(Standard Delivery)",
               steps: [
@@ -145,11 +152,11 @@ export default function TrackOrderPage() {
         
         {/* Header */}
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 bg-[#FFF0EB] border border-[#F24E1E]/30 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#F24E1E] tracking-[0.18em] shadow-2xs mb-2">
+          <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-300 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-emerald-800 tracking-[0.18em] shadow-2xs mb-2">
             <span>LIVE SHIPMENT TRACKING</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#593102]">
-            Track Your <span className="text-[#F24E1E]">Order</span>
+            Track Your <span className="text-emerald-700">Order</span>
           </h1>
           <p className="text-base text-[#6E5D4F] font-medium">
             Stay updated with your package delivery status in real-time.
@@ -161,9 +168,18 @@ export default function TrackOrderPage() {
           <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-start pb-8 border-b border-[#EADCC9]/60">
             <div>
               <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">ORDER NUMBER</p>
-              <p className="font-serif text-2xl font-extrabold text-[#F24E1E] mt-0.5">{order.orderNumber}</p>
+              <p className="font-serif text-2xl font-extrabold text-emerald-700 mt-0.5">{order.orderNumber}</p>
               <p className="mt-1 text-xs text-[#6E5D4F] font-semibold">Placed on {order.placedOn}</p>
             </div>
+
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#8D7F73]">TOTAL AMOUNT</p>
+              <p className="font-serif text-2xl font-extrabold text-[#593102] mt-0.5">{order.totalAmount || "₹1,549"}</p>
+              <p className="mt-1 text-xs text-emerald-700 font-extrabold">
+                {order.paymentMethod ? `Payment: ${order.paymentMethod}` : "Payment Confirmed"}
+              </p>
+            </div>
+
             <div className="text-left sm:text-right">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-300 px-3.5 py-1 text-xs font-extrabold text-emerald-800 shadow-2xs">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
@@ -183,7 +199,7 @@ export default function TrackOrderPage() {
                   <div
                     className={`absolute left-1/2 top-[26px] -translate-y-1/2 h-0.5 w-full z-0 ${
                       step.state === "done"
-                        ? "bg-gradient-to-r from-[#F24E1E] to-[#D93F13]"
+                        ? "bg-emerald-500"
                         : "border-t-2 border-dashed border-[#EADCC9]"
                     }`}
                   />
@@ -212,7 +228,7 @@ export default function TrackOrderPage() {
           <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-6 shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 pb-3 border-b border-[#EADCC9]/60">
-                <Truck size={18} className="text-[#F24E1E]" />
+                <Truck size={18} className="text-emerald-700" />
                 <h2 className="font-serif text-lg font-bold text-[#593102]">Shipment Details</h2>
               </div>
 
@@ -221,7 +237,7 @@ export default function TrackOrderPage() {
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8D7F73]">Courier Partner</span>
                   <span className="flex items-center gap-2 font-bold text-[#593102]">
                     {shipment.courier}
-                    <span className="rounded-md bg-[#FFF0EB] border border-[#F24E1E]/30 px-2 py-0.5 text-[10px] font-extrabold text-[#F24E1E]">
+                    <span className="rounded-md bg-emerald-50 border border-emerald-300 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800">
                       DELHIVERY
                     </span>
                   </span>
@@ -231,7 +247,7 @@ export default function TrackOrderPage() {
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8D7F73]">Tracking ID</span>
                   <span className="flex items-center gap-2 font-bold text-[#593102]">
                     {shipment.trackingId}
-                    <button onClick={handleCopy} className="p-1 rounded-md hover:bg-[#FFF0EB] text-[#F24E1E] transition cursor-pointer" title="Copy ID">
+                    <button onClick={handleCopy} className="p-1 rounded-md hover:bg-emerald-50 text-emerald-700 transition cursor-pointer" title="Copy ID">
                       {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                     </button>
                   </span>
@@ -243,7 +259,7 @@ export default function TrackOrderPage() {
                     href={shipment.trackingLink}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-1 text-xs font-bold text-[#F24E1E] hover:underline"
+                    className="flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline"
                   >
                     Track External
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -252,8 +268,8 @@ export default function TrackOrderPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex items-start gap-3 rounded-2xl bg-[#FFF0EB]/80 border border-[#F24E1E]/30 p-4">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#F24E1E] text-white shadow-xs">
+            <div className="mt-6 flex items-start gap-3 rounded-2xl bg-emerald-50 border border-emerald-300 p-4">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
                 <Package className="h-4.5 w-4.5" />
               </div>
               <div>
@@ -275,13 +291,13 @@ export default function TrackOrderPage() {
                 <li key={i} className="relative flex gap-3 pl-1">
                   {i < timeline.length - 1 && (
                     <div className="absolute left-[11px] -translate-x-1/2 top-[20px] bottom-1 w-0.5 bg-[#EADCC9] flex flex-col items-center justify-end">
-                      <span className="w-1.5 h-1.5 border-b-2 border-r-2 border-[#F24E1E] rotate-45 translate-y-[2px]" />
+                      <span className="w-1.5 h-1.5 border-b-2 border-r-2 border-emerald-600 rotate-45 translate-y-[2px]" />
                     </div>
                   )}
                   <span
                     className={`relative z-10 mt-1 h-3.5 w-3.5 flex-shrink-0 rounded-full border-2 ${
                       item.state === "done"
-                        ? "border-[#F24E1E] bg-[#F24E1E]"
+                        ? "border-emerald-600 bg-emerald-600"
                         : "border-[#EADCC9] bg-white"
                     }`}
                   />

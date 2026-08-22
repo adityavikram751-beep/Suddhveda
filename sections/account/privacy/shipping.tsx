@@ -76,10 +76,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
     return (
         <div className="space-y-4 w-full">
             <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-5 shadow-xs">
-                <div className="flex flex-col items-center text-center gap-2">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-base font-black text-white shadow-md">
-                        {initials}
-                    </div>
+                <div className="flex flex-col items-center text-center gap-1.5">
                     <p className="font-serif text-lg font-extrabold text-[#593102] capitalize">
                         {fullName}
                     </p>
@@ -112,7 +109,7 @@ function SidebarContent({ userData, onLinkClick }: { userData: any; onLinkClick?
                                 className={`
                                     relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300
                                     ${isActive
-                                        ? "bg-[#FAF0DC] text-[#593102] font-bold border-l-4 border-[#D49313] shadow-xs"
+                                        ? "bg-[#FAF0DC] text-[#593102] font-extrabold shadow-xs"
                                         : "text-[#593102] hover:bg-[#FAF5EC] hover:text-[#D49313]"
                                     }
                                 `}
