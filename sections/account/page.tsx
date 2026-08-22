@@ -419,20 +419,24 @@ export default function MyOrdersPage() {
                         rawItems.forEach((item: any) => {
                             const pd = item.product_details || item.productDetails || item.product || item;
                             const prod = pd.product || item.product || pd;
-                            const gift = pd.giftBox || item.giftBox || {};
+                            const gift = item.giftBox || pd.giftBox || item.gift_box || pd.gift_box || {};
                             const variant = item.variant || pd.variant || prod.variant || {};
 
-                            const title = item.type === "CUSTOM"
-                                ? (gift.name || "Custom Gift Box")
+                            const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(pd.giftBox) || Boolean(item.gift_box);
+
+                            const title = isCustomGift
+                                ? (gift.name || gift.title || item.title || item.name || "Custom Gift Box")
                                 : (prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey");
 
-                            const weightVal = variant.weight || item.weight || prod.weight;
+                            const weightVal = variant.weight || item.weight || prod.weight || item.totalWeight;
                             const unitVal = variant.unit || item.unit || prod.unit || "g";
                             const weightLabel = weightVal ? `${weightVal}${unitVal}` : "";
-                            const sub = item.type === "CUSTOM" ? "Gift Box" : (weightLabel || item.productSub || "Standard Pack");
+                            const sub = isCustomGift ? (weightLabel ? `${weightLabel} Gift Box` : "Gift Box") : (weightLabel || item.productSub || "Standard Pack");
 
                             let img = "/Upcoming.png";
-                            if (typeof prod.image === "string" && prod.image) {
+                            if (isCustomGift) {
+                                img = gift.image || gift.image_url || gift.boxImage || item.image || item.giftBoxImage || pd.image || "/giftset.png";
+                            } else if (typeof prod.image === "string" && prod.image) {
                                 img = prod.image;
                             } else if (prod.image?.image_url) {
                                 img = prod.image.image_url;
@@ -440,8 +444,8 @@ export default function MyOrdersPage() {
                                 img = prod.imageDocumentId[0].image_url;
                             } else if (Array.isArray(prod.images) && prod.images[0]?.image_url) {
                                 img = prod.images[0].image_url;
-                            } else if (gift.image) {
-                                img = gift.image;
+                            } else if (gift.image || gift.image_url) {
+                                img = gift.image || gift.image_url;
                             } else if (typeof item.image === "string" && item.image) {
                                 img = item.image;
                             }
