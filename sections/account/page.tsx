@@ -36,7 +36,7 @@ const sidebarLinks = [
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },
 ];
 
-type OrderStatus = "Processing" | "Delivered" | "Shipped";
+type OrderStatus = "Processing" | "Delivered" | "Shipped" | "Cancelled" | "Pending";
 
 interface Order {
     id: string;
@@ -199,31 +199,40 @@ const allOrders: Order[] = [
     },
 ];
 
-const statusStyles: Record<OrderStatus, { bg: string; text: string; icon: typeof Clock }> = {
+const statusStyles: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
     Processing: { bg: "bg-[#FDECC8]", text: "text-[#B9740B]", icon: Clock },
+    Pending: { bg: "bg-[#FDECC8]", text: "text-[#B9740B]", icon: Clock },
     Delivered: { bg: "bg-green-100", text: "text-green-700", icon: CheckCircle2 },
     Shipped: { bg: "bg-blue-100", text: "text-blue-700", icon: Ship },
+    Cancelled: { bg: "bg-red-100", text: "text-red-700", icon: X },
 };
 
 function OrderActions({ order }: { order: Order }) {
-    if (order.status === "Processing") {
+    if (order.status === "Cancelled") {
+        return (
+            <div className="flex w-full flex-col gap-2 sm:w-44">
+                <span className="flex h-9 items-center justify-center rounded-xl bg-gray-100 text-xs font-bold text-gray-500 border border-gray-200">
+                    Cancelled
+                </span>
+            </div>
+        );
+    }
+
+    if (order.status === "Processing" || order.status === "Pending") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href="/trackorder"
-                    className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition"
+                    className="flex h-9 items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs"
                 >
                     Track Order
                 </Link>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-xl border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
                 >
                     View Details
                 </Link>
-                <button className="flex h-9 items-center justify-center rounded-lg border border-red-500 text-xs font-bold text-red-500 hover:bg-red-50 transition">
-                    Cancel Order
-                </button>
             </div>
         );
     }
@@ -231,18 +240,12 @@ function OrderActions({ order }: { order: Order }) {
     if (order.status === "Delivered") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <button className="flex h-9 items-center justify-center rounded-lg bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition">
-                    Buy Again
-                </button>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
+                    className="flex h-9 items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs"
                 >
                     View Details
                 </Link>
-                <button className="flex h-9 items-center justify-center rounded-lg border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition">
-                    Write Review
-                </button>
             </div>
         );
     }
@@ -261,9 +264,6 @@ function OrderActions({ order }: { order: Order }) {
             >
                 View Details
             </Link>
-            <button className="flex h-9 items-center justify-center gap-1 rounded-xl border border-[#EADCC9] text-xs font-bold text-[#6E5D4F] hover:bg-[#FAF5EC] transition-colors cursor-pointer">
-                Download Invoice
-            </button>
         </div>
     );
 }
@@ -409,7 +409,7 @@ export default function MyOrdersPage() {
         }
     };
 
-    const [ordersList, setOrdersList] = useState<Order[]>(allOrders);
+    const [ordersList, setOrdersList] = useState<Order[]>([]);
     const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
 
     const fetchMyOrders = async () => {
@@ -427,55 +427,106 @@ export default function MyOrdersPage() {
 
             if (res.ok) {
                 const data = await res.json();
-                const rawList = data.data || data.orders || data.groups || (Array.isArray(data) ? data : []) || [];
+                const rawList = Array.isArray(data?.data)
+                    ? data.data
+                    : Array.isArray(data?.orders)
+                    ? data.orders
+                    : Array.isArray(data?.groups)
+                    ? data.groups
+                    : Array.isArray(data?.result)
+                    ? data.result
+                    : Array.isArray(data)
+                    ? data
+                    : [];
 
                 const mappedOrders: Order[] = [];
 
                 rawList.forEach((group: any, gIdx: number) => {
-                    const groupOrders = group.orders || group.items || (Array.isArray(group) ? group : [group]);
-                    const groupOrderId = group.group_id || group.order_id || group._id || group.orderId || `ORD-${gIdx + 1}`;
-                    const groupCreatedAt = group.createdAt || group.created_at || new Date().toISOString();
+                    const groupOrderId = String(group.group_id || group.order_id || group.orderId || group._id || `ORD-${gIdx + 1}`);
+                    const groupCreatedAt = group.createdAt || group.created_at || group.date || new Date().toISOString();
                     const formattedDate = new Date(groupCreatedAt).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                     });
-                    const paymentMethod = group.payment_mode === "cod" ? "COD" : (group.payment_mode ? group.payment_mode.toUpperCase() : "Online");
+                    const paymentMethodRaw = String(group.payment_mode || group.paymentMethod || group.payment_type || "COD");
+                    const paymentMethod = paymentMethodRaw.toLowerCase() === "cod" ? "Cash on Delivery" : paymentMethodRaw.toUpperCase();
+
+                    const groupOrders = Array.isArray(group.orders)
+                        ? group.orders
+                        : Array.isArray(group.items)
+                        ? group.items
+                        : Array.isArray(group.order_items)
+                        ? group.order_items
+                        : Array.isArray(group.products)
+                        ? group.products
+                        : [group];
 
                     if (Array.isArray(groupOrders) && groupOrders.length > 0) {
                         groupOrders.forEach((item: any, iIdx: number) => {
-                            const pd = item.product_details || item;
-                            const prod = pd.product || item.product || {};
+                            const pd = item.product_details || item.productDetails || item.product || item;
+                            const prod = pd.product || item.product || pd;
                             const gift = pd.giftBox || item.giftBox || {};
-                            const title = item.type === "CUSTOM" ? (gift.name || "Custom Gift Box") : (prod.product_name || prod.name || item.title || "Pure Honey");
-                            const sub = item.type === "CUSTOM" ? "Gift Box" : (prod.variant?.weight ? `${prod.variant.weight}g` : "Standard");
-                            const img = typeof prod.image === "string" ? prod.image : (prod.image?.image_url || gift.image || "/Upcoming.png");
-                            const totalVal = item.finalAmount || pd.finalAmount || item.totalAmount || group.finalAmount || 0;
-                            const statusRaw = (group.status || item.status || "Processing").toLowerCase();
+                            const variant = item.variant || pd.variant || prod.variant || {};
+
+                            const title = item.type === "CUSTOM"
+                                ? (gift.name || "Custom Gift Box")
+                                : (prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey");
+
+                            const weightVal = variant.weight || item.weight || prod.weight;
+                            const unitVal = variant.unit || item.unit || prod.unit || "g";
+                            const weightLabel = weightVal ? `${weightVal}${unitVal}` : "";
+                            const sub = item.type === "CUSTOM" ? "Gift Box" : (weightLabel || item.productSub || "Standard Pack");
+
+                            let img = "/Upcoming.png";
+                            if (typeof prod.image === "string" && prod.image) {
+                                img = prod.image;
+                            } else if (prod.image?.image_url) {
+                                img = prod.image.image_url;
+                            } else if (Array.isArray(prod.imageDocumentId) && prod.imageDocumentId[0]?.image_url) {
+                                img = prod.imageDocumentId[0].image_url;
+                            } else if (Array.isArray(prod.images) && prod.images[0]?.image_url) {
+                                img = prod.images[0].image_url;
+                            } else if (gift.image) {
+                                img = gift.image;
+                            } else if (typeof item.image === "string" && item.image) {
+                                img = item.image;
+                            }
+
+                            const itemQty = item.quantity || item.qty || 1;
+                            const totalVal = Number(item.finalAmount || pd.finalAmount || item.totalAmount || item.price || group.finalAmount || group.totalAmount || group.total_amount || 0);
+
+                            const statusRaw = String(group.status || item.status || "Processing").toLowerCase();
                             let status: OrderStatus = "Processing";
                             if (statusRaw.includes("deliver")) status = "Delivered";
-                            else if (statusRaw.includes("ship") || statusRaw.includes("transit")) status = "Shipped";
+                            else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
+                            else if (statusRaw.includes("cancel")) status = "Cancelled";
+                            else if (statusRaw.includes("pend")) status = "Pending";
 
                             mappedOrders.push({
                                 id: `${groupOrderId}-${iIdx}`,
                                 productTitle: title,
                                 productSub: sub,
-                                qty: item.quantity || 1,
+                                qty: itemQty,
                                 image: img,
                                 orderId: groupOrderId,
                                 orderedOn: formattedDate,
                                 paymentMethod: paymentMethod,
                                 totalAmount: `₹${totalVal.toLocaleString("en-IN")}`,
                                 status: status,
-                                statusNote: status === "Delivered" ? `Delivered on ${formattedDate}` : status === "Shipped" ? "In Transit" : "Your order is being processed",
+                                statusNote: status === "Delivered"
+                                    ? `Delivered on ${formattedDate}`
+                                    : status === "Shipped"
+                                    ? "In Transit"
+                                    : status === "Cancelled"
+                                    ? "Order Cancelled"
+                                    : "Your order is being processed",
                             });
                         });
                     }
                 });
 
-                if (mappedOrders.length > 0) {
-                    setOrdersList(mappedOrders);
-                }
+                setOrdersList(mappedOrders);
             }
         } catch (err) {
             console.error("Error fetching my-orders:", err);
@@ -841,13 +892,27 @@ export default function MyOrdersPage() {
 
                         {/* Order cards */}
                         <div className="space-y-5">
-                            {currentOrders.length === 0 ? (
-                                <div className="text-center py-12 text-[#6E5D4F] font-medium bg-white/90 rounded-3xl border-2 border-[#EADCC9]/80 shadow-xs">
-                                    {searchTerm ? "No orders match your search." : "No orders yet."}
+                            {loadingOrders ? (
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map((i) => (
+                                        <div key={i} className="h-32 rounded-3xl border-2 border-[#EADCC9]/50 bg-white/80 animate-pulse flex items-center justify-center">
+                                            <span className="text-xs font-bold text-[#8D7F73]">Loading your orders...</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : currentOrders.length === 0 ? (
+                                <div className="text-center py-14 text-[#6E5D4F] font-medium bg-white/90 rounded-3xl border-2 border-[#EADCC9]/80 shadow-xs space-y-2">
+                                    <Package size={40} className="mx-auto text-[#D49313] opacity-60" />
+                                    <p className="font-serif text-lg font-bold text-[#593102]">
+                                        {searchTerm ? "No orders match your search." : "No orders found."}
+                                    </p>
+                                    <p className="text-xs text-[#8D7F73]">
+                                        {searchTerm ? "Try searching with a different Order ID or Product Name." : "Your placed orders will appear here."}
+                                    </p>
                                 </div>
                             ) : (
                                 currentOrders.map((order) => {
-                                    const StatusIcon = statusStyles[order.status].icon;
+                                    const StatusIcon = statusStyles[order.status]?.icon || Clock;
                                     return (
                                         <div
                                             key={order.id}
@@ -892,12 +957,17 @@ export default function MyOrdersPage() {
 
                                                 {/* Status */}
                                                 <div className="md:w-40">
-                                                    <span
-                                                        className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-extrabold shadow-2xs ${statusStyles[order.status].bg} ${statusStyles[order.status].text}`}
-                                                    >
-                                                        <StatusIcon size={13} />
-                                                        {order.status}
-                                                    </span>
+                                                    {(() => {
+                                                        const style = statusStyles[order.status] || statusStyles.Processing;
+                                                        return (
+                                                            <span
+                                                                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}
+                                                            >
+                                                                <StatusIcon size={13} />
+                                                                {order.status}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                     <p className="mt-2 text-xs text-[#6E5D4F] font-medium">{order.statusNote}</p>
                                                 </div>
 
