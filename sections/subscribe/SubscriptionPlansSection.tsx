@@ -141,8 +141,8 @@ export default function SubscriptionPlansSection() {
                             {/* Most Popular Ribbon */}
                             {plan.isPopular && (
                                 <div className="absolute -top-3.5 sm:-top-4 left-1/2 -translate-x-1/2 z-20">
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#593102] px-3.5 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#FFD700] shadow-md border border-[#D49313]/50">
-                                        <Crown size={12} /> MOST POPULAR
+                                    <span className="inline-block rounded-full bg-[#FA4B1B] px-4 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-white shadow-md border border-white/20">
+                                        MOST POPULAR
                                     </span>
                                 </div>
                             )}
@@ -212,28 +212,31 @@ export default function SubscriptionPlansSection() {
                         </div>
                     ))}
 
-                    {/* Subscriber Benefits Card - Spreads evenly to fill card height */}
-                    <div className="relative flex flex-col justify-between rounded-3xl border-2 border-[#EADCC9] bg-white p-5 sm:p-7 shadow-sm hover:border-[#D49313] hover:ring-4 hover:ring-[#D49313]/20 hover:shadow-2xl hover:-translate-y-2.5 transition-all duration-300 group cursor-pointer h-full">
+                    {/* Subscriber Benefits Card - Clean No-Icon Styling */}
+                    <div className="relative flex flex-col justify-between rounded-3xl border-2 border-[#D49313]/50 bg-[#FFFDF7] p-5 sm:p-6 shadow-sm h-full">
                         <div className="flex flex-col h-full justify-between">
-                            <h3 className="font-serif text-base sm:text-[17px] font-extrabold text-[#593102] tracking-wide uppercase border-b border-[#EADCC9] pb-3 text-center truncate">
-                                SUBSCRIBER BENEFITS
-                            </h3>
+                            <div>
+                                <h3 className="font-serif text-lg sm:text-xl font-extrabold text-[#593102] tracking-wider uppercase text-center pb-3 border-b border-[#EADCC9]">
+                                    SUBSCRIBER BENEFITS
+                                </h3>
+                            </div>
 
-                            <ul className="mt-4 flex-1 flex flex-col justify-between py-1 text-left text-xs sm:text-sm">
-                                {subscriberBenefits6.map((b, idx) => {
-                                    const BIcon = b.icon;
-                                    return (
-                                        <li key={idx} className="flex items-center gap-3">
-                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF0DC] text-[#D49313]">
-                                                <BIcon size={14} />
-                                            </div>
-                                            <div className="leading-tight">
-                                                <p className="font-bold text-[#593102] text-[13px] sm:text-[14px]">{b.title}</p>
-                                                <p className="text-[11px] sm:text-xs text-[#8D7F73] font-medium">{b.subtitle}</p>
-                                            </div>
-                                        </li>
-                                    );
-                                })}
+                            <ul className="mt-4 flex-1 flex flex-col justify-between gap-2.5 py-1 text-left">
+                                {subscriberBenefits6.map((b, idx) => (
+                                    <li
+                                        key={idx}
+                                        className="rounded-2xl border border-[#EADCC9] bg-[#FAF5EC] p-3 pl-4 shadow-2xs"
+                                    >
+                                        <div className="leading-tight min-w-0">
+                                            <p className="font-bold text-[#593102] text-[13px] sm:text-[14px]">
+                                                {b.title}
+                                            </p>
+                                            <p className="text-[11px] sm:text-xs text-[#7A6A59] font-medium leading-snug mt-0.5">
+                                                {b.subtitle}
+                                            </p>
+                                        </div>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
