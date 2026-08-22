@@ -23,7 +23,12 @@ export type ApiProduct = Record<string, any>;
 
 export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
   if (!variant) return false;
-  const v = ((variant as any)?.variantId || (variant as any)?.variant || variant) as any;
+  let v = variant as any;
+  if (v?.variantId && typeof v.variantId === "object") {
+    v = v.variantId;
+  } else if (v?.variant && typeof v.variant === "object") {
+    v = v.variant;
+  }
 
   // 1. Explicit boolean checks
   if (
@@ -32,11 +37,7 @@ export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
     String(v.is_out_of_stock) === "true" ||
     String(v.isOutOfStock) === "true" ||
     v.outOfStock === true ||
-    String(v.outOfStock) === "true"
-  ) {
-    return true;
-  }
-  if (
+    String(v.outOfStock) === "true" ||
     v.inStock === false ||
     v.in_stock === false ||
     String(v.inStock) === "false" ||
@@ -45,7 +46,7 @@ export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
     return true;
   }
 
-  // 2. String status fields (stock_status, status, availability, stockStatus, stock_type)
+  // 2. String status fields
   const statusStr = String(
     v.stock_status ||
     v.stockStatus ||
@@ -69,7 +70,7 @@ export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
     return true;
   }
 
-  // 3. Numeric stock fields (available_stock, stock, inventory, stock_quantity, quantity, qty, count, countInStock)
+  // 3. Numeric stock fields
   const stockValues = [
     v.available_stock,
     v.availableStock,
@@ -87,7 +88,7 @@ export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
   for (const val of stockValues) {
     if (val !== undefined && val !== null && val !== "") {
       const num = Number(val);
-      if (!isNaN(num) && num <= 0) {
+      if (!isNaN(num) && num <= 0 && !v.allow_backorders) {
         return true;
       }
     }

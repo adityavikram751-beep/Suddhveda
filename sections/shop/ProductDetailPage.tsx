@@ -597,6 +597,7 @@ export default function ProductDetailPage({
                 </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
                   {variants.map((option: any) => {
+                    const outOfStock = isVariantOutOfStock(option);
                     const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
 
                     return (
@@ -604,16 +605,27 @@ export default function ProductDetailPage({
                         key={getVariantId(option) || option.weight}
                         onClick={() => setSelectedVariant(option)}
                         className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${
-                          isSelectedOption
+                          outOfStock
+                            ? isSelectedOption
+                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                              : "border-red-300 bg-red-50/70"
+                            : isSelectedOption
                             ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
                             : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
                         }`}
                       >
-                        <span className="text-[13px] font-extrabold text-[#593102]">
+                        {/* Red Diagonal Cross Line for out of stock variant */}
+                        {outOfStock && (
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
+                            <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
+                          </div>
+                        )}
+
+                        <span className={`text-[13px] font-extrabold ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
                           {option.weight}{option.unit}
                         </span>
 
-                        <div className="relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border border-[#EADCC9]">
+                        <div className={`relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
                           {mediaList[0]?.url && (
                             <Image
                               src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
@@ -624,9 +636,15 @@ export default function ProductDetailPage({
                           )}
                         </div>
 
-                        <span className="text-[13px] font-bold text-[#D49313]">
-                          ₹{option.price}
-                        </span>
+                        {outOfStock ? (
+                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
+                            OUT OF STOCK
+                          </span>
+                        ) : (
+                          <span className="text-[13px] font-bold text-[#D49313]">
+                            ₹{option.price}
+                          </span>
+                        )}
                       </button>
                     );
                   })}
