@@ -553,12 +553,6 @@ export default function ProductDetailPage({
                   You Save ₹{currentSave} ({discountPercent}% OFF)
                 </div>
               )}
-              {isVariantOutOfStock(selectedVariant) && (
-                <div className="mt-2 text-[13px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 inline-flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
-                  Currently Out of Stock ({selectedVariant?.weight}{selectedVariant?.unit})
-                </div>
-              )}
               <p className="text-[13px] text-[#7A6A5C] font-medium mt-1">
                 Inclusive of all taxes.
               </p>
@@ -603,7 +597,6 @@ export default function ProductDetailPage({
                 </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
                   {variants.map((option: any) => {
-                    const outOfStock = isVariantOutOfStock(option);
                     const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
 
                     return (
@@ -611,27 +604,16 @@ export default function ProductDetailPage({
                         key={getVariantId(option) || option.weight}
                         onClick={() => setSelectedVariant(option)}
                         className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${
-                          outOfStock
-                            ? isSelectedOption
-                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
-                              : "border-red-300 bg-red-50/70"
-                            : isSelectedOption
+                          isSelectedOption
                             ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
                             : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
                         }`}
                       >
-                        {/* Red Diagonal Cross Line for out of stock variant */}
-                        {outOfStock && (
-                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
-                            <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
-                          </div>
-                        )}
-
-                        <span className={`text-[13px] font-extrabold ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
+                        <span className="text-[13px] font-extrabold text-[#593102]">
                           {option.weight}{option.unit}
                         </span>
 
-                        <div className={`relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
+                        <div className="relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border border-[#EADCC9]">
                           {mediaList[0]?.url && (
                             <Image
                               src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
@@ -642,15 +624,9 @@ export default function ProductDetailPage({
                           )}
                         </div>
 
-                        {outOfStock ? (
-                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-md z-30 shadow-xs -mb-0.5">
-                            Out of Stock
-                          </span>
-                        ) : (
-                          <span className="text-[13px] font-bold text-[#D49313]">
-                            ₹{option.price}
-                          </span>
-                        )}
+                        <span className="text-[13px] font-bold text-[#D49313]">
+                          ₹{option.price}
+                        </span>
                       </button>
                     );
                   })}
