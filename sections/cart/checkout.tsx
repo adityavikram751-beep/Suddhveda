@@ -11,9 +11,12 @@ import {
   Phone,
   Mail,
   Clock,
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -597,6 +600,13 @@ export default function Checkout() {
 function CheckoutHeader() {
   return (
     <div className="relative pt-4 pb-2 mb-6 sm:mb-12 pr-1 sm:pr-36 flex flex-col justify-center overflow-visible">
+      <Link
+        href="/cart"
+        className="inline-flex items-center gap-2 mb-3 w-fit rounded-xl border border-[#F24E1E] bg-white px-3.5 py-1.5 text-xs font-bold text-[#F24E1E] hover:bg-[#F24E1E] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer group"
+      >
+        <ArrowLeft size={14} className="text-[#F24E1E] group-hover:text-white transition-colors" />
+        Back to Cart
+      </Link>
       <h1 className="font-serif text-[26px] sm:text-[34px] font-bold text-[#201A18]">Checkout</h1>
       <p className="mt-1 text-[13px] sm:text-[14px] text-[#7B8493]">
         Almost there! Just a few more details to get your pure honey.
@@ -925,6 +935,8 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onD
 }
 
 function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, couponCode = "", location, selectedAddressId, onProceedDirectly }: any) {
+  const [isDiscountsOpen, setIsDiscountsOpen] = useState(false);
+  const totalDiscounts = saved + couponDiscount;
   const finalTotal = Math.max(subtotal - couponDiscount, 0);
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
 
@@ -963,10 +975,12 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
           <span>Subtotal</span>
           <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
         </div>
-        <div className="flex justify-between">
-          <span>You Save</span>
-          <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
-        </div>
+        {saved > 0 && (
+          <div className="flex justify-between">
+            <span className="font-semibold">Discount on MRP</span>
+            <strong className="text-emerald-700 font-extrabold">- ₹{saved.toLocaleString("en-IN")}</strong>
+          </div>
+        )}
         {couponDiscount > 0 && (
           <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
             <div className="flex items-center justify-between">

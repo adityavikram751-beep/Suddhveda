@@ -120,6 +120,7 @@ export default function ReviewPage() {
 
   const [paymentLabel, setPaymentLabel] = useState<string>("Cash on Delivery (COD)");
   const [codCharge, setCodCharge] = useState<number>(0);
+  const [isDiscountsOpen, setIsDiscountsOpen] = useState(false);
 
   const [location, setLocation] = useState<LocationData | null>(null);
 
@@ -344,6 +345,7 @@ export default function ReviewPage() {
     const cappedPerUnit = Math.min(perUnitSaving, p.price || perUnitSaving);
     return sum + cappedPerUnit * p.quantity;
   }, 0);
+  const totalDiscounts = saved + couponDiscount;
 
   const formatAmount = (num: number) => {
     if (num % 1 !== 0) {
@@ -902,10 +904,12 @@ export default function ReviewPage() {
                   <span>Subtotal</span>
                   <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
                 </div>
-                <div className="flex justify-between">
-                  <span>You Save</span>
-                  <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
-                </div>
+                {saved > 0 && (
+                  <div className="flex justify-between">
+                    <span className="font-semibold">Discount on MRP</span>
+                    <strong className="text-emerald-700 font-extrabold">- ₹{saved.toLocaleString("en-IN")}</strong>
+                  </div>
+                )}
                 {couponDiscount > 0 && (
                   <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
                     <div className="flex items-center justify-between">

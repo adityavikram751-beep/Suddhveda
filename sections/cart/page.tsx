@@ -677,7 +677,7 @@ export function OrderSummaryWithCoupons({
 
     const [couponError, setCouponError] = useState<string | null>(null);
     const [couponLoading, setCouponLoading] = useState(false);
-    const [isCouponSectionOpen, setIsCouponSectionOpen] = useState(true);
+    const [isDiscountsOpen, setIsDiscountsOpen] = useState(false);
 
     // Fetch Available Coupons
     useEffect(() => {
@@ -793,6 +793,7 @@ export function OrderSummaryWithCoupons({
     };
 
     const totalDiscount = calculateTotalDiscount(appliedCoupons, subtotal);
+    const totalDiscounts = saved + totalDiscount;
 
     // Sync state into LocalStorage always
     useEffect(() => {
@@ -983,7 +984,7 @@ export function OrderSummaryWithCoupons({
                     </div>
                     {saved > 0 && (
                         <div className="flex justify-between py-1">
-                            <span className="text-[#6E5D4F] font-semibold">You Save</span>
+                            <span className="text-[#6E5D4F] font-semibold">Discount on MRP</span>
                             <span className="font-serif font-extrabold text-emerald-700">
                                 - ₹{saved.toLocaleString("en-IN")}
                             </span>
@@ -1033,6 +1034,15 @@ export function OrderSummaryWithCoupons({
                         ₹{total.toLocaleString("en-IN")}
                     </p>
                 </div>
+
+                {(saved > 0 || totalDiscount > 0) && (
+                    <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-3 sm:p-3.5 mt-3">
+                        <p className="flex items-center gap-2 text-xs sm:text-[13px] font-extrabold text-emerald-800">
+                            <ShieldCheck size={16} className="text-emerald-700 shrink-0" />
+                            You&apos;re saving ₹{(saved + totalDiscount).toLocaleString("en-IN")} on this order!
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Coupon Section - Always open */}

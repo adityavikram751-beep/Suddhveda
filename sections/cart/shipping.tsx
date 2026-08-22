@@ -17,6 +17,8 @@ import {
   Smartphone,
   LockKeyhole,
   X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
@@ -120,6 +122,7 @@ export default function PaymentPage() {
   const [appliedCouponCode, setAppliedCouponCode] = useState<string>("");
   const [cartLoading, setCartLoading] = useState(true);
   const [cartError, setCartError] = useState<string | null>(null);
+  const [isDiscountsOpen, setIsDiscountsOpen] = useState(false);
 
   const mapCartItemsToProducts = (items: any) => {
     const rawItems = Array.isArray(items) ? items : Object.values(items || {});
@@ -255,6 +258,7 @@ export default function PaymentPage() {
     const cappedPerUnit = Math.min(perUnitSaving, p.price || perUnitSaving);
     return sum + cappedPerUnit * p.quantity;
   }, 0);
+  const totalDiscounts = saved + couponDiscount;
 
   const netSubtotal = Math.max(subtotal - couponDiscount, 0);
   const codChargePercent = 0.25;
@@ -470,10 +474,12 @@ export default function PaymentPage() {
                     <span>Subtotal</span>
                     <strong className="text-[#593102]">₹{subtotal.toLocaleString("en-IN")}</strong>
                   </div>
-                  <div className="flex justify-between">
-                    <span>You Save</span>
-                    <strong className="text-[#0BA445]">- ₹{saved.toLocaleString("en-IN")}</strong>
-                  </div>
+                  {saved > 0 && (
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Discount on MRP</span>
+                      <strong className="text-emerald-700 font-extrabold">- ₹{saved.toLocaleString("en-IN")}</strong>
+                    </div>
+                  )}
                   {couponDiscount > 0 && (
                     <div className="mt-2 rounded-xl border border-dashed border-[#0BA445]/40 bg-[#F0FFF4] p-3">
                       <div className="flex items-center justify-between">
