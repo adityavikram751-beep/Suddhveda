@@ -9,9 +9,123 @@ export type ProductVariant = {
   mrp?: number;
   you_save?: number;
   discount_value?: number;
+  stock?: number;
+  available_stock?: number;
+  stock_status?: string;
+  is_out_of_stock?: boolean;
+  inStock?: boolean;
+  inventory?: number;
+  stock_quantity?: number;
+  status?: string;
 };
 
 export type ApiProduct = Record<string, any>;
+
+export function isVariantOutOfStock(variant?: ProductVariant | null): boolean {
+  if (!variant) return false;
+  const v = ((variant as any)?.variantId || (variant as any)?.variant || variant) as any;
+
+  // 1. Explicit boolean checks
+  if (
+    v.is_out_of_stock === true ||
+    v.isOutOfStock === true ||
+    String(v.is_out_of_stock) === "true" ||
+    String(v.isOutOfStock) === "true" ||
+    v.outOfStock === true ||
+    String(v.outOfStock) === "true"
+  ) {
+    return true;
+  }
+  if (
+    v.inStock === false ||
+    v.in_stock === false ||
+    String(v.inStock) === "false" ||
+    String(v.in_stock) === "false"
+  ) {
+    return true;
+  }
+
+  // 2. String status fields (stock_status, status, availability, stockStatus, stock_type)
+  const statusStr = String(
+    v.stock_status ||
+    v.stockStatus ||
+    v.status ||
+    v.availability ||
+    v.stock_type ||
+    v.stockState ||
+    ""
+  ).toLowerCase().trim();
+
+  if (
+    statusStr === "out_of_stock" ||
+    statusStr === "outofstock" ||
+    statusStr === "out of stock" ||
+    statusStr === "unavailable" ||
+    statusStr === "sold_out" ||
+    statusStr === "soldout" ||
+    statusStr === "no_stock" ||
+    statusStr === "nostock"
+  ) {
+    return true;
+  }
+
+  // 3. Numeric stock fields (available_stock, stock, inventory, stock_quantity, quantity, qty, count, countInStock)
+  const stockValues = [
+    v.available_stock,
+    v.availableStock,
+    v.stock,
+    v.inventory,
+    v.stock_quantity,
+    v.stockQuantity,
+    v.quantity,
+    v.qty,
+    v.count,
+    v.countInStock,
+    v.in_stock_count
+  ];
+
+  for (const val of stockValues) {
+    if (val !== undefined && val !== null && val !== "") {
+      const num = Number(val);
+      if (!isNaN(num) && num <= 0) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+export function isProductOutOfStock(product?: ApiProduct | null): boolean {
+  if (!product) return false;
+  const p = product as any;
+  if (p.is_out_of_stock === true || p.isOutOfStock === true) return true;
+  if (p.inStock === false || p.in_stock === false) return true;
+  const statusStr = String(p.stock_status || p.stockStatus || p.status || p.availability || "").toLowerCase().trim();
+  if (
+    statusStr === "out_of_stock" ||
+    statusStr === "outofstock" ||
+    statusStr === "out of stock" ||
+    statusStr === "unavailable" ||
+    statusStr === "sold_out" ||
+    statusStr === "soldout"
+  ) {
+    return true;
+  }
+  if (p.available_stock !== undefined && p.available_stock !== null && p.available_stock !== "") {
+    const num = Number(p.available_stock);
+    if (!isNaN(num) && num <= 0) return true;
+  }
+  if (p.stock !== undefined && p.stock !== null && p.stock !== "") {
+    const num = Number(p.stock);
+    if (!isNaN(num) && num <= 0) return true;
+  }
+  const variants = getProductVariants(product);
+  if (variants.length > 0) {
+    return variants.every((v) => isVariantOutOfStock(v));
+  }
+  return false;
+}
 
 export function getProductsFromResponse(data: any): ApiProduct[] {
   const possibleLists = [
@@ -91,9 +205,10 @@ export function getPrimaryImage(product: ApiProduct): string {
 }
 
 export function getProductVariants(product: ApiProduct): ProductVariant[] {
-  const variantDoc = product?.variantDocumentId || product?.variants || product?.variant;
+  const variantDoc = product?.variantDocumentId || product?.variants || product?.variant || product?.variantId;
   if (Array.isArray(variantDoc)) return variantDoc;
   if (Array.isArray(variantDoc?.variants)) return variantDoc.variants;
+  if (variantDoc && typeof variantDoc === "object") return [variantDoc];
   return [];
 }
 
@@ -119,8 +234,10 @@ export function normalizeProduct(
   selectedVariantId?: string
 ): Product {
   const variants = getProductVariants(product);
+  const inStockVariant = variants.find((v) => !isVariantOutOfStock(v));
   const selectedVariant =
     variants.find((variant) => getVariantId(variant) === selectedVariantId) ||
+    inStockVariant ||
     variants[0] ||
     {};
 
@@ -165,3 +282,4 @@ export function normalizeProduct(
     flavor: product?.floral_source || product?.flavor || "",
   };
 }
+

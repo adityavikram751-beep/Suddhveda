@@ -19,10 +19,12 @@ import {
   getVariantLabel,
   normalizeProduct,
   parseWeightLabel,
+  isVariantOutOfStock,
 } from "@/lib/api-products";
 
 const MIN_PRICE = 100;
 const MAX_PRICE = 2000;
+
 
 type ProductFilters = {
   categorySlug: string;
@@ -156,8 +158,10 @@ export default function ShopPage() {
   const getSelectedVariantId = (product: ApiProduct) => {
     const productId = getProductId(product);
     const variants = getProductVariants(product);
-    return selectedVariants[productId] || getVariantId(variants[0]);
+    const inStockVariant = variants.find((v) => !isVariantOutOfStock(v));
+    return selectedVariants[productId] || getVariantId(inStockVariant || variants[0]);
   };
+
 
   const getRefinedProducts = (list: ApiProduct[], filters: ProductFilters) => {
     const query = filters.search.trim().toLowerCase();

@@ -15,6 +15,7 @@ import {
   getProductsFromResponse,
   getVariantId,
   normalizeProduct,
+  isVariantOutOfStock,
 } from "@/lib/api-products";
 
 // ---------- Main Component ----------
@@ -131,8 +132,10 @@ export default function HoneySelection() {
   const getSelectedVariantId = (product: ApiProduct) => {
     const productId = getProductId(product);
     const variants = getProductVariants(product);
-    return selectedVariants[productId] || getVariantId(variants[0]);
+    const inStockVariant = variants.find((v) => !isVariantOutOfStock(v));
+    return selectedVariants[productId] || getVariantId(inStockVariant || variants[0]);
   };
+
 
   // ---------- Add to Cart (Guest & Logged-In) ----------
   const handleAddToCart = async (product: ApiProduct) => {

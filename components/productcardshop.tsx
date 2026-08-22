@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
+import { isVariantOutOfStock } from "@/lib/api-products";
 
 type Variant = {
   _id?: string;
@@ -11,6 +12,14 @@ type Variant = {
   unit?: string;
   price?: number;
   mrp?: number;
+  stock?: number;
+  available_stock?: number;
+  stock_status?: string;
+  is_out_of_stock?: boolean;
+  inStock?: boolean;
+  inventory?: number;
+  stock_quantity?: number;
+  status?: string;
 };
 
 export type ProductCardShopProps = {
@@ -91,6 +100,9 @@ export default function ProductCardShop({
   const getVariantId = (v: Variant) => v._id || v.id || "";
   const isSelected = (variantId: string) => variantId === selectedVariantId;
 
+  const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || variants[0];
+  const isSelectedOutOfStock = selectedVariant ? isVariantOutOfStock(selectedVariant) : false;
+
   const displayTaste = tasteProfile || subtitle || "";
   const displayDesc = shortDescription && shortDescription !== subtitle ? shortDescription : "";
 
@@ -154,47 +166,29 @@ export default function ProductCardShop({
               From ₹{price}
             </span>
           </div>
-
-          {/* Dynamic Weight Variants */}
-          {variants.length > 0 && (
-            <div className="mt-3 mb-1 flex items-center justify-center gap-2 flex-wrap">
-              {variants.map((variant, index) => {
-                const variantId = getVariantId(variant);
-                const uniqueKey = variantId || `variant-${index}`;
-                const selected = isSelected(variantId);
-                return (
-                  <button
-                    key={uniqueKey}
-                    type="button"
-                    onClick={(e) => handleVariantClick(variantId, e)}
-                    className={`rounded-lg border px-3 py-1 text-[12px] sm:text-[13px] font-extrabold transition-all duration-200 cursor-pointer ${
-                      selected
-                        ? "border-[#FA4B1B] bg-[#FA4B1B] text-white shadow-md scale-105"
-                        : "border-[#EADCC9] bg-white text-[#5C4033] hover:border-[#FA4B1B] hover:text-[#FA4B1B]"
-                    }`}
-                  >
-                    {getVariantLabel(variant)}
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
 
         {/* Buy Now Button */}
         <div className="mt-4 pb-1 flex justify-center">
           <button
             type="button"
+            disabled={isSelectedOutOfStock}
             onClick={(e) => {
               e.stopPropagation();
+              if (isSelectedOutOfStock) return;
               onOpenDetails();
             }}
-            className="h-[46px] w-full max-w-[160px] rounded-xl bg-[#FA4B1B] hover:bg-[#E64216] text-white font-extrabold text-[16px] shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer flex items-center justify-center active:scale-98 border border-white/20"
+            className={`h-[46px] w-full max-w-[160px] rounded-xl font-extrabold text-[15px] sm:text-[16px] transition-all duration-300 flex items-center justify-center border ${
+              isSelectedOutOfStock
+                ? "bg-gray-200 text-gray-500 border-gray-300 shadow-none cursor-not-allowed opacity-80"
+                : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer active:scale-98 border-white/20"
+            }`}
           >
-            Buy Now
+            {isSelectedOutOfStock ? "Out of Stock" : "Buy Now"}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

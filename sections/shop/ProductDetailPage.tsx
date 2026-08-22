@@ -17,7 +17,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL } from "@/lib/auth";
-import { getCategoryName, getProductImages, getProductVariants, getPrimaryImage, getProductName } from "@/lib/api-products";
+import { getCategoryName, getProductImages, getProductVariants, getPrimaryImage, getProductName, isVariantOutOfStock, getVariantId } from "@/lib/api-products";
 
 const accordionSections = [
   {
@@ -201,7 +201,8 @@ export default function ProductDetailPage({
       setSelectedMedia(primaryMedia);
     }
     if (variants.length > 0) {
-      setSelectedVariant(variants[0]);
+      const inStockVariant = variants.find((v) => !isVariantOutOfStock(v));
+      setSelectedVariant(inStockVariant || variants[0]);
     }
   }, [product, mediaList, variants]);
 
@@ -540,7 +541,7 @@ export default function ProductDetailPage({
             </div>
 
             {/* Price Block */}
-            <div className="space-y-1 bg-[#FAF6F0]/60 p-4 rounded-2xl border border-[#EADCC9]/80">
+            <div className="space-y-1">
               <div className="relative inline-flex items-center text-[14px] text-[#FA4B1B] font-normal line-through decoration-[#FA4B1B]">
                 <span>M.R.P ₹{currentMrp}</span>
               </div>
@@ -550,6 +551,12 @@ export default function ProductDetailPage({
               {currentSave > 0 && (
                 <div className="text-[14px] font-extrabold text-[#D49313] tracking-wide">
                   You Save ₹{currentSave} ({discountPercent}% OFF)
+                </div>
+              )}
+              {isVariantOutOfStock(selectedVariant) && (
+                <div className="mt-2 text-[13px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 inline-flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+                  Currently Out of Stock ({selectedVariant?.weight}{selectedVariant?.unit})
                 </div>
               )}
               <p className="text-[13px] text-[#7A6A5C] font-medium mt-1">
@@ -595,71 +602,113 @@ export default function ProductDetailPage({
                   Select Pack Size
                 </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
-                  {variants.map((option: any) => (
-                    <button
-                      key={option._id}
-                      onClick={() => setSelectedVariant(option)}
-                      className={`flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 bg-white transition-all cursor-pointer ${selectedVariant?._id === option._id
-                          ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
-                          : "border-[#EADCC9] hover:border-[#D49313]/60"
+                  {variants.map((option: any) => {
+                    const outOfStock = isVariantOutOfStock(option);
+                    const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
+
+                    return (
+                      <button
+                        key={getVariantId(option) || option.weight}
+                        onClick={() => setSelectedVariant(option)}
+                        className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${
+                          outOfStock
+                            ? isSelectedOption
+                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                              : "border-red-300 bg-red-50/70"
+                            : isSelectedOption
+                            ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
+                            : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
                         }`}
-                    >
-                      <span className="text-[13px] font-extrabold text-[#593102]">
-                        {option.weight}{option.unit}
-                      </span>
-                      <div className="relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border border-[#EADCC9]">
-                        {mediaList[0]?.url && (
-                          <Image
-                            src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
-                            alt={`${option.weight}${option.unit}`}
-                            fill
-                            className="object-cover"
-                          />
+                      >
+                        {/* Red Diagonal Cross Line for out of stock variant */}
+                        {outOfStock && (
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
+                            <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
+                          </div>
                         )}
-                      </div>
-                      <span className="text-[13px] font-bold text-[#D49313]">
-                        ₹{option.price}
-                      </span>
-                    </button>
-                  ))}
+
+                        <span className={`text-[13px] font-extrabold ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
+                          {option.weight}{option.unit}
+                        </span>
+
+                        <div className={`relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
+                          {mediaList[0]?.url && (
+                            <Image
+                              src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
+                              alt={`${option.weight}${option.unit}`}
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+
+                        {outOfStock ? (
+                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-md z-30 shadow-xs -mb-0.5">
+                            Out of Stock
+                          </span>
+                        ) : (
+                          <span className="text-[13px] font-bold text-[#D49313]">
+                            ₹{option.price}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {/* Quantity & Cart Actions (Desktop) */}
-            <div className="hidden lg:block space-y-3 pt-2">
-              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+            {(() => {
+              const isSelectedVariantOutOfStock = selectedVariant ? isVariantOutOfStock(selectedVariant) : false;
 
-              <div className="flex items-center gap-3 max-w-xl">
-                {/* Quantity Buttons */}
-                <div className="flex items-center border border-[#EADCC9] rounded-xl bg-white w-[140px] h-[46px] px-3 shadow-2xs">
-                  <button
-                    onClick={decrementQty}
-                    className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer"
-                  >
-                    −
-                  </button>
-                  <span className="flex-1 text-center font-extrabold text-[16px] text-[#593102]">
-                    {selectedQty}
-                  </span>
-                  <button
-                    onClick={incrementQty}
-                    className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer"
-                  >
-                    +
-                  </button>
+              return (
+                <div className="hidden lg:block space-y-3 pt-2">
+                  <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+
+                  <div className="flex items-center gap-3 max-w-xl">
+                    {/* Quantity Buttons */}
+                    <div className={`flex items-center border border-[#EADCC9] rounded-xl bg-white w-[140px] h-[46px] px-3 shadow-2xs ${isSelectedVariantOutOfStock ? "opacity-50 pointer-events-none" : ""}`}>
+                      <button
+                        disabled={isSelectedVariantOutOfStock}
+                        onClick={decrementQty}
+                        className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        −
+                      </button>
+                      <span className="flex-1 text-center font-extrabold text-[16px] text-[#593102]">
+                        {selectedQty}
+                      </span>
+                      <button
+                        disabled={isSelectedVariantOutOfStock}
+                        onClick={incrementQty}
+                        className="p-1 text-[#593102] hover:text-[#FA4B1B] text-xl font-semibold cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Single Primary Add To Cart Button */}
+                    <button
+                      disabled={btnLoading || isSelectedVariantOutOfStock}
+                      onClick={() => handleAddToCart(false)}
+                      className={`flex-1 max-w-[320px] h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase text-center shadow-sm flex items-center justify-center ${
+                        isSelectedVariantOutOfStock
+                          ? "bg-gray-300 text-gray-500 border border-gray-300 shadow-none cursor-not-allowed opacity-80"
+                          : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
+                      }`}
+                    >
+                      {isSelectedVariantOutOfStock
+                        ? "OUT OF STOCK"
+                        : btnLoading
+                        ? "ADDING..."
+                        : `ADD TO CART · ₹${currentPrice * selectedQty}`}
+                    </button>
+                  </div>
                 </div>
+              );
+            })()}
 
-                {/* Single Primary Add To Cart Button - Slightly Larger */}
-                <button
-                  disabled={btnLoading}
-                  onClick={() => handleAddToCart(false)}
-                  className="flex-1 max-w-[320px] bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase disabled:opacity-50 text-center shadow-sm cursor-pointer active:scale-98"
-                >
-                  {btnLoading ? "ADDING..." : `ADD TO CART · ₹${currentPrice * selectedQty}`}
-                </button>
-              </div>
-            </div>
 
             {/* Accordions */}
             <div className="pt-6 max-w-xl">
@@ -786,39 +835,56 @@ export default function ProductDetailPage({
       )}
 
       {/* MOBILE STICKY BAR */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EADCC9] p-3 sm:p-3.5 lg:hidden shadow-[0_-10px_25px_rgba(0,0,0,0.1)] z-50">
-        <div className="flex items-center gap-3">
-          {/* Quantity Controls */}
-          <div className="flex items-center border-2 border-[#EADCC9] rounded-2xl overflow-hidden bg-white shadow-2xs shrink-0">
-            <button
-              onClick={decrementQty}
-              className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <span className="px-2.5 py-2.5 text-sm font-black min-w-[32px] text-center text-[#593102]">
-              {selectedQty}
-            </span>
-            <button
-              onClick={incrementQty}
-              className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
+      {(() => {
+        const isSelectedVariantOutOfStock = selectedVariant ? isVariantOutOfStock(selectedVariant) : false;
 
-          {/* Add to Cart Button with Dynamic Total Price */}
-          <button
-            disabled={btnLoading}
-            onClick={() => handleAddToCart(false)}
-            className="flex-1 bg-[#FA4B1B] hover:bg-[#E64216] text-white py-3.5 px-3 rounded-2xl font-extrabold text-[13px] sm:text-[14px] uppercase tracking-wider disabled:opacity-50 text-center shadow-md cursor-pointer transition-all active:scale-98 flex items-center justify-center gap-1.5"
-          >
-            {btnLoading ? "ADDING..." : `ADD TO CART - ₹${currentPrice * selectedQty}`}
-          </button>
-        </div>
-      </div>
+        return (
+          <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#EADCC9] p-3 sm:p-3.5 lg:hidden shadow-[0_-10px_25px_rgba(0,0,0,0.1)] z-50">
+            <div className="flex items-center gap-3">
+              {/* Quantity Controls */}
+              <div className={`flex items-center border-2 border-[#EADCC9] rounded-2xl overflow-hidden bg-white shadow-2xs shrink-0 ${isSelectedVariantOutOfStock ? "opacity-50 pointer-events-none" : ""}`}>
+                <button
+                  disabled={isSelectedVariantOutOfStock}
+                  onClick={decrementQty}
+                  className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer disabled:cursor-not-allowed"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <span className="px-2.5 py-2.5 text-sm font-black min-w-[32px] text-center text-[#593102]">
+                  {selectedQty}
+                </span>
+                <button
+                  disabled={isSelectedVariantOutOfStock}
+                  onClick={incrementQty}
+                  className="px-3 py-2.5 hover:bg-gray-50 text-[#593102] font-black text-lg cursor-pointer disabled:cursor-not-allowed"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Add to Cart Button with Dynamic Total Price */}
+              <button
+                disabled={btnLoading || isSelectedVariantOutOfStock}
+                onClick={() => handleAddToCart(false)}
+                className={`flex-1 py-3.5 px-3 rounded-2xl font-extrabold text-[13px] sm:text-[14px] uppercase tracking-wider text-center shadow-md transition-all flex items-center justify-center gap-1.5 ${
+                  isSelectedVariantOutOfStock
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                    : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
+                }`}
+              >
+                {isSelectedVariantOutOfStock
+                  ? "OUT OF STOCK"
+                  : btnLoading
+                  ? "ADDING..."
+                  : `ADD TO CART - ₹${currentPrice * selectedQty}`}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
     </main>
   );
 }
