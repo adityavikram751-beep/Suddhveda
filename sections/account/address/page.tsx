@@ -273,6 +273,55 @@ function AddressModal({
 
                     <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                            Address Type
+                        </label>
+                        <div className="flex gap-3">
+                            {(["Home", "Office", "Other"] as AddressType[]).map((t) => (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    onClick={() => setForm({ ...form, type: t, label: t })}
+                                    className={`flex-1 py-2.5 px-3 rounded-xl border text-xs font-extrabold transition cursor-pointer ${
+                                        form.type === t
+                                            ? "border-[#593102] bg-[#593102] text-white shadow-xs"
+                                            : "border-[#F0E2CC] bg-white text-[#593102] hover:border-[#D49313]"
+                                    }`}
+                                >
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                value={form.name}
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                placeholder="Binod Kumar"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
+                                Phone Number
+                            </label>
+                            <input
+                                type="text"
+                                value={form.phone}
+                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                placeholder="8059224718"
+                                className="w-full rounded-xl border border-[#F0E2CC] bg-white px-4 py-3 text-sm text-[#3C2015] placeholder:text-[#B59A78] focus:outline-none focus:ring-2 focus:ring-[#593102]/40 transition"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-[#8A7460] mb-1.5">
                             Address Line 1 *
                         </label>
                         <input
@@ -642,7 +691,8 @@ export default function MyAddressesPage() {
         try {
             setLoading(true);
             const token = getTokenFromCookie();
-            const res = await fetch(`${API_BASE_URL}/api/addresses/all`, {
+            const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/all`, {
+                method: "GET",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
@@ -660,7 +710,7 @@ export default function MyAddressesPage() {
             }
 
             const data = await res.json();
-            const items = data.data || data.addresses || (Array.isArray(data) ? data : []) || [];
+            const items = data.data || data.addresses || data.shippingAddresses || (Array.isArray(data) ? data : []) || [];
             const list = items.map((item: any) => {
                 const lines = [
                     item.address_line1,
@@ -672,16 +722,17 @@ export default function MyAddressesPage() {
                 const typeMap: Record<string, AddressType> = {
                     home: "Home",
                     work: "Office",
+                    office: "Office",
                     other: "Other",
                 };
                 const type = typeMap[item.address_type?.toLowerCase()] || "Other";
 
                 return {
-                    id: item._id || item.id || item.address_id,
+                    id: item._id || item.id || item.shippingAddressId || item.address_id,
                     type,
                     label: type,
                     name: item.full_name || item.name || "",
-                    phone: item.phone || item.phone_number || "",
+                    phone: item.phone_number || item.phone || "",
                     address_line1: item.address_line1 || "",
                     address_line2: item.address_line2 || "",
                     city: item.city || "",
@@ -689,13 +740,13 @@ export default function MyAddressesPage() {
                     pincode: item.pincode || "",
                     country: item.country || "India",
                     lines,
-                    isDefault: item.is_default || false,
+                    isDefault: item.is_default || item.isDefault || false,
                 };
             });
 
             setAddresses(list);
         } catch (err: any) {
-            console.error("Error fetching addresses:", err);
+            console.error("Error fetching shipping addresses:", err);
             setToast({ type: "error", message: err.message || "Could not load addresses" });
         } finally {
             setLoading(false);
@@ -716,11 +767,11 @@ export default function MyAddressesPage() {
 
     const addAddress = async (data: AddressFormData) => {
         try {
-            const defaultName = userData.fullName || getStoredSession()?.user?.name || "Customer";
+            const defaultName = userData.fullName || getStoredSession()?.user?.name || "";
             const defaultPhone = userData.mobile || userData.phone || getStoredSession()?.user?.mobile || "";
             const payload = {
                 full_name: data.name || defaultName,
-                phone: data.phone || defaultPhone,
+                phone_number: data.phone || defaultPhone,
                 address_line1: data.address_line1,
                 address_line2: data.address_line2 || "",
                 city: data.city,
@@ -728,11 +779,10 @@ export default function MyAddressesPage() {
                 pincode: data.pincode,
                 country: data.country || "India",
                 address_type: (data.type || "home").toLowerCase(),
-                is_default: data.isDefault,
             };
 
             const token = getTokenFromCookie();
-            const res = await fetch(`${API_BASE_URL}/api/addresses/add`, {
+            const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/add`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -741,12 +791,13 @@ export default function MyAddressesPage() {
                 },
                 body: JSON.stringify(payload),
             });
+
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 throw new Error(errData.message || "Failed to add address");
             }
             await fetchAddresses();
-            setToast({ type: "success", message: "Address added" });
+            setToast({ type: "success", message: "Address added successfully" });
             setModalOpen(false);
         } catch (err: any) {
             setToast({ type: "error", message: err.message || "Failed to add address" });
@@ -755,11 +806,11 @@ export default function MyAddressesPage() {
 
     const updateAddress = async (id: string, data: AddressFormData) => {
         try {
-            const defaultName = userData.fullName || getStoredSession()?.user?.name || "Customer";
+            const defaultName = userData.fullName || getStoredSession()?.user?.name || "";
             const defaultPhone = userData.mobile || userData.phone || getStoredSession()?.user?.mobile || "";
             const payload = {
                 full_name: data.name || defaultName,
-                phone: data.phone || defaultPhone,
+                phone_number: data.phone || defaultPhone,
                 address_line1: data.address_line1,
                 address_line2: data.address_line2 || "",
                 city: data.city,
@@ -767,11 +818,10 @@ export default function MyAddressesPage() {
                 pincode: data.pincode,
                 country: data.country || "India",
                 address_type: (data.type || "home").toLowerCase(),
-                is_default: data.isDefault,
             };
 
             const token = getTokenFromCookie();
-            const res = await fetch(`${API_BASE_URL}/api/addresses/update/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/update/${id}`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -780,12 +830,13 @@ export default function MyAddressesPage() {
                 },
                 body: JSON.stringify(payload),
             });
+
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 throw new Error(errData.message || "Failed to update address");
             }
             await fetchAddresses();
-            setToast({ type: "success", message: "Address updated" });
+            setToast({ type: "success", message: "Address updated successfully" });
             setModalOpen(false);
             setEditingAddress(null);
         } catch (err: any) {
@@ -797,7 +848,7 @@ export default function MyAddressesPage() {
         if (!confirm("Delete this address?")) return;
         try {
             const token = getTokenFromCookie();
-            const res = await fetch(`${API_BASE_URL}/api/addresses/delete/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/delete/${id}`, {
                 method: "DELETE",
                 credentials: "include",
                 headers: {
@@ -805,12 +856,13 @@ export default function MyAddressesPage() {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
             });
+
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 throw new Error(errData.message || "Failed to delete address");
             }
             await fetchAddresses();
-            setToast({ type: "success", message: "Address deleted" });
+            setToast({ type: "success", message: "Address deleted successfully" });
         } catch (err: any) {
             setToast({ type: "error", message: err.message || "Failed to delete address" });
         }
@@ -823,23 +875,27 @@ export default function MyAddressesPage() {
 
             const payload = {
                 full_name: address.name,
-                phone: address.phone,
-                address_line1: address.lines[0] || "",
-                address_line2: address.lines[1] || "",
-                city: address.lines[2]?.split(",")[0]?.trim() || "",
-                state: address.lines[2]?.split(",")[1]?.trim() || "",
-                pincode: address.lines[3]?.split(",")[0]?.trim() || "",
-                country: address.lines[3]?.split(",")[1]?.trim() || "India",
+                phone_number: address.phone,
+                address_line1: address.address_line1,
+                address_line2: address.address_line2 || "",
+                city: address.city,
+                state: address.state,
+                pincode: address.pincode,
+                country: address.country || "India",
                 address_type: address.type.toLowerCase(),
-                is_default: true,
             };
 
-            const res = await fetch(`${API_BASE_URL}/api/addresses/update/${id}`, {
+            const token = getTokenFromCookie();
+            const res = await fetch(`${API_BASE_URL}/api/shipping/addresses/update/${id}`, {
                 method: "PUT",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify(payload),
             });
+
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 throw new Error(errData.message || "Failed to set default");
