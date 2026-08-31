@@ -389,6 +389,16 @@ export default function Cart() {
                                     currentVariant &&
                                     handleRecommendationAddToCart(item._id, currentVariant._id)
                                 }
+                                onBuyNow={() => {
+                                    const session = getStoredSession();
+                                    if (!session || !session.user?.mobile) {
+                                        router.push("/login");
+                                        return;
+                                    }
+                                    if (currentVariant) {
+                                        handleRecommendationAddToCart(item._id, currentVariant._id);
+                                    }
+                                }}
                                 onIncrement={() => { }}
                                 onDecrement={() => { }}
                                 onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
