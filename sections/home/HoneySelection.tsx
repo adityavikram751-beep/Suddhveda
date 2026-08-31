@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import {
   type ApiProduct,
   getProductId,
@@ -167,6 +167,43 @@ export default function HoneySelection() {
     }
   };
 
+  // ---------- Buy Now (Adds to cart & redirects to login if guest, else /cart) ----------
+  const handleBuyNow = async (product: ApiProduct) => {
+    const productId = getProductId(product);
+    const variantId = getSelectedVariantId(product);
+    if (!variantId) return;
+
+    const variants = getProductVariants(product);
+    const selectedVariant = variants.find((v) => getVariantId(v) === variantId) || variants[0];
+    const weightLabel = selectedVariant ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+    const price = selectedVariant?.price || product.price || 0;
+    const image = product.image?.image_url || product.image?.url || "/placeholder.png";
+
+    try {
+      setActionLoading(productId);
+      await addToCart(productId, variantId, {
+        type: "NORMAL",
+        productId,
+        variantId,
+        productName: getProductName(product),
+        image,
+        price,
+        weight: weightLabel,
+      });
+
+      const session = getStoredSession();
+      if (!session) {
+        router.push("/login?redirect=/cart");
+      } else {
+        router.push("/cart");
+      }
+    } catch (err) {
+      console.error("Error in Buy Now:", err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // ---------- Wishlist Toggle (Guest & Logged-In) ----------
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
@@ -274,6 +311,7 @@ export default function HoneySelection() {
                           handleVariantSelect(productId, variantId)
                         }
                         onAddToCart={() => handleAddToCart(product)}
+                        onBuyNow={() => handleBuyNow(product)}
                         onIncrement={dummyHandler}
                         onDecrement={dummyHandler}
                         onToggleWishlist={() => handleToggleWishlist(productId)}

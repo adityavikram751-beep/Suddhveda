@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import {
   type ApiProduct,
   getCategoryName,
@@ -307,6 +307,38 @@ export default function ShopPage() {
     }
   };
 
+  const handleBuyNow = async (product: ApiProduct) => {
+    const productId = getProductId(product);
+    const selectedVariantId = getSelectedVariantId(product);
+    if (!selectedVariantId) return;
+
+    const variants = getProductVariants(product);
+    const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || variants[0];
+    const weightLabel = selectedVariant ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+    const price = selectedVariant?.price || product.price || 0;
+    const image = product.image?.image_url || product.image?.url || "/placeholder.png";
+
+    try {
+      await addToCart(productId, selectedVariantId, {
+        type: "NORMAL",
+        productId,
+        variantId: selectedVariantId,
+        productName: getProductName(product),
+        image,
+        price,
+        weight: weightLabel,
+      });
+      const session = getStoredSession();
+      if (!session) {
+        router.push("/login?redirect=/cart");
+      } else {
+        router.push("/cart");
+      }
+    } catch (error) {
+      console.error("Error in Buy Now:", error);
+    }
+  };
+
   const handleToggleWishlist = async (productId: string) => {
     const isWishlisted = wishlistIds.includes(productId);
     const nextIds = isWishlisted
@@ -554,6 +586,7 @@ export default function ShopPage() {
                       isWishlisted={wishlistIds.includes(productId)}
                       onToggleWishlist={() => handleToggleWishlist(productId)}
                       onAddToCart={() => handleAddToCart(item)}
+                      onBuyNow={() => handleBuyNow(item)}
                       onIncrement={() => {}}
                       onDecrement={() => {}}
                       onOpenDetails={() => router.push(`/shop/products/${productId}`)}
@@ -595,6 +628,7 @@ export default function ShopPage() {
                       isWishlisted={wishlistIds.includes(productId)}
                       onToggleWishlist={() => handleToggleWishlist(productId)}
                       onAddToCart={() => handleAddToCart(item)}
+                      onBuyNow={() => handleBuyNow(item)}
                       onIncrement={() => {}}
                       onDecrement={() => {}}
                       onOpenDetails={() => router.push(`/shop/products/${productId}`)}

@@ -185,10 +185,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const fetchCart = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await authFetch(`${API_BASE_URL}/api/cart`);
       
-      // If user is logged in, sync any remaining guest items
+      // 1. Sync guest cart items to backend database FIRST if any exist
       await syncGuestCartOnLogin();
+
+      // 2. NOW fetch the complete updated backend cart!
+      const data = await authFetch(`${API_BASE_URL}/api/cart`);
 
       const items = Array.isArray(data)
         ? data

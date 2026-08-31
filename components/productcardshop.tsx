@@ -44,6 +44,7 @@ export type ProductCardShopProps = {
   isWishlisted?: boolean;
 
   onAddToCart: () => void;
+  onBuyNow?: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
   onOpenDetails: () => void;
@@ -68,6 +69,7 @@ export default function ProductCardShop({
   onVariantSelect,
   isWishlisted = false,
   onAddToCart,
+  onBuyNow,
   onIncrement,
   onDecrement,
   onOpenDetails,
@@ -96,20 +98,20 @@ export default function ProductCardShop({
     if (onVariantSelect) onVariantSelect(variantId);
   };
 
-  const getVariantLabel = (v: Variant) => `${v.weight}${v.unit}`;
+  const getVariantLabel = (v: Variant) => `${v.weight}${v.unit || "g"}`;
   const getVariantId = (v: Variant) => v._id || v.id || "";
   const isSelected = (variantId: string) => variantId === selectedVariantId;
 
   const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || variants[0];
   const isSelectedOutOfStock = selectedVariant ? isVariantOutOfStock(selectedVariant) : false;
 
-  const displayTaste = tasteProfile || subtitle || "";
-  const displayDesc = shortDescription && shortDescription !== subtitle ? shortDescription : "";
+  const currentPrice = selectedVariant?.price ?? price;
+  const currentOldPrice = selectedVariant?.mrp ?? oldPrice;
 
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[420px] sm:min-h-[450px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border-0 bg-white p-4 sm:p-5 shadow-none transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 mx-auto"
+      className="relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border-0 bg-white p-4 sm:p-5 shadow-none transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 mx-auto"
     >
 
       {/* Wishlist Button (Top Left) */}
@@ -130,7 +132,7 @@ export default function ProductCardShop({
       </button>
 
       {/* Dynamic Product Image */}
-      <div className="relative mt-3 h-[185px] sm:h-[205px] w-full overflow-hidden shrink-0 flex items-center justify-center">
+      <div className="relative mt-3 h-[175px] sm:h-[195px] w-full overflow-hidden shrink-0 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
@@ -141,7 +143,7 @@ export default function ProductCardShop({
       </div>
 
       {/* Text Content & Details */}
-      <div className="mt-4 flex flex-col flex-1 justify-between text-center">
+      <div className="mt-3 flex flex-col flex-1 justify-between text-center">
         <div>
           {/* Dynamic Title with Fixed Equal Height */}
           <div className="h-[44px] sm:h-[48px] flex items-center justify-center">
@@ -156,36 +158,73 @@ export default function ProductCardShop({
           </div>
 
           {/* Dynamic Price Row */}
-          <div className="mt-3.5 mb-1 flex items-center justify-center gap-2">
-            {oldPrice && oldPrice > price ? (
+          <div className="mt-2.5 mb-1 flex items-center justify-center gap-2">
+            {currentOldPrice && currentOldPrice > currentPrice ? (
               <span className="line-through text-[#FA4B1B] font-normal text-[13px] sm:text-[14px]">
-                ₹{oldPrice}
+                ₹{currentOldPrice}
               </span>
             ) : null}
             <span className="font-extrabold text-[#593102] text-[17px] sm:text-[18px] tracking-tight">
-              From ₹{price}
+              ₹{currentPrice}
             </span>
           </div>
         </div>
 
-        {/* Buy Now Button */}
-        <div className="mt-4 pb-1 flex justify-center">
-          <button
-            type="button"
-            disabled={isSelectedOutOfStock}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isSelectedOutOfStock) return;
-              onOpenDetails();
-            }}
-            className={`h-[46px] w-full max-w-[160px] rounded-xl font-extrabold text-[15px] sm:text-[16px] transition-all duration-300 flex items-center justify-center border ${
-              isSelectedOutOfStock
-                ? "bg-gray-200 text-gray-500 border-gray-300 shadow-none cursor-not-allowed opacity-80"
-                : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer active:scale-98 border-white/20"
-            }`}
-          >
-            {isSelectedOutOfStock ? "Out of Stock" : "Buy Now"}
-          </button>
+        {/* Variant Selection & Action Area */}
+        <div className="mt-2">
+          {/* Variant Selection Buttons */}
+          {variants && variants.length > 0 && (
+            <div className="mb-2.5 flex items-center justify-center gap-1.5 flex-wrap min-h-[30px]">
+              {variants.map((v) => {
+                const vId = getVariantId(v);
+                const selected = isSelected(vId);
+                const outOfStock = isVariantOutOfStock(v);
+                const label = getVariantLabel(v);
+
+                return (
+                  <button
+                    key={vId}
+                    type="button"
+                    disabled={outOfStock}
+                    onClick={(e) => handleVariantClick(vId, e)}
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer border ${
+                      selected
+                        ? "bg-[#593102] text-white border-[#593102] shadow-2xs scale-105"
+                        : outOfStock
+                        ? "bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed opacity-60"
+                        : "bg-[#FAF0DC]/80 hover:bg-[#FAF0DC] text-[#593102] border-[#D49313]/40 hover:border-[#D49313]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Buy Now Button */}
+          <div className="pb-1 flex justify-center">
+            <button
+              type="button"
+              disabled={isSelectedOutOfStock}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isSelectedOutOfStock) return;
+                if (onBuyNow) {
+                  onBuyNow();
+                } else {
+                  onOpenDetails();
+                }
+              }}
+              className={`h-[44px] w-full max-w-[170px] rounded-xl font-extrabold text-[15px] sm:text-[16px] transition-all duration-300 flex items-center justify-center border ${
+                isSelectedOutOfStock
+                  ? "bg-gray-200 text-gray-500 border-gray-300 shadow-none cursor-not-allowed opacity-80"
+                  : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer active:scale-98 border-white/20"
+              }`}
+            >
+              {isSelectedOutOfStock ? "Out of Stock" : "Buy Now"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
