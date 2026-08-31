@@ -21,7 +21,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -66,7 +66,7 @@ const paymentMethods: PaymentMethod[] = [
 
 export default function PaymentPage() {
   const router = useRouter();
-  const { cartItems } = useCart();
+  const { cartItems, isLoading } = useCart();
   const [selectedMethod, setSelectedMethod] = useState<string>("cod");
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
@@ -162,14 +162,25 @@ export default function PaymentPage() {
   };
 
   useEffect(() => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+  }, [router]);
+
+  useEffect(() => {
     if (cartItems && Object.keys(cartItems).length > 0) {
       const mapped = mapCartItemsToProducts(cartItems);
       if (mapped.length > 0) {
         setCartProducts(mapped);
         setCartLoading(false);
       }
+    } else if (!isLoading && Object.keys(cartItems).length === 0) {
+      setCartLoading(false);
+      router.push("/cart");
     }
-  }, [cartItems]);
+  }, [cartItems, isLoading, router]);
 
   useEffect(() => {
     if (isMounted && typeof window !== "undefined") {

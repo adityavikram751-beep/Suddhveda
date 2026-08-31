@@ -100,6 +100,14 @@ export default function Cart() {
     const [appliedCouponsList, setAppliedCouponsList] = useState<any[]>([]);
 
     useEffect(() => {
+        const session = getStoredSession();
+        if (!session || !session.user?.mobile) {
+            router.push("/login");
+            return;
+        }
+    }, [router]);
+
+    useEffect(() => {
         const checkCoupons = () => {
             if (typeof window !== "undefined") {
                 const stored = localStorage.getItem("applied_coupons");
@@ -660,6 +668,7 @@ export function OrderSummaryWithCoupons({
     const { fetchCart } = useCart() as any;
     const [couponCode, setCouponCode] = useState("");
     const [coupons, setCoupons] = useState<ApiCoupon[]>([]);
+    const [cartWarning, setCartWarning] = useState<string | null>(null);
     const [appliedCoupons, setAppliedCoupons] = useState<ApiCoupon[]>(() => {
         if (typeof window !== "undefined") {
             const stored = localStorage.getItem("applied_coupons");
@@ -1180,12 +1189,30 @@ export function OrderSummaryWithCoupons({
 
             {/* Checkout Button */}
             <div className="px-3.5 sm:px-5 py-4 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4 flex flex-col items-center gap-3.5 w-full">
-                <Link
-                    href="/checkout"
+                {cartWarning && (
+                    <div className="w-full max-w-[280px] rounded-xl bg-[#FAF0DC] border border-[#D49313]/60 p-3 text-center text-[12px] font-bold text-[#593102] shadow-2xs animate-in fade-in duration-200">
+                        {cartWarning}
+                    </div>
+                )}
+                <button
+                    type="button"
+                    onClick={() => {
+                        const session = getStoredSession();
+                        if (!session || !session.user?.mobile) {
+                            router.push("/login");
+                            return;
+                        }
+                        if (selectedProducts.length === 0) {
+                            setCartWarning("Your cart is empty! Please add products to proceed.");
+                            setTimeout(() => setCartWarning(null), 4000);
+                            return;
+                        }
+                        router.push("/checkout");
+                    }}
                     className="flex h-[42px] w-full max-w-[280px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
                 >
                     PROCEED TO CHECKOUT
-                </Link>
+                </button>
 
                 {/* 4 Certification Badges */}
                 <div className="grid grid-cols-4 gap-1.5 text-center pt-2.5 border-t border-[#EADCC9]/60 w-full max-w-[280px]">

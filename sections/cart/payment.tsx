@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts } from "@/lib/shop-data";
+
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -78,9 +80,20 @@ function QrPattern() {
 
 export default function PaymentPage() {
     const router = useRouter();
-    const { cartItems } = useCart();
+    const { cartItems, isLoading } = useCart();
     const [selectedMethod, setSelectedMethod] = useState<string>("upi");
     const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        const session = getStoredSession();
+        if (!session || !session.user?.mobile) {
+            router.push("/login");
+            return;
+        }
+        if (!isLoading && Object.keys(cartItems).length === 0) {
+            router.push("/cart");
+        }
+    }, [cartItems, isLoading, router]);
 
     // ----- FIX: Safely extract quantity from cartItems -----
     const cartProducts = allProducts

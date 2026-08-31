@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { getStoredSession } from "@/lib/auth";
 import { isVariantOutOfStock } from "@/lib/api-products";
 
 type Variant = {
@@ -76,6 +78,7 @@ export default function ProductCardShop({
   onAddToWishlist,
   onToggleWishlist,
 }: ProductCardShopProps) {
+  const router = useRouter();
   const fallbackImage = "/honneycart.png";
   const initialImageSrc = image && image.trim() !== "" ? image : fallbackImage;
   const [imageSrc, setImageSrc] = useState(initialImageSrc);
@@ -210,6 +213,11 @@ export default function ProductCardShop({
               onClick={(e) => {
                 e.stopPropagation();
                 if (isSelectedOutOfStock) return;
+                const session = getStoredSession();
+                if (!session || !session.user?.mobile) {
+                  router.push("/login");
+                  return;
+                }
                 if (onBuyNow) {
                   onBuyNow();
                 } else {

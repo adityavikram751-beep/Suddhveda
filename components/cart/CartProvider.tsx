@@ -23,6 +23,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getCategoryName } from "@/lib/api-products";
 
@@ -103,6 +104,7 @@ export function useCart() {
 }
 
 export default function CartProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [cartItems, setCartItems] = useState<Record<string, CartItemDetail>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastProduct, setToastProduct] = useState<{ title: string; weight: string } | null>(null);
@@ -771,13 +773,21 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           </div>
 
           <div className="flex justify-center">
-            <Link
-              href="/cart"
-              onClick={() => setIsCartOpen(false)}
+            <button
+              type="button"
+              onClick={() => {
+                setIsCartOpen(false);
+                const session = getStoredSession();
+                if (!session || !session.user?.mobile) {
+                  router.push("/login");
+                } else {
+                  router.push("/cart");
+                }
+              }}
               className="flex h-[42px] w-full max-w-[240px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
             >
               VIEW FULL CART
-            </Link>
+            </button>
           </div>
 
           <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[#EADCC9]/60 pt-4 text-center text-[#593102]">

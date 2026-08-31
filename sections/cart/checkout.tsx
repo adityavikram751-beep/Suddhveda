@@ -22,7 +22,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -69,7 +69,7 @@ const mapApiAddress = (item: any): Address => ({
 
 export default function Checkout() {
   const router = useRouter();
-  const { cartItems } = useCart();
+  const { cartItems, isLoading } = useCart();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -158,12 +158,23 @@ export default function Checkout() {
     });
 
   useEffect(() => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+  }, [router]);
+
+  useEffect(() => {
     const productsFromContext = mapCartItemsToProducts(cartItems);
     if (productsFromContext.length > 0) {
       setCartProducts(productsFromContext);
       setCartLoading(false);
+    } else if (!isLoading && Object.keys(cartItems).length === 0) {
+      setCartLoading(false);
+      router.push("/cart");
     }
-  }, [cartItems]);
+  }, [cartItems, isLoading, router]);
 
   useEffect(() => {
     if (isMounted && typeof window !== "undefined") {

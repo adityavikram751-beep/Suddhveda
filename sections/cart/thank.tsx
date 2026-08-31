@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts } from "@/lib/shop-data";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -55,6 +55,14 @@ export default function OrderConfirmation() {
   const router = useRouter();
   const { cartItems } = useCart();
   const [order, setOrder] = useState<any>(null);
+
+  useEffect(() => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+  }, [router]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

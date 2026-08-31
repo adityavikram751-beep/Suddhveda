@@ -308,6 +308,12 @@ export default function ShopPage() {
   };
 
   const handleBuyNow = async (product: ApiProduct) => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+
     const productId = getProductId(product);
     const selectedVariantId = getSelectedVariantId(product);
     if (!selectedVariantId) return;
@@ -328,12 +334,7 @@ export default function ShopPage() {
         price,
         weight: weightLabel,
       });
-      const session = getStoredSession();
-      if (!session) {
-        router.push("/login?redirect=/cart");
-      } else {
-        router.push("/cart");
-      }
+      router.push("/checkout");
     } catch (error) {
       console.error("Error in Buy Now:", error);
     }

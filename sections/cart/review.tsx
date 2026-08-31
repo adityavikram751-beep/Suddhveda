@@ -24,7 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 function getTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
@@ -37,16 +37,6 @@ function getTokenFromCookie(): string | null {
   }
   return null;
 }
-
-function getStoredSession(): any {
-  if (typeof window === "undefined") return null;
-  try {
-    const stored = window.localStorage.getItem("sudhveda_auth_session");
-    if (stored) return JSON.parse(stored);
-  } catch { }
-  return null;
-}
-
 const freeDeliveryTarget = 2000;
 
 const steps = [
@@ -98,7 +88,7 @@ const mapApiAddress = (item: any): Address => ({
 
 export default function ReviewPage() {
   const router = useRouter();
-  const { cartItems } = useCart();
+  const { cartItems, isLoading } = useCart();
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   useEffect(() => {
@@ -165,14 +155,25 @@ export default function ReviewPage() {
   };
 
   useEffect(() => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+  }, [router]);
+
+  useEffect(() => {
     if (cartItems && Object.keys(cartItems).length > 0) {
       const mapped = mapCartItemsToProducts(cartItems);
       if (mapped.length > 0) {
         setCartProducts(mapped);
         setCartLoading(false);
       }
+    } else if (!isLoading && Object.keys(cartItems).length === 0) {
+      setCartLoading(false);
+      router.push("/cart");
     }
-  }, [cartItems]);
+  }, [cartItems, isLoading, router]);
 
   useEffect(() => {
     if (isMounted && typeof window !== "undefined") {
@@ -387,7 +388,7 @@ export default function ReviewPage() {
       const storedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment") || "" : "";
       const isCodMode = storedPayment.toLowerCase() === "cod" || paymentLabel.toLowerCase().includes("cash");
 
-      const userPhone = address?.phone || getStoredSession()?.user?.mobile || getStoredSession()?.user?.phone || "9876543210";
+      const userPhone = address?.phone || getStoredSession()?.user?.mobile || (getStoredSession()?.user as any)?.phone || "9876543210";
 
       const shippingAddressObj = {
         full_name: address?.name || getStoredSession()?.user?.name || "Customer",

@@ -169,6 +169,12 @@ export default function HoneySelection() {
 
   // ---------- Buy Now (Adds to cart & redirects to login if guest, else /cart) ----------
   const handleBuyNow = async (product: ApiProduct) => {
+    const session = getStoredSession();
+    if (!session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+
     const productId = getProductId(product);
     const variantId = getSelectedVariantId(product);
     if (!variantId) return;
@@ -191,12 +197,7 @@ export default function HoneySelection() {
         weight: weightLabel,
       });
 
-      const session = getStoredSession();
-      if (!session) {
-        router.push("/login?redirect=/cart");
-      } else {
-        router.push("/cart");
-      }
+      router.push("/checkout");
     } catch (err) {
       console.error("Error in Buy Now:", err);
     } finally {
