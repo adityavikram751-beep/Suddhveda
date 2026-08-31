@@ -1062,9 +1062,9 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
                 <Phone size={14} className="text-[#D49313] shrink-0" />
                 <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
               </p>
-              <p className="flex items-center gap-2">
+              <p className="flex items-center gap-2 min-w-0">
                 <Mail size={14} className="text-[#D49313] shrink-0" />
-                <span className="text-[#593102] break-all">{location?.email || "hello@shuddhaveda.com"}</span>
+                <span className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate">{location?.email || "hello@shuddhaveda.com"}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Clock size={14} className="text-[#D49313] shrink-0" />

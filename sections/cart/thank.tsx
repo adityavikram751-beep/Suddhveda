@@ -455,9 +455,9 @@ export default function OrderConfirmation() {
                             {location?.phone || "+91 98765 43210"}
                           </a>
                         </p>
-                        <p className="flex items-center gap-2">
+                        <p className="flex items-center gap-2 min-w-0">
                           <Mail size={14} className="text-[#D49313] shrink-0" />
-                          <a href={`mailto:${location?.email || "connect@shuddhveda.in"}`} className="text-[#593102] break-all hover:underline">
+                          <a href={`mailto:${location?.email || "connect@shuddhveda.in"}`} className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate hover:underline">
                             {location?.email || "connect@shuddhveda.in"}
                           </a>
                         </p>

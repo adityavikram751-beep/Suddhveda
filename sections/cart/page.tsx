@@ -1342,9 +1342,9 @@ function HelpPanel({
                             {loading ? "Loading..." : location?.phone || "+91 98765 43210"}
                         </span>
                     </p>
-                    <p className="flex items-center gap-2.5">
+                    <p className="flex items-center gap-2.5 min-w-0">
                         <Mail size={15} className="text-[#D49313] shrink-0" />
-                        <span className="text-[#593102] break-all">
+                        <span className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[13px] truncate">
                             {loading ? "Loading..." : location?.email || "connect@honeyveda.in"}
                         </span>
                     </p>

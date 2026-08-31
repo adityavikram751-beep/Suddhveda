@@ -377,6 +377,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       );
       if (added) {
         setToastProduct({ title: added.productName, weight: added.weight });
+      } else if (productDetails) {
+        setToastProduct({
+          title: productDetails.productName || "Honey Product",
+          weight: (productDetails as any).weight || "",
+        });
       }
     } catch (err) {
       // User is guest -> Store item in guest cart localStorage
@@ -610,8 +615,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                 <button
                   type="button"
                   onClick={() => {
-                    setIsCartOpen(true);
                     setToastProduct(null);
+                    const session = getStoredSession();
+                    if (!session || !session.user?.mobile) {
+                      router.push("/login");
+                    } else {
+                      router.push("/cart");
+                    }
                   }}
                   className="rounded-lg border border-[#593102] px-5 py-2 text-[15px] font-bold text-[#593102] hover:bg-[#FFF2D8]"
                 >
