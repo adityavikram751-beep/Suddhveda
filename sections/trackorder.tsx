@@ -147,7 +147,7 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] px-4 pb-16 pt-32 lg:pt-16 sm:px-8 border-b border-[#EADCC9]/50">
+    <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] px-4 pb-16 pt-8 sm:pt-28 lg:pt-16 sm:px-8 border-b border-[#EADCC9]/50">
       <div className="mx-auto max-w-7xl">
         
         {/* Header */}
