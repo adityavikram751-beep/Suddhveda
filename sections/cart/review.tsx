@@ -824,7 +824,6 @@ export default function ReviewPage() {
               </div>
             </section>
 
-            {/* 🔥 "Items in Your Order" section REMOVED completely */}
 
 
 
