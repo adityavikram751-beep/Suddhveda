@@ -85,7 +85,7 @@ export default function HoneySelection() {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {   
     fetchProducts();
     fetchWishlist();
 
