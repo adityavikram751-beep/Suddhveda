@@ -61,7 +61,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] border-b border-[#EADCC9]/50">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9]">
       {/* Decorative Glow Blobs */}
       <div className="absolute top-0 right-10 w-96 h-96 bg-[#D49313]/8 rounded-full blur-3xl pointer-events-none" />
 
