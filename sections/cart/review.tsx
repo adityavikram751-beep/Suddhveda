@@ -592,7 +592,7 @@ export default function ReviewPage() {
                 const finalOrder = {
                   orderId: data.group?.group_id || data.orders?.[0]?.order_id || `ORD-${Date.now().toString().slice(-6)}`,
                   createdAt: new Date().toISOString(),
-                  paymentMethod: "Online Payment (Razorpay)",
+                  paymentMethod: "Online Payment",
                   paymentStatus: "Paid",
                   razorpayPaymentId: response.razorpay_payment_id,
                   shippingAddress: {

@@ -51,10 +51,47 @@ function formatOrderTime(date: Date) {
   });
 }
 
+interface LocationData {
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    country?: string;
+  };
+  _id?: string;
+  phone?: string;
+  phone_timing?: string;
+  email?: string;
+  email_reply_time?: string;
+  whatsapp?: string;
+  whatsapp_timing?: string;
+  map_embed_url?: string;
+  isActive?: boolean;
+}
+
 export default function OrderConfirmation() {
   const router = useRouter();
   const { cartItems } = useCart();
   const [order, setOrder] = useState<any>(null);
+  const [location, setLocation] = useState<LocationData | null>(null);
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/location/all`);
+        if (res.ok) {
+          const data = await res.json();
+          const loc = data.data || data.location || (Array.isArray(data) ? data[0] : null);
+          if (loc) setLocation(loc);
+        }
+      } catch (err) {
+        console.error("Error fetching location in thank page:", err);
+      }
+    };
+    fetchLocation();
+  }, []);
 
   useEffect(() => {
     const session = getStoredSession();
@@ -131,15 +168,42 @@ export default function OrderConfirmation() {
   const remaining = Math.max(freeDeliveryTarget - subtotal, 0);
   const progress = Math.min((subtotal / freeDeliveryTarget) * 100, 100);
 
-  const orderItems = order?.items && order.items.length > 0
-    ? order.items
-    : visibleProducts;
+  const isSubscriptionOrder = Boolean(
+    order?.planName || order?.purchase?.plan || order?.purchase_id || order?.purchase
+  );
 
-  const displaySubtotal = order?.pricing?.subtotal ?? subtotal;
-  const displaySaved = order?.pricing?.saved ?? saved;
-  const displayCodFee = order?.pricing?.codFee ?? 0;
-  const displayCouponDiscount = order?.pricing?.couponDiscount ?? order?.couponDiscount ?? 0;
-  const displayTotal = order?.pricing?.total ?? (displaySubtotal + displayCodFee - displayCouponDiscount);
+  const subscriptionItems = isSubscriptionOrder
+    ? [
+        {
+          title: order?.planName || order?.purchase?.plan?.name || "Subscription Plan",
+          weight: order?.purchase?.plan?.packageLabel || `${order?.purchase?.plan?.numberOfJars || 6} Jars Delivery`,
+          quantity: 1,
+          price: order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || 4299,
+          image: order?.purchase?.plan?.image || "/giftset.png",
+        },
+      ]
+    : [];
+
+  const orderItems =
+    order?.items && order.items.length > 0
+      ? order.items
+      : isSubscriptionOrder
+      ? subscriptionItems
+      : visibleProducts;
+
+  const subscriptionTotal =
+    order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || (isSubscriptionOrder ? 4299 : 0);
+
+  const displaySubtotal = isSubscriptionOrder
+    ? subscriptionTotal
+    : (order?.pricing?.subtotal ?? subtotal);
+
+  const displaySaved = isSubscriptionOrder ? 0 : (order?.pricing?.saved ?? saved);
+  const displayCodFee = isSubscriptionOrder ? 0 : (order?.pricing?.codFee ?? 0);
+  const displayCouponDiscount = isSubscriptionOrder ? 0 : (order?.pricing?.couponDiscount ?? order?.couponDiscount ?? 0);
+  const displayTotal = isSubscriptionOrder
+    ? subscriptionTotal
+    : (order?.pricing?.total ?? (displaySubtotal + displayCodFee - displayCouponDiscount));
 
   // Order meta info for the confirmation cards
   const orderDate = order?.createdAt ? new Date(order.createdAt) : new Date();
@@ -201,7 +265,7 @@ export default function OrderConfirmation() {
               <p className="mt-1 text-[14px] text-[#6F7786]">
                 We&apos;ve emailed the order details to{" "}
                 <span className="font-medium text-[#187A37]">
-                  rahulsharma123@gmail.com
+                  {order?.customer?.email || order?.shippingAddress?.email || (getStoredSession()?.user as any)?.email || "your email address"}
                 </span>
               </p>
 
@@ -257,7 +321,7 @@ export default function OrderConfirmation() {
                     <div>
                       <p className="text-[14px] font-bold text-[#2F241C]">Payment Method</p>
                       <p className="mt-1.5 text-[13px] font-semibold text-[#187A37]">
-                        {order.paymentMethod || "Cash on Delivery (COD)"}
+                        {(order.paymentMethod || "Cash on Delivery (COD)").replace(/\s*\(\s*Razorpay\s*\)/gi, "").trim()}
                       </p>
                       <p className="mt-1 text-[12px] text-[#6F7786]">
                         Status: <span className="font-medium text-[#187A37]">{order.paymentStatus || "Pay on Delivery"}</span>
@@ -387,15 +451,19 @@ export default function OrderConfirmation() {
                       <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
                         <p className="flex items-center gap-2">
                           <Phone size={14} className="text-[#D49313] shrink-0" />
-                          <span className="text-[#593102]">+91 98765 43210</span>
+                          <a href={`tel:${location?.phone || "+91 98765 43210"}`} className="text-[#593102] hover:underline">
+                            {location?.phone || "+91 98765 43210"}
+                          </a>
                         </p>
                         <p className="flex items-center gap-2">
                           <Mail size={14} className="text-[#D49313] shrink-0" />
-                          <span className="text-[#593102] break-all">connect@honeyveda.in</span>
+                          <a href={`mailto:${location?.email || "connect@shuddhveda.in"}`} className="text-[#593102] break-all hover:underline">
+                            {location?.email || "connect@shuddhveda.in"}
+                          </a>
                         </p>
                         <p className="flex items-center gap-2">
                           <Clock size={14} className="text-[#D49313] shrink-0" />
-                          <span className="text-[#593102]">Mon - Sat: 9AM - 7PM</span>
+                          <span className="text-[#593102]">{location?.phone_timing || "Mon - Sat: 9AM - 7PM"}</span>
                         </p>
                       </div>
                     </div>
