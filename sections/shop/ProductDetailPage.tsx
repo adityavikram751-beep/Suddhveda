@@ -364,30 +364,22 @@ export default function ProductDetailPage({
 
     if (!variant) return;
 
+    const weightLabel = variant.weight ? `${variant.weight}${variant.unit || "g"}` : "";
+    const price = variant.price || 0;
+    const image = item.imageDocumentId?.[0]?.image_url || item.image?.image_url || "/placeholder.png";
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: item._id,
-          selectedWeight: variant._id,
-          quantity: 1,
-        }),
+      await addToCart(item._id, variant._id, {
+        type: "NORMAL",
+        productId: item._id,
+        variantId: variant._id,
+        productName: item.product_name,
+        image,
+        price,
+        weight: weightLabel,
       });
-
-      if (res.status === 401) {
-        redirectToLogin();
-        return;
-      }
-
-      if (res.ok) {
-        updateQuantity(item._id, variant._id, 1);
-        showToastMessage(`${item.product_name} added to cart! 🛒`, "success");
-      }
     } catch (err) {
       console.error("Failed to update recommendation cart:", err);
-      showToastMessage("Failed to add to cart", "error");
     }
   };
 
