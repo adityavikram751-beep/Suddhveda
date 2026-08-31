@@ -94,44 +94,44 @@ export default function ImpactSection() {
             </p>
 
             {/* 4 Stats Cards */}
-            <div className="mt-8 grid grid-cols-2 gap-4 max-w-[540px] w-full px-2 sm:px-0">
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all">
-                <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiUser size={22} className="text-[#D49313]" />
+            <div className="mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-[540px] w-full px-1 sm:px-0">
+              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <FiUser className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
                 </div>
-                <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[22px] font-black text-[#593102] leading-none">20,000+</h3>
-                  <p className="mt-1 text-[11px] font-extrabold tracking-wider text-[#7A6A5C] uppercase">Happy Customers</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all">
-                <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <GiBee size={22} className="text-[#D49313]" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[22px] font-black text-[#593102] leading-none">7M+</h3>
-                  <p className="mt-1 text-[11px] font-extrabold tracking-wider text-[#7A6A5C] uppercase">Bees Protected</p>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">20,000+</h3>
+                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Happy Customers</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all">
-                <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiBox size={22} className="text-[#D49313]" />
+              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <GiBee className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
                 </div>
-                <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[22px] font-black text-[#593102] leading-none">1,250+</h3>
-                  <p className="mt-1 text-[11px] font-extrabold tracking-wider text-[#7A6A5C] uppercase">Bee Colonies</p>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">7M+</h3>
+                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Bees Protected</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all">
-                <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiDroplet size={22} className="text-[#D49313]" />
+              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <FiBox className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
                 </div>
-                <div className="text-left">
-                  <h3 className="text-[20px] sm:text-[22px] font-black text-[#593102] leading-none">99.9%</h3>
-                  <p className="mt-1 text-[11px] font-extrabold tracking-wider text-[#7A6A5C] uppercase">Pure &amp; Natural</p>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">1,250+</h3>
+                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Bee Colonies</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <FiDroplet className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
+                </div>
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">99.9%</h3>
+                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Pure &amp; Natural</p>
                 </div>
               </div>
             </div>
