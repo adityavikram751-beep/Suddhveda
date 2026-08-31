@@ -43,7 +43,7 @@ function getStoredSession(): any {
   try {
     const stored = window.localStorage.getItem("sudhveda_auth_session");
     if (stored) return JSON.parse(stored);
-  } catch {}
+  } catch { }
   return null;
 }
 
@@ -251,7 +251,7 @@ export default function ReviewPage() {
             const parsed = JSON.parse(stored);
             if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
             if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
-          } catch (e) {}
+          } catch (e) { }
         } else if (apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
           setAppliedCouponCode(apiCode);
