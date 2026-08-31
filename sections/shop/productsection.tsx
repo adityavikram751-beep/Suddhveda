@@ -334,7 +334,7 @@ export default function ShopPage() {
         price,
         weight: weightLabel,
       });
-      router.push("/checkout");
+      router.push("/cart");
     } catch (error) {
       console.error("Error in Buy Now:", error);
     }

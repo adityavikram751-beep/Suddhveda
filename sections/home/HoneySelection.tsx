@@ -197,7 +197,7 @@ export default function HoneySelection() {
         weight: weightLabel,
       });
 
-      router.push("/checkout");
+      router.push("/cart");
     } catch (err) {
       console.error("Error in Buy Now:", err);
     } finally {
