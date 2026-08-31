@@ -204,8 +204,10 @@ export default function Cart() {
         })();
     }, []);
 
+    const [isRecSliderPaused, setIsRecSliderPaused] = useState(false);
+
     useEffect(() => {
-        if (recommendations.length <= 1) return;
+        if (recommendations.length <= 1 || isRecSliderPaused) return;
 
         const timer = window.setInterval(() => {
             recommendationScrollerRefs.current.forEach((scroller) => {
@@ -224,7 +226,7 @@ export default function Cart() {
         }, 3000);
 
         return () => window.clearInterval(timer);
-    }, [recommendations.length]);
+    }, [recommendations.length, isRecSliderPaused]);
 
     // Fetch wishlist
     useEffect(() => {
@@ -320,10 +322,10 @@ export default function Cart() {
         }
     };
 
-    const handleRecommendationAddToCart = async (productId: string, variantId: string) => {
+    const handleRecommendationAddToCart = async (productId: string, variantId: string, itemDetails?: any) => {
         try {
             setActionLoading(productId);
-            await addToCart(productId, variantId);
+            await addToCart(productId, variantId, itemDetails);
         } catch (err) {
             console.error("Error adding to cart:", err);
         } finally {
@@ -339,6 +341,10 @@ export default function Cart() {
                 ref={(node) => {
                     recommendationScrollerRefs.current[scrollerIndex] = node;
                 }}
+                onMouseEnter={() => setIsRecSliderPaused(true)}
+                onMouseLeave={() => setIsRecSliderPaused(false)}
+                onTouchStart={() => setIsRecSliderPaused(true)}
+                onTouchEnd={() => setIsRecSliderPaused(false)}
                 className="mt-5 flex w-full max-w-full gap-0 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
                 {recommendations.map((item) => {
@@ -387,7 +393,14 @@ export default function Cart() {
                                 onToggleWishlist={() => handleToggleWishlist(item._id)}
                                 onAddToCart={() =>
                                     currentVariant &&
-                                    handleRecommendationAddToCart(item._id, currentVariant._id)
+                                    handleRecommendationAddToCart(item._id, currentVariant._id, {
+                                        type: "NORMAL",
+                                        productId: item._id,
+                                        variantId: currentVariant._id,
+                                        productName: item.product_name,
+                                        weight: currentVariant.weight ? `${currentVariant.weight}${currentVariant.unit || "g"}` : "",
+                                        price: currentVariant.price || 0,
+                                    })
                                 }
                                 onBuyNow={() => {
                                     const session = getStoredSession();
@@ -396,7 +409,14 @@ export default function Cart() {
                                         return;
                                     }
                                     if (currentVariant) {
-                                        handleRecommendationAddToCart(item._id, currentVariant._id);
+                                        handleRecommendationAddToCart(item._id, currentVariant._id, {
+                                            type: "NORMAL",
+                                            productId: item._id,
+                                            variantId: currentVariant._id,
+                                            productName: item.product_name,
+                                            weight: currentVariant.weight ? `${currentVariant.weight}${currentVariant.unit || "g"}` : "",
+                                            price: currentVariant.price || 0,
+                                        });
                                     }
                                 }}
                                 onIncrement={() => { }}

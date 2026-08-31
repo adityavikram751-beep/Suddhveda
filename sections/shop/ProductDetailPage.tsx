@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getCategoryName, getProductImages, getProductVariants, getPrimaryImage, getProductName, isVariantOutOfStock, getVariantId } from "@/lib/api-products";
 
 const accordionSections = [
@@ -805,6 +805,15 @@ export default function ProductDetailPage({
                       selectedVariantId={selectedVariantId}
                       onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}
                       onAddToCart={() => handleRecommendationCartAction(item)}
+                      onBuyNow={async () => {
+                        const session = getStoredSession();
+                        if (!session || !session.user?.mobile) {
+                          router.push("/login");
+                          return;
+                        }
+                        await handleRecommendationCartAction(item);
+                        router.push("/cart");
+                      }}
                       onIncrement={() => handleRecommendationCartAction(item)}
                       onDecrement={() => handleRecommendationCartAction(item)}
                       onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
