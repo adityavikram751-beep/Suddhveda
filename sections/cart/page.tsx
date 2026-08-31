@@ -1062,18 +1062,18 @@ export function OrderSummaryWithCoupons({
                 <div className="pb-4 pt-1 space-y-3">
                     <div className="max-h-[340px] flex flex-col space-y-3">
                         {/* Input row */}
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex gap-2 shrink-0 w-full">
                             <input
                                 type="text"
                                 placeholder="Enter coupon code"
                                 value={couponCode}
                                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                className="flex-1 rounded-xl border border-[#EADCC9] bg-[#FAF5EC]/50 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#593102] placeholder:text-[#8D7F73] focus:border-[#D49313] focus:outline-none focus:ring-2 focus:ring-[#D49313]/20 transition-all"
+                                className="flex-1 min-w-0 rounded-xl border border-[#EADCC9] bg-[#FAF5EC]/50 px-3 sm:px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#593102] placeholder:text-[#8D7F73] focus:border-[#D49313] focus:outline-none focus:ring-2 focus:ring-[#D49313]/20 transition-all"
                             />
                             <button
                                 onClick={() => couponCode && applyCoupon(couponCode)}
                                 disabled={couponLoading}
-                                className="min-w-[90px] rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
+                                className="min-w-[80px] sm:min-w-[90px] rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-4 sm:px-5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
                             >
                                 {couponLoading ? (
                                     <>
@@ -1179,10 +1179,10 @@ export function OrderSummaryWithCoupons({
             </div>
 
             {/* Checkout Button */}
-            <div className="px-5 py-4 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4 flex flex-col items-center gap-3.5">
+            <div className="px-3.5 sm:px-5 py-4 bg-[#FAF5EC]/80 border-t border-[#EADCC9]/80 rounded-b-3xl mt-4 flex flex-col items-center gap-3.5 w-full">
                 <Link
                     href="/checkout"
-                    className="flex h-[42px] w-full max-w-[240px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
+                    className="flex h-[42px] w-full max-w-[280px] items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12px] font-extrabold uppercase tracking-wider text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95"
                 >
                     PROCEED TO CHECKOUT
                 </Link>

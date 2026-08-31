@@ -151,17 +151,17 @@ export default function PaymentPage() {
                         </header>
 
                         {/* Progress Steps */}
-                        <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-2 sm:px-4 py-3 sm:py-4 shadow-sm">
-                            <div className="flex items-center justify-between gap-1 sm:gap-2">
+                        <div className="rounded-lg border border-[#F4D7B8] bg-white/55 px-1.5 sm:px-4 py-2 sm:py-4 shadow-sm w-full max-w-full overflow-hidden">
+                            <div className="flex items-center justify-between gap-0.5 sm:gap-2 w-full">
                                 {steps.map((step, index) => {
                                     const isDone = step.id < 4;
                                     const isActive = step.id === 4;
 
                                     return (
-                                        <div key={step.id} className="flex min-w-0 flex-1 items-center">
+                                        <div key={step.id} className="flex min-w-0 flex-1 items-center justify-between">
                                             <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                                                 <span
-                                                    className={`flex h-7 w-7 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[12px] sm:text-[16px] font-bold ${
+                                                    className={`flex h-5.5 w-5.5 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[9.5px] sm:text-[16px] font-bold ${
                                                         isDone
                                                             ? "border-[#77AE61] bg-white text-[#77AE61]"
                                                             : isActive
@@ -169,11 +169,11 @@ export default function PaymentPage() {
                                                             : "border-[#F0DDC8] bg-white text-[#2F241C]"
                                                     }`}
                                                 >
-                                                    {isDone ? <CheckCircle2 size={16} className="sm:w-[28px] sm:h-[28px]" strokeWidth={1.8} /> : step.id}
+                                                    {isDone ? <CheckCircle2 size={12} className="sm:w-[28px] sm:h-[28px]" strokeWidth={2} /> : step.id}
                                                 </span>
                                                 <div className="min-w-0">
                                                     <p
-                                                        className={`text-[11px] sm:text-[15px] font-semibold leading-tight truncate ${
+                                                        className={`text-[9.5px] sm:text-[15px] font-semibold leading-tight truncate ${
                                                             isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
                                                         }`}
                                                     >
@@ -185,7 +185,7 @@ export default function PaymentPage() {
                                                 </div>
                                             </div>
                                             {index < steps.length - 1 && (
-                                                <span className="mx-0.5 sm:mx-3 shrink-0 text-[16px] sm:text-[26px] leading-none text-[#F24E1E]/60">
+                                                <span className="mx-0.5 sm:mx-3 shrink-0 text-[10px] sm:text-[26px] leading-none text-[#F24E1E]/60">
                                                     &rsaquo;
                                                 </span>
                                             )}
@@ -318,13 +318,7 @@ export default function PaymentPage() {
                                 </div>
                             </div>
 
-                            {/* Security Badge */}
-                            <div className="rounded-md border border-[#BFDDB4] bg-[#EDF8E7] px-4 py-3 text-[12px] font-bold text-[#45A651] md:col-start-2">
-                                <span className="inline-flex items-center gap-3">
-                                    <CheckCircle2 size={16} fill="#45A651" className="text-white" />
-                                    Your payment information is safe and encrypted.
-                                </span>
-                            </div>
+
                         </div>
 
                         {/* Navigation Buttons */}
@@ -340,7 +334,7 @@ export default function PaymentPage() {
                             <button
                                 type="button"
                                 onClick={handleContinue}
-                                className="flex h-[42px] px-6 w-auto items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
+                                className="flex h-[42px] w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[12.5px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 hover:-translate-y-1 transition-all duration-300 cursor-pointer active:translate-y-0 active:scale-95 whitespace-nowrap"
                             >
                                 Place Order
                                 <ArrowRight size={16} />
@@ -349,8 +343,8 @@ export default function PaymentPage() {
                     </section>
 
                     {/* Right Column - Order Summary */}
-                    <aside className="flex h-full flex-col">
-                        <div className="flex w-full flex-1 flex-col rounded-[4px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                    <aside className="flex h-full flex-col w-full min-w-0">
+                        <div className="flex w-full flex-1 flex-col rounded-[4px] border border-[#F2EFE9] bg-white p-3.5 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] min-w-0">
                             {/* Order Summary Header */}
                             <div className="flex items-center justify-between">
                                 <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>

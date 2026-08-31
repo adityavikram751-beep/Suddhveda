@@ -198,22 +198,22 @@ export default function OrderConfirmation() {
               </p>
 
               {/* Order Info Cards */}
-              <div className="mt-6 grid grid-cols-2 gap-4 rounded-[14px] bg-white p-6 sm:grid-cols-4">
+              <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-2.5 sm:gap-4 rounded-[14px] bg-white p-3.5 sm:p-6 sm:grid-cols-4">
                 {orderInfoItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <div key={item.label} className="flex flex-col items-center gap-1">
-                      <Icon size={20} className="text-[#0BA445]" />
-                      <p className="text-[10px] tracking-wide text-[#9AA3AF]">
+                    <div key={item.label} className="flex flex-col items-center gap-1 min-w-0">
+                      <Icon size={18} className="text-[#0BA445]" />
+                      <p className="text-[10px] tracking-wide text-[#9AA3AF] truncate">
                         {item.label}
                       </p>
                       <p
-                        className={`text-[15px] font-bold ${item.valueClass ?? "text-[#2F241C]"}`}
+                        className={`text-[13px] sm:text-[15px] font-bold truncate max-w-full ${item.valueClass ?? "text-[#2F241C]"}`}
                       >
                         {item.value}
                       </p>
                       {item.sub && (
-                        <p className="text-[11px] text-[#9AA3AF]">{item.sub}</p>
+                        <p className="text-[10px] sm:text-[11px] text-[#9AA3AF] truncate">{item.sub}</p>
                       )}
                     </div>
                   );
@@ -221,15 +221,15 @@ export default function OrderConfirmation() {
               </div>
 
               {/* Notification banner */}
-              <div className="mt-5 flex items-center justify-center gap-2 rounded-[10px] bg-[#E4F7E7] py-3 text-[13px] font-medium text-[#187A37]">
-                <Bell size={16} />
+              <div className="mt-4 sm:mt-5 flex items-center justify-center gap-2 rounded-[10px] bg-[#E4F7E7] p-3 text-[12px] sm:text-[13px] font-medium text-[#187A37] text-center leading-snug">
+                <Bell size={16} className="shrink-0" />
                 We&apos;ll notify you at every step until your order reaches you.
               </div>
             </div>
 
             {/* Delivery & Payment Details */}
             {order?.shippingAddress && (
-              <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-6 shadow-sm">
+              <div className="rounded-[16px] border border-[#F2EFE9] bg-white p-3.5 sm:p-6 shadow-sm">
                 <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#593102] mb-4">Delivery &amp; Payment Details</h2>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="flex items-start gap-3">
