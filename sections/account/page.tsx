@@ -149,16 +149,16 @@ function OrderActions({ order }: { order: Order }) {
 
     if (order.status === "Processing" || order.status === "Pending") {
         return (
-            <div className="flex w-full flex-col gap-2 sm:w-44">
+            <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
                 <Link
                     href="/trackorder"
-                    className="flex h-9 items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Order
                 </Link>
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-xl border border-[#593102] text-xs font-bold text-[#593102] hover:bg-[#FFF8EF] transition"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-[#FFF8EF] transition cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     View Details
                 </Link>
@@ -171,7 +171,7 @@ function OrderActions({ order }: { order: Order }) {
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href={`/account/orders/${order.orderId}`}
-                    className="flex h-9 items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs whitespace-nowrap"
                 >
                     View Details
                 </Link>
@@ -183,13 +183,13 @@ function OrderActions({ order }: { order: Order }) {
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
                 href="/trackorder"
-                className="flex h-9 items-center justify-center rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-xs font-bold uppercase tracking-wider text-white shadow-xs transition-all duration-300 border border-[#FFD700]/30"
+                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white shadow-xs transition cursor-pointer active:scale-95 whitespace-nowrap"
             >
                 Track Shipment
             </Link>
             <Link
                 href={`/account/orders/${order.orderId}`}
-                className="flex h-9 items-center justify-center rounded-xl border border-[#D49313] text-xs font-bold text-[#593102] hover:bg-[#FAF0DC] transition-colors"
+                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#D49313] text-xs font-bold text-[#593102] hover:bg-[#FAF0DC] transition-colors whitespace-nowrap"
             >
                 View Details
             </Link>
@@ -301,11 +301,11 @@ export default function MyOrdersPage() {
     const mobileBarRef = useRef<HTMLDivElement>(null);
     const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
         position: "fixed",
-        top: 95,
+        top: 98,
         left: 0,
         right: 0,
     });
-    const MOBILE_BAR_TOP_OFFSET = 95;
+    const MOBILE_BAR_TOP_OFFSET = 98;
 
     const fetchProfileDetails = async () => {
         try {
@@ -356,14 +356,14 @@ export default function MyOrdersPage() {
                 const rawList = Array.isArray(data?.data)
                     ? data.data
                     : Array.isArray(data?.orders)
-                    ? data.orders
-                    : Array.isArray(data?.groups)
-                    ? data.groups
-                    : Array.isArray(data?.result)
-                    ? data.result
-                    : Array.isArray(data)
-                    ? data
-                    : [];
+                        ? data.orders
+                        : Array.isArray(data?.groups)
+                            ? data.groups
+                            : Array.isArray(data?.result)
+                                ? data.result
+                                : Array.isArray(data)
+                                    ? data
+                                    : [];
 
                 const mappedOrders: Order[] = [];
 
@@ -405,12 +405,12 @@ export default function MyOrdersPage() {
                     const rawItems = Array.isArray(group.items)
                         ? group.items
                         : Array.isArray(group.orders)
-                        ? group.orders
-                        : Array.isArray(group.order_items)
-                        ? group.order_items
-                        : Array.isArray(group.products)
-                        ? group.products
-                        : [group];
+                            ? group.orders
+                            : Array.isArray(group.order_items)
+                                ? group.order_items
+                                : Array.isArray(group.products)
+                                    ? group.products
+                                    : [group];
 
                     const itemsList: OrderItem[] = [];
                     let groupTotalSum = 0;
@@ -426,7 +426,7 @@ export default function MyOrdersPage() {
 
                             const title = isCustomGift
                                 ? (gift.name || gift.title || item.title || item.name || "Custom Gift Box")
-                                : (prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey");
+                                : (item.product_name || prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey");
 
                             const weightVal = variant.weight || item.weight || prod.weight || item.totalWeight;
                             const unitVal = variant.unit || item.unit || prod.unit || "g";
@@ -436,6 +436,10 @@ export default function MyOrdersPage() {
                             let img = "/Upcoming.png";
                             if (isCustomGift) {
                                 img = gift.image || gift.image_url || gift.boxImage || item.image || item.giftBoxImage || pd.image || "/giftset.png";
+                            } else if (typeof item.image === "string" && item.image) {
+                                img = item.image;
+                            } else if (item.image?.image_url) {
+                                img = item.image.image_url;
                             } else if (typeof prod.image === "string" && prod.image) {
                                 img = prod.image;
                             } else if (prod.image?.image_url) {
@@ -446,12 +450,19 @@ export default function MyOrdersPage() {
                                 img = prod.images[0].image_url;
                             } else if (gift.image || gift.image_url) {
                                 img = gift.image || gift.image_url;
-                            } else if (typeof item.image === "string" && item.image) {
-                                img = item.image;
                             }
 
                             const itemQty = item.quantity || item.qty || 1;
-                            const itemPrice = Number(item.finalAmount || pd.finalAmount || item.totalAmount || item.price || 0);
+                            const itemPrice = Number(
+                                item.amount ||
+                                item.finalAmount ||
+                                pd.finalAmount ||
+                                item.totalAmount ||
+                                item.price ||
+                                (variant.price ? Number(variant.price) * itemQty : 0) ||
+                                (prod.price ? Number(prod.price) * itemQty : 0) ||
+                                0
+                            );
                             groupTotalSum += itemPrice;
 
                             itemsList.push({
@@ -464,7 +475,15 @@ export default function MyOrdersPage() {
                         });
                     }
 
-                    const groupFinalTotal = Number(group.finalAmount || group.totalAmount || group.total_amount || groupTotalSum);
+                    const groupFinalTotal = Number(
+                        group.total_amount ||
+                        group.totalAmount ||
+                        group.finalAmount ||
+                        group.grand_total ||
+                        group.grandTotal ||
+                        group.total ||
+                        groupTotalSum
+                    );
                     const subtotal = Number(group.subtotal || groupFinalTotal);
                     const shippingFee = Number(group.shippingFee || group.shipping_fee || 0);
 
@@ -490,10 +509,10 @@ export default function MyOrdersPage() {
                         statusNote: status === "Delivered"
                             ? `Delivered on ${formattedDate}`
                             : status === "Shipped"
-                            ? "In Transit"
-                            : status === "Cancelled"
-                            ? "Order Cancelled"
-                            : "Your order is being processed",
+                                ? "In Transit"
+                                : status === "Cancelled"
+                                    ? "Order Cancelled"
+                                    : "Your order is being processed",
                         shippingAddress: (addrName || addrLines) ? {
                             name: addrName,
                             phone: addrPhone,
@@ -706,7 +725,7 @@ export default function MyOrdersPage() {
     const getPageNumbers = () => {
         const pages = [];
         const maxVisible = 5;
-        
+
         if (totalPages <= maxVisible) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
@@ -751,9 +770,9 @@ export default function MyOrdersPage() {
     }, [mobileMenuOpen]);
 
     return (
-        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-32 lg:pt-12">
-            
-            {/* MOBILE FIXED BAR: Fixed top-[95px] to guarantee safe distance under site header */}
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-[106px] sm:pt-32 lg:pt-12">
+
+            {/* MOBILE FIXED BAR: Fixed top-[98px] to guarantee safe distance under site header */}
             <div
                 ref={mobileBarRef}
                 style={mobileBarStyle}
@@ -762,9 +781,9 @@ export default function MyOrdersPage() {
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBE4B8] text-sm font-bold text-[#593102]">
-                            {getInitials({ 
-                                name: userData.fullName || session.user.name || "Customer", 
-                                mobile: userData?.mobile || session.user?.mobile || "" 
+                            {getInitials({
+                                name: userData.fullName || session.user.name || "Customer",
+                                mobile: userData?.mobile || session.user?.mobile || ""
                             })}
                         </div>
                         <div>
@@ -784,11 +803,11 @@ export default function MyOrdersPage() {
                 </div>
             </div>
 
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-1 lg:pt-0">
 
                 {/* Mobile Drawer */}
                 {mobileMenuOpen && (
-                    <div 
+                    <div
                         className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md lg:hidden animate-in fade-in duration-300 transition-all touch-none overscroll-contain"
                         onClick={() => setMobileMenuOpen(false)}
                         onTouchMove={(e) => {
@@ -797,7 +816,7 @@ export default function MyOrdersPage() {
                             }
                         }}
                     >
-                        <div 
+                        <div
                             className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[330px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] shadow-[0_0_40px_rgba(89,49,2,0.25)] rounded-r-[28px] border-r-2 border-[#D49313]/40 overflow-y-auto flex flex-col animate-in slide-in-from-left duration-300 overscroll-contain touch-pan-y"
                             onClick={(e) => e.stopPropagation()}
                             onTouchMove={(e) => e.stopPropagation()}
@@ -809,7 +828,7 @@ export default function MyOrdersPage() {
                                     </div>
                                     <h3 className="font-serif text-base font-extrabold text-[#593102] tracking-tight">Account Navigation</h3>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="rounded-full p-2 bg-[#FAF0DC] hover:bg-[#D49313] text-[#593102] hover:text-white transition-all shadow-2xs cursor-pointer active:scale-95"
                                     aria-label="Close menu"
@@ -833,7 +852,7 @@ export default function MyOrdersPage() {
                     </aside>
 
                     {/* --- MAIN CONTENT --- */}
-                    <div className="space-y-6 flex-1 w-full min-w-0">
+                    <div className="space-y-4 sm:space-y-6 flex-1 w-full min-w-0">
 
                         {/* Header */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -896,33 +915,77 @@ export default function MyOrdersPage() {
                                             className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/95 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all space-y-4"
                                         >
                                             {/* Top Header Bar */}
-                                            <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5 border-b border-[#EADCC9]/60">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313]">
-                                                        <Package size={18} />
+                                            <div className="pb-3.5 border-b border-[#EADCC9]/60">
+                                                {/* Desktop Header Layout */}
+                                                <div className="hidden sm:flex flex-wrap items-center justify-between gap-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313]">
+                                                            <Package size={18} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
+                                                            <p className="text-sm font-extrabold text-[#593102]">{order.orderId.replace(/\s+-\s+/g, "-")}</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
-                                                        <p className="text-sm font-extrabold text-[#593102]">{order.orderId}</p>
+
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="text-right">
+                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Total Price</p>
+                                                            <p className="text-sm font-black text-[#D49313]">{order.totalAmount}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
+                                                            <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
+                                                        </div>
+
+                                                        {(() => {
+                                                            const style = statusStyles[order.status] || statusStyles.Processing;
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}>
+                                                                    <StatusIcon size={13} />
+                                                                    {order.status}
+                                                                </span>
+                                                            );
+                                                        })()}
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-3">
-                                                    <div className="text-right">
-                                                        <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
-                                                        <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
+                                                {/* Mobile Header Layout */}
+                                                <div className="flex sm:hidden flex-col gap-2.5">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#FAF0DC] text-[#D49313]">
+                                                                <Package size={16} />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="text-[9px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
+                                                                <p className="text-[11.5px] xs:text-[12px] font-extrabold text-[#593102] tracking-tight leading-tight whitespace-normal break-all">
+                                                                    {order.orderId.replace(/\s+-\s+/g, "-")}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        {(() => {
+                                                            const style = statusStyles[order.status] || statusStyles.Processing;
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold shadow-2xs shrink-0 ${style.bg} ${style.text}`}>
+                                                                    <StatusIcon size={12} />
+                                                                    {order.status}
+                                                                </span>
+                                                            );
+                                                        })()}
                                                     </div>
 
-                                                    {/* Status Badge */}
-                                                    {(() => {
-                                                        const style = statusStyles[order.status] || statusStyles.Processing;
-                                                        return (
-                                                            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}>
-                                                                <StatusIcon size={13} />
-                                                                {order.status}
-                                                            </span>
-                                                        );
-                                                    })()}
+                                                    <div className="flex items-center justify-between rounded-xl bg-[#FAF5EC] px-3 py-2 text-xs border border-[#EADCC9]/50">
+                                                        <div>
+                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
+                                                            <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Total Price</p>
+                                                            <p className="text-sm font-black text-[#D49313]">{order.totalAmount}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -1012,8 +1075,8 @@ export default function MyOrdersPage() {
                                             </div>
 
                                             {/* Actions Bar */}
-                                            <div className="flex items-center justify-between pt-2 border-t border-[#EADCC9]/40">
-                                                <p className="text-xs text-[#6E5D4F] font-medium">{order.statusNote}</p>
+                                            <div className="flex flex-col gap-3 pt-3 border-t border-[#EADCC9]/60 sm:flex-row sm:items-center sm:justify-between">
+                                                <p className="text-xs sm:text-sm text-[#6E5D4F] font-medium leading-tight">{order.statusNote}</p>
                                                 <OrderActions order={order} />
                                             </div>
                                         </div>
@@ -1028,15 +1091,14 @@ export default function MyOrdersPage() {
                                 <button
                                     onClick={() => goToPage(currentPage - 1)}
                                     disabled={currentPage === 1}
-                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${
-                                        currentPage === 1
+                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${currentPage === 1
                                             ? "border-[#F0E2CC] text-[#D4C5B2] cursor-not-allowed"
                                             : "border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]"
-                                    }`}
+                                        }`}
                                 >
                                     <ChevronLeft size={16} />
                                 </button>
-                                
+
                                 {getPageNumbers().map((page, index) => (
                                     page === '...' ? (
                                         <span key={`ellipsis-${index}`} className="px-2 text-[#B59A78]">…</span>
@@ -1044,25 +1106,23 @@ export default function MyOrdersPage() {
                                         <button
                                             key={page}
                                             onClick={() => goToPage(page as number)}
-                                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold transition ${
-                                                page === currentPage
+                                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold transition ${page === currentPage
                                                     ? "bg-[#593102] text-white"
                                                     : "border border-[#F0E2CC] text-[#3C2015] hover:bg-[#FFF8EF]"
-                                            }`}
+                                                }`}
                                         >
                                             {page}
                                         </button>
                                     )
                                 ))}
-                                
+
                                 <button
                                     onClick={() => goToPage(currentPage + 1)}
                                     disabled={currentPage === totalPages}
-                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${
-                                        currentPage === totalPages
+                                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${currentPage === totalPages
                                             ? "border-[#F0E2CC] text-[#D4C5B2] cursor-not-allowed"
                                             : "border-[#F0E2CC] text-[#8A7460] hover:bg-[#FFF8EF]"
-                                    }`}
+                                        }`}
                                 >
                                     <ChevronRight size={16} />
                                 </button>

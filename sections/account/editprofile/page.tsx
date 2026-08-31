@@ -150,7 +150,7 @@ export default function EditProfilePage() {
   const mobileBarRef = useRef<HTMLDivElement>(null);
   const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
     position: "fixed",
-    top: 95,
+    top: 98,
     left: 0,
     right: 0,
   });
@@ -410,7 +410,7 @@ export default function EditProfilePage() {
   }, [mobileMenuOpen]);
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-32 lg:pt-12 border-b border-[#EADCC9]/50">
+    <section ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-[106px] sm:pt-32 lg:pt-12 border-b border-[#EADCC9]/50">
 
       {/* MOBILE BAR */}
       <div
@@ -615,19 +615,19 @@ export default function EditProfilePage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-3 pt-4 border-t border-[#EADCC9]/60">
+                  <div className="flex items-center gap-2.5 pt-4 border-t border-[#EADCC9]/60">
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex h-11 flex-1 sm:flex-none items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white px-8 text-xs font-bold uppercase tracking-wider shadow-md transition-all duration-300 border border-[#FFD700]/30 disabled:opacity-60 cursor-pointer"
+                      className="flex h-9 flex-1 sm:flex-none items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white px-5 text-[11px] font-bold uppercase tracking-wider shadow-sm transition-all duration-300 border border-[#FFD700]/30 disabled:opacity-60 cursor-pointer active:scale-95"
                     >
-                      {saving && <Loader2 size={16} className="animate-spin" />}
+                      {saving && <Loader2 size={14} className="animate-spin" />}
                       Save Changes
                     </button>
                     <button
                       type="button"
                       onClick={fetchProfileDetails}
-                      className="flex h-11 flex-1 sm:flex-none items-center justify-center rounded-xl border border-[#EADCC9] px-6 text-xs font-bold uppercase tracking-wider text-[#593102] hover:bg-[#FAF0DC] transition cursor-pointer"
+                      className="flex h-9 flex-1 sm:flex-none items-center justify-center rounded-xl border border-[#EADCC9] px-4 text-[11px] font-bold uppercase tracking-wider text-[#593102] hover:bg-[#FAF0DC] transition cursor-pointer active:scale-95"
                     >
                       Cancel
                     </button>
@@ -638,11 +638,12 @@ export default function EditProfilePage() {
 
             {/* Address Management Section */}
             <div className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/90 backdrop-blur-sm p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-[#EADCC9]/60">
-                <div className="flex items-center gap-2">
-                  <MapPin size={20} className="text-[#D49313]" />
-                  <h2 className="font-serif text-lg sm:text-xl font-bold text-[#593102]">
-                    My Saved Addresses
+              <div className="flex items-center justify-between gap-2 pb-4 border-b border-[#EADCC9]/60">
+                <div className="flex items-center gap-2 min-w-0">
+                  <MapPin size={18} className="text-[#D49313] shrink-0" />
+                  <h2 className="font-serif text-[15px] sm:text-xl font-bold text-[#593102] whitespace-nowrap">
+                    <span className="sm:hidden">Saved Addresses</span>
+                    <span className="hidden sm:inline">My Saved Addresses</span>
                   </h2>
                 </div>
                 <button
@@ -652,9 +653,11 @@ export default function EditProfilePage() {
                     setEditingAddressId(null);
                     setAddressModalOpen(true);
                   }}
-                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#D49313] to-[#593102] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:opacity-90 transition cursor-pointer shadow-xs border border-[#FFD700]/30"
+                  className="flex h-8 sm:h-10 shrink-0 items-center justify-center gap-1 sm:gap-1.5 rounded-full bg-gradient-to-r from-[#D49313] to-[#593102] px-3 sm:px-4 text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-white hover:opacity-90 transition cursor-pointer shadow-xs border border-[#FFD700]/30 active:scale-95 whitespace-nowrap"
                 >
-                  <span>+</span> Add New Address
+                  <Plus size={13} className="shrink-0" />
+                  <span className="sm:hidden">Add New</span>
+                  <span className="hidden sm:inline">Add New Address</span>
                 </button>
               </div>
 

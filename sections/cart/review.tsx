@@ -770,7 +770,7 @@ export default function ReviewPage() {
 
               <div className="mt-7 grid gap-7 md:grid-cols-3">
                 <div className="flex items-start gap-3.5">
-                  <Home size={28} className="mt-0.5 text-[#593102] shrink-0" />
+                  <Home size={22} className="mt-0.5 text-[#593102] shrink-0" />
                   <div>
                     {addressLoading ? (
                       <p className="text-[14px] text-[#B59A78]">Loading address...</p>

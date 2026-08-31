@@ -569,11 +569,11 @@ export default function MyAddressesPage() {
     const mobileBarRef = useRef<HTMLDivElement>(null);
     const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
         position: "fixed",
-        top: 95,
+        top: 98,
         left: 0,
         right: 0,
     });
-    const MOBILE_BAR_TOP_OFFSET = 95;
+    const MOBILE_BAR_TOP_OFFSET = 98;
 
     useEffect(() => {
         function handleScroll() {
@@ -928,7 +928,7 @@ export default function MyAddressesPage() {
     }, [mobileMenuOpen]);
 
     return (
-        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-32 lg:pt-12">
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-[106px] sm:pt-32 lg:pt-12">
 
             {/* MOBILE BAR: fixed while scrolling, unsticks (absolute) once the footer approaches */}
             <div
@@ -958,7 +958,7 @@ export default function MyAddressesPage() {
                 </div>
             </div>
 
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-1 lg:pt-0">
                 {/* Mobile Drawer */}
                 {mobileMenuOpen && (
                     <div 
@@ -1032,7 +1032,7 @@ export default function MyAddressesPage() {
                                         setEditingAddress(null);
                                         setModalOpen(true);
                                     }}
-                                    className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] px-5 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 cursor-pointer"
+                                    className="hidden sm:flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] px-5 text-xs font-bold uppercase tracking-wider text-white shadow-md transition-all duration-300 border border-[#FFD700]/30 cursor-pointer"
                                 >
                                     <Plus size={16} />
                                     Add New Address
