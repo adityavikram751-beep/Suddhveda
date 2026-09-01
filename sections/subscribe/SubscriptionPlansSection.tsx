@@ -97,7 +97,7 @@ export default function SubscriptionPlansSection() {
         const fetchPlans = async () => {
             try {
                 setLoadingApi(true);
-                const res = await fetch(`${API_BASE_URL}/api/purchase-plans/checkout`);
+                const res = await fetch(`${API_BASE_URL}/api/subscripation/plan/all-plans`);
                 if (!res.ok) throw new Error("Failed to fetch subscription plans");
 
                 const data = await res.json();
@@ -219,7 +219,7 @@ export default function SubscriptionPlansSection() {
                     },
             };
 
-            const res = await fetch(`${API_BASE_URL}/api/checkout/plan`, {
+            const res = await fetch(`${API_BASE_URL}/api/purchase-plans/checkout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

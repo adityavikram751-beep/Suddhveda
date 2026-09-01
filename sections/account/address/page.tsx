@@ -18,6 +18,7 @@ import {
     X,
     CheckCircle,
     Menu,
+    Crown,
 } from "lucide-react";
 import { API_BASE_URL, getInitials, getStoredSession } from "@/lib/auth";
 
@@ -427,6 +428,7 @@ function AddressModal({
 
 const sidebarLinks = [
     { icon: Package, label: "My Orders", href: "/account" },
+    { icon: Crown, label: "Subscription Plans", href: "/account/subscriptions" },
     { icon: MapPin, label: "My Addresses", href: "/address" },
     { icon: Heart, label: "Wishlist", href: "/wishlist" },
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },

@@ -24,11 +24,13 @@ import {
     X,
     ArrowLeft,
     CheckCircle2,
+    Crown,
 } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 const sidebarLinks = [
     { icon: Package, label: "My Orders", href: "/account" },
+    { icon: Crown, label: "Subscription Plans", href: "/account/subscriptions" },
     { icon: MapPin, label: "My Addresses", href: "/address" },
     { icon: Heart, label: "Wishlist", href: "/wishlist" },
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },
