@@ -98,7 +98,7 @@ export default function SubscriptionPlansSection() {
             try {
                 setLoadingApi(true);
                 const res = await fetch(`${API_BASE_URL}/api/subscripation/plan/all-plans`);
-                if (!res.ok) throw new Error("Failed to fetch subscription plans");
+                if (!res.ok) throw new Error("Failed to fetch subscriptions plans");
 
                 const data = await res.json();
                 const rawList = data.data || data.plans || data || [];
