@@ -804,15 +804,10 @@ export default function MySubscriptionsPage() {
 
                                                 {/* Jar-by-Jar Subscription Delivery Progress Bar */}
                                                 <div className="pt-6 border-t border-[#F0E4D0]">
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 px-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <Package size={16} className="text-[#D49313]" />
-                                                            <span className="font-serif text-sm font-extrabold text-[#593102]">
-                                                                Jar Delivery Schedule
-                                                            </span>
-                                                        </div>
-                                                        <span className="inline-flex items-center gap-1 bg-[#FAF0DC] text-[#593102] border border-[#D49313]/30 px-3 py-1 rounded-full text-xs font-extrabold self-start sm:self-auto">
-                                                            {purchase.deliveredJarsCount} of {purchase.totalJarsCount} Jars Delivered
+                                                    <div className="flex items-center gap-2 mb-4 px-1">
+                                                        <Package size={16} className="text-[#D49313]" />
+                                                        <span className="font-serif text-sm font-extrabold text-[#593102]">
+                                                            Jar Delivery Schedule
                                                         </span>
                                                     </div>
 
