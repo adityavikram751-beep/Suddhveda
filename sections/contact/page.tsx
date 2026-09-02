@@ -66,13 +66,13 @@ export default function Hero() {
       <div className="absolute top-0 right-10 w-96 h-96 bg-[#D49313]/8 rounded-full blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10 relative z-10">
-        <div className="grid min-h-[720px] items-center lg:grid-cols-2">
+        <div className="grid min-h-0 lg:min-h-[660px] items-center lg:grid-cols-2 gap-8 lg:gap-0">
 
           {/* LEFT CONTENT */}
-          <div className="relative z-10 max-w-[610px] py-16 lg:py-0">
+          <div className="relative z-10 max-w-[610px] pt-8 pb-2 lg:py-0 lg:mt-1 flex flex-col">
 
             {/* Subtitle Pill Badge */}
-            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-4">
+            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-4 self-start">
               <span>GET IN TOUCH</span>
             </div>
 
@@ -91,8 +91,32 @@ export default function Hero() {
               pure honey.
             </p>
 
+            {/* IMAGE ON MOBILE ONLY (Directly below description text) */}
+            <div className="block lg:hidden relative my-6">
+              <div
+                className="absolute right-1/2 translate-x-1/2 top-1/2 -translate-y-1/2
+                w-[280px] sm:w-[450px] h-[280px] sm:h-[450px]
+                rounded-full
+                bg-[radial-gradient(circle,rgba(212,147,19,0.18)_0%,rgba(255,255,255,0)_70%)]"
+              />
+              <Image
+                src="/hero.png"
+                alt="ShuddhaVeda Natural Honey Jar"
+                width={1800}
+                height={1800}
+                priority
+                className="
+                  relative
+                  w-full max-w-[320px] sm:max-w-[450px]
+                  h-auto
+                  object-contain
+                  mx-auto
+                "
+              />
+            </div>
+
             {/* Feature Cards Grid */}
-            <div className="mt-8 lg:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[640px]">
+            <div className="mt-2 lg:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[640px]">
               {cards.map((item, index) => {
                 const Icon = item.icon;
 
@@ -115,12 +139,12 @@ export default function Hero() {
 
           </div>
 
-          {/* RIGHT IMAGE */}
-          <div className="relative flex items-center justify-end h-[400px] sm:h-[500px] lg:h-[720px] -mt-2 lg:mt-0">
+          {/* RIGHT IMAGE FOR DESKTOP ONLY */}
+          <div className="hidden lg:flex relative items-center justify-end h-[660px] mt-1">
 
             <div
               className="absolute right-[-100px] sm:right-[-140px] top-1/2 -translate-y-1/2
-              w-[400px] sm:w-[600px] lg:w-[780px] h-[400px] sm:h-[600px] lg:h-[780px]
+              w-[780px] h-[780px]
               rounded-full
               bg-[radial-gradient(circle,rgba(212,147,19,0.18)_0%,rgba(255,255,255,0)_70%)]"
             />
@@ -132,17 +156,16 @@ export default function Hero() {
               height={1800}
               priority
               className="
-                relative lg:absolute
-                top-0 lg:top-43
-                right-0 lg:right-32
-                w-full lg:w-[90%]
-                max-w-full lg:max-w-none
+                absolute
+                top-28
+                right-32
+                w-[90%]
+                max-w-none
                 h-full
                 object-contain
-                object-center lg:object-right-top
-                -translate-y-6 sm:-translate-y-8 lg:translate-y-0
-                translate-x-0 lg:translate-x-22
-                scale-100 lg:scale-[1.2]
+                object-right-top
+                translate-x-22
+                scale-[1.2]
               "
             />
 

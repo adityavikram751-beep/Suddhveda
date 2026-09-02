@@ -185,22 +185,22 @@ export default function ContactSection() {
   const whatsappNumber = locationData?.whatsapp || "+919876543210";
 
   return (
-    <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 lg:pb-16 relative overflow-hidden">
-      <div className="max-w-[1500px] mx-auto w-full px-6 lg:px-16 relative">
+    <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pt-6 sm:pt-8 lg:pt-10 pb-12 lg:pb-16 relative overflow-hidden">
+      <div className="max-w-[1500px] mx-auto w-full px-4 sm:px-6 lg:px-16 relative">
 
         {/* TOP ROW - Form + Photo */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-stretch">
           {/* LEFT - Form Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-5 sm:p-7 lg:p-9 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 bg-[#FAF0DC] border border-[#D49313]/40 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase text-[#593102] tracking-[0.16em] mb-2">
                 <span>WE&apos;D LOVE TO</span>
               </div>
-              <h2 className="text-[28px] sm:text-[34px] font-serif font-extrabold text-[#593102] mt-1 mb-6">
+              <h2 className="text-[26px] sm:text-[32px] font-serif font-extrabold text-[#593102] mt-1 mb-4 sm:mb-5">
                 Hear From You
               </h2>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-3.5">
                 <input
                   type="text"
                   name="name"
@@ -208,7 +208,7 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                  className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                 />
                 <input
                   type="email"
@@ -217,17 +217,17 @@ export default function ContactSection() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full h-[50px] sm:h-[52px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                  className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
                   <div className="relative">
                     <select
                       name="subject"
                       value={formData.subject}
                       onChange={handleInputChange}
                       required
-                      className="appearance-none w-full h-[50px] sm:h-[52px] px-4 pr-9 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] focus:outline-none focus:border-[#D49313] transition-colors cursor-pointer"
+                      className="appearance-none w-full h-[48px] sm:h-[50px] px-4 pr-9 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] focus:outline-none focus:border-[#D49313] transition-colors cursor-pointer"
                     >
                       <option value="" disabled>Subject</option>
                       <option value="general">General Inquiry</option>
@@ -247,7 +247,7 @@ export default function ContactSection() {
                     value={formData.mobile}
                     onChange={handleInputChange}
                     required
-                    className="w-full h-[50px] sm:h-[52px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                    className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                   />
                 </div>
 
