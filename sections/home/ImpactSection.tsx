@@ -32,10 +32,32 @@ export default function ImpactSection() {
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/6 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
 
-          {/* LEFT - Video Showcase */}
-          <div className="lg:col-span-6 relative w-full max-w-[540px] mx-auto lg:mx-0">
+          {/* 1. HEADER (Top on Mobile, Top Right on Desktop) */}
+          <div className="order-1 lg:order-2 lg:col-span-6 text-center lg:text-left flex flex-col items-center lg:items-start">
+            <p className="text-[12px] sm:text-[13px] font-extrabold tracking-[0.18em] text-[#593102] uppercase bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
+              WHY CHOOSE SHUDDH VEDA HONEY?
+            </p>
+
+            <h2 className="mt-4 text-[32px] sm:text-[42px] lg:text-[50px] font-serif font-bold leading-[1.12] text-[#593102] tracking-tight">
+              Rooted in Tradition.
+              <br />
+              <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
+                Committed to Purity.
+              </span>
+            </h2>
+
+            <div className="w-24 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-3.5 rounded-full" />
+
+            <p className="mt-2 text-[15px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[540px] px-2 lg:px-0">
+              At Shuddh Veda Honey, we follow traditional beekeeping practices and modern purity standards to bring you honey that is{" "}
+              <span className="font-extrabold text-[#593102]">raw, natural, and filtered.</span>
+            </p>
+          </div>
+
+          {/* 2. VIDEO SHOWCASE (Middle on Mobile, Left Column on Desktop) */}
+          <div className="order-2 lg:order-1 lg:col-span-6 lg:row-span-2 relative w-full max-w-[540px] mx-auto lg:mx-0">
             <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group bg-black">
               <video
                 ref={videoRef}
@@ -66,35 +88,13 @@ export default function ImpactSection() {
                   <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[18px] border-l-white ml-1.5" />
                 </button>
               )}
-
-              {/* Floating Quality Badge */}
-
             </div>
           </div>
 
-          {/* RIGHT - Content */}
-          <div className="lg:col-span-6 text-center lg:text-left flex flex-col items-center lg:items-start">
-            <p className="text-[12px] sm:text-[13px] font-extrabold tracking-[0.18em] text-[#593102] uppercase bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
-              WHY CHOOSE SHUDDH VEDA HONEY?
-            </p>
-
-            <h2 className="mt-4 text-[32px] sm:text-[42px] lg:text-[50px] font-serif font-bold leading-[1.12] text-[#593102] tracking-tight">
-              Rooted in Tradition.
-              <br />
-              <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
-                Committed to Purity.
-              </span>
-            </h2>
-
-            <div className="w-24 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-3.5 rounded-full" />
-
-            <p className="mt-2 text-[15px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[540px] px-2 lg:px-0">
-              At Shuddh Veda Honey, we follow traditional beekeeping practices and modern purity standards to bring you honey that is{" "}
-              <span className="font-extrabold text-[#593102]">raw, natural, and filtered.</span>
-            </p>
-
+          {/* 3. STATS & BUTTON (Bottom on Mobile, Bottom Right on Desktop) */}
+          <div className="order-3 lg:order-3 lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
             {/* 4 Stats Cards */}
-            <div className="mt-8 grid grid-cols-2 gap-2.5 sm:gap-4 max-w-[540px] w-full px-1 sm:px-0">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 max-w-[540px] w-full px-1 sm:px-0">
               <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
                 <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
                   <FiUser className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
