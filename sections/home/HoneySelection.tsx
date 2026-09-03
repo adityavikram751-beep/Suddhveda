@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 import {
   type ApiProduct,
   getProductId,
@@ -32,38 +32,48 @@ export default function HoneySelection() {
   // ---------- Fetch Wishlist ----------
   const fetchWishlist = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const wishlistProducts = data?.data?.products || [];
-        const ids = wishlistProducts
-          .map((item: any) => {
-            if (item.productId && typeof item.productId === "object") {
-              return item.productId._id;
-            }
-            return item.productId || item._id;
-          })
-          .filter(Boolean)
-          .map(String);
-        setWishlistIds(ids);
-        window.dispatchEvent(
-          new CustomEvent("wishlist-count-update", { detail: { count: ids.length } })
-        );
-      } else {
-        const { getGuestWishlist } = await import("@/lib/wishlist");
-        const guestIds = getGuestWishlist();
-        setWishlistIds(guestIds);
-        window.dispatchEvent(
-          new CustomEvent("wishlist-count-update", { detail: { count: guestIds.length } })
-        );
-      }
-    } catch (err) {
       const { getGuestWishlist } = await import("@/lib/wishlist");
       const guestIds = getGuestWishlist();
-      setWishlistIds(guestIds);
+      let backendIds: string[] = [];
+
+      const token = getStoredToken();
+      if (token || getStoredSession()) {
+        const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const wishlistProducts = data?.data?.products || data?.products || [];
+          backendIds = wishlistProducts
+            .map((item: any) => {
+              if (item.productId && typeof item.productId === "object") {
+                return String(item.productId._id || item.productId.id || "");
+              }
+              if (typeof item.productId === "string") {
+                return item.productId;
+              }
+              return String(item._id || item.id || "");
+            })
+            .filter(Boolean);
+        }
+      }
+
+      const combined = Array.from(new Set([...backendIds, ...guestIds]));
+      setWishlistIds(combined);
+      window.dispatchEvent(
+        new CustomEvent("wishlist-count-update", { detail: { count: combined.length } })
+      );
+    } catch (err) {
+      console.error("Error fetching wishlist in HoneySelection:", err);
+      try {
+        const { getGuestWishlist } = await import("@/lib/wishlist");
+        setWishlistIds(getGuestWishlist());
+      } catch { }
     }
   };
 
@@ -90,14 +100,14 @@ export default function HoneySelection() {
     fetchWishlist();
 
     const handleWishlistChange = () => {
-      import("@/lib/wishlist").then(({ getGuestWishlist }) => {
-        setWishlistIds(getGuestWishlist());
-      });
+      fetchWishlist();
     };
 
     window.addEventListener("wishlist-count-update", handleWishlistChange);
+    window.addEventListener("sudhveda-auth-changed", handleWishlistChange);
     return () => {
       window.removeEventListener("wishlist-count-update", handleWishlistChange);
+      window.removeEventListener("sudhveda-auth-changed", handleWishlistChange);
     };
   }, []);
 
@@ -215,12 +225,16 @@ export default function HoneySelection() {
     setWishlistIds(nextIds);
 
     try {
+      const token = getStoredToken();
       const res = await fetch(
         `${API_BASE_URL}/api/wishlist/${isWishlisted ? "remove" : "add"}/${productId}`,
         {
           method: isWishlisted ? "DELETE" : "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         }
       );
 
