@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import {
   type ApiProduct,
   getProductId,
@@ -36,31 +36,24 @@ export default function HoneySelection() {
       const guestIds = getGuestWishlist();
       let backendIds: string[] = [];
 
-      const token = getStoredToken();
-      if (token || getStoredSession()) {
-        const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const wishlistProducts = data?.data?.products || data?.products || [];
-          backendIds = wishlistProducts
-            .map((item: any) => {
-              if (item.productId && typeof item.productId === "object") {
-                return String(item.productId._id || item.productId.id || "");
-              }
-              if (typeof item.productId === "string") {
-                return item.productId;
-              }
-              return String(item._id || item.id || "");
-            })
-            .filter(Boolean);
-        }
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const wishlistProducts = data?.data?.products || data?.products || [];
+        backendIds = wishlistProducts
+          .map((item: any) => {
+            if (item.productId && typeof item.productId === "object") {
+              return String(item.productId._id || item.productId.id || "");
+            }
+            if (typeof item.productId === "string") {
+              return item.productId;
+            }
+            return String(item._id || item.id || "");
+          })
+          .filter(Boolean);
       }
 
       const combined = Array.from(new Set([...backendIds, ...guestIds]));
@@ -69,7 +62,6 @@ export default function HoneySelection() {
         new CustomEvent("wishlist-count-update", { detail: { count: combined.length } })
       );
     } catch (err) {
-      console.error("Error fetching wishlist in HoneySelection:", err);
       try {
         const { getGuestWishlist } = await import("@/lib/wishlist");
         setWishlistIds(getGuestWishlist());
@@ -95,7 +87,7 @@ export default function HoneySelection() {
     }
   };
 
-  useEffect(() => {   
+  useEffect(() => {
     fetchProducts();
     fetchWishlist();
 
@@ -104,10 +96,8 @@ export default function HoneySelection() {
     };
 
     window.addEventListener("wishlist-count-update", handleWishlistChange);
-    window.addEventListener("sudhveda-auth-changed", handleWishlistChange);
     return () => {
       window.removeEventListener("wishlist-count-update", handleWishlistChange);
-      window.removeEventListener("sudhveda-auth-changed", handleWishlistChange);
     };
   }, []);
 
@@ -225,16 +215,12 @@ export default function HoneySelection() {
     setWishlistIds(nextIds);
 
     try {
-      const token = getStoredToken();
       const res = await fetch(
         `${API_BASE_URL}/api/wishlist/${isWishlisted ? "remove" : "add"}/${productId}`,
         {
           method: isWishlisted ? "DELETE" : "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -255,7 +241,7 @@ export default function HoneySelection() {
     }
   };
 
-  const dummyHandler = () => {};
+  const dummyHandler = () => { };
 
   // ---------- Render ----------
   return (
@@ -295,15 +281,14 @@ export default function HoneySelection() {
                 const cardBadge = (product as any).product_name
                   ? (product as any).product_name.toUpperCase()
                   : normalized.title
-                  ? `${normalized.title.toUpperCase()}`
-                  : "RAW HONEY";
+                    ? `${normalized.title.toUpperCase()}`
+                    : "RAW HONEY";
 
                 return (
                   <div
                     key={productId}
-                    className={`w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center ${
-                      idx >= 4 ? "lg:hidden" : ""
-                    }`}
+                    className={`w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center ${idx >= 4 ? "lg:hidden" : ""
+                      }`}
                   >
                     <div className="w-full max-w-[340px] lg:max-w-none">
                       <ProductCardShop
