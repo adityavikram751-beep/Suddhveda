@@ -83,10 +83,22 @@ export default function Footer() {
 
             {/* 4 Social Media Icons */}
             <div className="flex items-center justify-center gap-3 mt-4">
-              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a
+                href="https://www.instagram.com/ShuddhVedaHoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram - ShuddhVedaHoney"
+                title="ShuddhVedaHoney"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              >
                 <FaInstagram size={16} />
               </a>
-              <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a
+                href="#"
+                aria-label="Facebook - ShuddhVedaHoney"
+                title="ShuddhVedaHoney"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              >
                 <FaFacebookF size={16} />
               </a>
               <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
@@ -202,10 +214,22 @@ export default function Footer() {
               Bringing nature&apos;s purest honey from the hive to your home. Committed to quality, purity, and sustainability.
             </p>
             <div className="flex gap-3 mt-6">
-              <a href="#" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a
+                href="https://www.instagram.com/ShuddhVedaHoney"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram - ShuddhVedaHoney"
+                title="ShuddhVedaHoney"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              >
                 <FaInstagram size={16} />
               </a>
-              <a href="#" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a
+                href="#"
+                aria-label="Facebook - ShuddhVedaHoney"
+                title="ShuddhVedaHoney"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              >
                 <FaFacebookF size={16} />
               </a>
               <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">

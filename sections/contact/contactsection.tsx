@@ -448,7 +448,7 @@ export default function ContactSection() {
               {loading ? "Loading..." : getFullAddress() || "Shuddha Veda Studio, 4A, Sri Sai Enclave, ECC Road, Whitefield, Bengaluru, Karnataka 560066"}
             </p>
             <p className="text-[12px] sm:text-[13px] text-[#6E5D4F] font-medium mt-1 px-4 truncate">
-              Phone: {loading ? "..." : phoneNumber} &nbsp;|&nbsp; Email: {loading ? "..." : emailAddress} &nbsp;|&nbsp; Instagram: @shuddhadeva
+              Phone: {loading ? "..." : phoneNumber} &nbsp;|&nbsp; Email: {loading ? "..." : emailAddress} &nbsp;|&nbsp; Instagram: @ShuddhVedaHoney
             </p>
           </div>
         </div>
