@@ -11,6 +11,7 @@ import {
   clearSession,
   ensureValidSession,
   getStoredSession,
+  getStoredToken,
   API_BASE_URL,
 } from "@/lib/auth";
 import {
@@ -232,12 +233,22 @@ export default function Header() {
     }
   };
 
+  const lastTokenRef = useRef<string | null>(null);
+
   useEffect(() => {
     async function syncSession() {
+      const token = getStoredToken();
+      lastTokenRef.current = token;
+      if (!token) {
+        setSession(null);
+        setAccountOpen(false);
+        return;
+      }
       const sessionData = await ensureValidSession();
       setSession(sessionData);
-      fetchWishlistCount();
-      fetchCartCount();
+      if (!sessionData) {
+        setAccountOpen(false);
+      }
     }
 
     function closeOnOutsideClick(event: MouseEvent) {
@@ -274,8 +285,30 @@ export default function Header() {
     };
 
     syncSession();
+
+    // Check if token in cookie/localStorage changed (every 800ms)
+    const tokenCheckInterval = setInterval(() => {
+      const token = getStoredToken();
+      if (token !== lastTokenRef.current) {
+        lastTokenRef.current = token;
+        if (!token) {
+          setSession(null);
+          setAccountOpen(false);
+        } else {
+          syncSession();
+        }
+      }
+    }, 800);
+
     window.addEventListener(AUTH_CHANGED_EVENT, syncSession);
     window.addEventListener("storage", syncSession);
+
+    if (typeof window !== "undefined" && "cookieStore" in window) {
+      try {
+        (window as any).cookieStore.addEventListener("change", syncSession);
+      } catch {}
+    }
+
     document.addEventListener("mousedown", closeOnOutsideClick);
     window.addEventListener("wishlist-count-update", handleWishlistUpdate);
     window.addEventListener("cart-count-update", handleCartUpdate);
@@ -285,8 +318,14 @@ export default function Header() {
     window.addEventListener("cart_updated", fetchCartCount);
 
     return () => {
+      clearInterval(tokenCheckInterval);
       window.removeEventListener(AUTH_CHANGED_EVENT, syncSession);
       window.removeEventListener("storage", syncSession);
+      if (typeof window !== "undefined" && "cookieStore" in window) {
+        try {
+          (window as any).cookieStore.removeEventListener("change", syncSession);
+        } catch {}
+      }
       document.removeEventListener("mousedown", closeOnOutsideClick);
       window.removeEventListener("wishlist-count-update", handleWishlistUpdate);
       window.removeEventListener("cart-count-update", handleCartUpdate);
@@ -300,7 +339,7 @@ export default function Header() {
   useEffect(() => {
     fetchWishlistCount();
     fetchCartCount();
-  }, [pathname, session]);
+  }, [session]);
 
   useEffect(() => {
     if (open) {
@@ -354,7 +393,10 @@ export default function Header() {
   }, [open]);
 
   function handleAccountClick() {
-    if (!session) {
+    const token = getStoredToken();
+    if (!token || !session) {
+      setSession(null);
+      setAccountOpen(false);
       const currentPath = `${pathname || "/"}${window.location.search || ""}`;
       router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       setOpen(false);

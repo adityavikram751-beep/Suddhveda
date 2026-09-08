@@ -73,9 +73,11 @@ export default function WishlistPage() {
 
       const session = getStoredSession();
       if (session) {
-        // Logged in user -> sync any guest items first
-        const { syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
-        await syncGuestWishlistOnLogin();
+        // Logged in user -> sync guest items only if guest items exist in localStorage
+        const { getGuestWishlist, syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
+        if (getGuestWishlist().length > 0) {
+          await syncGuestWishlistOnLogin();
+        }
 
         const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
           method: "GET",

@@ -30,7 +30,7 @@ export default function HoneySelection() {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   // ---------- Fetch Wishlist ----------
-  const fetchWishlist = async () => {
+  const fetchWishlist = async (broadcast = true) => {
     try {
       const { getGuestWishlist } = await import("@/lib/wishlist");
       const guestIds = getGuestWishlist();
@@ -58,9 +58,11 @@ export default function HoneySelection() {
 
       const combined = Array.from(new Set([...backendIds, ...guestIds]));
       setWishlistIds(combined);
-      window.dispatchEvent(
-        new CustomEvent("wishlist-count-update", { detail: { count: combined.length } })
-      );
+      if (broadcast) {
+        window.dispatchEvent(
+          new CustomEvent("wishlist-count-update", { detail: { count: combined.length, source: "HoneySelection" } })
+        );
+      }
     } catch (err) {
       try {
         const { getGuestWishlist } = await import("@/lib/wishlist");
@@ -89,10 +91,12 @@ export default function HoneySelection() {
 
   useEffect(() => {
     fetchProducts();
-    fetchWishlist();
+    fetchWishlist(true);
 
-    const handleWishlistChange = () => {
-      fetchWishlist();
+    const handleWishlistChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.source === "HoneySelection") return;
+      fetchWishlist(false);
     };
 
     window.addEventListener("wishlist-count-update", handleWishlistChange);

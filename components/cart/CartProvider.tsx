@@ -19,6 +19,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useCallback,
   type ReactNode,
@@ -183,8 +184,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [getGuestCart]);
 
+  const isFetchingRef = useRef(false);
+
   // ---------- Fetch Cart (Backend or Guest) ----------
   const fetchCart = useCallback(async () => {
+    if (isFetchingRef.current) return cartItems;
+    isFetchingRef.current = true;
     try {
       setIsLoading(true);
       
@@ -291,6 +296,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       return guestItems;
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
   }, [syncGuestCartOnLogin, getGuestCart]);
 
@@ -314,13 +320,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("trigger-live-update", handleLiveCartUpdate);
       window.removeEventListener("sudhveda-auth-changed", handleAuthChanged);
     };
-  }, [fetchCart]);
+  }, []);
 
   useEffect(() => {
     if (isCartOpen) {
       fetchCart();
     }
-  }, [isCartOpen, fetchCart]);
+  }, [isCartOpen]);
 
   // Lock Body Scroll when Cart Drawer is Open
   useEffect(() => {
