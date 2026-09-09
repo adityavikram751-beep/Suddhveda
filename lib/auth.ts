@@ -15,17 +15,59 @@ export type AuthSession = {
 const AUTH_STORAGE_KEY = "sudhveda_auth_session";
 export const AUTH_CHANGED_EVENT = "sudhveda-auth-changed";
 
-// ---------- Session functions ----------
-// NOTE: Actual auth token cookie is httpOnly and set by the BACKEND
-// (Set-Cookie: token=...; HttpOnly; Secure; SameSite=None).
-// Frontend JS can NEVER read/write that cookie directly (by design, for security).
-// So here we only store the *user profile* (name/mobile) in localStorage,
-// purely for UI purposes (showing name, initials, "is logged in" state etc).
-// The real auth check happens server-side via the cookie sent automatically
-// by the browser when we use `credentials: "include"` on every fetch call.
+// ---------- Session & Token functions ----------
+// NOTE: Backend sends httpOnly cookie, but cross-domain 3rd party cookies
+// can be blocked by browsers. We also extract and save token in document.cookie / localStorage
+// so Authorization: Bearer <token> header can always be sent as backup.
+
+export function extractToken(data: unknown): string | null {
+  if (typeof data !== "object" || data === null) return null;
+  const obj = data as Record<string, any>;
+
+  if (typeof obj.token === "string" && obj.token) return obj.token;
+  if (typeof obj.accessToken === "string" && obj.accessToken) return obj.accessToken;
+  if (typeof obj.jwt === "string" && obj.jwt) return obj.jwt;
+
+  if (obj.data && typeof obj.data === "object") {
+    const nestedToken = extractToken(obj.data);
+    if (nestedToken) return nestedToken;
+  }
+  if (obj.user && typeof obj.user === "object") {
+    const nestedToken = extractToken(obj.user);
+    if (nestedToken) return nestedToken;
+  }
+  if (obj.result && typeof obj.result === "object") {
+    const nestedToken = extractToken(obj.result);
+    if (nestedToken) return nestedToken;
+  }
+
+  return null;
+}
+
+export function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const cookieMatch = document.cookie.match(/(?:^|;\s*)(sudhveda_token|token|accessToken|jwt)=([^;]+)/);
+    if (cookieMatch && cookieMatch[2]) return decodeURIComponent(cookieMatch[2]);
+  } catch { }
+
+  // Cookie is missing or deleted: purge stale localStorage auth state
+  try {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    window.localStorage.removeItem("sudhveda_token");
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("accessToken");
+  } catch { }
+
+  return null;
+}
 
 export function getStoredSession(): AuthSession | null {
   if (typeof window === "undefined") return null;
+
+  const token = getStoredToken();
+  if (!token) return null;
 
   try {
     const stored = window.localStorage.getItem(AUTH_STORAGE_KEY);
@@ -33,7 +75,7 @@ export function getStoredSession(): AuthSession | null {
       const parsed = JSON.parse(stored) as AuthSession;
       if (parsed?.user?.mobile) return parsed;
     }
-  } catch {}
+  } catch { }
 
   return null;
 }
@@ -44,19 +86,57 @@ export function saveSession(session: AuthSession) {
     AUTH_STORAGE_KEY,
     JSON.stringify({ user, raw })
   );
+
+  const token = extractToken(raw);
+  if (token) {
+    try {
+      window.localStorage.setItem("sudhveda_token", token);
+      window.localStorage.setItem("token", token);
+      // Max-age: 1 year (31,536,000s) so session persists across days/weeks/months
+      document.cookie = `sudhveda_token=${encodeURIComponent(token)}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch (e) {
+      console.error("Error saving token to cookie/localStorage:", e);
+    }
+  }
+
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 }
 
 export function clearSession() {
-  window.localStorage.removeItem(AUTH_STORAGE_KEY);
-  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+  try {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    window.localStorage.removeItem("sudhveda_token");
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("accessToken");
+    if (typeof document !== "undefined") {
+      const names = ["sudhveda_token", "token", "accessToken", "jwt"];
+      names.forEach((name) => {
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+        if (typeof window !== "undefined") {
+          document.cookie = `${name}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+        }
+      });
+    }
+  } catch { }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+  }
 }
 
 export async function ensureValidSession(): Promise<AuthSession | null> {
   if (typeof window === "undefined") return null;
 
+  const token = getStoredToken();
+  if (!token) {
+    clearSession();
+    return null;
+  }
+
   const storedSession = getStoredSession();
-  if (!storedSession) return null;
+  if (!storedSession) {
+    clearSession();
+    return null;
+  }
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/users/profile-details`, {
@@ -64,6 +144,7 @@ export async function ensureValidSession(): Promise<AuthSession | null> {
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -85,7 +166,7 @@ export async function logout() {
       method: "POST",
       credentials: "include",
     });
-  } catch {}
+  } catch { }
   clearSession();
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
