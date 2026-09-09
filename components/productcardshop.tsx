@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getStoredSession } from "@/lib/auth";
+import { getStoredSession, getStoredToken } from "@/lib/auth";
 import { isVariantOutOfStock } from "@/lib/api-products";
 
 type Variant = {
@@ -213,8 +213,9 @@ export default function ProductCardShop({
               onClick={(e) => {
                 e.stopPropagation();
                 if (isSelectedOutOfStock) return;
+                const token = getStoredToken();
                 const session = getStoredSession();
-                if (!session || !session.user?.mobile) {
+                if (!token || !session || !session.user?.mobile) {
                   router.push("/login");
                   return;
                 }

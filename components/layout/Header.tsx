@@ -306,7 +306,7 @@ export default function Header() {
     if (typeof window !== "undefined" && "cookieStore" in window) {
       try {
         (window as any).cookieStore.addEventListener("change", syncSession);
-      } catch {}
+      } catch { }
     }
 
     document.addEventListener("mousedown", closeOnOutsideClick);
@@ -324,7 +324,7 @@ export default function Header() {
       if (typeof window !== "undefined" && "cookieStore" in window) {
         try {
           (window as any).cookieStore.removeEventListener("change", syncSession);
-        } catch {}
+        } catch { }
       }
       document.removeEventListener("mousedown", closeOnOutsideClick);
       window.removeEventListener("wishlist-count-update", handleWishlistUpdate);
@@ -467,18 +467,16 @@ export default function Header() {
                     <Link
                       href={item.href}
                       onClick={() => setShopMenuOpen((prev) => !prev)}
-                      className={`relative flex items-center gap-1 text-[16px] font-medium transition-all duration-300 ${
-                        isActive
+                      className={`relative flex items-center gap-1 text-[16px] font-medium transition-all duration-300 ${isActive
                           ? "text-[#D89B00]"
                           : "text-[#7A3F10] hover:text-[#D89B00]"
-                      }`}
+                        }`}
                     >
                       {item.title}
                       <FiChevronDown size={14} className={`transition-transform duration-200 ${shopMenuOpen ? "rotate-180 text-[#D89B00]" : ""}`} />
                       <span
-                        className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${
-                          isActive ? "opacity-100" : "opacity-0"
-                        }`}
+                        className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0"
+                          }`}
                       />
                     </Link>
 
@@ -603,17 +601,15 @@ export default function Header() {
                 <Link
                   key={item.title}
                   href={item.href}
-                  className={`relative flex items-center gap-1 py-1 text-[16px] font-medium transition-all duration-300 ${
-                    isActive
+                  className={`relative flex items-center gap-1 py-1 text-[16px] font-medium transition-all duration-300 ${isActive
                       ? "text-[#D89B00]"
                       : "text-[#7A3F10] hover:text-[#D89B00]"
-                  }`}
+                    }`}
                 >
                   {item.title}
                   <span
-                    className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${
-                      isActive ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`absolute -bottom-1.5 left-0 h-[2px] w-full rounded-full bg-[#D89B00] transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0"
+                      }`}
                   />
                 </Link>
               );
@@ -794,9 +790,8 @@ export default function Header() {
                               <Link
                                 href="/shop"
                                 onClick={() => setOpen(false)}
-                                className={`text-[15px] font-extrabold ${
-                                  isActive ? "text-[#D49313]" : "text-[#593102]"
-                                }`}
+                                className={`text-[15px] font-extrabold ${isActive ? "text-[#D49313]" : "text-[#593102]"
+                                  }`}
                               >
                                 Shop Collections
                               </Link>
@@ -808,9 +803,8 @@ export default function Header() {
                               >
                                 <FiChevronDown
                                   size={18}
-                                  className={`transition-transform duration-300 ${
-                                    mobileShopOpen ? "rotate-180 text-[#D49313]" : ""
-                                  }`}
+                                  className={`transition-transform duration-300 ${mobileShopOpen ? "rotate-180 text-[#D49313]" : ""
+                                    }`}
                                 />
                               </button>
                             </div>
@@ -909,11 +903,10 @@ export default function Header() {
                           key={item.title}
                           href={item.href}
                           onClick={() => setOpen(false)}
-                          className={`flex items-center justify-between rounded-2xl px-4 py-3 text-[15px] font-extrabold transition-all duration-300 ${
-                            isActive
+                          className={`flex items-center justify-between rounded-2xl px-4 py-3 text-[15px] font-extrabold transition-all duration-300 ${isActive
                               ? "bg-[#FAF0DC] text-[#593102] border-l-4 border-[#D49313] shadow-2xs"
                               : "text-[#593102] bg-white/90 hover:bg-[#FAF5EC] border border-[#EADCC9]/80 hover:border-[#D49313]/50"
-                          }`}
+                            }`}
                         >
                           <span>{item.title}</span>
                           {isActive && (

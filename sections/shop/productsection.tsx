@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 import {
   type ApiProduct,
   getCategoryName,
@@ -308,8 +308,9 @@ export default function ShopPage() {
   };
 
   const handleBuyNow = async (product: ApiProduct) => {
+    const token = getStoredToken();
     const session = getStoredSession();
-    if (!session || !session.user?.mobile) {
+    if (!token || !session || !session.user?.mobile) {
       router.push("/login");
       return;
     }

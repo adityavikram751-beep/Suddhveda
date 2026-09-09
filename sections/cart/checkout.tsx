@@ -22,7 +22,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 
 const freeDeliveryTarget = 2000;
 
@@ -158,8 +158,9 @@ export default function Checkout() {
     });
 
   useEffect(() => {
+    const token = getStoredToken();
     const session = getStoredSession();
-    if (!session || !session.user?.mobile) {
+    if (!token || !session || !session.user?.mobile) {
       router.push("/login");
       return;
     }

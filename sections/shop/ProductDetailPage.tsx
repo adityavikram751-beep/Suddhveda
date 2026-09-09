@@ -13,6 +13,11 @@ import {
   ChevronRight,
   Share2,
   Play,
+  CheckCircle2,
+  MapPin,
+  Truck,
+  ShieldCheck,
+  X,
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
@@ -210,12 +215,17 @@ export default function ProductDetailPage({
     setSelectedQty(1);
   }, [selectedVariant?._id]);
 
-  // Pincode State
-  const [pincode, setPincode] = useState("");
-  const [isCheckingPincode, setIsCheckingPincode] = useState(false);
-  const [pincodeStatus, setPincodeStatus] = useState<{
+  // Pincode Details Type & State
+  type PincodeDetails = {
     type: "success" | "error" | null;
     message: string;
+    pincode: string;
+    city?: string;
+    state?: string;
+    district?: string;
+    cod?: boolean;
+    courier?: string;
+    couriersList?: string[];
     deliveryInfo?: {
       day1: number;
       ord1: string;
@@ -223,8 +233,15 @@ export default function ProductDetailPage({
       day2: number;
       ord2: string;
       month2: string;
+      rawDate?: string;
     };
-  }>({ type: null, message: "" });
+    rawData?: any;
+  };
+
+  const [pincode, setPincode] = useState("");
+  const [isCheckingPincode, setIsCheckingPincode] = useState(false);
+  const [pincodeStatus, setPincodeStatus] = useState<PincodeDetails>({ type: null, message: "", pincode: "" });
+  const [isPincodeDropdownOpen, setIsPincodeDropdownOpen] = useState(false);
 
   const [openSection, setOpenSection] = useState<string | null>(null);
 
@@ -397,8 +414,10 @@ export default function ProductDetailPage({
     if (!trimmedPincode) {
       setPincodeStatus({
         type: "error",
-        message: "Please enter a valid pincode.",
+        message: "Please enter a valid 6-digit pincode.",
+        pincode: "",
       });
+      setIsPincodeDropdownOpen(true);
       return;
     }
     const isPincodeValid = /^[1-9][0-9]{5}$/.test(trimmedPincode);
@@ -406,13 +425,16 @@ export default function ProductDetailPage({
       setPincodeStatus({
         type: "error",
         message: "Invalid pincode structure. Enter 6 digits.",
+        pincode: trimmedPincode,
       });
+      setIsPincodeDropdownOpen(true);
       return;
     }
 
     try {
       setIsCheckingPincode(true);
-      setPincodeStatus({ type: null, message: "" });
+      setPincodeStatus({ type: null, message: "", pincode: trimmedPincode });
+      setIsPincodeDropdownOpen(true);
 
       const token = getStoredToken();
       const headers: Record<string, string> = {
@@ -422,95 +444,135 @@ export default function ProductDetailPage({
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailability`, {
+      // Call Admin Pincode Check API Endpoint requested by user
+      let res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailabilitybyadmin`, {
         method: "POST",
         credentials: "include",
         headers,
         body: JSON.stringify({ pincode: trimmedPincode }),
       });
 
-      const data = await res.json();
-
-      if (res.ok && data?.success !== false && data?.status !== "error" && data?.error === undefined) {
-        const findDateInObj = (obj: any): string | null => {
-          if (!obj || typeof obj !== "object") return null;
-          const targetKeys = [
-            "expected_delivery_date",
-            "expectedDeliveryDate",
-            "expected_date",
-            "expectedDate",
-            "delivery_date",
-            "deliveryDate",
-            "estimated_delivery_date",
-            "estimated_delivery",
-            "estimatedDeliveryDate",
-            "date",
-          ];
-          for (const key of targetKeys) {
-            if (obj[key]) return String(obj[key]);
-          }
-          for (const k of Object.keys(obj)) {
-            if (typeof obj[k] === "object" && obj[k] !== null) {
-              const found = findDateInObj(obj[k]);
-              if (found) return found;
-            }
-          }
-          return null;
-        };
-
-        let rawDate = findDateInObj(data);
-
-        // Fallback: If backend didn't send expected_delivery_date, calculate 5 days from now
-        if (!rawDate) {
-          const future = new Date();
-          future.setDate(future.getDate() + 5);
-          rawDate = future.toISOString().split("T")[0];
-        }
-
-        const getOrdinal = (n: number) => {
-          const s = ["th", "st", "nd", "rd"];
-          const v = n % 100;
-          return s[(v - 20) % 10] || s[v] || s[0];
-        };
-
-        let deliveryInfo: any = null;
-        try {
-          const d1 = new Date(rawDate);
-          if (!isNaN(d1.getTime())) {
-            const d2 = new Date(d1);
-            d2.setDate(d2.getDate() + 1);
-
-            const day1 = d1.getDate();
-            const ord1 = getOrdinal(day1);
-            const month1 = d1.toLocaleDateString("en-US", { month: "short" });
-
-            const day2 = d2.getDate();
-            const ord2 = getOrdinal(day2);
-            const month2 = d2.toLocaleDateString("en-US", { month: "short" });
-
-            deliveryInfo = { day1, ord1, month1, day2, ord2, month2 };
-          }
-        } catch {}
-
-        const msg = data?.message || data?.msg || data?.data?.message || "Standard delivery available at this location.";
-        setPincodeStatus({
-          type: "success",
-          message: msg,
-          deliveryInfo: deliveryInfo || undefined,
-        });
-      } else {
-        const errorMsg = data?.message || data?.msg || data?.error || "Delivery is not available at this pincode.";
-        setPincodeStatus({
-          type: "error",
-          message: errorMsg,
+      if (!res.ok) {
+        // Fallback to standard endpoint if needed
+        res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailability`, {
+          method: "POST",
+          credentials: "include",
+          headers,
+          body: JSON.stringify({ pincode: trimmedPincode }),
         });
       }
+
+      const data = await res.json().catch(() => ({}));
+      const isSuccess = res.ok && data?.success !== false && data?.status !== "error" && data?.error === undefined;
+
+      const findDateInObj = (obj: any): string | null => {
+        if (!obj || typeof obj !== "object") return null;
+        const targetKeys = [
+          "expected_delivery_date",
+          "expectedDeliveryDate",
+          "expected_date",
+          "expectedDate",
+          "delivery_date",
+          "deliveryDate",
+          "estimated_delivery_date",
+          "estimated_delivery",
+          "estimatedDeliveryDate",
+          "date",
+          "etd",
+        ];
+        for (const key of targetKeys) {
+          if (obj[key] && typeof obj[key] === "string") return obj[key];
+        }
+        for (const k of Object.keys(obj)) {
+          if (typeof obj[k] === "object" && obj[k] !== null) {
+            const found = findDateInObj(obj[k]);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      let rawDate = findDateInObj(data);
+      if (!rawDate) {
+        const future = new Date();
+        future.setDate(future.getDate() + 5);
+        rawDate = future.toISOString().split("T")[0];
+      }
+
+      const getOrdinal = (n: number) => {
+        const s = ["th", "st", "nd", "rd"];
+        const v = n % 100;
+        return s[(v - 20) % 10] || s[v] || s[0];
+      };
+
+      let deliveryInfo: any = null;
+      try {
+        const d1 = new Date(rawDate);
+        if (!isNaN(d1.getTime())) {
+          const d2 = new Date(d1);
+          d2.setDate(d2.getDate() + 1);
+
+          const day1 = d1.getDate();
+          const ord1 = getOrdinal(day1);
+          const month1 = d1.toLocaleDateString("en-US", { month: "short" });
+
+          const day2 = d2.getDate();
+          const ord2 = getOrdinal(day2);
+          const month2 = d2.toLocaleDateString("en-US", { month: "short" });
+
+          deliveryInfo = { day1, ord1, month1, day2, ord2, month2, rawDate };
+        }
+      } catch {}
+
+      const findField = (keys: string[], obj: any): any => {
+        if (!obj || typeof obj !== "object") return undefined;
+        for (const k of keys) {
+          if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return obj[k];
+        }
+        for (const key of Object.keys(obj)) {
+          if (typeof obj[key] === "object" && obj[key] !== null) {
+            const found = findField(keys, obj[key]);
+            if (found !== undefined) return found;
+          }
+        }
+        return undefined;
+      };
+
+      const city = findField(["city", "city_name", "cityName", "district", "area"], data) || "";
+      const state = findField(["state", "state_name", "stateName", "region"], data) || "";
+      const district = findField(["district", "district_name"], data) || "";
+      const codVal = findField(["cod", "is_cod", "cod_available", "isCodAvailable", "cash_on_delivery"], data);
+      const cod = codVal !== undefined ? Boolean(codVal) : true;
+      const courier = findField(["courier", "courier_name", "express_courier", "carrier"], data) || "";
+      const couriersList = Array.isArray(data?.available_couriers || data?.data?.available_couriers || data?.couriers)
+        ? (data?.available_couriers || data?.data?.available_couriers || data?.couriers)
+        : [];
+
+      const msg = data?.message || data?.msg || data?.data?.message || (isSuccess ? "Delivery is available at this pincode." : "Delivery is not available at this pincode.");
+
+      setPincodeStatus({
+        type: isSuccess ? "success" : "error",
+        message: msg,
+        pincode: trimmedPincode,
+        city: typeof city === "string" ? city : "",
+        state: typeof state === "string" ? state : "",
+        district: typeof district === "string" ? district : "",
+        cod,
+        courier: typeof courier === "string" ? courier : "",
+        couriersList: Array.isArray(couriersList) ? couriersList : [],
+        deliveryInfo: deliveryInfo || undefined,
+        rawData: data,
+      });
+
+      setIsPincodeDropdownOpen(true);
     } catch (err) {
       console.error("Error checking pincode availability:", err);
       setPincodeStatus({
         type: "error",
         message: "Failed to check delivery availability. Please try again.",
+        pincode: trimmedPincode,
       });
+      setIsPincodeDropdownOpen(true);
     } finally {
       setIsCheckingPincode(false);
     }
@@ -662,19 +724,25 @@ export default function ProductDetailPage({
             </div>
 
             {/* Delivery Details */}
-            <div className="space-y-2.5">
+            <div className="space-y-2.5 max-w-xl">
               <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
                 Check Delivery Availability
               </h3>
-              <div className="flex flex-col sm:flex-row border border-[#EADCC9] rounded-2xl overflow-hidden bg-white max-w-xl shadow-2xs">
+
+              {/* Input Box */}
+              <div className="flex flex-col sm:flex-row border border-[#EADCC9] rounded-2xl overflow-hidden bg-white shadow-2xs focus-within:border-[#D49313] transition-colors">
                 <input
                   type="text"
-                  placeholder="Enter 6-digit Pincode"
+                  placeholder="Enter 6-digit Pincode (e.g. 110057)"
                   value={pincode}
                   maxLength={6}
                   onChange={(e) => {
-                    setPincode(e.target.value);
-                    if (pincodeStatus.type) setPincodeStatus({ type: null, message: "" });
+                    const val = e.target.value.replace(/\D/g, "");
+                    setPincode(val);
+                    if (pincodeStatus.type) {
+                      setPincodeStatus({ type: null, message: "", pincode: "" });
+                      setIsPincodeDropdownOpen(false);
+                    }
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleCheckPincode();
@@ -682,6 +750,7 @@ export default function ProductDetailPage({
                   className="flex-1 px-4 py-3 text-[15px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
                 />
                 <button
+                  type="button"
                   onClick={handleCheckPincode}
                   disabled={isCheckingPincode}
                   className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] disabled:opacity-50 text-white px-7 py-3 text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
@@ -689,48 +758,151 @@ export default function ProductDetailPage({
                   {isCheckingPincode ? "CHECKING..." : "CHECK"}
                 </button>
               </div>
-              {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
-                <div className="flex items-center gap-2.5 mt-3 text-[14px] sm:text-[15px] text-[#374151]">
-                  <svg className="w-6 h-6 text-[#1F2937] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 17h4V5H2v12h3" />
-                    <path d="M20 17h2v-5l-3-4h-5v9h2" />
-                    <circle cx="7.5" cy="17.5" r="2.5" />
-                    <circle cx="17.5" cy="17.5" r="2.5" />
-                    <circle cx="6.5" cy="8.5" r="3" />
-                    <path d="M6.5 7V8.5L7.5 9.5" />
-                  </svg>
-                  <div>
-                    <span>Delivery between </span>
-                    <span className="text-[#16A34A] font-medium">
-                      {pincodeStatus.deliveryInfo.day1}
-                      <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord1}</sup>
-                      {pincodeStatus.deliveryInfo.month1 === pincodeStatus.deliveryInfo.month2 ? (
-                        <>
-                          {" and "}
-                          {pincodeStatus.deliveryInfo.day2}
-                          <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
-                          {" "}
-                          {pincodeStatus.deliveryInfo.month1}
-                        </>
+
+              {/* 🎯 PINCODE AVAILABILITY DROPDOWN CONTAINER */}
+              {pincodeStatus.type !== null && (
+                <div className="mt-3 overflow-hidden rounded-2xl border border-[#EADCC9] bg-white shadow-md animate-in fade-in slide-in-from-top-2 duration-300">
+                  {/* Dropdown Header / Toggle Bar */}
+                  <button
+                    type="button"
+                    onClick={() => setIsPincodeDropdownOpen(!isPincodeDropdownOpen)}
+                    className={`w-full px-4 py-3 flex items-center justify-between transition-colors cursor-pointer text-left ${
+                      pincodeStatus.type === "success"
+                        ? "bg-[#FAF0DC]/90 hover:bg-[#FAF0DC]"
+                        : "bg-red-50/90 hover:bg-red-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                        pincodeStatus.type === "success" ? "bg-[#16A34A] text-white" : "bg-red-600 text-white"
+                      }`}>
+                        {pincodeStatus.type === "success" ? (
+                          <CheckCircle2 size={16} />
+                        ) : (
+                          <X size={16} />
+                        )}
+                      </div>
+                      <div>
+                        <span className={`text-[14px] font-black tracking-wide ${
+                          pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
+                        }`}>
+                          {pincodeStatus.type === "success"
+                            ? `Pincode ${pincodeStatus.pincode || pincode} is Serviceable!`
+                            : `Pincode ${pincodeStatus.pincode || pincode} is Non-Serviceable`}
+                        </span>
+                        <p className="text-[11.5px] font-semibold text-[#6E5D4F] leading-tight">
+                          Click to {isPincodeDropdownOpen ? "collapse" : "expand"} delivery details
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[#593102]">
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform duration-300 ${
+                          isPincodeDropdownOpen ? "rotate-180 text-[#D49313]" : ""
+                        }`}
+                      />
+                    </div>
+                  </button>
+
+                  {/* Dropdown Expandable Details Body */}
+                  {isPincodeDropdownOpen && (
+                    <div className="p-4 sm:p-5 border-t border-[#EADCC9]/60 space-y-4 bg-gradient-to-b from-white to-[#FFFDF9]">
+                      {/* Delivery Date Highlight */}
+                      {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
+                        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF0DC]/60 border border-[#D49313]/30">
+                          <Truck className="w-6 h-6 text-[#D49313] shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#593102] block">
+                              Estimated Delivery Date
+                            </span>
+                            <p className="text-[15px] font-bold text-[#16A34A] mt-0.5">
+                              {pincodeStatus.deliveryInfo.day1}
+                              <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord1}</sup>
+                              {pincodeStatus.deliveryInfo.month1 === pincodeStatus.deliveryInfo.month2 ? (
+                                <>
+                                  {" – "}
+                                  {pincodeStatus.deliveryInfo.day2}
+                                  <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
+                                  {" "}
+                                  {pincodeStatus.deliveryInfo.month1}
+                                </>
+                              ) : (
+                                <>
+                                  {" "}
+                                  {pincodeStatus.deliveryInfo.month1}
+                                  {" – "}
+                                  {pincodeStatus.deliveryInfo.day2}
+                                  <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
+                                  {" "}
+                                  {pincodeStatus.deliveryInfo.month2}
+                                </>
+                              )}
+                            </p>
+                          </div>
+                        </div>
                       ) : (
-                        <>
-                          {" "}
-                          {pincodeStatus.deliveryInfo.month1}
-                          {" and "}
-                          {pincodeStatus.deliveryInfo.day2}
-                          <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
-                          {" "}
-                          {pincodeStatus.deliveryInfo.month2}
-                        </>
+                        <p className={`text-[13px] font-semibold ${
+                          pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
+                        }`}>
+                          {pincodeStatus.message}
+                        </p>
                       )}
-                    </span>
-                  </div>
+
+                      {/* Location & Service Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
+                        {/* City / State */}
+                        {(pincodeStatus.city || pincodeStatus.state) && (
+                          <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white">
+                            <MapPin size={16} className="text-[#D49313] shrink-0" />
+                            <div>
+                              <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Location</span>
+                              <span className="font-extrabold text-[#593102]">
+                                {[pincodeStatus.city, pincodeStatus.state].filter(Boolean).join(", ")}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cash on Delivery */}
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white">
+                          <ShieldCheck size={16} className="text-[#16A34A] shrink-0" />
+                          <div>
+                            <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Payment Options</span>
+                            <span className="font-extrabold text-[#593102]">
+                              {pincodeStatus.cod ? "Prepaid & Cash on Delivery (COD)" : "Prepaid Delivery Available"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Courier Partner */}
+                        {pincodeStatus.courier && (
+                          <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white col-span-1 sm:col-span-2">
+                            <Truck size={16} className="text-[#593102] shrink-0" />
+                            <div>
+                              <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Courier Partner</span>
+                              <span className="font-extrabold text-[#593102]">
+                                {pincodeStatus.courier}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Quality Assurance Badges */}
+                      <div className="pt-2 border-t border-[#EADCC9]/50 flex items-center justify-between text-[11px] font-bold text-[#6E5D4F] flex-wrap gap-2">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#16A34A]" /> Safe Glass Jar Packaging
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#D49313]" /> Pan-India Express Shipping
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ) : pincodeStatus.type ? (
-                <p className={`text-[13px] font-medium mt-2 ${pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"}`}>
-                  {pincodeStatus.message}
-                </p>
-              ) : null}
+              )}
             </div>
 
             {/* Weight Selection */}
@@ -950,8 +1122,9 @@ export default function ProductDetailPage({
                       onVariantSelect={(vId: string) => handleRecVariantSelect(item._id, vId)}
                       onAddToCart={() => handleRecommendationCartAction(item)}
                       onBuyNow={async () => {
+                        const token = getStoredToken();
                         const session = getStoredSession();
-                        if (!session || !session.user?.mobile) {
+                        if (!token || !session || !session.user?.mobile) {
                           router.push("/login");
                           return;
                         }

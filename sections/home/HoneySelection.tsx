@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 import {
   type ApiProduct,
   getProductId,
@@ -173,8 +173,9 @@ export default function HoneySelection() {
 
   // ---------- Buy Now (Adds to cart & redirects to login if guest, else /cart) ----------
   const handleBuyNow = async (product: ApiProduct) => {
+    const token = getStoredToken();
     const session = getStoredSession();
-    if (!session || !session.user?.mobile) {
+    if (!token || !session || !session.user?.mobile) {
       router.push("/login");
       return;
     }

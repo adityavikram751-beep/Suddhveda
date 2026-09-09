@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
@@ -100,8 +100,9 @@ export default function Cart() {
     const [appliedCouponsList, setAppliedCouponsList] = useState<any[]>([]);
 
     useEffect(() => {
+        const token = getStoredToken();
         const session = getStoredSession();
-        if (!session || !session.user?.mobile) {
+        if (!token || !session || !session.user?.mobile) {
             router.push("/login");
             return;
         }
@@ -1227,8 +1228,9 @@ export function OrderSummaryWithCoupons({
                 <button
                     type="button"
                     onClick={() => {
+                        const token = getStoredToken();
                         const session = getStoredSession();
-                        if (!session || !session.user?.mobile) {
+                        if (!token || !session || !session.user?.mobile) {
                             router.push("/login");
                             return;
                         }
