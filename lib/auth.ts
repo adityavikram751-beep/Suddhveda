@@ -103,8 +103,15 @@ export function clearSession() {
     window.localStorage.removeItem("sudhveda_token");
     window.localStorage.removeItem("token");
     window.localStorage.removeItem("accessToken");
+    window.localStorage.removeItem("user");
+    window.localStorage.removeItem("session");
+    window.localStorage.removeItem("sudhveda_guest_cart");
+    window.localStorage.removeItem("sudhveda_guest_wishlist");
+    if (typeof window !== "undefined") {
+      window.sessionStorage.clear();
+    }
     if (typeof document !== "undefined") {
-      const names = ["sudhveda_token", "token", "accessToken", "jwt"];
+      const names = ["sudhveda_token", "token", "accessToken", "jwt", "session"];
       names.forEach((name) => {
         document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
         if (typeof window !== "undefined") {
@@ -115,6 +122,8 @@ export function clearSession() {
   } catch { }
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+    window.dispatchEvent(new CustomEvent("wishlist-count-update", { detail: { count: 0 } }));
+    window.dispatchEvent(new CustomEvent("trigger-live-update", { detail: { count: 0 } }));
   }
 }
 

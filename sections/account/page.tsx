@@ -683,8 +683,7 @@ export default function MyOrdersPage() {
         }
         clearSession();
         setSession(null);
-        window.dispatchEvent(new Event("auth-changed"));
-        window.location.href = "/login";
+        router.push("/login");
     }
 
     if (!session) {

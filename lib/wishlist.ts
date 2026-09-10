@@ -10,7 +10,12 @@ export function getGuestWishlist(): string[] {
   if (typeof window === "undefined") return [];
   try {
     const data = localStorage.getItem(GUEST_WISHLIST_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    if (Array.isArray(parsed)) {
+      return Array.from(new Set(parsed)).filter(Boolean).map(String);
+    }
+    return [];
   } catch {
     return [];
   }

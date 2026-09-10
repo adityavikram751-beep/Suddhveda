@@ -317,9 +317,19 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
     const handleAuthChanged = async () => {
       console.log("🔐 User Auth Changed! Triggering automatic cart & wishlist sync...");
-      const { syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
-      await syncGuestWishlistOnLogin();
-      await fetchCart();
+      const token = getTokenFromCookie();
+      if (token) {
+        const { syncGuestWishlistOnLogin } = await import("@/lib/wishlist");
+        await syncGuestWishlistOnLogin();
+        await fetchCart();
+      } else {
+        setCartItems({});
+        setApiCartCount(null);
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("sudhveda_guest_cart");
+          localStorage.removeItem("sudhveda_guest_wishlist");
+        }
+      }
     };
 
     window.addEventListener("trigger-live-update", handleLiveCartUpdate);

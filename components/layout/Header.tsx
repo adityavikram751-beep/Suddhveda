@@ -95,8 +95,9 @@ export default function Header() {
   // ---------- Fetch Wishlist Count ----------
   const fetchWishlistCount = async () => {
     try {
+      const token = getStoredToken();
       const sessionData = getStoredSession();
-      if (!sessionData) {
+      if (!token || !sessionData) {
         const { getGuestWishlist } = await import("@/lib/wishlist");
         const guestIds = getGuestWishlist();
         setWishlistCount(guestIds.length);
@@ -106,10 +107,13 @@ export default function Header() {
       const res = await fetch(`${API_BASE_URL}/api/wishlist/product-count`, {
         method: "GET",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      if (res.status === 401) {
+      if (res.status === 401 || res.status === 403) {
         const { getGuestWishlist } = await import("@/lib/wishlist");
         const guestIds = getGuestWishlist();
         setWishlistCount(guestIds.length);
@@ -145,8 +149,9 @@ export default function Header() {
   // ---------- Fetch Cart Count ----------
   const fetchCartCount = async () => {
     try {
+      const token = getStoredToken();
       const sessionData = getStoredSession();
-      if (!sessionData) {
+      if (!token || !sessionData) {
         setCartCount(ctxItemCount);
         return;
       }
@@ -154,10 +159,13 @@ export default function Header() {
       const res = await fetch(`${API_BASE_URL}/api/cart/count`, {
         method: "GET",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      if (res.status === 401) {
+      if (res.status === 401 || res.status === 403) {
         setCartCount(ctxItemCount);
         return;
       }
@@ -216,20 +224,13 @@ export default function Header() {
       console.error("Logout API error:", error);
     } finally {
       clearAllCookies();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("session");
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
-      sessionStorage.removeItem("session");
       clearSession();
       setSession(null);
       setAccountOpen(false);
       setOpen(false);
       setWishlistCount(0);
       setCartCount(0);
-      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
-      window.location.href = "/login";
+      router.push("/login");
     }
   };
 
@@ -312,10 +313,10 @@ export default function Header() {
     document.addEventListener("mousedown", closeOnOutsideClick);
     window.addEventListener("wishlist-count-update", handleWishlistUpdate);
     window.addEventListener("cart-count-update", handleCartUpdate);
-    window.addEventListener("trigger-live-update", fetchCartCount);
-    window.addEventListener("cart-updated", fetchCartCount);
-    window.addEventListener("cartUpdated", fetchCartCount);
-    window.addEventListener("cart_updated", fetchCartCount);
+    window.addEventListener("trigger-live-update", handleCartUpdate);
+    window.addEventListener("cart-updated", handleCartUpdate);
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    window.addEventListener("cart_updated", handleCartUpdate);
 
     return () => {
       clearInterval(tokenCheckInterval);
@@ -329,10 +330,10 @@ export default function Header() {
       document.removeEventListener("mousedown", closeOnOutsideClick);
       window.removeEventListener("wishlist-count-update", handleWishlistUpdate);
       window.removeEventListener("cart-count-update", handleCartUpdate);
-      window.removeEventListener("trigger-live-update", fetchCartCount);
-      window.removeEventListener("cart-updated", fetchCartCount);
-      window.removeEventListener("cartUpdated", fetchCartCount);
-      window.removeEventListener("cart_updated", fetchCartCount);
+      window.removeEventListener("trigger-live-update", handleCartUpdate);
+      window.removeEventListener("cart-updated", handleCartUpdate);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+      window.removeEventListener("cart_updated", handleCartUpdate);
     };
   }, []);
 
