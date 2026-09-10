@@ -342,6 +342,14 @@ export default function Header() {
   }, [session]);
 
   useEffect(() => {
+    if (ctxItemCount !== undefined) {
+      setCartCount(ctxItemCount);
+    }
+  }, [ctxItemCount]);
+
+  const displayCartCount = session ? Math.max(cartCount, ctxItemCount) : ctxItemCount;
+
+  useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
@@ -677,10 +685,10 @@ export default function Header() {
               aria-label="Open cart"
             >
               <FiShoppingCart size={22} />
-              <span data-cart-count={cartCount} />
-              {cartCount > 0 && (
+              <span data-cart-count={displayCartCount} />
+              {displayCartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#593102] px-1.5 text-[11px] font-bold text-white">
-                  {cartCount}
+                  {displayCartCount}
                 </span>
               )}
             </button>

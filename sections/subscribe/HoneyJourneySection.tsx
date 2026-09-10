@@ -10,7 +10,7 @@ const journeyItems = [
         stepNumber: "01",
         title: "Mustard Honey",
         collection: "Winter Harvest Collection",
-        image: "/occession1.png",
+        image: "/mustard honey.png",
         bgColor: "bg-[#FEF9C3]",
         textColor: "text-[#854D0E]",
         borderColor: "border-[#FDE047]",
@@ -22,7 +22,7 @@ const journeyItems = [
         stepNumber: "02",
         title: "Litchi Honey",
         collection: "Spring Blossom Collection",
-        image: "/occession2.png",
+        image: "/litchi honey.png",
         bgColor: "bg-[#FCE7F3]",
         textColor: "text-[#9D174D]",
         borderColor: "border-[#F472B6]",
@@ -34,7 +34,7 @@ const journeyItems = [
         stepNumber: "03",
         title: "Multiflora Honey",
         collection: "Nature's Bouquet Collection",
-        image: "/occession3.png",
+        image: "/multi flora.png",
         bgColor: "bg-[#F3E8FF]",
         textColor: "text-[#6B21A8]",
         borderColor: "border-[#C084FC]",
@@ -46,7 +46,7 @@ const journeyItems = [
         stepNumber: "04",
         title: "Natural Honey",
         collection: "Pure Origins Collection",
-        image: "/occession4.png",
+        image: "/natural honey.png",
         bgColor: "bg-[#D1FAE5]",
         textColor: "text-[#065F46]",
         borderColor: "border-[#34D399]",
@@ -58,7 +58,7 @@ const journeyItems = [
         stepNumber: "05",
         title: "Fennel Honey",
         collection: "Herbal Wellness Collection",
-        image: "/occession5.png",
+        image: "/fennel honey.png",
         bgColor: "bg-[#DCFCE7]",
         textColor: "text-[#166534]",
         borderColor: "border-[#4ADE80]",
@@ -70,7 +70,7 @@ const journeyItems = [
         stepNumber: "06",
         title: "Ajwain Honey",
         collection: "Ayurvedic Heritage Collection",
-        image: "/occession6.png",
+        image: "/ajwain honey.png",
         bgColor: "bg-[#FFEDD5]",
         textColor: "text-[#9A3412]",
         borderColor: "border-[#FB923C]",
@@ -126,7 +126,7 @@ export default function HoneyJourneySection() {
                     onMouseLeave={() => setIsPlaying(true)}
                 >
                     {/* Horizontal Gold Progress Line */}
-                    <div className="hidden lg:block absolute top-[92px] left-[8%] right-[8%] h-1.5 bg-[#FAF0DC] rounded-full z-0 overflow-hidden border border-[#EADCC9]/70 shadow-inner">
+                    <div className="hidden lg:block absolute top-[108px] left-[8%] right-[8%] h-1.5 bg-[#FAF0DC] rounded-full z-0 overflow-hidden border border-[#EADCC9]/70 shadow-inner">
                         <div
                             className="h-full bg-gradient-to-r from-[#FA4B1B] via-[#FF6F3C] to-[#FA4B1B] transition-all duration-700 ease-out rounded-full"
                             style={{ width: `${(activeIndex / (journeyItems.length - 1)) * 100}%` }}
@@ -159,18 +159,18 @@ export default function HoneyJourneySection() {
 
                                     {/* Thumbnail Circle Frame with Glowing Ring */}
                                     <div
-                                        className={`relative h-24 w-24 sm:h-32 sm:w-32 rounded-full border-3 sm:border-4 transition-all duration-500 flex items-center justify-center overflow-hidden ${isCurrent
-                                            ? "border-[#FA4B1B] scale-108 sm:scale-112 shadow-[0_8px_24px_rgba(250,75,27,0.4)] ring-4 ring-[#FA4B1B]/30 bg-white"
+                                        className={`relative h-28 w-28 sm:h-36 sm:w-36 lg:h-[150px] lg:w-[150px] rounded-full border-3 sm:border-4 transition-all duration-500 flex items-center justify-center overflow-hidden bg-white ${isCurrent
+                                            ? "border-[#FA4B1B] scale-108 sm:scale-112 shadow-[0_10px_30px_rgba(250,75,27,0.45)] ring-4 ring-[#FA4B1B]/30"
                                             : isCompleted
-                                                ? "border-[#FA4B1B]/80 shadow-md ring-2 ring-[#FA4B1B]/20 bg-white"
-                                                : "border-white shadow-sm bg-white/70 opacity-65 group-hover:opacity-100 group-hover:scale-105"
+                                                ? "border-[#FA4B1B]/80 shadow-md ring-2 ring-[#FA4B1B]/20"
+                                                : "border-white shadow-sm opacity-80 group-hover:opacity-100 group-hover:scale-105"
                                             }`}
                                     >
                                         <Image
                                             src={item.image}
                                             alt={item.title}
                                             fill
-                                            className="object-cover w-full h-full rounded-full transition-transform duration-500 group-hover:scale-110"
+                                            className="object-contain p-1 scale-110 w-full h-full rounded-full transition-transform duration-500 group-hover:scale-125"
                                         />
 
                                         {/* Completed Checkmark Badge */}

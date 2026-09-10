@@ -192,6 +192,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     isFetchingRef.current = true;
     try {
       setIsLoading(true);
+
+      const token = getTokenFromCookie();
+      if (!token) {
+        const guestItems = getGuestCart();
+        setCartItems(guestItems);
+        setApiCartCount(null);
+        return guestItems;
+      }
       
       // 1. Sync guest cart items to backend database FIRST if any exist
       await syncGuestCartOnLogin();

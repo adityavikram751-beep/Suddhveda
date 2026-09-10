@@ -15,10 +15,7 @@ export type AuthSession = {
 const AUTH_STORAGE_KEY = "sudhveda_auth_session";
 export const AUTH_CHANGED_EVENT = "sudhveda-auth-changed";
 
-// ---------- Session & Token functions ----------
-// NOTE: Backend sends httpOnly cookie, but cross-domain 3rd party cookies
-// can be blocked by browsers. We also extract and save token in document.cookie / localStorage
-// so Authorization: Bearer <token> header can always be sent as backup.
+
 
 export function extractToken(data: unknown): string | null {
   if (typeof data !== "object" || data === null) return null;
@@ -52,7 +49,6 @@ export function getStoredToken(): string | null {
     if (cookieMatch && cookieMatch[2]) return decodeURIComponent(cookieMatch[2]);
   } catch { }
 
-  // Cookie is missing or deleted: purge stale localStorage auth state
   try {
     window.localStorage.removeItem(AUTH_STORAGE_KEY);
     window.localStorage.removeItem("sudhveda_token");
@@ -92,7 +88,6 @@ export function saveSession(session: AuthSession) {
     try {
       window.localStorage.setItem("sudhveda_token", token);
       window.localStorage.setItem("token", token);
-      // Max-age: 1 year (31,536,000s) so session persists across days/weeks/months
       document.cookie = `sudhveda_token=${encodeURIComponent(token)}; path=/; max-age=31536000; SameSite=Lax`;
     } catch (e) {
       console.error("Error saving token to cookie/localStorage:", e);
@@ -161,7 +156,6 @@ export async function ensureValidSession(): Promise<AuthSession | null> {
 
 export async function logout() {
   try {
-    // Ask backend to clear the httpOnly cookie too
     await fetch(`${API_BASE_URL}/api/users/logout`, {
       method: "POST",
       credentials: "include",
@@ -189,7 +183,7 @@ export function getInitials(user?: AuthUser | null) {
 async function postApi<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
-    credentials: "include", // 👈 sends & receives the httpOnly cookie cross-origin
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
