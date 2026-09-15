@@ -106,8 +106,10 @@ export default function HoneySelection() {
   }, []);
 
   // ---------- Auto Slide for Mobile ----------
+  const [isPaused, setIsPaused] = useState(false);
+
   useEffect(() => {
-    if (products.length === 0) return;
+    if (products.length === 0 || isPaused) return;
 
     let currentIndex = 0;
     const interval = setInterval(() => {
@@ -123,7 +125,7 @@ export default function HoneySelection() {
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [products]);
+  }, [products, isPaused]);
 
   // ---------- Variant Selection ----------
   const handleVariantSelect = (productId: string, variantId: string) => {
@@ -275,6 +277,11 @@ export default function HoneySelection() {
           <div className="relative">
             <div
               ref={sliderRef}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setIsPaused(false)}
+              onTouchCancel={() => setIsPaused(false)}
               className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
             >
               {products.map((product, idx) => {

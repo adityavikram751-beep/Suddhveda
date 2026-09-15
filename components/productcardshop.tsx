@@ -114,7 +114,7 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border-0 bg-white p-4 sm:p-5 shadow-none transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 mx-auto"
+      className="relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9]/60 bg-[#FCF9F3] p-4 sm:p-5 shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto"
     >
 
       {/* Wishlist Button (Top Left) */}
@@ -134,13 +134,13 @@ export default function ProductCardShop({
         />
       </button>
 
-      {/* Dynamic Product Image */}
-      <div className="relative mt-3 h-[175px] sm:h-[195px] w-full overflow-hidden shrink-0 flex items-center justify-center">
+      {/* Dynamic Product Image - Bottle Shifted Upwards & Slightly Larger */}
+      <div className="relative mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] w-full overflow-hidden shrink-0 flex items-center justify-center">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-1 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-0 -translate-y-2.5 sm:-translate-y-3.5 scale-115 sm:scale-120 group-hover:scale-125 group-hover:-translate-y-4 transition-transform duration-500"
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>
@@ -195,7 +195,7 @@ export default function ProductCardShop({
                         ? "bg-[#593102] text-white border-[#593102] shadow-2xs scale-105"
                         : outOfStock
                         ? "bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed opacity-60"
-                        : "bg-[#FAF0DC]/80 hover:bg-[#FAF0DC] text-[#593102] border-[#D49313]/40 hover:border-[#D49313]"
+                        : "bg-white/90 hover:bg-white text-[#593102] border-[#EADCC9] hover:border-[#D49313]"
                     }`}
                   >
                     {label}

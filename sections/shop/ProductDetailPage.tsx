@@ -629,7 +629,7 @@ export default function ProductDetailPage({
             </div>
 
             {/* MAIN MEDIA DISPLAY */}
-            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-4 md:p-6 flex items-center justify-center relative w-full h-[380px] sm:h-[480px] lg:h-[540px] overflow-hidden shadow-2xs">
+            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full h-[380px] sm:h-[480px] lg:h-[540px] overflow-hidden shadow-2xs">
               {selectedMedia?.type === "video" ? (
                 <video
                   src={selectedMedia.url}
@@ -637,7 +637,7 @@ export default function ProductDetailPage({
                   autoPlay
                   loop
                   muted
-                  className="w-full h-full object-contain rounded-2xl"
+                  className="w-full h-full object-cover rounded-3xl"
                 />
               ) : (
                 selectedMedia?.url && (
@@ -645,7 +645,7 @@ export default function ProductDetailPage({
                     src={selectedMedia.url}
                     alt={product.product_name || "Product Media"}
                     fill
-                    className="object-contain p-2 rounded-2xl"
+                    className="object-cover object-center transition-transform duration-500 hover:scale-105 rounded-3xl"
                     priority
                   />
                 )
@@ -1089,6 +1089,9 @@ export default function ProductDetailPage({
               ref={recSliderRef}
               onMouseEnter={() => setIsRecHovered(true)}
               onMouseLeave={() => setIsRecHovered(false)}
+              onTouchStart={() => setIsRecHovered(true)}
+              onTouchEnd={() => setIsRecHovered(false)}
+              onTouchCancel={() => setIsRecHovered(false)}
               className="flex overflow-x-auto snap-x snap-mandatory gap-6 pt-3 pb-8 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               {recommendations.map((item: any) => {
