@@ -266,15 +266,6 @@ export default function Footer() {
                   Products
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* ================= Products Information ================= */}
-          <div>
-            <h3 className="text-[16px] font-semibold">
-              Products Information
-            </h3>
-            <ul className="mt-5 space-y-3">
               <li>
                 <Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Contact Us
@@ -285,6 +276,16 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* ================= Products Information ================= */}
+          <div>
+            <h3 className="text-[16px] font-semibold">
+              Products Information
+            </h3>
+            <ul className="mt-5 space-y-3">
+
               <li>
                 <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Privacy Policy
