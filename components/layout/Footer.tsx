@@ -117,10 +117,14 @@ export default function Footer() {
             <div className="w-full">
               <h3 className="text-[16px] font-semibold text-center sm:text-left">Quick Links</h3>
               <ul className="mt-4 space-y-2.5 text-center sm:text-left">
+                <li><Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">About Us</Link></li>
+
                 <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">All Honey</Link></li>
                 <li><Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">My Account</Link></li>
                 <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Policies &amp; Information</Link></li>
                 <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Products</Link></li>
+                <li><Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Contact Us</Link></li>
+
               </ul>
             </div>
 
@@ -128,8 +132,6 @@ export default function Footer() {
             <div className="w-full">
               <h3 className="text-[16px] font-semibold text-center sm:text-left">Products Information</h3>
               <ul className="mt-4 space-y-2.5 text-center sm:text-left">
-                <li><Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Contact Us</Link></li>
-                <li><Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">About Us</Link></li>
                 <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Terms &amp; Conditions</Link></li>
                 <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Return Policy</Link></li>
