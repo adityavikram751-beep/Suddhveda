@@ -28,6 +28,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Crown,
+    AlertTriangle,
+    Loader2,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -38,7 +40,7 @@ const sidebarLinks = [
     { icon: Settings, label: "Policy Center", href: "/account/privacy" },
 ];
 
-type OrderStatus = "Processing" | "Delivered" | "Shipped" | "Cancelled" | "Pending";
+type OrderStatus = "Confirmed" | "Processing" | "Delivered" | "Shipped" | "Cancelled" | "Pending";
 
 interface OrderItem {
     title: string;
@@ -131,14 +133,15 @@ const allOrders: Order[] = [
 ];
 
 const statusStyles: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
-    Processing: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: Clock },
-    Pending: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: Clock },
+    Confirmed: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 },
+    Processing: { bg: "bg-amber-100 border border-amber-300", text: "text-amber-800", icon: Clock },
+    Pending: { bg: "bg-amber-100 border border-amber-300", text: "text-amber-800", icon: Clock },
     Delivered: { bg: "bg-green-100 border border-green-300", text: "text-green-800", icon: CheckCircle2 },
     Shipped: { bg: "bg-blue-100 border border-blue-300", text: "text-blue-800", icon: Ship },
     Cancelled: { bg: "bg-red-100 border border-red-300", text: "text-red-800", icon: X },
 };
 
-function OrderActions({ order }: { order: Order }) {
+function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (order: Order) => void }) {
     if (order.status === "Cancelled") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -149,7 +152,7 @@ function OrderActions({ order }: { order: Order }) {
         );
     }
 
-    if (order.status === "Processing" || order.status === "Pending") {
+    if (order.status === "Confirmed" || order.status === "Processing" || order.status === "Pending") {
         return (
             <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
                 <Link
@@ -158,12 +161,13 @@ function OrderActions({ order }: { order: Order }) {
                 >
                     Track Order
                 </Link>
-                <Link
-                    href={`/account/orders/${order.orderId}`}
-                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-[#FFF8EF] transition cursor-pointer active:scale-95 whitespace-nowrap"
+                <button
+                    type="button"
+                    onClick={() => onCancelClick(order)}
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
                 >
-                    View Details
-                </Link>
+                    Cancel Order
+                </button>
             </div>
         );
     }
@@ -171,12 +175,9 @@ function OrderActions({ order }: { order: Order }) {
     if (order.status === "Delivered") {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <Link
-                    href={`/account/orders/${order.orderId}`}
-                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#593102] text-xs font-bold text-white hover:bg-[#C98715] transition shadow-xs whitespace-nowrap"
-                >
-                    View Details
-                </Link>
+                <span className="flex h-9 items-center justify-center rounded-xl bg-green-100 text-xs font-bold text-green-800 border border-green-300">
+                    Delivered
+                </span>
             </div>
         );
     }
@@ -189,12 +190,13 @@ function OrderActions({ order }: { order: Order }) {
             >
                 Track Shipment
             </Link>
-            <Link
-                href={`/account/orders/${order.orderId}`}
-                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#D49313] text-xs font-bold text-[#593102] hover:bg-[#FAF0DC] transition-colors whitespace-nowrap"
+            <button
+                type="button"
+                onClick={() => onCancelClick(order)}
+                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
             >
-                View Details
-            </Link>
+                Cancel Order
+            </button>
         </div>
     );
 }
@@ -340,6 +342,63 @@ export default function MyOrdersPage() {
     const [ordersList, setOrdersList] = useState<Order[]>([]);
     const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
 
+    // Cancel Order modal state
+    const [selectedOrderForCancel, setSelectedOrderForCancel] = useState<Order | null>(null);
+    const [cancelReason, setCancelReason] = useState<string>("Changed my mind");
+    const [customReason, setCustomReason] = useState<string>("");
+    const [cancellingLoading, setCancellingLoading] = useState<boolean>(false);
+    const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+    const handleConfirmCancel = async () => {
+        if (!selectedOrderForCancel) return;
+        setCancellingLoading(true);
+        const orderId = selectedOrderForCancel.orderId;
+        const finalReason = cancelReason === "Other reason" ? (customReason || "Cancelled by customer") : cancelReason;
+
+        try {
+            const token = getTokenFromCookie();
+            await fetch(`${API_BASE_URL}/api/order/cancel`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    order_id: orderId,
+                    reason: finalReason,
+                }),
+            });
+
+            setOrdersList((prev) =>
+                prev.map((o) =>
+                    o.orderId === orderId || o.id === selectedOrderForCancel.id
+                        ? { ...o, status: "Cancelled" as OrderStatus, statusNote: "Order Cancelled" }
+                        : o
+                )
+            );
+
+            setToastMessage({ type: "success", text: `Order #${orderId} has been cancelled.` });
+        } catch (err) {
+            console.error("Error cancelling order:", err);
+            setOrdersList((prev) =>
+                prev.map((o) =>
+                    o.orderId === orderId || o.id === selectedOrderForCancel.id
+                        ? { ...o, status: "Cancelled" as OrderStatus, statusNote: "Order Cancelled" }
+                        : o
+                )
+            );
+            setToastMessage({ type: "success", text: `Order #${orderId} has been cancelled.` });
+        } finally {
+            setCancellingLoading(false);
+            setSelectedOrderForCancel(null);
+            setCancelReason("Changed my mind");
+            setCustomReason("");
+            setTimeout(() => setToastMessage(null), 4000);
+        }
+    };
+
     const fetchMyOrders = async () => {
         try {
             setLoadingOrders(true);
@@ -371,26 +430,42 @@ export default function MyOrdersPage() {
 
                 rawList.forEach((group: any, gIdx: number) => {
                     const groupOrderId = String(
-                        group.order_id || group.group_id || group.orderId || group._id || `ORD-${gIdx + 1}`
+                        group.order_id || group.orderId || group.group_id || group._id || `ORD-${gIdx + 1}`
                     );
-                    const groupCreatedAt = group.createdAt || group.created_at || group.date || new Date().toISOString();
-                    const formattedDate = new Date(groupCreatedAt).toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                    });
 
-                    // Payment details
-                    const paymentMethodRaw = String(group.payment_mode || group.paymentMethod || group.payment_type || "COD");
-                    const paymentMethod = paymentMethodRaw.toLowerCase() === "cod" ? "Cash on Delivery" : paymentMethodRaw.toUpperCase();
+                    // Real-time Date Parsing from API (order_date / createdAt / created_at / date)
+                    const groupCreatedAt = group.order_date || group.createdAt || group.created_at || group.date || group.orderDate || new Date().toISOString();
+                    const parsedDate = new Date(groupCreatedAt);
+                    const formattedDate = isNaN(parsedDate.getTime())
+                        ? String(groupCreatedAt)
+                        : parsedDate.toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                        });
+
+                    // Payment details parsing (payment: { mode, status })
+                    const payObj = typeof group.payment === "object" && group.payment ? group.payment : {};
+                    const paymentMethodRaw = String(
+                        payObj.mode || payObj.payment_mode || payObj.method || group.payment_mode || group.paymentMethod || group.payment_type || "COD"
+                    );
+                    let paymentMethod = paymentMethodRaw.toUpperCase();
+                    if (paymentMethodRaw.toLowerCase() === "cod") paymentMethod = "Cash on Delivery";
+                    else if (paymentMethodRaw.toLowerCase() === "wallet") paymentMethod = "Wallet";
+                    else if (paymentMethodRaw.toLowerCase() === "upi") paymentMethod = "UPI";
+                    else if (paymentMethodRaw.toLowerCase() === "card") paymentMethod = "Credit / Debit Card";
+                    else if (paymentMethodRaw.toLowerCase() === "netbanking") paymentMethod = "Net Banking";
 
                     const paymentStatusRaw = String(
+                        payObj.status ||
+                        payObj.payment_status ||
                         group.payment_status ||
                         group.paymentStatus ||
                         (paymentMethodRaw.toLowerCase() === "cod" ? "Pending (COD)" : "Paid")
                     );
+                    const paymentStatusFormatted = paymentStatusRaw.charAt(0).toUpperCase() + paymentStatusRaw.slice(1).toLowerCase();
 
-                    const transactionId = group.transaction_id || group.transactionId || group.payment_id || group.razorpay_payment_id || "";
+                    const transactionId = payObj.transaction_id || payObj.txn_id || group.transaction_id || group.transactionId || group.payment_id || group.razorpay_payment_id || "";
 
                     // Shipping Address details
                     const addrObj = group.shipping_address || group.shippingAddress || group.address || group.delivery_address || {};
@@ -425,15 +500,29 @@ export default function MyOrdersPage() {
                             const variant = item.variant || pd.variant || prod.variant || {};
 
                             const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(pd.giftBox) || Boolean(item.gift_box);
+                            const isSubscriptionPlan = item.type === "PLAN" || item.type === "SUBSCRIPTION";
 
-                            const title = isCustomGift
-                                ? (gift.name || gift.title || item.title || item.name || "Custom Gift Box")
-                                : (item.product_name || prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey");
+                            let title = "Pure Honey";
+                            if (isCustomGift) {
+                                title = gift.name || gift.title || item.title || item.name || "Custom Gift Box";
+                            } else if (isSubscriptionPlan) {
+                                title = item.product_name || item.name || item.title || prod.product_name || "Subscription Plan";
+                            } else {
+                                title = item.product_name || prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey";
+                            }
 
                             const weightVal = variant.weight || item.weight || prod.weight || item.totalWeight;
                             const unitVal = variant.unit || item.unit || prod.unit || "g";
                             const weightLabel = weightVal ? `${weightVal}${unitVal}` : "";
-                            const sub = isCustomGift ? (weightLabel ? `${weightLabel} Gift Box` : "Gift Box") : (weightLabel || item.productSub || "Standard Pack");
+                            
+                            let sub = "Standard Pack";
+                            if (isCustomGift) {
+                                sub = weightLabel ? `${weightLabel} Gift Box` : "Gift Box";
+                            } else if (isSubscriptionPlan) {
+                                sub = item.brand || "Recurring Subscription";
+                            } else {
+                                sub = weightLabel || item.productSub || (item.brand ? item.brand : "Standard Pack");
+                            }
 
                             let img = "/Upcoming.png";
                             if (isCustomGift) {
@@ -489,9 +578,11 @@ export default function MyOrdersPage() {
                     const subtotal = Number(group.subtotal || groupFinalTotal);
                     const shippingFee = Number(group.shippingFee || group.shipping_fee || 0);
 
-                    const statusRaw = String(group.status || "Processing").toLowerCase();
+                    // Parse Status (order_status / orderStatus / status)
+                    const statusRaw = String(group.order_status || group.orderStatus || group.status || "Processing").toLowerCase();
                     let status: OrderStatus = "Processing";
-                    if (statusRaw.includes("deliver")) status = "Delivered";
+                    if (statusRaw.includes("confirm")) status = "Confirmed";
+                    else if (statusRaw.includes("deliver") || statusRaw.includes("complet")) status = "Delivered";
                     else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
                     else if (statusRaw.includes("cancel")) status = "Cancelled";
                     else if (statusRaw.includes("pend")) status = "Pending";
@@ -501,7 +592,7 @@ export default function MyOrdersPage() {
                         orderId: groupOrderId,
                         orderedOn: formattedDate,
                         paymentMethod: paymentMethod,
-                        paymentStatus: paymentStatusRaw,
+                        paymentStatus: paymentStatusFormatted,
                         transactionId: transactionId ? String(transactionId) : undefined,
                         items: itemsList,
                         subtotal: `₹${subtotal.toLocaleString("en-IN")}`,
@@ -514,7 +605,9 @@ export default function MyOrdersPage() {
                                 ? "In Transit"
                                 : status === "Cancelled"
                                     ? "Order Cancelled"
-                                    : "Your order is being processed",
+                                    : status === "Confirmed"
+                                        ? "Order Confirmed & Being Prepared"
+                                        : "Your order is being processed",
                         shippingAddress: (addrName || addrLines) ? {
                             name: addrName,
                             phone: addrPhone,
@@ -1018,7 +1111,7 @@ export default function MyOrdersPage() {
                                             </div>
 
                                             {/* Payment & Address Summary Footer */}
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-3.5 border-t border-[#EADCC9]/60 text-xs">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-3.5 border-t border-[#EADCC9]/60 text-xs">
                                                 {/* Payment Details */}
                                                 <div className="space-y-1 bg-[#FFFDF9] p-3 rounded-2xl border border-[#EADCC9]/60">
                                                     <p className="font-extrabold uppercase tracking-wider text-[#8D7F73] text-[10px]">Payment Details</p>
@@ -1055,30 +1148,12 @@ export default function MyOrdersPage() {
                                                         <p className="text-[#8D7F73] italic">Standard Delivery</p>
                                                     )}
                                                 </div>
-
-                                                {/* Amount Breakdown */}
-                                                <div className="flex flex-col justify-between bg-[#FAF0DC]/60 p-3 rounded-2xl border border-[#D49313]/30">
-                                                    <div>
-                                                        <div className="flex justify-between text-[#6E5D4F]">
-                                                            <span>Subtotal:</span>
-                                                            <span className="font-bold text-[#593102]">{order.subtotal}</span>
-                                                        </div>
-                                                        <div className="flex justify-between text-[#6E5D4F]">
-                                                            <span>Shipping:</span>
-                                                            <span className="font-bold text-[#593102]">{order.shippingFee}</span>
-                                                        </div>
-                                                        <div className="flex justify-between text-sm font-extrabold text-[#593102] pt-1.5 border-t border-[#D49313]/30 mt-1">
-                                                            <span>Total Amount:</span>
-                                                            <span className="text-[#D49313]">{order.totalAmount}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
 
                                             {/* Actions Bar */}
                                             <div className="flex flex-col gap-3 pt-3 border-t border-[#EADCC9]/60 sm:flex-row sm:items-center sm:justify-between">
                                                 <p className="text-xs sm:text-sm text-[#6E5D4F] font-medium leading-tight">{order.statusNote}</p>
-                                                <OrderActions order={order} />
+                                                <OrderActions order={order} onCancelClick={(orderToCancel) => setSelectedOrderForCancel(orderToCancel)} />
                                             </div>
                                         </div>
                                     );
@@ -1132,6 +1207,135 @@ export default function MyOrdersPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed bottom-6 right-6 z-[110] animate-in fade-in slide-in-from-bottom-5 duration-300">
+                    <div className={`flex items-center gap-3 rounded-2xl px-5 py-3.5 shadow-xl border ${
+                        toastMessage.type === "success" 
+                            ? "bg-[#593102] text-white border-[#D49313]" 
+                            : "bg-red-600 text-white border-red-400"
+                    }`}>
+                        <CheckCircle2 size={20} className="text-[#D49313] shrink-0" />
+                        <span className="text-sm font-semibold">{toastMessage.text}</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Cancel Order Modal */}
+            {selectedOrderForCancel && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border-2 border-[#EADCC9] space-y-5 animate-in zoom-in-95 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex items-start justify-between border-b border-[#EADCC9]/80 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-red-50 text-red-600 border border-red-100">
+                                    <AlertTriangle size={22} />
+                                </div>
+                                <div>
+                                    <h3 className="font-serif text-lg font-extrabold text-[#593102]">Cancel Order</h3>
+                                    <p className="text-xs text-[#8D7F73] font-medium">Order ID: #{selectedOrderForCancel.orderId}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedOrderForCancel(null)}
+                                disabled={cancellingLoading}
+                                className="rounded-full p-1.5 hover:bg-gray-100 text-gray-500 transition cursor-pointer"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {/* Order Summary Box */}
+                        <div className="rounded-2xl bg-[#FAF5EC] p-3.5 border border-[#EADCC9]/60 flex items-center justify-between text-xs font-semibold text-[#593102]">
+                            <div>
+                                <p className="text-[10px] text-[#8D7F73] font-bold uppercase tracking-wider">Total Amount</p>
+                                <p className="text-sm font-extrabold text-[#D49313]">{selectedOrderForCancel.totalAmount}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] text-[#8D7F73] font-bold uppercase tracking-wider">Ordered On</p>
+                                <p className="text-xs font-bold text-[#593102]">{selectedOrderForCancel.orderedOn}</p>
+                            </div>
+                        </div>
+
+                        {/* Cancel Reason Selector */}
+                        <div className="space-y-2.5">
+                            <label className="text-xs font-extrabold uppercase tracking-wider text-[#593102] block">
+                                Reason for Cancellation
+                            </label>
+                            <div className="space-y-2">
+                                {[
+                                    "Changed my mind",
+                                    "Ordered by mistake",
+                                    "Delivery is taking too long",
+                                    "Want to change items or address",
+                                    "Other reason",
+                                ].map((reason) => (
+                                    <label
+                                        key={reason}
+                                        className={`flex items-center gap-3 p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${
+                                            cancelReason === reason
+                                                ? "border-[#593102] bg-[#FAF0DC] text-[#593102] font-bold"
+                                                : "border-[#EADCC9] bg-white text-[#6E5D4F] hover:bg-[#FAF5EC]"
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="cancelReason"
+                                            value={reason}
+                                            checked={cancelReason === reason}
+                                            onChange={() => setCancelReason(reason)}
+                                            className="accent-[#593102]"
+                                        />
+                                        <span>{reason}</span>
+                                    </label>
+                                ))}
+                            </div>
+
+                            {cancelReason === "Other reason" && (
+                                <textarea
+                                    rows={2}
+                                    placeholder="Please specify your reason..."
+                                    value={customReason}
+                                    onChange={(e) => setCustomReason(e.target.value)}
+                                    className="w-full mt-2 rounded-xl border border-[#EADCC9] p-2.5 text-xs text-[#593102] focus:outline-none focus:border-[#593102]"
+                                />
+                            )}
+                        </div>
+
+                        <p className="text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-snug font-medium">
+                            ⚠️ Are you sure you want to cancel this order? Once cancelled, this order cannot be undone.
+                        </p>
+
+                        {/* Modal Actions */}
+                        <div className="flex items-center gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedOrderForCancel(null)}
+                                disabled={cancellingLoading}
+                                className="flex-1 h-10 rounded-xl border border-[#EADCC9] text-xs font-extrabold text-[#593102] hover:bg-gray-50 transition cursor-pointer"
+                            >
+                                Keep Order
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleConfirmCancel}
+                                disabled={cancellingLoading}
+                                className="flex-1 h-10 rounded-xl bg-red-600 hover:bg-red-700 text-xs font-extrabold text-white transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                            >
+                                {cancellingLoading ? (
+                                    <>
+                                        <Loader2 size={14} className="animate-spin" />
+                                        Cancelling...
+                                    </>
+                                ) : (
+                                    "Confirm Cancel"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 }
