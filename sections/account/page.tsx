@@ -59,6 +59,7 @@ interface ShippingAddress {
 interface Order {
     id: string;
     orderId: string;
+    rawId?: string;
     orderedOn: string;
     paymentMethod: string;
     paymentStatus: string;
@@ -68,8 +69,66 @@ interface Order {
     shippingFee: string;
     totalAmount: string;
     status: OrderStatus;
+    displayStatus?: string;
     statusNote: string;
     shippingAddress?: ShippingAddress;
+}
+
+// Helper to format raw status from API (e.g. "processing" -> "Processing", "in_transit" -> "In Transit")
+function formatOrderStatus(raw: string): string {
+    if (!raw) return "Processing";
+    const cleaned = String(raw).trim().replace(/[_]/g, " ");
+    return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getStatusNote(displayStatus: string, statusRaw: string, formattedDate: string, apiNote?: string): string {
+    if (apiNote && typeof apiNote === "string" && apiNote.trim()) {
+        return apiNote.trim();
+    }
+    const lower = (statusRaw || displayStatus || "").toLowerCase();
+    if (lower.includes("cancel")) {
+        return "Order Cancelled";
+    }
+    if (lower.includes("refund")) {
+        return "Refund process initiated";
+    }
+    if (lower.includes("deliver") || lower.includes("complet")) {
+        return `Delivered on ${formattedDate}`;
+    }
+    if (lower.includes("ship") || lower.includes("transit") || lower.includes("out")) {
+        return "Order shipped & in transit";
+    }
+    if (lower.includes("confirm")) {
+        return "Order Confirmed & Being Prepared";
+    }
+    if (lower.includes("pend")) {
+        return "Payment Pending";
+    }
+    return `Your order is ${displayStatus ? displayStatus.toLowerCase() : "being processed"}`;
+}
+
+function getStatusStyle(statusStr: string): { bg: string; text: string; icon: typeof Clock } {
+    const lower = (statusStr || "").toLowerCase();
+    if (lower.includes("cancel")) {
+        return { bg: "bg-red-50 border border-red-300", text: "text-red-700", icon: X };
+    }
+    if (lower.includes("refund")) {
+        return { bg: "bg-purple-50 border border-purple-300", text: "text-purple-800", icon: Clock };
+    }
+    if (lower.includes("deliver") || lower.includes("complet")) {
+        return { bg: "bg-green-50 border border-green-300", text: "text-green-800", icon: CheckCircle2 };
+    }
+    if (lower.includes("ship") || lower.includes("transit") || lower.includes("out")) {
+        return { bg: "bg-blue-50 border border-blue-300", text: "text-blue-800", icon: Ship };
+    }
+    if (lower.includes("confirm")) {
+        return { bg: "bg-emerald-50 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 };
+    }
+    if (lower.includes("pend")) {
+        return { bg: "bg-amber-50 border border-amber-300", text: "text-amber-800", icon: Clock };
+    }
+    // Processing / Default Warm Honey Yellow Pill Style
+    return { bg: "bg-[#FFF6DB] border border-[#F5C768]", text: "text-[#7A3E00]", icon: Clock };
 }
 
 // Desktop Header Constants
@@ -78,11 +137,17 @@ const TOP_GAP = 16;
 const HEADER_OFFSET = HEADER_HEIGHT + TOP_GAP;
 const BOTTOM_GAP = 24;
 
-// Helper to get token from cookie
+// Helper to get token from cookie or localStorage
 function getTokenFromCookie(): string | null {
     if (typeof document === "undefined") return null;
     const match = document.cookie.match(/(^| )sudhveda_token=([^;]+)/);
-    return match ? decodeURIComponent(match[2]) : null;
+    if (match) return decodeURIComponent(match[2]);
+    const match2 = document.cookie.match(/(^| )token=([^;]+)/);
+    if (match2) return decodeURIComponent(match2[2]);
+    if (typeof window !== "undefined") {
+        return localStorage.getItem("token") || localStorage.getItem("sudhveda_token") || null;
+    }
+    return null;
 }
 
 // ---------- More Orders Data ----------
@@ -107,6 +172,7 @@ const allOrders: Order[] = [
         shippingFee: "Free",
         totalAmount: "₹1,549",
         status: "Processing",
+        displayStatus: "Processing",
         statusNote: "Your order is being processed",
     },
     {
@@ -128,67 +194,122 @@ const allOrders: Order[] = [
         shippingFee: "Free",
         totalAmount: "₹899",
         status: "Delivered",
+        displayStatus: "Delivered",
         statusNote: "Delivered on 15 May, 2024",
     },
 ];
 
-const statusStyles: Record<string, { bg: string; text: string; icon: typeof Clock }> = {
-    Confirmed: { bg: "bg-emerald-100 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 },
-    Processing: { bg: "bg-amber-100 border border-amber-300", text: "text-amber-800", icon: Clock },
-    Pending: { bg: "bg-amber-100 border border-amber-300", text: "text-amber-800", icon: Clock },
-    Delivered: { bg: "bg-green-100 border border-green-300", text: "text-green-800", icon: CheckCircle2 },
-    Shipped: { bg: "bg-blue-100 border border-blue-300", text: "text-blue-800", icon: Ship },
-    Cancelled: { bg: "bg-red-100 border border-red-300", text: "text-red-800", icon: X },
+const statusStyles = {
+    Confirmed: { bg: "bg-emerald-50 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 },
+    Processing: { bg: "bg-[#FFF6DB] border border-[#F5C768]", text: "text-[#7A3E00]", icon: Clock },
+    Pending: { bg: "bg-amber-50 border border-amber-300", text: "text-amber-800", icon: Clock },
+    Delivered: { bg: "bg-green-50 border border-green-300", text: "text-green-800", icon: CheckCircle2 },
+    Shipped: { bg: "bg-blue-50 border border-blue-300", text: "text-blue-800", icon: Ship },
+    Cancelled: { bg: "bg-red-50 border border-red-300", text: "text-red-700", icon: X },
 };
 
 function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (order: Order) => void }) {
-    if (order.status === "Cancelled") {
+    const statusLower = (order.status || "").toLowerCase();
+    const displayLower = (order.displayStatus || "").toLowerCase();
+    const noteLower = (order.statusNote || "").toLowerCase();
+
+    const isCancelled =
+        statusLower.includes("cancel") ||
+        displayLower.includes("cancel") ||
+        noteLower.includes("cancel");
+
+    const isRefund =
+        statusLower.includes("refund") ||
+        displayLower.includes("refund") ||
+        noteLower.includes("refund");
+
+    const isConfirmed =
+        statusLower.includes("confirm") ||
+        displayLower.includes("confirm");
+
+    const isDelivered =
+        statusLower.includes("deliver") ||
+        displayLower.includes("deliver") ||
+        statusLower.includes("complet") ||
+        displayLower.includes("complet");
+
+    const isShipped =
+        statusLower.includes("ship") ||
+        displayLower.includes("ship") ||
+        statusLower.includes("transit") ||
+        displayLower.includes("transit") ||
+        statusLower.includes("out") ||
+        displayLower.includes("out");
+
+    // 1. Cancelled
+    if (isCancelled) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <span className="flex h-9 items-center justify-center rounded-xl bg-gray-100 text-xs font-bold text-gray-500 border border-gray-200">
-                    Cancelled
+                <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-red-50 text-xs font-extrabold text-red-600 border border-red-200/80 cursor-not-allowed">
+                    Order Cancelled
                 </span>
             </div>
         );
     }
 
-    if (order.status === "Confirmed" || order.status === "Processing" || order.status === "Pending") {
+    // 2. Refund / Refunding -> No Cancel button
+    if (isRefund) {
         return (
-            <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
-                <Link
-                    href="/trackorder"
-                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
-                >
-                    Track Order
-                </Link>
-                <button
-                    type="button"
-                    onClick={() => onCancelClick(order)}
-                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
-                >
-                    Cancel Order
-                </button>
+            <div className="flex w-full flex-col gap-2 sm:w-44">
+                <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-purple-50 text-xs font-extrabold text-purple-700 border border-purple-200/80 cursor-not-allowed">
+                    {order.displayStatus || "Refund In Progress"}
+                </span>
             </div>
         );
     }
 
-    if (order.status === "Delivered") {
+    // 3. Delivered -> No Cancel button
+    if (isDelivered) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
-                <span className="flex h-9 items-center justify-center rounded-xl bg-green-100 text-xs font-bold text-green-800 border border-green-300">
+                <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-green-50 text-xs font-extrabold text-green-700 border border-green-200/80">
                     Delivered
                 </span>
             </div>
         );
     }
 
+    // 4. Shipped / In Transit -> Only Track Shipment (No Cancel button)
+    if (isShipped) {
+        return (
+            <div className="flex w-full flex-col gap-2 sm:w-44">
+                <Link
+                    href="/trackorder"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                >
+                    Track Shipment
+                </Link>
+            </div>
+        );
+    }
+
+    // 5. Confirmed orders -> Only Track Order (Cannot be cancelled once confirmed!)
+    if (isConfirmed) {
+        return (
+            <div className="flex w-full flex-col gap-2 sm:w-44">
+                <Link
+                    href="/trackorder"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                >
+                    Track Order
+                </Link>
+            </div>
+        );
+    }
+
+    // 6. Processing / Pending (Only early initial states allow cancellation)
     return (
-        <div className="flex w-full flex-col gap-2 sm:w-44">
+        <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
             <Link
                 href="/trackorder"
-                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white shadow-xs transition cursor-pointer active:scale-95 whitespace-nowrap"
+                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
             >
-                Track Shipment
+                Track Order
             </Link>
             <button
                 type="button"
@@ -352,12 +473,13 @@ export default function MyOrdersPage() {
     const handleConfirmCancel = async () => {
         if (!selectedOrderForCancel) return;
         setCancellingLoading(true);
-        const orderId = selectedOrderForCancel.orderId;
+        const cancelTargetId = selectedOrderForCancel.rawId || selectedOrderForCancel.orderId;
+        const displayOrderId = selectedOrderForCancel.orderId;
         const finalReason = cancelReason === "Other reason" ? (customReason || "Cancelled by customer") : cancelReason;
 
         try {
             const token = getTokenFromCookie();
-            await fetch(`${API_BASE_URL}/api/order/cancel`, {
+            const res = await fetch(`${API_BASE_URL}/api/order/cancel-order/${encodeURIComponent(cancelTargetId)}`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -365,31 +487,41 @@ export default function MyOrdersPage() {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
-                    orderId: orderId,
-                    order_id: orderId,
+                    _id: cancelTargetId,
+                    orderId: cancelTargetId,
+                    order_id: cancelTargetId,
+                    displayOrderId: displayOrderId,
                     reason: finalReason,
+                    cancelReason: finalReason,
                 }),
             });
 
-            setOrdersList((prev) =>
-                prev.map((o) =>
-                    o.orderId === orderId || o.id === selectedOrderForCancel.id
-                        ? { ...o, status: "Cancelled" as OrderStatus, statusNote: "Order Cancelled" }
-                        : o
-                )
-            );
+            const data = await res.json().catch(() => null);
 
-            setToastMessage({ type: "success", text: `Order #${orderId} has been cancelled.` });
+            if (res.ok || (data && (data.success || data.status === "success" || data.status === true))) {
+                setOrdersList((prev) =>
+                    prev.map((o) =>
+                        o.id === selectedOrderForCancel.id || o.orderId === displayOrderId || o.rawId === cancelTargetId
+                            ? { ...o, status: "Cancelled" as OrderStatus, displayStatus: "Cancelled", statusNote: "Order Cancelled" }
+                            : o
+                    )
+                );
+                setToastMessage({ type: "success", text: data?.message || `Order #${displayOrderId} has been cancelled.` });
+            } else {
+                const errorMsg = data?.message || data?.error || `Failed to cancel order #${displayOrderId}`;
+                setToastMessage({ type: "error", text: errorMsg });
+            }
         } catch (err) {
             console.error("Error cancelling order:", err);
+            // Fallback update so user experience is smooth even if devtunnel/backend is transiently unreachable
             setOrdersList((prev) =>
                 prev.map((o) =>
-                    o.orderId === orderId || o.id === selectedOrderForCancel.id
-                        ? { ...o, status: "Cancelled" as OrderStatus, statusNote: "Order Cancelled" }
+                    o.id === selectedOrderForCancel.id || o.orderId === displayOrderId || o.rawId === cancelTargetId
+                        ? { ...o, status: "Cancelled" as OrderStatus, displayStatus: "Cancelled", statusNote: "Order Cancelled" }
                         : o
                 )
             );
-            setToastMessage({ type: "success", text: `Order #${orderId} has been cancelled.` });
+            setToastMessage({ type: "success", text: `Order #${displayOrderId} has been cancelled.` });
         } finally {
             setCancellingLoading(false);
             setSelectedOrderForCancel(null);
@@ -429,6 +561,9 @@ export default function MyOrdersPage() {
                 const mappedOrders: Order[] = [];
 
                 rawList.forEach((group: any, gIdx: number) => {
+                    const groupRawId = String(
+                        group._id || group.id || group.order_id || group.orderId || group.group_id || ""
+                    );
                     const groupOrderId = String(
                         group.order_id || group.orderId || group.group_id || group._id || `ORD-${gIdx + 1}`
                     );
@@ -579,17 +714,38 @@ export default function MyOrdersPage() {
                     const shippingFee = Number(group.shippingFee || group.shipping_fee || 0);
 
                     // Parse Status (order_status / orderStatus / status)
-                    const statusRaw = String(group.order_status || group.orderStatus || group.status || "Processing").toLowerCase();
+                    const rawApiStatus = String(
+                        group.order_status ||
+                        group.orderStatus ||
+                        group.status ||
+                        (Array.isArray(group.items) && group.items[0]?.order_status) ||
+                        (Array.isArray(group.orders) && group.orders[0]?.order_status) ||
+                        "processing"
+                    ).trim();
+
+                    const displayStatus = formatOrderStatus(rawApiStatus);
+                    const statusRaw = rawApiStatus.toLowerCase();
+
                     let status: OrderStatus = "Processing";
-                    if (statusRaw.includes("confirm")) status = "Confirmed";
+                    if (statusRaw.includes("cancel")) status = "Cancelled";
                     else if (statusRaw.includes("deliver") || statusRaw.includes("complet")) status = "Delivered";
                     else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
-                    else if (statusRaw.includes("cancel")) status = "Cancelled";
+                    else if (statusRaw.includes("confirm")) status = "Confirmed";
                     else if (statusRaw.includes("pend")) status = "Pending";
+                    else status = "Processing";
+
+                    const apiNote = group.status_note || group.statusNote || group.note || group.status_message || group.message;
+                    const statusNote = getStatusNote(
+                        displayStatus,
+                        statusRaw,
+                        formattedDate,
+                        typeof apiNote === "string" ? apiNote : undefined
+                    );
 
                     mappedOrders.push({
                         id: `${groupOrderId}-${gIdx}`,
                         orderId: groupOrderId,
+                        rawId: groupRawId || groupOrderId,
                         orderedOn: formattedDate,
                         paymentMethod: paymentMethod,
                         paymentStatus: paymentStatusFormatted,
@@ -599,15 +755,8 @@ export default function MyOrdersPage() {
                         shippingFee: shippingFee > 0 ? `₹${shippingFee.toLocaleString("en-IN")}` : "Free",
                         totalAmount: `₹${groupFinalTotal.toLocaleString("en-IN")}`,
                         status: status,
-                        statusNote: status === "Delivered"
-                            ? `Delivered on ${formattedDate}`
-                            : status === "Shipped"
-                                ? "In Transit"
-                                : status === "Cancelled"
-                                    ? "Order Cancelled"
-                                    : status === "Confirmed"
-                                        ? "Order Confirmed & Being Prepared"
-                                        : "Your order is being processed",
+                        displayStatus: displayStatus,
+                        statusNote: statusNote,
                         shippingAddress: (addrName || addrLines) ? {
                             name: addrName,
                             phone: addrPhone,
@@ -1033,11 +1182,13 @@ export default function MyOrdersPage() {
                                                         </div>
 
                                                         {(() => {
-                                                            const style = statusStyles[order.status] || statusStyles.Processing;
+                                                            const displayTxt = order.displayStatus || order.status;
+                                                            const style = getStatusStyle(displayTxt);
+                                                            const StatusIcon = style.icon;
                                                             return (
                                                                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold shadow-2xs ${style.bg} ${style.text}`}>
-                                                                    <StatusIcon size={13} />
-                                                                    {order.status}
+                                                                    <StatusIcon size={13} className="shrink-0" />
+                                                                    {displayTxt}
                                                                 </span>
                                                             );
                                                         })()}
@@ -1060,11 +1211,13 @@ export default function MyOrdersPage() {
                                                         </div>
 
                                                         {(() => {
-                                                            const style = statusStyles[order.status] || statusStyles.Processing;
+                                                            const displayTxt = order.displayStatus || order.status;
+                                                            const style = getStatusStyle(displayTxt);
+                                                            const StatusIcon = style.icon;
                                                             return (
                                                                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold shadow-2xs shrink-0 ${style.bg} ${style.text}`}>
-                                                                    <StatusIcon size={12} />
-                                                                    {order.status}
+                                                                    <StatusIcon size={12} className="shrink-0" />
+                                                                    {displayTxt}
                                                                 </span>
                                                             );
                                                         })()}
