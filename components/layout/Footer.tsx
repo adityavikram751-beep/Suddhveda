@@ -60,144 +60,13 @@ export default function Footer() {
     <footer className="bg-[#593102] text-white block">
       <div className="max-w-[1445px] mx-auto px-6 sm:px-8 py-12">
 
-        {/* ================= MOBILE & TABLET LAYOUT (Original Mobile UI Styling + Full Content) ================= */}
-        <div className="flex flex-col items-center text-center lg:hidden space-y-10">
+        {/* ================= UNIFIED RESPONSIVE FOOTER (Uses Exact Desktop Content for Both Mobile & Desktop) ================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
 
-          {/* Logo & Brand & Description */}
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5 shadow-md">
-              <Image
-                src="/yellow logo.png"
-                alt="ShuddhVedahoney Logo"
-                width={42}
-                height={42}
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h2 className="text-[22px] font-semibold mt-3">
-              ShuddhVedaHoney
-            </h2>
-            <p className="mt-3 text-[13px] leading-relaxed text-[#E2D2C4] max-w-xs text-center">
-              Bringing nature&apos;s purest honey from the hive to your home. Committed to quality, purity, and sustainability.
-            </p>
-
-            {/* 4 Social Media Icons */}
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <a
-                href="https://www.instagram.com/ShuddhVedaHoney"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram - ShuddhVedaHoney"
-                title="ShuddhVedaHoney"
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-              >
-                <FaInstagram size={16} />
-              </a>
-              <a
-                href="#"
-                aria-label="Facebook - ShuddhVedaHoney"
-                title="ShuddhVedaHoney"
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-              >
-                <FaFacebookF size={16} />
-              </a>
-              <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                <FaXTwitter size={16} />
-              </a>
-              <a href="#" aria-label="Youtube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                <FaYoutube size={16} />
-              </a>
-            </div>
-          </div>
-
-          {/* Links Grid for Mobile / Tablet (Original UI Layout + ALL Content) */}
-          <div className="grid grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-8 w-full max-w-lg px-2 justify-items-center text-left">
-
-            {/* Quick Links */}
-            <div className="w-full">
-              <h3 className="text-[16px] font-semibold text-center sm:text-left">Quick Links</h3>
-              <ul className="mt-4 space-y-2.5 text-center sm:text-left">
-                <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">All Honey</Link></li>
-                <li><Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">My Account</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Policies &amp; Info</Link></li>
-                <li><Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Products</Link></li>
-                <li><Link href="/b2b" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">B2B Order</Link></li>
-                <li><Link href="/bulk-gifting" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Bulk Gifting</Link></li>
-              </ul>
-            </div>
-
-            {/* Info & Policies */}
-            <div className="w-full">
-              <h3 className="text-[16px] font-semibold text-center sm:text-left">Info &amp; Policies</h3>
-              <ul className="mt-4 space-y-2.5 text-center sm:text-left">
-                <li><Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Contact Us</Link></li>
-                <li><Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">About Us</Link></li>
-                <li><Link href="/our-process" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Our Process</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Terms &amp; Conditions</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Return Policy</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Shipping Policy</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Refund Policy</Link></li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Get in Touch (Centered for Mobile/Tablet) */}
-          <div className="w-full flex flex-col items-center text-center px-4">
-            <h3 className="text-[16px] font-semibold">Get in Touch</h3>
-            <div className="mt-4 space-y-3 max-w-md w-full">
-              <div className="flex items-center justify-center gap-3">
-                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
-                </a>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  WhatsApp: {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
-                </a>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <Mail size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@Shuddhveda.in"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  {loading ? "Loading..." : locationData?.email || "connect@Shuddhveda.in"}
-                </a>
-              </div>
-              <div className="flex items-start justify-center gap-3">
-                <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
-                <p className="text-[13px] leading-5 text-[#E2D2C4] text-center max-w-sm">
-                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Footer for Mobile */}
-          <div className="w-full border-t border-white/15 pt-6 flex flex-col items-center gap-3 text-center">
-            <p className="text-[13px] text-[#D9C8BA]">
-              © {new Date().getFullYear()} Shuddhveda. All rights reserved. Made with 🍯 in India.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
-              <span>FSSAI Licensed</span>
-              <span className="text-[#c29665]">•</span>
-              <span>ISO Certified</span>
-              <span className="text-[#c29665]">•</span>
-              <span>Raw &amp; Organic</span>
-            </div>
-          </div>
-
-        </div>
-
-
-        {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
-        <div className="hidden lg:grid grid-cols-4 gap-10">
-
-          {/* ================= Logo ================= */}
+          {/* ================= Column 1: Logo & Brand ================= */}
           <div>
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5">
+              <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5 shrink-0">
                 <Image
                   src="/yellow logo.png"
                   alt="ShuddhVeda Logo"
@@ -241,7 +110,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* ================= Quick Links ================= */}
+          {/* ================= Column 2: Quick Links ================= */}
           <div>
             <h3 className="text-[16px] font-semibold">
               Quick Links
@@ -270,7 +139,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ================= Products ================= */}
+          {/* ================= Column 3: Products Information ================= */}
           <div>
             <h3 className="text-[16px] font-semibold">
               Products Information
@@ -314,7 +183,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* ================= Get In Touch ================= */}
+          {/* ================= Column 4: Get In Touch ================= */}
           <div>
             <h3 className="text-[16px] font-semibold">
               Get in Touch
@@ -323,7 +192,7 @@ export default function Footer() {
             <div className="mt-5 space-y-3">
               {/* Phone 1 */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
+                <Phone size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
                   href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
@@ -334,7 +203,7 @@ export default function Footer() {
 
               {/* Phone 2 / WhatsApp */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
+                <Phone size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
                   href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
@@ -345,7 +214,7 @@ export default function Footer() {
 
               {/* Email */}
               <div className="flex items-start gap-3">
-                <Mail size={15} className="mt-1 text-[#E2D2C4]" />
+                <Mail size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
                   href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@shuddhveda.in"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
@@ -366,13 +235,13 @@ export default function Footer() {
 
         </div>
 
-        {/* ================= Desktop Bottom Footer ================= */}
-        <div className="hidden lg:flex mt-10 border-t border-white/15 pt-6 items-center justify-between">
+        {/* ================= Bottom Footer ================= */}
+        <div className="mt-10 border-t border-white/15 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-[13px] text-[#D9C8BA]">
             © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with in India.
           </p>
 
-          <div className="flex items-center gap-2 text-[13px] text-[#D9C8BA]">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
             <span>FSSAI Licensed</span>
             <span className="text-[#c29665]">•</span>
             <span>ISO Certified</span>
