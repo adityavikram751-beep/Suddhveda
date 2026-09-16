@@ -149,13 +149,6 @@ export default function EditProfilePage() {
   });
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const mobileBarRef = useRef<HTMLDivElement>(null);
-  const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
-    position: "fixed",
-    top: 98,
-    left: 0,
-    right: 0,
-  });
 
   const fetchProfileDetails = async () => {
     try {
@@ -412,13 +405,11 @@ export default function EditProfilePage() {
   }, [mobileMenuOpen]);
 
   return (
-    <section ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-[106px] sm:pt-32 lg:pt-12 border-b border-[#EADCC9]/50">
+    <section ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-0 lg:pt-12 border-b border-[#EADCC9]/50">
 
       {/* MOBILE BAR */}
       <div
-        ref={mobileBarRef}
-        style={mobileBarStyle}
-        className="z-30 bg-[#FFFDF9]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#EADCC9] shadow-sm"
+        className="z-30 bg-[#FFFDF9]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#EADCC9] shadow-sm sticky top-[96px]"
       >
         <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#EADCC9] bg-white p-3 shadow-sm">
           <div className="flex items-center gap-3">

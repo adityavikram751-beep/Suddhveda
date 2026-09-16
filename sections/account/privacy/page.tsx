@@ -230,9 +230,7 @@ export default function PolicyCenterPage() {
     const [sidebarPinned, setSidebarPinned] = useState(false);
     const [placeholderHeight, setPlaceholderHeight] = useState(0);
 
-    // ---- JS-driven "unstick near footer" logic for the mobile fixed bar ----
     const sectionRef = useRef<HTMLDivElement>(null);
-    const mobileBarRef = useRef<HTMLDivElement>(null);
 
 
     return (

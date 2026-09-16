@@ -186,14 +186,6 @@ export default function MySubscriptionsPage() {
     const [loadingPurchases, setLoadingPurchases] = useState<boolean>(true);
 
     const sectionRef = useRef<HTMLDivElement>(null);
-    const mobileBarRef = useRef<HTMLDivElement>(null);
-    const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
-        position: "fixed",
-        top: 98,
-        left: 0,
-        right: 0,
-    });
-    const MOBILE_BAR_TOP_OFFSET = 98;
 
     const fetchProfileDetails = async () => {
         try {
@@ -461,49 +453,7 @@ export default function MySubscriptionsPage() {
         }
     }, [router, session]);
 
-    // Unstick mobile fixed bar on scroll
-    useEffect(() => {
-        function handleMobileBarScroll() {
-            const sectionEl = sectionRef.current;
-            const barEl = mobileBarRef.current;
-            if (!sectionEl || !barEl) return;
 
-            if (window.innerWidth >= 1024) return;
-
-            const scrollY = window.scrollY || window.pageYOffset;
-            const sectionRect = sectionEl.getBoundingClientRect();
-            const sectionTopDoc = sectionRect.top + scrollY;
-            const sectionHeight = sectionEl.offsetHeight;
-            const sectionBottomDoc = sectionTopDoc + sectionHeight;
-            const barHeight = barEl.offsetHeight;
-
-            const desiredTopDoc = scrollY + MOBILE_BAR_TOP_OFFSET;
-
-            if (desiredTopDoc + barHeight >= sectionBottomDoc) {
-                setMobileBarStyle({
-                    position: "absolute",
-                    top: sectionHeight - barHeight,
-                    left: 0,
-                    right: 0,
-                });
-            } else {
-                setMobileBarStyle({
-                    position: "fixed",
-                    top: MOBILE_BAR_TOP_OFFSET,
-                    left: 0,
-                    right: 0,
-                });
-            }
-        }
-
-        handleMobileBarScroll();
-        window.addEventListener("scroll", handleMobileBarScroll, { passive: true });
-        window.addEventListener("resize", handleMobileBarScroll);
-        return () => {
-            window.removeEventListener("scroll", handleMobileBarScroll);
-            window.removeEventListener("resize", handleMobileBarScroll);
-        };
-    }, []);
 
     async function logout() {
         try {
@@ -553,12 +503,10 @@ export default function MySubscriptionsPage() {
     };
 
     return (
-        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-[106px] sm:pt-32 lg:pt-12">
-            {/* MOBILE FIXED BAR */}
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-0 lg:pt-12">
+            {/* MOBILE STICKY BAR */}
             <div
-                ref={mobileBarRef}
-                style={mobileBarStyle}
-                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-xs"
+                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-xs sticky top-[96px]"
             >
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-xs">
                     <div className="flex items-center gap-3">
@@ -585,7 +533,7 @@ export default function MySubscriptionsPage() {
                 </div>
             </div>
 
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-1 lg:pt-0">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
                 {/* Mobile Drawer */}
                 {mobileMenuOpen && (
                     <div

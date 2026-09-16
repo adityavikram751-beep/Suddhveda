@@ -568,14 +568,6 @@ export default function MyAddressesPage() {
 
     // ---- JS-driven "unstick near footer" logic for the mobile fixed bar ----
     const sectionRef = useRef<HTMLDivElement>(null);
-    const mobileBarRef = useRef<HTMLDivElement>(null);
-    const [mobileBarStyle, setMobileBarStyle] = useState<React.CSSProperties>({
-        position: "fixed",
-        top: 98,
-        left: 0,
-        right: 0,
-    });
-    const MOBILE_BAR_TOP_OFFSET = 98;
 
     useEffect(() => {
         function handleScroll() {
@@ -633,55 +625,6 @@ export default function MyAddressesPage() {
         return () => {
             window.removeEventListener("scroll", handleScroll);
             window.removeEventListener("resize", handleScroll);
-        };
-    }, [loading, addresses.length]);
-
-    // ---- Unstick the mobile fixed bar once the footer is about to appear ----
-    useEffect(() => {
-        function handleMobileBarScroll() {
-            const sectionEl = sectionRef.current;
-            const barEl = mobileBarRef.current;
-            if (!sectionEl || !barEl) return;
-
-            if (window.innerWidth >= 1024) {
-                return; // bar is hidden on desktop anyway (lg:hidden)
-            }
-
-            const scrollY = window.scrollY || window.pageYOffset;
-            const sectionRect = sectionEl.getBoundingClientRect();
-            const sectionTopDoc = sectionRect.top + scrollY;
-            const sectionHeight = sectionEl.offsetHeight;
-            const sectionBottomDoc = sectionTopDoc + sectionHeight;
-            const barHeight = barEl.offsetHeight;
-
-            const desiredTopDoc = scrollY + MOBILE_BAR_TOP_OFFSET;
-
-            if (desiredTopDoc + barHeight >= sectionBottomDoc) {
-                // Section (and footer right after it) is coming into view —
-                // pin the bar to the bottom of the section so it scrolls
-                // away naturally instead of floating over the footer.
-                setMobileBarStyle({
-                    position: "absolute",
-                    top: sectionHeight - barHeight,
-                    left: 0,
-                    right: 0,
-                });
-            } else {
-                setMobileBarStyle({
-                    position: "fixed",
-                    top: MOBILE_BAR_TOP_OFFSET,
-                    left: 0,
-                    right: 0,
-                });
-            }
-        }
-
-        handleMobileBarScroll();
-        window.addEventListener("scroll", handleMobileBarScroll, { passive: true });
-        window.addEventListener("resize", handleMobileBarScroll);
-        return () => {
-            window.removeEventListener("scroll", handleMobileBarScroll);
-            window.removeEventListener("resize", handleMobileBarScroll);
         };
     }, [loading, addresses.length]);
 
@@ -930,13 +873,11 @@ export default function MyAddressesPage() {
     }, [mobileMenuOpen]);
 
     return (
-        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-[106px] sm:pt-32 lg:pt-12">
+        <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-0 lg:pt-12">
 
-            {/* MOBILE BAR: fixed while scrolling, unsticks (absolute) once the footer approaches */}
+            {/* MOBILE STICKY BAR */}
             <div
-                ref={mobileBarRef}
-                style={mobileBarStyle}
-                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-sm"
+                className="z-30 bg-[#FFF8EF]/95 backdrop-blur-md py-2.5 px-4 lg:hidden border-b border-[#F0E2CC] shadow-sm sticky top-[96px]"
             >
                 <div className="mx-auto max-w-[1480px] flex items-center justify-between rounded-2xl border border-[#F0E2CC] bg-white p-3 shadow-sm">
                     <div className="flex items-center gap-3">
@@ -960,7 +901,7 @@ export default function MyAddressesPage() {
                 </div>
             </div>
 
-            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-1 lg:pt-0">
+            <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8 pt-4 lg:pt-0">
                 {/* Mobile Drawer */}
                 {mobileMenuOpen && (
                     <div 
