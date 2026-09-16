@@ -59,6 +59,7 @@ interface ShippingAddress {
 interface Order {
     id: string;
     orderId: string;
+    orderGroupId?: string;
     rawId?: string;
     orderedOn: string;
     paymentMethod: string;
@@ -277,11 +278,14 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         statusLower.includes("out") ||
         displayLower.includes("out");
 
+    const targetGroupId = order.orderGroupId || order.rawId || order.id || order.orderId || "";
+    const trackHref = targetGroupId ? `/trackorder?ordergroupId=${encodeURIComponent(targetGroupId)}` : "/trackorder";
+
     if (isShipped) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
-                    href="/trackorder"
+                    href={trackHref}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Shipment
@@ -307,7 +311,7 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
-                    href="/trackorder"
+                    href={trackHref}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Order
@@ -332,7 +336,7 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         return (
             <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
                 <Link
-                    href="/trackorder"
+                    href={trackHref}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Order
@@ -352,7 +356,7 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
     return (
         <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
-                href="/trackorder"
+                href={trackHref}
                 className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
             >
                 Track Order
@@ -591,11 +595,26 @@ export default function MyOrdersPage() {
                 const mappedOrders: Order[] = [];
 
                 rawList.forEach((group: any, gIdx: number) => {
+                    const groupOrderGroupId = String(
+                        group.order_group_id ||
+                        group.orderGroupId ||
+                        group.group_id ||
+                        group._id ||
+                        group.id ||
+                        ""
+                    );
                     const groupRawId = String(
-                        group._id || group.id || group.order_id || group.orderId || group.group_id || ""
+                        group.order_group_id ||
+                        group.orderGroupId ||
+                        group._id ||
+                        group.id ||
+                        group.order_id ||
+                        group.orderId ||
+                        group.group_id ||
+                        ""
                     );
                     const groupOrderId = String(
-                        group.order_id || group.orderId || group.group_id || group._id || `ORD-${gIdx + 1}`
+                        group.order_id || group.orderId || group.group_id || group.order_group_id || group._id || `ORD-${gIdx + 1}`
                     );
 
                     // Real-time Date Parsing from API (order_date / createdAt / created_at / date)
@@ -778,6 +797,7 @@ export default function MyOrdersPage() {
                     mappedOrders.push({
                         id: `${groupOrderId}-${gIdx}`,
                         orderId: groupOrderId,
+                        orderGroupId: groupOrderGroupId || groupRawId,
                         rawId: groupRawId || groupOrderId,
                         orderedOn: formattedDate,
                         paymentMethod: paymentMethod,
