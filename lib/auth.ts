@@ -1,6 +1,6 @@
 "use client";
 
-export const API_BASE_URL = "https://sltwdpp8-3000.inc1.devtunnels.ms";
+export const API_BASE_URL = "https://suddhvedha-honey-backend.onrender.com";
 
 export type AuthUser = {
   name?: string;
