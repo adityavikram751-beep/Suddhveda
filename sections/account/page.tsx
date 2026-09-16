@@ -101,6 +101,12 @@ function getStatusNote(displayStatus: string, statusRaw: string, formattedDate: 
     if (lower.includes("confirm")) {
         return "Order Confirmed & Being Prepared";
     }
+    if (lower.includes("pack")) {
+        return "Order Packed & Ready for Dispatch";
+    }
+    if (lower.includes("dispatch")) {
+        return "Order Dispatched";
+    }
     if (lower.includes("pend")) {
         return "Payment Pending";
     }
@@ -121,7 +127,7 @@ function getStatusStyle(statusStr: string): { bg: string; text: string; icon: ty
     if (lower.includes("ship") || lower.includes("transit") || lower.includes("out")) {
         return { bg: "bg-blue-50 border border-blue-300", text: "text-blue-800", icon: Ship };
     }
-    if (lower.includes("confirm")) {
+    if (lower.includes("confirm") || lower.includes("pack") || lower.includes("dispatch") || lower.includes("ready")) {
         return { bg: "bg-emerald-50 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 };
     }
     if (lower.includes("pend")) {
@@ -213,35 +219,12 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
     const displayLower = (order.displayStatus || "").toLowerCase();
     const noteLower = (order.statusNote || "").toLowerCase();
 
+    // 1. Cancelled -> Show Cancelled badge only
     const isCancelled =
         statusLower.includes("cancel") ||
         displayLower.includes("cancel") ||
         noteLower.includes("cancel");
 
-    const isRefund =
-        statusLower.includes("refund") ||
-        displayLower.includes("refund") ||
-        noteLower.includes("refund");
-
-    const isConfirmed =
-        statusLower.includes("confirm") ||
-        displayLower.includes("confirm");
-
-    const isDelivered =
-        statusLower.includes("deliver") ||
-        displayLower.includes("deliver") ||
-        statusLower.includes("complet") ||
-        displayLower.includes("complet");
-
-    const isShipped =
-        statusLower.includes("ship") ||
-        displayLower.includes("ship") ||
-        statusLower.includes("transit") ||
-        displayLower.includes("transit") ||
-        statusLower.includes("out") ||
-        displayLower.includes("out");
-
-    // 1. Cancelled
     if (isCancelled) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -253,6 +236,11 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
     }
 
     // 2. Refund / Refunding -> No Cancel button
+    const isRefund =
+        statusLower.includes("refund") ||
+        displayLower.includes("refund") ||
+        noteLower.includes("refund");
+
     if (isRefund) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -263,7 +251,13 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         );
     }
 
-    // 3. Delivered -> No Cancel button
+    // 3. Delivered / Completed -> No Cancel button
+    const isDelivered =
+        statusLower.includes("deliver") ||
+        displayLower.includes("deliver") ||
+        statusLower.includes("complet") ||
+        displayLower.includes("complet");
+
     if (isDelivered) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -274,7 +268,15 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         );
     }
 
-    // 4. Shipped / In Transit -> Only Track Shipment (No Cancel button)
+    // 4. Shipped / In Transit / Out for delivery -> No Cancel button
+    const isShipped =
+        statusLower.includes("ship") ||
+        displayLower.includes("ship") ||
+        statusLower.includes("transit") ||
+        displayLower.includes("transit") ||
+        statusLower.includes("out") ||
+        displayLower.includes("out");
+
     if (isShipped) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -288,7 +290,19 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         );
     }
 
-    // 5. Confirmed orders -> Only Track Order (Cannot be cancelled once confirmed!)
+    // 5. Confirmed or beyond (Confirmed, Packed, Dispatched, etc.) -> NEVER show Cancel Order
+    const isConfirmed =
+        statusLower.includes("confirm") ||
+        displayLower.includes("confirm") ||
+        noteLower.includes("confirm") ||
+        statusLower.includes("pack") ||
+        displayLower.includes("pack") ||
+        statusLower.includes("dispatch") ||
+        displayLower.includes("dispatch") ||
+        statusLower.includes("ready") ||
+        displayLower.includes("ready") ||
+        order.status === "Confirmed";
+
     if (isConfirmed) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
@@ -302,22 +316,47 @@ function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (
         );
     }
 
-    // 6. Processing / Pending (Only early initial states allow cancellation)
+    // 6. Strictly ONLY when in "Processing" / "Pending" / "Order Placed" state:
+    // "jab process mai rahe yaar tab he yaar cancel order ka button dikhe"
+    const isProcessing =
+        statusLower.includes("process") ||
+        displayLower.includes("process") ||
+        statusLower.includes("pend") ||
+        displayLower.includes("pend") ||
+        statusLower.includes("placed") ||
+        displayLower.includes("placed") ||
+        order.status === "Processing" ||
+        order.status === "Pending";
+
+    if (isProcessing) {
+        return (
+            <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
+                <Link
+                    href="/trackorder"
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                >
+                    Track Order
+                </Link>
+                <button
+                    type="button"
+                    onClick={() => onCancelClick(order)}
+                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
+                >
+                    Cancel Order
+                </button>
+            </div>
+        );
+    }
+
+    // Fallback: For any other state, DO NOT show Cancel Order! Only Track Order!
     return (
-        <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
+        <div className="flex w-full flex-col gap-2 sm:w-44">
             <Link
                 href="/trackorder"
                 className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
             >
                 Track Order
             </Link>
-            <button
-                type="button"
-                onClick={() => onCancelClick(order)}
-                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
-            >
-                Cancel Order
-            </button>
         </div>
     );
 }
@@ -709,8 +748,10 @@ export default function MyOrdersPage() {
                         group.order_status ||
                         group.orderStatus ||
                         group.status ||
-                        (Array.isArray(group.items) && group.items[0]?.order_status) ||
-                        (Array.isArray(group.orders) && group.orders[0]?.order_status) ||
+                        group.order_state ||
+                        group.state ||
+                        (Array.isArray(group.items) && (group.items[0]?.order_status || group.items[0]?.status)) ||
+                        (Array.isArray(group.orders) && (group.orders[0]?.order_status || group.orders[0]?.status)) ||
                         "processing"
                     ).trim();
 
@@ -721,8 +762,9 @@ export default function MyOrdersPage() {
                     if (statusRaw.includes("cancel")) status = "Cancelled";
                     else if (statusRaw.includes("deliver") || statusRaw.includes("complet")) status = "Delivered";
                     else if (statusRaw.includes("ship") || statusRaw.includes("transit") || statusRaw.includes("out")) status = "Shipped";
-                    else if (statusRaw.includes("confirm")) status = "Confirmed";
+                    else if (statusRaw.includes("confirm") || statusRaw.includes("pack") || statusRaw.includes("dispatch") || statusRaw.includes("ready")) status = "Confirmed";
                     else if (statusRaw.includes("pend")) status = "Pending";
+                    else if (statusRaw.includes("process") || statusRaw.includes("placed")) status = "Processing";
                     else status = "Processing";
 
                     const apiNote = group.status_note || group.statusNote || group.note || group.status_message || group.message;
