@@ -521,7 +521,7 @@ export default function MyOrdersPage() {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
-                    orderId: cancelTargetId,
+                    _id: cancelTargetId,
                     cancelReason: finalReason,
                 }),
             });
@@ -600,12 +600,12 @@ export default function MyOrdersPage() {
                         ""
                     );
                     const groupRawId = String(
-                        group.order_group_id ||
-                        group.orderGroupId ||
                         group._id ||
                         group.id ||
                         group.order_id ||
                         group.orderId ||
+                        group.order_group_id ||
+                        group.orderGroupId ||
                         group.group_id ||
                         ""
                     );
