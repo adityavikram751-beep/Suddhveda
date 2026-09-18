@@ -1172,10 +1172,10 @@ export default function MyOrdersPage() {
                 )}
 
                 {/* Main Layout Grid */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start relative">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] items-start relative">
 
                     {/* Desktop Sidebar (Pure CSS Sticky - 100% smooth, 0 jitter) */}
-                    <aside className="hidden lg:block w-[280px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
+                    <aside className="hidden lg:block w-[240px] xl:w-[260px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
                         <SidebarContent userData={userData} onLogout={logout} />
                     </aside>
 
@@ -1258,10 +1258,6 @@ export default function MyOrdersPage() {
 
                                                     <div className="flex items-center gap-4">
                                                         <div className="text-right">
-                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Total Price</p>
-                                                            <p className="text-sm font-black text-[#D49313]">{order.totalAmount}</p>
-                                                        </div>
-                                                        <div className="text-right">
                                                             <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
                                                             <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
                                                         </div>
@@ -1312,10 +1308,6 @@ export default function MyOrdersPage() {
                                                         <div>
                                                             <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
                                                             <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <p className="text-[10px] font-bold text-[#8D7F73]">Total Price</p>
-                                                            <p className="text-sm font-black text-[#D49313]">{order.totalAmount}</p>
                                                         </div>
                                                     </div>
                                                 </div>

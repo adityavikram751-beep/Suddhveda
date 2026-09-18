@@ -142,9 +142,9 @@ export default function PaymentPage() {
     return (
         <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
             <div className="mx-auto max-w-[1410px] px-4 md:px-6">
-                <div className="grid items-stretch gap-6 lg:grid-cols-[1fr_390px] xl:gap-8 xl:grid-cols-[1fr_410px]">
+                <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_340px] xl:gap-8 xl:grid-cols-[minmax(0,1fr)_400px]">
                     {/* Left Column */}
-                    <section className="flex h-full flex-col gap-8">
+                    <section className="flex h-full flex-col gap-8 min-w-0">
                         {/* Header */}
                         <header className="relative pr-1 sm:pr-28">
                             <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
@@ -356,7 +356,7 @@ export default function PaymentPage() {
                     </section>
 
                     {/* Right Column - Order Summary */}
-                    <aside className="flex h-full flex-col w-full min-w-0">
+                    <aside className="flex h-full flex-col w-full box-border lg:max-w-[340px] xl:max-w-[400px] min-w-0">
                         <div className="flex w-full flex-1 flex-col rounded-[4px] border border-[#F2EFE9] bg-white p-3.5 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] min-w-0">
                             {/* Order Summary Header */}
                             <div className="flex items-center justify-between">
@@ -375,7 +375,7 @@ export default function PaymentPage() {
                                                 src={product.image}
                                                 alt={product.title}
                                                 fill
-                                                className="object-contain p-1.5"
+                                                className="object-cover"
                                             />
                                         </div>
                                         <div className="min-w-0 flex-1">

@@ -248,9 +248,9 @@ export default function OrderConfirmation() {
   return (
     <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-5">
-        <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
+        <div className="grid items-start gap-6 xl:gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px]">
           {/* LEFT COLUMN */}
-          <section className="flex flex-col gap-6">
+          <section className="flex flex-col gap-6 min-w-0">
             {/* Success Header */}
             <div className="rounded-[16px] border border-[#D7F3D9] bg-[#F0FFF4] p-8 text-center">
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#0BA445] text-white">
@@ -353,7 +353,7 @@ export default function OrderConfirmation() {
           </section>
 
           {/* RIGHT COLUMN – Order Summary */}
-          <aside className="lg:sticky lg:top-[112px] self-start">
+          <aside className="w-full box-border lg:max-w-[340px] xl:max-w-[400px] lg:sticky lg:top-[112px] self-start min-w-0">
             <div className="w-full h-full flex flex-col rounded-[22px] border border-[#F2EFE9] bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
               <div className="flex items-center justify-between">
                 <h2 className="font-serif text-[20px] font-bold">Order Summary</h2>
@@ -370,7 +370,7 @@ export default function OrderConfirmation() {
                         src={product.image || "/placeholder.png"}
                         alt={product.title || "Product"}
                         fill
-                        className="object-contain p-1.5"
+                        className="object-cover"
                       />
                     </div>
                     <div className="flex-1">

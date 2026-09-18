@@ -25,6 +25,7 @@ type Variant = {
 };
 
 export type ProductCardShopProps = {
+  className?: string;
   badge?: string;
   image: string;
   title: string;
@@ -55,6 +56,7 @@ export type ProductCardShopProps = {
 };
 
 export default function ProductCardShop({
+  className,
   badge,
   image,
   title,
@@ -114,7 +116,7 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className="relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9]/60 bg-[#FCF9F3] p-4 sm:p-5 shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto"
+      className={`relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9]/60 bg-[#FCF9F3] p-4 sm:p-5 shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto ${className || ""}`}
     >
 
       {/* Wishlist Button (Top Left) */}

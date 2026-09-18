@@ -534,9 +534,9 @@ export default function Checkout() {
   return (
     <main className="bg-[#FFF8EF] min-h-screen pt-8 sm:pt-12 pb-8 sm:pb-12 text-[#2F241C]">
       <div className="mx-auto max-w-[1410px] px-4 sm:px-5">
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px] items-start">
+        <div className="grid gap-6 xl:gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px] items-start">
 
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-6 sm:space-y-8 min-w-0">
 
             <CheckoutHeader />
             <Stepper activeStep={activeStep} />
@@ -585,7 +585,7 @@ export default function Checkout() {
           </div>
 
           {/* Order Summary Sidebar */}
-          <aside className="lg:sticky lg:top-[112px] self-start">
+          <aside className="w-full box-border lg:max-w-[340px] xl:max-w-[400px] lg:sticky lg:top-[112px] self-start min-w-0">
             <CheckoutOrderSummary
               products={cartProducts}
               subtotal={subtotal}
@@ -882,7 +882,7 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onD
           + Add New
         </button>
       </div>
-      <div className="mt-4 grid gap-3 sm:gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2">
         {addresses.map((address: Address) => {
           const isSelected = selectedId === address.id;
           return (
@@ -894,32 +894,39 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onD
                 : "border-[#EEF1F4] bg-white hover:border-[#E3D3B4]"
                 }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2.5 text-[15px] sm:text-[16px] font-bold">
+              <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-[#EADCC9]/60">
+                <div className="flex items-center gap-2 min-w-0 flex-1 flex-wrap">
                   <span
-                    className={`h-4 w-4 rounded-full border-2 ${isSelected ? "border-[#593102] bg-[#593102]" : "border-[#CBD2DB] bg-white"
+                    className={`h-4 w-4 shrink-0 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-[#593102] bg-[#593102]" : "border-[#CBD2DB] bg-white"
                       }`}
-                  />
+                  >
+                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+                  </span>
                   {address.label.toLowerCase().includes("office") || address.label.toLowerCase().includes("work") ? (
-                    <Briefcase size={26} className="text-[#593102] shrink-0" />
+                    <Briefcase size={18} className="text-[#593102] shrink-0" />
                   ) : address.label.toLowerCase().includes("other") ? (
-                    <MapPin size={26} className="text-[#593102] shrink-0" />
+                    <MapPin size={18} className="text-[#593102] shrink-0" />
                   ) : (
-                    <Home size={26} className="text-[#593102] shrink-0" />
+                    <Home size={18} className="text-[#593102] shrink-0" />
                   )}
-                  <span>{address.label}</span>
+                  <span className="text-[14px] sm:text-[15px] font-extrabold text-[#593102]">
+                    {address.label}
+                  </span>
                   {address.isDefault && (
-                    <span className="text-[10px] sm:text-[11px] font-normal text-[#593102]">(Default)</span>
+                    <span className="rounded-md bg-[#593102]/10 border border-[#593102]/20 px-1.5 py-0.5 text-[10px] font-bold text-[#593102] shrink-0">
+                      Default
+                    </span>
                   )}
-                </span>
-                <div className="flex items-center gap-3">
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onEdit(address);
                     }}
-                    className="text-[11px] sm:text-[12px] font-semibold text-[#593102] hover:underline cursor-pointer"
+                    className="flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold text-[#593102] bg-[#593102]/5 hover:bg-[#593102]/10 transition-colors cursor-pointer"
                   >
                     ✎ Edit
                   </button>
@@ -930,23 +937,23 @@ function SavedAddresses({ addresses, selectedId, onSelect, onAddNew, onEdit, onD
                         e.stopPropagation();
                         onDelete(address.id);
                       }}
-                      className="text-[11px] sm:text-[12px] font-semibold text-red-600 hover:underline cursor-pointer"
+                      className="flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors cursor-pointer"
                     >
                       ✕ Delete
                     </button>
                   )}
                 </div>
               </div>
-              <p className="mt-2 sm:mt-3 text-[12px] sm:text-[13px] leading-relaxed text-[#4C5362]">
-                {address.name}
-                <br />
+
+              <p className="mt-2.5 text-[12px] sm:text-[13px] leading-relaxed text-[#4C5362] break-words">
+                <span className="font-bold text-[#2F241C] block">{address.name}</span>
                 {address.line}
                 <br />
                 {address.city} - {address.pincode}
                 <br />
                 {address.state}
                 <br />
-                {address.phone}
+                <span className="font-semibold text-[#593102]">📞 {address.phone}</span>
               </p>
             </div>
           );
@@ -978,7 +985,7 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
           products.map((product: any, index: number) => (
             <div key={index} className="flex items-center gap-2 sm:gap-3">
               <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                <Image src={product.image} alt={product.title} fill className="object-contain p-1.5" />
+                <Image src={product.image} alt={product.title} fill className="object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>

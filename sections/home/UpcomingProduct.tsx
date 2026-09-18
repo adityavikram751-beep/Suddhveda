@@ -93,12 +93,12 @@ export default function UpcomingProduct() {
       { value: countdown.minutes, label: "Minute" },
       { value: countdown.seconds, label: "Second" },
     ];
-    const boxSize = isMobile ? "w-[46px] h-[46px]" : "w-[64px] h-[64px]";
-    const textSize = isMobile ? "text-[15px]" : "text-[18px]";
-    const labelSize = isMobile ? "text-[9px]" : "text-[11px]";
+    const boxSize = isMobile ? "w-[44px] h-[44px]" : "w-[42px] h-[42px] lg:w-[46px] lg:h-[46px] xl:w-[64px] xl:h-[64px]";
+    const textSize = isMobile ? "text-[14px]" : "text-[13px] lg:text-[15px] xl:text-[18px]";
+    const labelSize = isMobile ? "text-[9px]" : "text-[8.5px] lg:text-[9.5px] xl:text-[11px]";
     return items.map((item, i) => (
-      <div key={i} className="flex flex-col items-center">
-        <div className={`${boxSize} rounded-[10px] bg-[#FEF6EC] border border-[#EFD2AE] flex flex-col items-center justify-center`}>
+      <div key={i} className="flex flex-col items-center shrink-0">
+        <div className={`${boxSize} rounded-[8px] lg:rounded-[10px] bg-[#FEF6EC] border border-[#EFD2AE] flex flex-col items-center justify-center shrink-0`}>
           <span className={`${textSize} font-semibold text-[#3B2A1A] leading-none`}>
             {String(item.value).padStart(2, "0")}
           </span>
@@ -140,7 +140,7 @@ export default function UpcomingProduct() {
           right-0
           w-[140px]
           sm:w-[180px]
-          lg:w-[250px]
+          lg:w-[220px]
           xl:w-[270px]
           h-auto
           object-contain
@@ -150,49 +150,48 @@ export default function UpcomingProduct() {
         "
       />
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-14 py-8 sm:py-10 lg:py-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-14 py-8 sm:py-10 lg:py-12">
         {/* ===== DESKTOP: 3-Column Layout ===== */}
-        <div className="hidden lg:grid grid-cols-[minmax(0,322px)_minmax(0,1fr)_minmax(0,360px)] gap-8 items-center">
+        <div className="hidden lg:grid grid-cols-[230px_minmax(0,1fr)_260px] xl:grid-cols-[320px_minmax(0,1fr)_360px] gap-3 lg:gap-4 xl:gap-8 items-stretch">
           
           {/* LEFT – Image Card */}
-          <div className="flex justify-center min-w-0">
-            <div className="relative w-full max-w-[320px] min-w-0 rounded-[24px] overflow-hidden bg-white shadow-xl border-2 border-[#D49313]/40 group">
+          <div className="flex justify-center items-center min-w-0 h-full">
+            <div className="relative w-full max-w-[320px] min-w-0 h-full min-h-[260px] lg:min-h-[300px] xl:min-h-[380px] rounded-[20px] lg:rounded-[24px] overflow-hidden bg-white shadow-xl border-2 border-[#D49313]/40 group">
               <div className="absolute top-3 left-3 z-20">
-                <span className="bg-[#593102] text-[#FFD700] text-[12px] px-4 py-1.5 rounded-full font-extrabold shadow-md border border-[#D49313] tracking-wide uppercase">
+                <span className="bg-[#593102] text-[#FFD700] text-[10px] lg:text-[11px] xl:text-[12px] px-2.5 py-1 lg:px-3 lg:py-1 xl:px-4 xl:py-1.5 rounded-full font-extrabold shadow-md border border-[#D49313] tracking-wide uppercase">
                   {banner.title}
                 </span>
               </div>
               <Image
                 src={banner.banner_image}
                 alt={banner.product_name}
-                width={320}
-                height={320}
+                fill
                 priority
                 quality={100}
                 sizes="(max-width: 1024px) 100vw, 320px"
-                className="w-full h-[320px] object-cover group-hover:scale-105 transition-transform duration-700"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>
 
           {/* CENTER – Details + Countdown + Pre-Order Button */}
-          <div className="flex flex-col items-center justify-center text-center bg-white/95 backdrop-blur-md rounded-[24px] border-2 border-[#D49313]/30 px-8 py-7 shadow-xl min-h-[400px] min-w-0">
-            <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/60 px-4 py-1.5 rounded-full shadow-2xs">
+          <div className="flex flex-col items-center justify-center text-center bg-white/95 backdrop-blur-md rounded-[20px] lg:rounded-[24px] border-2 border-[#D49313]/30 px-3 py-4 lg:px-5 lg:py-6 xl:px-8 xl:py-7 shadow-xl h-full min-w-0">
+            <span className="uppercase tracking-[0.12em] lg:tracking-[0.15em] xl:tracking-[0.18em] text-[#593102] text-[10px] lg:text-[11px] xl:text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/60 px-2.5 py-0.5 lg:px-3 lg:py-1 xl:px-4 xl:py-1.5 rounded-full shadow-2xs">
               {banner.tag}
             </span>
-            <h2 className="mt-3 text-[36px] lg:text-[42px] font-serif font-extrabold leading-tight text-[#593102] whitespace-pre-line">
+            <h2 className="mt-2 lg:mt-2.5 text-[20px] lg:text-[24px] xl:text-[42px] font-serif font-extrabold leading-tight text-[#593102] whitespace-normal xl:whitespace-nowrap">
               {banner.product_name}
             </h2>
-            <p className="mt-2 text-[16px] text-[#6E5D4F] font-medium max-w-[420px] leading-relaxed">{banner.subtitle}</p>
+            <p className="mt-1 lg:mt-1.5 text-[12px] lg:text-[13px] xl:text-[16px] text-[#6E5D4F] font-medium max-w-[360px] xl:max-w-[420px] leading-snug sm:leading-relaxed">{banner.subtitle}</p>
             
-            <div className="flex gap-4 mt-5">{renderCountdown(false)}</div>
+            <div className="flex gap-1.5 sm:gap-2 xl:gap-4 mt-3 lg:mt-4 xl:mt-5 justify-center flex-nowrap shrink-0 max-w-full overflow-hidden">{renderCountdown(false)}</div>
             
             {banner.pre_order_url && (
               <a
                 href={banner.pre_order_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 w-full max-w-[180px] h-[38px] inline-flex items-center justify-center bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold rounded-xl transition-all duration-500 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 text-center text-xs uppercase tracking-wider cursor-pointer border border-[#FFD700]/40"
+                className="mt-3 lg:mt-4 xl:mt-5 w-full max-w-[150px] lg:max-w-[170px] xl:max-w-[180px] h-[36px] lg:h-[38px] inline-flex items-center justify-center bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] text-white font-extrabold rounded-xl transition-all duration-500 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 text-center text-[11px] lg:text-xs uppercase tracking-wider cursor-pointer border border-[#FFD700]/40 shrink-0"
               >
                 Pre-Order Now
               </a>
@@ -200,22 +199,22 @@ export default function UpcomingProduct() {
           </div>
 
           {/* RIGHT – Features with /madhu.png icon */}
-          <div className="relative bg-[#FFF9F2] rounded-[24px] border-2 border-[#D49313]/30 px-8 py-8 min-h-[400px] overflow-hidden min-w-0 flex flex-col justify-center shadow-xl">
-            <h3 className="text-[30px] font-serif font-extrabold text-[#593102]">{banner.product_name}</h3>
-            <p className="mt-2.5 text-[15px] leading-relaxed text-[#6E5D4F] font-medium whitespace-pre-line break-words">
+          <div className="relative bg-[#FFF9F2] rounded-[20px] lg:rounded-[24px] border-2 border-[#D49313]/30 px-4 py-5 lg:px-5 lg:py-6 xl:px-8 xl:py-8 h-full overflow-hidden min-w-0 flex flex-col justify-center shadow-xl">
+            <h3 className="text-[18px] lg:text-[22px] xl:text-[30px] font-serif font-extrabold text-[#593102]">{banner.product_name}</h3>
+            <p className="mt-1.5 lg:mt-2 text-[12px] lg:text-[13px] xl:text-[15px] leading-relaxed text-[#6E5D4F] font-medium whitespace-pre-line break-words">
               {banner.product_description}
             </p>
-            <div className="mt-5 space-y-3.5">
+            <div className="mt-3 lg:mt-4 xl:mt-5 space-y-2 lg:space-y-2.5 xl:space-y-3.5">
               {banner.features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-3.5">
+                <div key={i} className="flex items-start gap-2 lg:gap-2.5 xl:gap-3.5">
                   <Image
                     src="/madhu.png"
                     alt=""
-                    width={22}
-                    height={22}
-                    className="w-[22px] h-auto flex-shrink-0 mt-0.5"
+                    width={20}
+                    height={20}
+                    className="w-[16px] lg:w-[18px] xl:w-[22px] h-auto flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[16px] font-extrabold text-[#593102] break-words whitespace-normal">
+                  <span className="text-[12.5px] lg:text-[13.5px] xl:text-[16px] font-extrabold text-[#593102] break-words whitespace-normal leading-snug">
                     {feature}
                   </span>
                 </div>

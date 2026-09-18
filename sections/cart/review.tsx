@@ -686,10 +686,10 @@ export default function ReviewPage() {
   return (
     <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
       <div className="mx-auto max-w-[1410px] px-4 md:px-6">
-        <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
+        <div className="grid items-start gap-6 xl:gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px]">
 
           {/* Left Column - Scrollable */}
-          <section className="flex flex-col gap-7">
+          <section className="flex flex-col gap-7 min-w-0">
             {/* Header */}
             <header className="relative pr-1 sm:pr-28">
               <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
@@ -851,7 +851,7 @@ export default function ReviewPage() {
           </section>
 
           {/* Right Column - Order Summary */}
-          <aside className="lg:sticky lg:top-[112px] flex flex-col w-full min-w-0">
+          <aside className="w-full box-border lg:max-w-[340px] xl:max-w-[400px] lg:sticky lg:top-[112px] flex flex-col min-w-0">
             <div className="w-full rounded-[22px] border border-[#F2EFE9] bg-white p-3.5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col min-w-0">
               {/* Header */}
               <div className="flex items-center justify-between">
@@ -871,7 +871,7 @@ export default function ReviewPage() {
                   cartProducts.map((product: any, index: number) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                        <Image src={product.image} alt={product.title} fill className="object-contain p-1.5" />
+                        <Image src={product.image} alt={product.title} fill className="object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>

@@ -473,8 +473,8 @@ export default function EditProfilePage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr] items-start relative">
-          <aside className="hidden lg:block w-[280px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)] items-start relative">
+          <aside className="hidden lg:block w-[240px] xl:w-[260px] shrink-0 sticky top-28 self-start max-h-[calc(100vh-120px)] overflow-y-auto z-20">
             <SidebarContent userData={formData} />
           </aside>
 

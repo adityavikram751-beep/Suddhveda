@@ -215,7 +215,7 @@ export default function Cart() {
                 if (!scroller || scroller.offsetParent === null) return;
 
                 const firstCard = scroller.querySelector<HTMLElement>("[data-recommendation-card]");
-                const gap = 24;
+                const gap = 20;
                 const step = firstCard ? firstCard.offsetWidth + gap : scroller.clientWidth;
                 const isAtEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 8;
 
@@ -346,7 +346,7 @@ export default function Cart() {
                 onMouseLeave={() => setIsRecSliderPaused(false)}
                 onTouchStart={() => setIsRecSliderPaused(true)}
                 onTouchEnd={() => setIsRecSliderPaused(false)}
-                className="mt-5 flex w-full max-w-full gap-0 sm:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="mt-5 flex w-full max-w-full gap-4 sm:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
                 {recommendations.map((item) => {
                     const variants = item.variantDocumentId || [];
@@ -370,9 +370,10 @@ export default function Cart() {
                         <div
                             key={item._id}
                             data-recommendation-card
-                            className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-48px)/3)] shrink-0 snap-center flex flex-col h-full mx-auto px-1 sm:px-0"
+                            className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-20px)/2)] xl:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col h-full px-0"
                         >
                             <ProductCardShop
+                                className="max-w-full w-full"
                                 badge={categoryName}
                                 image={primaryImage}
                                 title={item.product_name}
@@ -434,7 +435,7 @@ export default function Cart() {
     return (
         <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
             <div className="mx-auto max-w-[1410px] px-4 sm:px-6">
-                <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] items-start">
+                <div className="grid gap-6 xl:gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px] items-start">
                     {/* LEFT SECTION */}
                     <section className="min-w-0">
                         <div className="inline-flex items-center gap-2 bg-[#EA580C]/10 border border-[#EA580C]/30 px-3.5 py-1 rounded-full text-[12px] font-extrabold uppercase text-[#EA580C] tracking-[0.18em] shadow-xs mb-2">
@@ -447,7 +448,8 @@ export default function Cart() {
                             </span>
                         </h1>
 
-                        <div className="mt-8 flex items-center justify-between px-6 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102]">
+                        {/* Desktop Header aligned to cards */}
+                        <div className="mt-8 hidden md:grid grid-cols-[1fr_70px_110px_75px] xl:grid-cols-[1fr_90px_130px_100px] gap-2.5 sm:gap-4 px-3 sm:px-4 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102] items-center">
                             <div className="flex items-center gap-3">
                                 <input
                                     type="checkbox"
@@ -457,15 +459,26 @@ export default function Cart() {
                                 />
                                 <span>Product</span>
                             </div>
-                            <div className="hidden md:grid grid-cols-3 gap-12 text-right min-w-[360px]">
-                                <span>Price</span>
-                                <span>Quantity</span>
-                                <span>Total</span>
+                            <span className="text-right">Price</span>
+                            <span className="text-center">Quantity</span>
+                            <span className="text-right">Total</span>
+                        </div>
+
+                        {/* Mobile Header */}
+                        <div className="mt-8 md:hidden flex items-center justify-between px-4 py-3 rounded-xl border border-[#EADCC9] bg-[#FAF5EC] text-xs font-black uppercase tracking-[0.12em] text-[#593102]">
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={cartProducts.length > 0 && unselectedItemIds.length === 0}
+                                    onChange={toggleSelectAll}
+                                    className="h-4.5 w-4.5 accent-[#EA580C] rounded cursor-pointer shrink-0"
+                                />
+                                <span>Product</span>
                             </div>
                         </div>
 
-                        {/* Cart items list with max-height scroll (shows 2 cards, rest scroll) */}
-                        <div className="mt-4 space-y-4 max-h-[250px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        {/* Cart items list with max-height scroll */}
+                        <div className="mt-4 space-y-4 max-h-[420px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {isLoading ? (
                                 <div className="rounded-2xl border-2 border-[#EADCC9] bg-white px-5 py-12 text-center text-[#6E5D4F] font-semibold">
                                     Loading your cart....
@@ -500,36 +513,37 @@ export default function Cart() {
                                     return (
                                         <div
                                             key={product.cartItemId}
-                                            className={`group grid gap-4 rounded-2xl border-2 p-3.5 sm:p-5 transition-all md:grid-cols-[1fr_110px_140px_110px] md:items-center overflow-hidden ${selected
+                                            className={`group grid gap-2.5 sm:gap-4 rounded-2xl border-2 p-3 sm:p-4 transition-all md:grid-cols-[1fr_70px_110px_75px] xl:grid-cols-[1fr_90px_130px_100px] md:items-center overflow-hidden ${selected
                                                     ? "border-[#D49313] bg-white shadow-xs"
                                                     : "border-[#EADCC9]/70 bg-white/60 opacity-60"
                                                 }`}
                                         >
-                                            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                                                 <input
                                                     type="checkbox"
                                                     checked={selected}
                                                     onChange={() => toggleSelectItem(product.cartItemId)}
                                                     className="h-5 w-5 accent-[#EA580C] rounded cursor-pointer shrink-0"
                                                 />
-                                                <div className="relative h-20 w-20 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
+                                                <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
                                                     <Image
                                                         src={product.image && product.image.trim() !== "" ? product.image : "/giftset.png"}
                                                         alt={product.productName}
                                                         fill
-                                                        className="object-contain p-1.5"
+                                                        unoptimized
+                                                        className="object-cover"
                                                     />
                                                 </div>
                                                 <div className="flex flex-col justify-center gap-0.5 min-w-0 flex-1">
-                                                    <h2 className="font-serif text-[15px] sm:text-[17px] font-extrabold leading-snug text-[#593102] truncate">
+                                                    <h2 className="font-serif text-[13px] sm:text-[15px] font-extrabold leading-tight text-[#593102] line-clamp-2" title={product.productName}>
                                                         {product.productName}
                                                     </h2>
                                                     {product.type === "NORMAL" && product.categoryName && (
-                                                        <p className="text-xs font-semibold text-[#6E5D4F] truncate">
+                                                        <p className="text-[11px] sm:text-xs font-semibold text-[#6E5D4F] truncate">
                                                             {product.categoryName}
                                                         </p>
                                                     )}
-                                                    <p className="text-xs font-semibold text-[#6E5D4F] truncate">
+                                                    <p className="text-[11px] sm:text-xs font-semibold text-[#6E5D4F] truncate">
                                                         {product.type === "NORMAL"
                                                             ? product.weight
                                                             : product.customMessage || "Gift box"}
@@ -537,21 +551,21 @@ export default function Cart() {
                                                     <button
                                                         type="button"
                                                         onClick={() => removeItem(product.cartItemId)}
-                                                        className="mt-2.5 flex w-fit items-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200/80 px-3 py-1.5 text-[12px] sm:text-[13px] font-bold text-red-600 transition-all cursor-pointer shadow-2xs active:scale-95"
+                                                        className="mt-1 flex w-fit items-center gap-1 rounded-lg bg-red-50 hover:bg-red-100 border border-red-200/80 px-2 py-0.5 text-[11px] font-bold text-red-600 transition-all cursor-pointer shadow-2xs active:scale-95 shrink-0"
                                                     >
-                                                        <Trash2 size={14} /> Remove
+                                                        <Trash2 size={12} /> Remove
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:block">
+                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:justify-end text-right min-w-0">
                                                 <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Price</span>
-                                                <p className="font-serif text-[15px] sm:text-[17px] font-extrabold text-[#593102]">
+                                                <p className="font-serif text-[14px] sm:text-[15px] font-extrabold text-[#593102] truncate">
                                                     ₹{product.price}
                                                 </p>
                                             </div>
 
-                                            <div className="flex items-center justify-between md:justify-start">
+                                            <div className="flex items-center justify-between md:justify-center min-w-0">
                                                 <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Quantity</span>
                                                 <QuantityControl
                                                     quantity={product.quantity}
@@ -568,19 +582,19 @@ export default function Cart() {
                                                 />
                                             </div>
 
-                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:block">
+                                            <div className="flex items-center justify-between border-t border-[#EADCC9]/50 pt-2.5 md:border-t-0 md:pt-0 md:justify-end text-right min-w-0">
                                                 <span className="text-[11px] font-bold text-[#8D7F73] uppercase md:hidden">Total</span>
                                                 {itemCouponDiscount > 0 ? (
-                                                    <div className="flex flex-col items-end md:items-start">
-                                                        <span className="text-[13px] text-[#8D7F73] line-through font-semibold">
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="text-[11px] text-[#8D7F73] line-through font-semibold">
                                                             ₹{itemSubtotal}
                                                         </span>
-                                                        <span className="font-serif text-[17px] sm:text-[20px] font-black text-emerald-700">
+                                                        <span className="font-serif text-[14px] sm:text-[16px] font-black text-emerald-700 truncate">
                                                             ₹{itemFinalTotal}
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <p className="font-serif text-[16px] sm:text-[19px] font-extrabold text-[#593102]">
+                                                    <p className="font-serif text-[14px] sm:text-[16px] font-black text-[#593102] truncate">
                                                         ₹{itemSubtotal}
                                                     </p>
                                                 )}
@@ -598,7 +612,7 @@ export default function Cart() {
                     </section>
 
                     {/* RIGHT SIDEBAR */}
-                    <aside className="w-full box-border lg:max-w-[420px] lg:sticky lg:top-[112px] self-start">
+                    <aside className="w-full box-border lg:max-w-[340px] xl:max-w-[400px] lg:sticky lg:top-[112px] self-start">
                         <OrderSummaryWithCoupons
                             subtotal={subtotal}
                             saved={saved}

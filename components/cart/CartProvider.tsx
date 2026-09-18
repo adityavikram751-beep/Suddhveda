@@ -719,12 +719,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
                   key={product.cartItemId}
                   className="rounded-2xl border-2 border-[#EADCC9]/80 bg-white/90 p-3.5 shadow-xs hover:border-[#D49313]/50 transition-all flex items-center justify-between gap-3"
                 >
-                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]/60 p-1.5">
+                  <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]/60">
                     <Image
                       src={product.image}
                       alt={product.productName}
                       fill
-                      className="object-contain p-1"
+                      className="object-cover"
                     />
                   </div>
                   <div className="min-w-0 flex-1">

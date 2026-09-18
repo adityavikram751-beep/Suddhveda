@@ -298,8 +298,8 @@ export default function PaymentPage() {
   return (
     <main className="min-h-screen bg-[#FFF8EF] py-8 text-[#2F241C] md:py-10">
       <div className="mx-auto max-w-[1410px] px-4 md:px-6">
-        <div className="grid items-start gap-8 lg:grid-cols-[1fr_420px]">
-          <section className="flex flex-col gap-8">
+        <div className="grid items-start gap-6 xl:gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_400px]">
+          <section className="flex flex-col gap-8 min-w-0">
             <header className="relative pr-1 sm:pr-28">
               <h1 className="font-serif text-[42px] font-bold leading-none text-[#593102] md:text-[48px]">
                 Shipping Method
@@ -447,7 +447,7 @@ export default function PaymentPage() {
           </section>
 
           {/* Order Summary Sidebar */}
-          <aside className="lg:sticky lg:top-[112px] self-start w-full min-w-0">
+          <aside className="w-full box-border lg:max-w-[340px] xl:max-w-[400px] lg:sticky lg:top-[112px] self-start min-w-0">
             <div className="flex w-full flex-1 flex-col justify-between rounded-[22px] border border-[#F2EFE9] bg-white p-3.5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] min-w-0">
               <div>
                 <div className="flex items-center justify-between">
@@ -467,7 +467,7 @@ export default function PaymentPage() {
                     cartProducts.map((product: any, index: number) => (
                       <div key={index} className="flex items-center gap-3">
                         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#FFF8EF]">
-                          <Image src={product.image} alt={product.title} fill className="object-contain p-1.5" />
+                          <Image src={product.image} alt={product.title} fill className="object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] sm:text-[14px] font-semibold truncate">{product.title}</p>
