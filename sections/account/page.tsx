@@ -521,11 +521,7 @@ export default function MyOrdersPage() {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
-                    _id: cancelTargetId,
                     orderId: cancelTargetId,
-                    order_id: cancelTargetId,
-                    displayOrderId: displayOrderId,
-                    reason: finalReason,
                     cancelReason: finalReason,
                 }),
             });
