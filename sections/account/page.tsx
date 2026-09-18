@@ -157,6 +157,100 @@ function getTokenFromCookie(): string | null {
     return null;
 }
 
+function extractImageUrl(item: any): string {
+    if (!item || typeof item !== "object") return "";
+
+    const pd = (typeof item.product_details === "object" && item.product_details !== null && item.product_details)
+        || (typeof item.productDetails === "object" && item.productDetails !== null && item.productDetails)
+        || (typeof item.product === "object" && item.product !== null && item.product)
+        || {};
+
+    const prod = (typeof pd.product === "object" && pd.product !== null && pd.product)
+        || (typeof item.product === "object" && item.product !== null && item.product)
+        || pd;
+
+    const candidates = [
+        item.box_image,
+        item.boxImage,
+        item.gift_box_image,
+        item.giftBoxImage,
+        item.image_url,
+        item.imageUrl,
+        typeof item.image === "string" ? item.image : null,
+        item.image?.image_url,
+        item.image?.url,
+        item.image?.secure_url,
+        pd.image_url,
+        typeof pd.image === "string" ? pd.image : null,
+        pd.image?.image_url,
+        pd.image?.url,
+        prod.image_url,
+        typeof prod.image === "string" ? prod.image : null,
+        prod.image?.image_url,
+        prod.image?.url,
+        Array.isArray(item.products) && item.products[0]?.image_url,
+        Array.isArray(item.products) && (typeof item.products[0]?.image === "string" ? item.products[0].image : null),
+        Array.isArray(item.products) && item.products[0]?.image?.image_url,
+        Array.isArray(item.products) && item.products[0]?.image?.url,
+        Array.isArray(item.images) && (typeof item.images[0] === "string" ? item.images[0] : item.images[0]?.image_url),
+        Array.isArray(prod.imageDocumentId) && prod.imageDocumentId[0]?.image_url,
+        Array.isArray(prod.images) && (typeof prod.images[0] === "string" ? prod.images[0] : prod.images[0]?.image_url),
+    ];
+
+    for (const cand of candidates) {
+        if (typeof cand === "string" && cand.trim().length > 0) {
+            return cand.trim();
+        }
+    }
+    return "";
+}
+
+function extractItemTitle(item: any): string {
+    if (!item || typeof item !== "object") return "Pure Honey";
+
+    const isCustom = item.type === "CUSTOM" || Boolean(item.gift_box) || Boolean(item.giftBox) || Boolean(item.box_image);
+    const isSubscription = item.type === "PLAN" || item.type === "SUBSCRIPTION";
+
+    const giftName = typeof item.gift_box === "string" ? item.gift_box : typeof item.giftBox === "string" ? item.giftBox : item.gift_box?.name || item.giftBox?.name || "";
+
+    if (isCustom) {
+        return giftName || item.title || item.name || "Custom Gift Box";
+    }
+
+    const pd = (typeof item.product_details === "object" && item.product_details !== null && item.product_details)
+        || (typeof item.productDetails === "object" && item.productDetails !== null && item.productDetails)
+        || (typeof item.product === "object" && item.product !== null && item.product)
+        || {};
+
+    const prod = (typeof pd.product === "object" && pd.product !== null && pd.product)
+        || (typeof item.product === "object" && item.product !== null && item.product)
+        || pd;
+
+    const titleCandidates = [
+        item.product_name,
+        item.productName,
+        item.title,
+        item.name,
+        pd.product_name,
+        pd.productName,
+        pd.name,
+        prod.product_name,
+        prod.productName,
+        prod.name,
+        prod.title,
+        Array.isArray(item.products) && item.products[0]?.product_name,
+        Array.isArray(item.products) && item.products[0]?.name,
+    ];
+
+    for (const cand of titleCandidates) {
+        if (typeof cand === "string" && cand.trim().length > 0) {
+            return cand.trim();
+        }
+    }
+
+    return isSubscription ? "Subscription Plan" : "Pure Honey";
+}
+
 // ---------- More Orders Data ----------
 const allOrders: Order[] = [
     {
@@ -675,80 +769,38 @@ export default function MyOrdersPage() {
 
                     if (Array.isArray(rawItems) && rawItems.length > 0) {
                         rawItems.forEach((item: any) => {
-                            const pd = item.product_details || item.productDetails || item.product || item;
-                            const prod = pd.product || item.product || pd;
-                            const giftObj = (typeof item.giftBox === "object" && item.giftBox) || (typeof pd.giftBox === "object" && pd.giftBox) || (typeof item.gift_box === "object" && item.gift_box) || (typeof pd.gift_box === "object" && pd.gift_box) || {};
-                            const giftBoxName = typeof item.gift_box === "string" ? item.gift_box : typeof item.giftBox === "string" ? item.giftBox : giftObj.name || giftObj.title || "";
-                            const variant = item.variant || pd.variant || prod.variant || {};
-
-                            const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(pd.giftBox) || Boolean(item.gift_box) || Boolean(item.box_image) || Boolean(item.boxImage);
+                            const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(item.gift_box) || Boolean(item.box_image) || Boolean(item.boxImage);
                             const isSubscriptionPlan = item.type === "PLAN" || item.type === "SUBSCRIPTION";
 
-                            const firstProdInItem = Array.isArray(item.products) && item.products.length > 0 ? item.products[0] : null;
-
-                            let title = "Pure Honey";
-                            if (isCustomGift) {
-                                title = giftBoxName || giftObj.name || giftObj.title || item.title || item.name || "Custom Gift Box";
-                            } else if (isSubscriptionPlan) {
-                                title = item.product_name || item.name || item.title || prod.product_name || "Subscription Plan";
-                            } else {
-                                title = item.product_name || prod.product_name || prod.name || prod.title || item.title || item.productTitle || "Pure Honey";
+                            const title = extractItemTitle(item);
+                            let img = extractImageUrl(item);
+                            if (!img) {
+                                img = isCustomGift ? "/giftset.png" : "/Upcoming.png";
                             }
 
-                            const weightVal = variant.weight || item.weight || prod.weight || item.totalWeight;
-                            const unitVal = variant.unit || item.unit || prod.unit || "g";
+                            const pd = (typeof item.product_details === "object" && item.product_details !== null && item.product_details)
+                                || (typeof item.productDetails === "object" && item.productDetails !== null && item.productDetails)
+                                || (typeof item.product === "object" && item.product !== null && item.product)
+                                || {};
+                            const prod = (typeof pd.product === "object" && pd.product !== null && pd.product)
+                                || (typeof item.product === "object" && item.product !== null && item.product)
+                                || pd;
+                            const variant = (typeof item.variant === "object" && item.variant !== null && item.variant)
+                                || (typeof pd.variant === "object" && pd.variant !== null && pd.variant)
+                                || (typeof prod.variant === "object" && prod.variant !== null && prod.variant)
+                                || {};
+
+                            const weightVal = variant.weight || item.weight || pd.weight || prod.weight || item.totalWeight;
+                            const unitVal = variant.unit || item.unit || pd.unit || prod.unit || "g";
                             const weightLabel = weightVal ? `${weightVal}${unitVal}` : "";
                             
                             let sub = "Standard Pack";
                             if (isCustomGift) {
                                 sub = weightLabel ? `${weightLabel} Gift Box` : "Gift Box";
                             } else if (isSubscriptionPlan) {
-                                sub = item.brand || "Recurring Subscription";
+                                sub = item.brand || pd.brand || prod.brand || "Recurring Subscription";
                             } else {
-                                sub = weightLabel || item.productSub || (item.brand ? item.brand : "Standard Pack");
-                            }
-
-                            let img = "";
-
-                            // 1. Direct box_image or boxImage on item / pd / giftObj
-                            if (typeof item.box_image === "string" && item.box_image) img = item.box_image;
-                            else if (typeof item.boxImage === "string" && item.boxImage) img = item.boxImage;
-                            else if (typeof pd.box_image === "string" && pd.box_image) img = pd.box_image;
-                            else if (typeof pd.boxImage === "string" && pd.boxImage) img = pd.boxImage;
-                            else if (typeof giftObj.box_image === "string" && giftObj.box_image) img = giftObj.box_image;
-                            else if (typeof giftObj.boxImage === "string" && giftObj.boxImage) img = giftObj.boxImage;
-                            else if (typeof giftObj.image === "string" && giftObj.image) img = giftObj.image;
-                            else if (typeof giftObj.image_url === "string" && giftObj.image_url) img = giftObj.image_url;
-
-                            // 2. Direct image on item
-                            else if (typeof item.image === "string" && item.image) img = item.image;
-                            else if (typeof item.image_url === "string" && item.image_url) img = item.image_url;
-                            else if (item.image?.image_url) img = item.image.image_url;
-                            else if (item.image?.url) img = item.image.url;
-
-                            // 3. Products array inside item (for custom gift boxes if box_image missing)
-                            else if (firstProdInItem) {
-                                if (typeof firstProdInItem.image === "string" && firstProdInItem.image) img = firstProdInItem.image;
-                                else if (typeof firstProdInItem.image_url === "string" && firstProdInItem.image_url) img = firstProdInItem.image_url;
-                                else if (firstProdInItem.image?.image_url) img = firstProdInItem.image.image_url;
-                                else if (firstProdInItem.image?.url) img = firstProdInItem.image.url;
-                            }
-
-                            // 4. Image on pd or prod
-                            else if (typeof pd.image === "string" && pd.image) img = pd.image;
-                            else if (typeof pd.image_url === "string" && pd.image_url) img = pd.image_url;
-                            else if (pd.image?.image_url) img = pd.image.image_url;
-                            else if (pd.image?.url) img = pd.image.url;
-                            else if (typeof prod.image === "string" && prod.image) img = prod.image;
-                            else if (typeof prod.image_url === "string" && prod.image_url) img = prod.image_url;
-                            else if (prod.image?.image_url) img = prod.image.image_url;
-                            else if (prod.image?.url) img = prod.image.url;
-                            else if (Array.isArray(prod.imageDocumentId) && prod.imageDocumentId[0]?.image_url) img = prod.imageDocumentId[0].image_url;
-                            else if (Array.isArray(prod.images) && prod.images[0]?.image_url) img = prod.images[0].image_url;
-                            else if (Array.isArray(prod.images) && typeof prod.images[0] === "string") img = prod.images[0];
-
-                            if (!img) {
-                                img = isCustomGift ? "/giftset.png" : "/Upcoming.png";
+                                sub = weightLabel || item.productSub || item.brand || pd.brand || prod.brand || "Standard Pack";
                             }
 
                             const itemQty = item.quantity || item.qty || 1;
@@ -756,10 +808,10 @@ export default function MyOrdersPage() {
                                 item.amount ||
                                 item.finalAmount ||
                                 pd.finalAmount ||
+                                prod.finalAmount ||
                                 item.totalAmount ||
                                 item.price ||
                                 (variant.price ? Number(variant.price) * itemQty : 0) ||
-                                (prod.price ? Number(prod.price) * itemQty : 0) ||
                                 0
                             );
                             groupTotalSum += itemPrice;
