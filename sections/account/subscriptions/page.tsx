@@ -135,7 +135,9 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
                 <nav className="space-y-1.5">
                     {sidebarLinks.map((link) => {
                         const Icon = link.icon;
-                        const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+                        const isActive = link.href === "/account"
+                            ? pathname === "/account" || pathname === "/account/" || pathname?.startsWith("/account/orders")
+                            : pathname === link.href || pathname?.startsWith(`${link.href}/`);
                         return (
                             <Link
                                 key={link.label}

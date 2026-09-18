@@ -443,6 +443,7 @@ function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; o
 
 export default function MyOrdersPage() {
     const router = useRouter();
+    const [isMounted, setIsMounted] = useState(false);
     const [session, setSession] = useState<AuthSession | null>(() => getStoredSession());
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -851,6 +852,10 @@ export default function MyOrdersPage() {
     };
 
     useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
         function syncSession() {
             setSession(getStoredSession());
         }
@@ -867,10 +872,10 @@ export default function MyOrdersPage() {
     }, []);
 
     useEffect(() => {
-        if (!session) {
+        if (isMounted && !session) {
             router.replace("/login");
         }
-    }, [router, session]);
+    }, [isMounted, router, session]);
 
     // JS-driven Sticky Sidebar Scroll Handler (Desktop)
     useEffect(() => {
@@ -944,7 +949,26 @@ export default function MyOrdersPage() {
         };
     }, [currentPage, searchTerm, userData]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.touchAction = "none";
+        } else {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            document.body.style.touchAction = "";
+        };
+    }, [mobileMenuOpen]);
 
     async function logout() {
         try {
@@ -958,14 +982,6 @@ export default function MyOrdersPage() {
         clearSession();
         setSession(null);
         router.push("/login");
-    }
-
-    if (!session) {
-        return (
-            <section className="min-h-[60vh] bg-[#FFF8EF] px-4 py-16">
-                <div className="mx-auto h-24 max-w-sm animate-pulse rounded-2xl bg-white" />
-            </section>
-        );
     }
 
     // ---------- Filter Orders by Search ----------
@@ -986,10 +1002,6 @@ export default function MyOrdersPage() {
     const startIndex = (currentPage - 1) * ordersPerPage;
     const endIndex = startIndex + ordersPerPage;
     const currentOrders = filteredOrders.slice(startIndex, endIndex);
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm]);
 
     const goToPage = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -1027,22 +1039,13 @@ export default function MyOrdersPage() {
         return pages;
     };
 
-    useEffect(() => {
-        if (mobileMenuOpen) {
-            document.body.style.overflow = "hidden";
-            document.documentElement.style.overflow = "hidden";
-            document.body.style.touchAction = "none";
-        } else {
-            document.body.style.overflow = "";
-            document.documentElement.style.overflow = "";
-            document.body.style.touchAction = "";
-        }
-        return () => {
-            document.body.style.overflow = "";
-            document.documentElement.style.overflow = "";
-            document.body.style.touchAction = "";
-        };
-    }, [mobileMenuOpen]);
+    if (!isMounted || !session) {
+        return (
+            <section className="min-h-[60vh] bg-[#FFF8EF] px-4 py-16 flex items-center justify-center">
+                <div className="mx-auto h-24 w-full max-w-sm animate-pulse rounded-2xl bg-white/80 border border-[#EADCC9]" />
+            </section>
+        );
+    }
 
     return (
         <section ref={sectionRef} className="relative min-h-screen bg-[#FFF8EF] pb-8 pt-0 lg:pt-12">
