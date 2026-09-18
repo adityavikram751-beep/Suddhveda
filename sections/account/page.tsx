@@ -676,15 +676,18 @@ export default function MyOrdersPage() {
                         rawItems.forEach((item: any) => {
                             const pd = item.product_details || item.productDetails || item.product || item;
                             const prod = pd.product || item.product || pd;
-                            const gift = item.giftBox || pd.giftBox || item.gift_box || pd.gift_box || {};
+                            const giftObj = (typeof item.giftBox === "object" && item.giftBox) || (typeof pd.giftBox === "object" && pd.giftBox) || (typeof item.gift_box === "object" && item.gift_box) || (typeof pd.gift_box === "object" && pd.gift_box) || {};
+                            const giftBoxName = typeof item.gift_box === "string" ? item.gift_box : typeof item.giftBox === "string" ? item.giftBox : giftObj.name || giftObj.title || "";
                             const variant = item.variant || pd.variant || prod.variant || {};
 
-                            const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(pd.giftBox) || Boolean(item.gift_box);
+                            const isCustomGift = item.type === "CUSTOM" || Boolean(item.giftBox) || Boolean(pd.giftBox) || Boolean(item.gift_box) || Boolean(item.box_image) || Boolean(item.boxImage);
                             const isSubscriptionPlan = item.type === "PLAN" || item.type === "SUBSCRIPTION";
+
+                            const firstProdInItem = Array.isArray(item.products) && item.products.length > 0 ? item.products[0] : null;
 
                             let title = "Pure Honey";
                             if (isCustomGift) {
-                                title = gift.name || gift.title || item.title || item.name || "Custom Gift Box";
+                                title = giftBoxName || giftObj.name || giftObj.title || item.title || item.name || "Custom Gift Box";
                             } else if (isSubscriptionPlan) {
                                 title = item.product_name || item.name || item.title || prod.product_name || "Subscription Plan";
                             } else {
@@ -704,23 +707,47 @@ export default function MyOrdersPage() {
                                 sub = weightLabel || item.productSub || (item.brand ? item.brand : "Standard Pack");
                             }
 
-                            let img = "/Upcoming.png";
-                            if (isCustomGift) {
-                                img = gift.image || gift.image_url || gift.boxImage || item.image || item.giftBoxImage || pd.image || "/giftset.png";
-                            } else if (typeof item.image === "string" && item.image) {
-                                img = item.image;
-                            } else if (item.image?.image_url) {
-                                img = item.image.image_url;
-                            } else if (typeof prod.image === "string" && prod.image) {
-                                img = prod.image;
-                            } else if (prod.image?.image_url) {
-                                img = prod.image.image_url;
-                            } else if (Array.isArray(prod.imageDocumentId) && prod.imageDocumentId[0]?.image_url) {
-                                img = prod.imageDocumentId[0].image_url;
-                            } else if (Array.isArray(prod.images) && prod.images[0]?.image_url) {
-                                img = prod.images[0].image_url;
-                            } else if (gift.image || gift.image_url) {
-                                img = gift.image || gift.image_url;
+                            let img = "";
+
+                            // 1. Direct box_image or boxImage on item / pd / giftObj
+                            if (typeof item.box_image === "string" && item.box_image) img = item.box_image;
+                            else if (typeof item.boxImage === "string" && item.boxImage) img = item.boxImage;
+                            else if (typeof pd.box_image === "string" && pd.box_image) img = pd.box_image;
+                            else if (typeof pd.boxImage === "string" && pd.boxImage) img = pd.boxImage;
+                            else if (typeof giftObj.box_image === "string" && giftObj.box_image) img = giftObj.box_image;
+                            else if (typeof giftObj.boxImage === "string" && giftObj.boxImage) img = giftObj.boxImage;
+                            else if (typeof giftObj.image === "string" && giftObj.image) img = giftObj.image;
+                            else if (typeof giftObj.image_url === "string" && giftObj.image_url) img = giftObj.image_url;
+
+                            // 2. Direct image on item
+                            else if (typeof item.image === "string" && item.image) img = item.image;
+                            else if (typeof item.image_url === "string" && item.image_url) img = item.image_url;
+                            else if (item.image?.image_url) img = item.image.image_url;
+                            else if (item.image?.url) img = item.image.url;
+
+                            // 3. Products array inside item (for custom gift boxes if box_image missing)
+                            else if (firstProdInItem) {
+                                if (typeof firstProdInItem.image === "string" && firstProdInItem.image) img = firstProdInItem.image;
+                                else if (typeof firstProdInItem.image_url === "string" && firstProdInItem.image_url) img = firstProdInItem.image_url;
+                                else if (firstProdInItem.image?.image_url) img = firstProdInItem.image.image_url;
+                                else if (firstProdInItem.image?.url) img = firstProdInItem.image.url;
+                            }
+
+                            // 4. Image on pd or prod
+                            else if (typeof pd.image === "string" && pd.image) img = pd.image;
+                            else if (typeof pd.image_url === "string" && pd.image_url) img = pd.image_url;
+                            else if (pd.image?.image_url) img = pd.image.image_url;
+                            else if (pd.image?.url) img = pd.image.url;
+                            else if (typeof prod.image === "string" && prod.image) img = prod.image;
+                            else if (typeof prod.image_url === "string" && prod.image_url) img = prod.image_url;
+                            else if (prod.image?.image_url) img = prod.image.image_url;
+                            else if (prod.image?.url) img = prod.image.url;
+                            else if (Array.isArray(prod.imageDocumentId) && prod.imageDocumentId[0]?.image_url) img = prod.imageDocumentId[0].image_url;
+                            else if (Array.isArray(prod.images) && prod.images[0]?.image_url) img = prod.images[0].image_url;
+                            else if (Array.isArray(prod.images) && typeof prod.images[0] === "string") img = prod.images[0];
+
+                            if (!img) {
+                                img = isCustomGift ? "/giftset.png" : "/Upcoming.png";
                             }
 
                             const itemQty = item.quantity || item.qty || 1;
@@ -1244,13 +1271,14 @@ export default function MyOrdersPage() {
                                                 {order.items.map((item, idx) => (
                                                     <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-2xl bg-[#FAF5EC]/50 border border-[#EADCC9]/40">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white border border-[#EADCC9]/60">
+                                                            <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl bg-white border border-[#EADCC9]/80 shadow-xs">
                                                                 <Image
                                                                     src={item.image}
                                                                     alt={item.title}
                                                                     fill
-                                                                    sizes="56px"
-                                                                    className="object-contain p-1"
+                                                                    unoptimized
+                                                                    sizes="80px"
+                                                                    className="object-cover"
                                                                 />
                                                             </div>
                                                             <div>
