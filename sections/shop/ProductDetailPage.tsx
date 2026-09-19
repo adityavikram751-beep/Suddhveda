@@ -18,6 +18,11 @@ import {
   Truck,
   ShieldCheck,
   X,
+  Sparkles,
+  Utensils,
+  FileText,
+  Leaf,
+  Award,
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
@@ -244,6 +249,94 @@ export default function ProductDetailPage({
   const [isPincodeDropdownOpen, setIsPincodeDropdownOpen] = useState(false);
 
   const [openSection, setOpenSection] = useState<string | null>(null);
+
+  // Dynamic Accordion Sections strictly generated from API product payload
+  const dynamicAccordionSections = useMemo(() => {
+    const list: any[] = [];
+
+    // 1. Description
+    if (product?.description && String(product.description).trim()) {
+      list.push({
+        key: "description",
+        icon: Info,
+        title: "Description",
+        content: String(product.description).trim(),
+      });
+    }
+
+    // 2. Key Benefits & Flora
+    if ((product?.key_benefits && String(product.key_benefits).trim()) || (product?.floral_source && String(product.floral_source).trim())) {
+      const benefitDetails: any[] = [];
+      if (product?.floral_source && String(product.floral_source).trim()) {
+        benefitDetails.push({ label: "Floral Source", value: String(product.floral_source).trim() });
+      }
+      list.push({
+        key: "benefits",
+        icon: Sparkles,
+        title: "Key Benefits & Flora",
+        content: product?.key_benefits ? String(product.key_benefits).trim() : undefined,
+        details: benefitDetails.length > 0 ? benefitDetails : undefined,
+      });
+    }
+
+    // 3. Ingredients
+    if (product?.ingredients && String(product.ingredients).trim()) {
+      list.push({
+        key: "ingredients",
+        icon: Utensils,
+        title: "Ingredients",
+        content: String(product.ingredients).trim(),
+      });
+    }
+
+    // 4. Storage Instructions
+    if (product?.storage_instructions && String(product.storage_instructions).trim()) {
+      list.push({
+        key: "storage",
+        icon: ShieldCheck,
+        title: "Storage Instructions",
+        content: String(product.storage_instructions).trim(),
+      });
+    }
+
+    // 5. Product Specifications & Manufacturing Details (API fields)
+    const specDetails: any[] = [];
+    if (product?.brand && String(product.brand).trim())
+      specDetails.push({ label: "Brand", value: String(product.brand).trim() });
+    if (product?.product_type && String(product.product_type).trim())
+      specDetails.push({ label: "Product Type", value: String(product.product_type).trim() });
+    if (product?.manufacturer_information && String(product.manufacturer_information).trim())
+      specDetails.push({ label: "Manufacturer Info", value: String(product.manufacturer_information).trim() });
+    if (product?.shelf_life && String(product.shelf_life).trim())
+      specDetails.push({ label: "Shelf Life", value: String(product.shelf_life).trim() });
+    if (product?.country_of_origin && String(product.country_of_origin).trim())
+      specDetails.push({ label: "Country of Origin", value: String(product.country_of_origin).trim() });
+    if (product?.fssai_license_number && String(product.fssai_license_number).trim())
+      specDetails.push({ label: "FSSAI License No.", value: String(product.fssai_license_number).trim() });
+    if (product?.batch_number && String(product.batch_number).trim())
+      specDetails.push({ label: "Batch Number", value: String(product.batch_number).trim() });
+
+    if (specDetails.length > 0) {
+      list.push({
+        key: "details",
+        icon: Box,
+        title: "Product Details & Origin",
+        details: specDetails,
+      });
+    }
+
+    // 6. Nutritional Info (API field if present)
+    if (product?.nutritional_info && String(product.nutritional_info).trim()) {
+      list.push({
+        key: "nutrition",
+        icon: FileText,
+        title: "Nutritional Info",
+        content: String(product.nutritional_info).trim(),
+      });
+    }
+
+    return list;
+  }, [product]);
 
   // Computed Dynamic Prices & Discount Percent
   const currentPrice = selectedVariant?.price ?? 0;
@@ -522,7 +615,7 @@ export default function ProductDetailPage({
 
           deliveryInfo = { day1, ord1, month1, day2, ord2, month2, rawDate };
         }
-      } catch {}
+      } catch { }
 
       const findField = (keys: string[], obj: any): any => {
         if (!obj || typeof obj !== "object") return undefined;
@@ -599,28 +692,28 @@ export default function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
           {/* LEFT MEDIA COLUMN (DESKTOP STICKY GALLERY BELOW HEADER) */}
-          <div className="lg:col-span-6 flex flex-col-reverse lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-10">
+          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-10 w-full">
 
-            {/* THUMBNAILS (Desktop vertical column / Mobile horizontal scroll) */}
-            <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none shrink-0">
+            {/* THUMBNAILS (Desktop & Tablet vertical column / Mobile horizontal scroll) */}
+            <div className="flex md:flex-col lg:flex-col gap-3 overflow-x-auto md:overflow-visible lg:overflow-visible pb-2 md:pb-0 lg:pb-0 scrollbar-none shrink-0 w-full md:w-auto justify-start px-0.5">
               {mediaList.map((item: any) => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedMedia(item)}
-                  className={`relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-2xl border bg-white transition-colors cursor-pointer ${selectedMedia?.id === item.id
-                      ? "border-[#D49313] ring-2 ring-[#D49313]/40"
-                      : "border-[#EADCC9] hover:border-[#D49313]"
+                  className={`relative h-[68px] w-[68px] sm:h-[76px] sm:w-[76px] lg:h-[80px] lg:w-[80px] shrink-0 overflow-hidden rounded-2xl border transition-all cursor-pointer p-0 bg-white ${selectedMedia?.id === item.id
+                    ? "border-[#D49313] ring-2 ring-[#D49313]/40 shadow-xs scale-105"
+                    : "border-[#EADCC9] hover:border-[#D49313]"
                     }`}
                 >
                   <Image
                     src={item.type === "video" ? item.thumbnail : item.url}
                     alt={product.product_name || "Thumbnail"}
-                    width={68}
-                    height={68}
-                    className="h-full w-full object-cover"
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover rounded-2xl"
                   />
                   {item.type === "video" && (
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-2xl">
                       <Play size={16} className="text-white fill-white" />
                     </div>
                   )}
@@ -629,7 +722,7 @@ export default function ProductDetailPage({
             </div>
 
             {/* MAIN MEDIA DISPLAY */}
-            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full h-[380px] sm:h-[480px] lg:h-[540px] overflow-hidden shadow-2xs">
+            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square max-w-[560px] lg:max-w-[540px] lg:max-h-[540px] mx-auto overflow-hidden shadow-sm">
               {selectedMedia?.type === "video" ? (
                 <video
                   src={selectedMedia.url}
@@ -637,7 +730,7 @@ export default function ProductDetailPage({
                   autoPlay
                   loop
                   muted
-                  className="w-full h-full object-cover rounded-3xl"
+                  className="w-full h-full object-cover lg:object-contain rounded-3xl"
                 />
               ) : (
                 selectedMedia?.url && (
@@ -645,7 +738,7 @@ export default function ProductDetailPage({
                     src={selectedMedia.url}
                     alt={product.product_name || "Product Media"}
                     fill
-                    className="object-cover object-center transition-transform duration-500 hover:scale-105 rounded-3xl"
+                    className="w-full h-full object-cover lg:object-contain object-center transition-transform duration-300 hover:scale-[1.01] rounded-3xl p-0"
                     priority
                   />
                 )
@@ -677,8 +770,8 @@ export default function ProductDetailPage({
                     <Heart
                       size={20}
                       className={`transition-colors ${wishlistIds.includes(product._id)
-                          ? "fill-[#FA4B1B] text-[#FA4B1B]"
-                          : "text-gray-400 hover:text-[#FA4B1B]"
+                        ? "fill-[#FA4B1B] text-[#FA4B1B]"
+                        : "text-gray-400 hover:text-[#FA4B1B]"
                         }`}
                     />
                   </button>
@@ -766,16 +859,14 @@ export default function ProductDetailPage({
                   <button
                     type="button"
                     onClick={() => setIsPincodeDropdownOpen(!isPincodeDropdownOpen)}
-                    className={`w-full px-4 py-3 flex items-center justify-between transition-colors cursor-pointer text-left ${
-                      pincodeStatus.type === "success"
-                        ? "bg-[#FAF0DC]/90 hover:bg-[#FAF0DC]"
-                        : "bg-red-50/90 hover:bg-red-50"
-                    }`}
+                    className={`w-full px-4 py-3 flex items-center justify-between transition-colors cursor-pointer text-left ${pincodeStatus.type === "success"
+                      ? "bg-[#FAF0DC]/90 hover:bg-[#FAF0DC]"
+                      : "bg-red-50/90 hover:bg-red-50"
+                      }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                        pincodeStatus.type === "success" ? "bg-[#16A34A] text-white" : "bg-red-600 text-white"
-                      }`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${pincodeStatus.type === "success" ? "bg-[#16A34A] text-white" : "bg-red-600 text-white"
+                        }`}>
                         {pincodeStatus.type === "success" ? (
                           <CheckCircle2 size={16} />
                         ) : (
@@ -783,9 +874,8 @@ export default function ProductDetailPage({
                         )}
                       </div>
                       <div>
-                        <span className={`text-[14px] font-black tracking-wide ${
-                          pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
-                        }`}>
+                        <span className={`text-[14px] font-black tracking-wide ${pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
+                          }`}>
                           {pincodeStatus.type === "success"
                             ? `Pincode ${pincodeStatus.pincode || pincode} is Serviceable!`
                             : `Pincode ${pincodeStatus.pincode || pincode} is Non-Serviceable`}
@@ -799,9 +889,8 @@ export default function ProductDetailPage({
                     <div className="flex items-center gap-1 text-[#593102]">
                       <ChevronDown
                         size={18}
-                        className={`transition-transform duration-300 ${
-                          isPincodeDropdownOpen ? "rotate-180 text-[#D49313]" : ""
-                        }`}
+                        className={`transition-transform duration-300 ${isPincodeDropdownOpen ? "rotate-180 text-[#D49313]" : ""
+                          }`}
                       />
                     </div>
                   </button>
@@ -843,9 +932,8 @@ export default function ProductDetailPage({
                           </div>
                         </div>
                       ) : (
-                        <p className={`text-[13px] font-semibold ${
-                          pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
-                        }`}>
+                        <p className={`text-[13px] font-semibold ${pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
+                          }`}>
                           {pincodeStatus.message}
                         </p>
                       )}
@@ -920,15 +1008,14 @@ export default function ProductDetailPage({
                       <button
                         key={getVariantId(option) || option.weight}
                         onClick={() => setSelectedVariant(option)}
-                        className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${
-                          outOfStock
-                            ? isSelectedOption
-                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
-                              : "border-red-300 bg-red-50/70"
-                            : isSelectedOption
+                        className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${outOfStock
+                          ? isSelectedOption
+                            ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                            : "border-red-300 bg-red-50/70"
+                          : isSelectedOption
                             ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
                             : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
-                        }`}
+                          }`}
                       >
                         {/* Red Diagonal Cross Line for out of stock variant */}
                         {outOfStock && (
@@ -1002,17 +1089,16 @@ export default function ProductDetailPage({
                     <button
                       disabled={btnLoading || isSelectedVariantOutOfStock}
                       onClick={() => handleAddToCart(false)}
-                      className={`flex-1 max-w-[320px] h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase text-center shadow-sm flex items-center justify-center ${
-                        isSelectedVariantOutOfStock
-                          ? "bg-gray-300 text-gray-500 border border-gray-300 shadow-none cursor-not-allowed opacity-80"
-                          : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
-                      }`}
+                      className={`flex-1 max-w-[320px] h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase text-center shadow-sm flex items-center justify-center ${isSelectedVariantOutOfStock
+                        ? "bg-gray-300 text-gray-500 border border-gray-300 shadow-none cursor-not-allowed opacity-80"
+                        : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
+                        }`}
                     >
                       {isSelectedVariantOutOfStock
                         ? "OUT OF STOCK"
                         : btnLoading
-                        ? "ADDING..."
-                        : `ADD TO CART · ₹${currentPrice * selectedQty}`}
+                          ? "ADDING..."
+                          : `ADD TO CART · ₹${currentPrice * selectedQty}`}
                     </button>
                   </div>
                 </div>
@@ -1021,43 +1107,59 @@ export default function ProductDetailPage({
 
 
             {/* Accordions */}
-            <div className="pt-6 max-w-xl">
-              <div className="w-full text-center mb-6">
-                <a href="#compare" className="font-serif text-[20px] sm:text-[24px] font-bold text-[#593102] underline underline-offset-8 decoration-[#D49313] tracking-wide inline-block hover:text-[#D49313] transition-colors">
-                  Compare Honey Flora &amp; Benefits
-                </a>
-              </div>
+            {dynamicAccordionSections.length > 0 && (
+              <div className="pt-6 max-w-xl">
+                <div className="w-full text-center mb-6">
+                  <a href="#compare" className="font-serif text-[20px] sm:text-[24px] font-bold text-[#593102] underline underline-offset-8 decoration-[#D49313] tracking-wide inline-block hover:text-[#D49313] transition-colors">
+                    Compare Honey Flora &amp; Benefits
+                  </a>
+                </div>
 
-              <div className="divide-y divide-[#EADCC9] border-t border-[#EADCC9]">
-                {accordionSections.map((section) => {
-                  const Icon = section.icon;
-                  const isOpen = openSection === section.key;
-                  return (
-                    <div key={section.key} className="py-1">
-                      <button
-                        onClick={() => setOpenSection(isOpen ? null : section.key)}
-                        className="flex w-full items-center justify-between py-4 text-left cursor-pointer"
-                      >
-                        <span className="flex items-center gap-3.5">
-                          <div className="w-9 h-9 rounded-xl bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
-                            <Icon size={18} className="text-[#D49313] stroke-[2]" />
-                          </div>
-                          <span className="font-serif text-[18px] sm:text-[22px] font-bold text-[#593102] tracking-tight">
-                            {section.title}
+                <div className="divide-y divide-[#EADCC9] border-t border-[#EADCC9]">
+                  {dynamicAccordionSections.map((section) => {
+                    const Icon = section.icon;
+                    const isOpen = openSection === section.key;
+                    return (
+                      <div key={section.key} className="py-1">
+                        <button
+                          onClick={() => setOpenSection(isOpen ? null : section.key)}
+                          className="flex w-full items-center justify-between py-4 text-left cursor-pointer"
+                        >
+                          <span className="flex items-center gap-3.5">
+                            <div className="w-9 h-9 rounded-xl bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
+                              <Icon size={18} className="text-[#D49313] stroke-[2]" />
+                            </div>
+                            <span className="font-serif text-[18px] sm:text-[22px] font-bold text-[#593102] tracking-tight">
+                              {section.title}
+                            </span>
                           </span>
-                        </span>
-                        {isOpen ? <ChevronUp size={20} className="text-[#593102] shrink-0" /> : <ChevronDown size={20} className="text-[#7A6A5C] shrink-0" />}
-                      </button>
-                      {isOpen && (
-                        <p className="pb-4 pl-12 text-[14px] leading-relaxed text-[#6E5D4F] font-medium">
-                          {section.content}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
+                          {isOpen ? <ChevronUp size={20} className="text-[#593102] shrink-0" /> : <ChevronDown size={20} className="text-[#7A6A5C] shrink-0" />}
+                        </button>
+                        {isOpen && (
+                          <div className="pb-4 pl-12 space-y-3 text-[14px] leading-relaxed text-[#6E5D4F] font-medium">
+                            {section.content && <p>{section.content}</p>}
+                            {section.details && section.details.length > 0 && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                                {section.details.map((detail: any, idx: number) => (
+                                  <div key={idx} className="bg-[#FFFDF9] border border-[#EADCC9] rounded-xl p-2.5 px-3.5 shadow-2xs">
+                                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73] block mb-0.5">
+                                      {detail.label}
+                                    </span>
+                                    <span className="text-[13px] font-bold text-[#593102]">
+                                      {detail.value}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -1191,17 +1293,16 @@ export default function ProductDetailPage({
               <button
                 disabled={btnLoading || isSelectedVariantOutOfStock}
                 onClick={() => handleAddToCart(false)}
-                className={`flex-1 py-3.5 px-3 rounded-2xl font-extrabold text-[13px] sm:text-[14px] uppercase tracking-wider text-center shadow-md transition-all flex items-center justify-center gap-1.5 ${
-                  isSelectedVariantOutOfStock
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
-                    : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
-                }`}
+                className={`flex-1 py-3.5 px-3 rounded-2xl font-extrabold text-[13px] sm:text-[14px] uppercase tracking-wider text-center shadow-md transition-all flex items-center justify-center gap-1.5 ${isSelectedVariantOutOfStock
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                  : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
+                  }`}
               >
                 {isSelectedVariantOutOfStock
                   ? "OUT OF STOCK"
                   : btnLoading
-                  ? "ADDING..."
-                  : `ADD TO CART - ₹${currentPrice * selectedQty}`}
+                    ? "ADDING..."
+                    : `ADD TO CART - ₹${currentPrice * selectedQty}`}
               </button>
             </div>
           </div>

@@ -136,13 +136,13 @@ export default function ProductCardShop({
         />
       </button>
 
-      {/* Dynamic Product Image - Bottle Shifted Upwards & Slightly Larger */}
-      <div className="relative mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] w-full overflow-hidden shrink-0 flex items-center justify-center">
+      {/* Dynamic Product Image */}
+      <div className="relative mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] w-full overflow-hidden shrink-0 flex items-center justify-center p-2">
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-0 -translate-y-2.5 sm:-translate-y-3.5 scale-115 sm:scale-120 group-hover:scale-125 group-hover:-translate-y-4 transition-transform duration-500"
+          className="object-contain p-1.5 transition-transform duration-500 group-hover:scale-105"
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>

@@ -531,7 +531,7 @@ export default function Cart() {
                                                         alt={product.productName}
                                                         fill
                                                         unoptimized
-                                                        className="object-cover"
+                                                        className="object-contain p-1"
                                                     />
                                                 </div>
                                                 <div className="flex flex-col justify-center gap-0.5 min-w-0 flex-1">

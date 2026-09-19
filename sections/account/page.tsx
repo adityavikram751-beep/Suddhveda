@@ -1325,7 +1325,7 @@ export default function MyOrdersPage() {
                                                                     fill
                                                                     unoptimized
                                                                     sizes="80px"
-                                                                    className="object-cover"
+                                                                    className="object-contain p-1"
                                                                 />
                                                             </div>
                                                             <div>
