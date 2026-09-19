@@ -2,10 +2,10 @@
 
 import { API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
-import { FiPhone, FiMail, FiMapPin, FiArrowUp, FiChevronDown } from "react-icons/fi";
+import { FiPhone, FiMail, FiMapPin, FiArrowUp, FiChevronDown, FiCheck } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface LocationData {
   address: {
@@ -52,6 +52,34 @@ export default function ContactSection() {
     message: string;
   }>({ type: null, message: "" });
 
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
+  const subjectDropdownRef = useRef<HTMLDivElement>(null);
+
+  const subjectOptions = [
+    { value: "general", label: "General Inquiry" },
+    { value: "order", label: "Order Support" },
+    { value: "wholesale", label: "Wholesale" },
+    { value: "product", label: "Product Query" },
+  ];
+
+  // Close custom dropdown when clicking outside (mouse or touch)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (
+        subjectDropdownRef.current &&
+        !subjectDropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsSubjectDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, []);
+
   // Fetch location data
   useEffect(() => {
     const fetchLocation = async () => {
@@ -85,8 +113,50 @@ export default function ContactSection() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
+
+    // Client-side validations
+    if (!formData.name.trim()) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter your full name.",
+      });
+      return;
+    }
+
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter a valid email address.",
+      });
+      return;
+    }
+
+    if (!formData.subject) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please select a subject.",
+      });
+      return;
+    }
+
+    if (!formData.mobile.trim() || formData.mobile.trim().length < 10) {
+      setSubmitStatus({
+        type: "error",
+        message: "Please enter a valid 10-digit mobile number.",
+      });
+      return;
+    }
+
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      setSubmitStatus({
+        type: "error",
+        message: "Message must be at least 10 characters.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/enquiry/submit`, {
@@ -112,9 +182,31 @@ export default function ContactSection() {
           message: "",
         });
       } else {
+        let errorMsg = data.message || "Failed to send enquiry. Please try again.";
+
+        // Extract detailed validation errors if returned by API
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          errorMsg = data.errors.map((err: any) => (typeof err === "string" ? err : err.msg || err.message)).join(". ");
+        } else if (data.errors && typeof data.errors === "object") {
+          errorMsg = Object.values(data.errors)
+            .map((err: any) => (typeof err === "string" ? err : err.msg || err.message))
+            .join(". ");
+        } else if (data.error) {
+          errorMsg = typeof data.error === "string" ? data.error : data.error.message || errorMsg;
+        }
+
+        // If backend message is generic "Validation failed", provide helpful specific guidance
+        if (errorMsg.toLowerCase() === "validation failed") {
+          if (formData.message.trim().length < 10) {
+            errorMsg = "Message must be at least 10 characters.";
+          } else {
+            errorMsg = "Please check your details and try again.";
+          }
+        }
+
         setSubmitStatus({
           type: "error",
-          message: data.message || "Failed to send enquiry. Please try again.",
+          message: errorMsg,
         });
       }
     } catch (error: any) {
@@ -220,25 +312,61 @@ export default function ContactSection() {
                   className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
                 />
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
-                  <div className="relative">
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      required
-                      className="appearance-none w-full h-[48px] sm:h-[50px] px-4 pr-9 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] focus:outline-none focus:border-[#D49313] transition-colors cursor-pointer"
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  <div className="relative" ref={subjectDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => setIsSubjectDropdownOpen((prev) => !prev)}
+                      className={`w-full h-[48px] sm:h-[50px] px-4 rounded-xl border bg-[#FAF9F7] text-[14px] font-medium text-[#593102] flex items-center justify-between transition-all cursor-pointer text-left select-none active:scale-[0.995] ${
+                        isSubjectDropdownOpen
+                          ? "border-[#D49313] ring-2 ring-[#D49313]/20 shadow-xs bg-white"
+                          : "border-[#EADCC9] hover:border-[#D49313]"
+                      }`}
+                      aria-haspopup="listbox"
+                      aria-expanded={isSubjectDropdownOpen}
                     >
-                      <option value="" disabled>Subject</option>
-                      <option value="general">General Inquiry</option>
-                      <option value="order">Order Support</option>
-                      <option value="wholesale">Wholesale</option>
-                      <option value="product">Product Query</option>
-                    </select>
-                    <FiChevronDown
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A69C8F] pointer-events-none"
-                      size={16}
-                    />
+                      <span className={`truncate mr-2 ${formData.subject ? "text-[#593102] font-semibold" : "text-[#A69C8F]"}`}>
+                        {subjectOptions.find((opt) => opt.value === formData.subject)?.label || "Subject"}
+                      </span>
+                      <FiChevronDown
+                        className={`text-[#A69C8F] transition-transform duration-300 flex-shrink-0 ${
+                          isSubjectDropdownOpen ? "rotate-180 text-[#D49313]" : ""
+                        }`}
+                        size={18}
+                      />
+                    </button>
+
+                    {/* Custom Touch-Friendly Dropdown Popover */}
+                    {isSubjectDropdownOpen && (
+                      <div 
+                        className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-2xl border border-[#EADCC9] bg-[#FFFDF9] shadow-xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-150 overflow-hidden"
+                        role="listbox"
+                      >
+                        {subjectOptions.map((option) => {
+                          const isSelected = formData.subject === option.value;
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({ ...prev, subject: option.value }));
+                                setIsSubjectDropdownOpen(false);
+                              }}
+                              className={`w-full px-3.5 py-3 rounded-xl text-[14px] text-left transition-all flex items-center justify-between cursor-pointer select-none active:scale-[0.98] ${
+                                isSelected
+                                  ? "bg-[#FAF0DC] text-[#593102] font-extrabold border border-[#D49313]/40 shadow-2xs"
+                                  : "text-[#593102] hover:bg-[#FAF5EC] active:bg-[#FAF0DC]/60 font-medium"
+                              }`}
+                              role="option"
+                              aria-selected={isSelected}
+                            >
+                              <span>{option.label}</span>
+                              {isSelected && <FiCheck className="text-[#D49313] stroke-[3] flex-shrink-0 ml-2" size={16} />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <input
                     type="tel"
@@ -247,7 +375,7 @@ export default function ContactSection() {
                     value={formData.mobile}
                     onChange={handleInputChange}
                     required
-                    className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] transition-colors"
+                    className="w-full h-[48px] sm:h-[50px] px-4 rounded-xl border border-[#EADCC9] bg-[#FAF9F7] text-[14px] font-medium text-[#593102] placeholder:text-[#A69C8F] focus:outline-none focus:border-[#D49313] focus:bg-white transition-colors"
                   />
                 </div>
 
