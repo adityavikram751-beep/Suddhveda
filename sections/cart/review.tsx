@@ -459,7 +459,6 @@ export default function ReviewPage() {
               product_name: prodObj.product_name || prodObj.productName || prodObj.name || p.product_name || "Honey",
               brand: prodObj.brand || "SudhVeda Honey",
               description: prodObj.description || "Raw and organic honey.",
-              sku: productSku,
               image: {
                 image_url: imgUrl,
               },
@@ -484,10 +483,8 @@ export default function ReviewPage() {
 
           return {
             type: "CUSTOM",
-            sku: giftSku,
             product_details: {
               giftCartItemId: pd.giftCartItemId || item.giftCartItemId || item.cartItemId || item._id || "",
-              sku: giftSku,
               giftBox: {
                 _id: giftBox._id || giftBox.id || "",
                 name: giftBox.name || "Gift Box",
@@ -529,13 +526,11 @@ export default function ReviewPage() {
             sku: itemSku,
             product_details: {
               cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
-              sku: itemSku,
               product: {
                 _id: prodObj._id || prodObj.productId || prodObj.id || item.productId || item.id || "",
                 product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Pure Honey",
                 brand: prodObj.brand || "SudhVeda Honey",
                 description: prodObj.description || "Raw and organic honey collected directly from natural hives.",
-                sku: itemSku,
                 image: {
                   image_url: imgUrl,
                 },
