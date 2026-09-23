@@ -388,7 +388,7 @@ export default function EditProfilePage() {
   const initials = getInitials(formData.fullName);
 
   useEffect(() => {
-    if (mobileMenuOpen) {
+    if (mobileMenuOpen || addressModalOpen) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
       document.body.style.touchAction = "none";
@@ -402,7 +402,7 @@ export default function EditProfilePage() {
       document.documentElement.style.overflow = "";
       document.body.style.touchAction = "";
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, addressModalOpen]);
 
   return (
     <section ref={sectionRef} className="relative min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pb-12 pt-0 lg:pt-12 border-b border-[#EADCC9]/50">
@@ -639,19 +639,21 @@ export default function EditProfilePage() {
                     <span className="hidden sm:inline">My Saved Addresses</span>
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    resetAddressForm();
-                    setEditingAddressId(null);
-                    setAddressModalOpen(true);
-                  }}
-                  className="flex h-8 sm:h-10 shrink-0 items-center justify-center gap-1 sm:gap-1.5 rounded-full bg-gradient-to-r from-[#D49313] to-[#593102] px-3 sm:px-4 text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-white hover:opacity-90 transition cursor-pointer shadow-xs border border-[#FFD700]/30 active:scale-95 whitespace-nowrap"
-                >
-                  <Plus size={13} className="shrink-0" />
-                  <span className="sm:hidden">Add New</span>
-                  <span className="hidden sm:inline">Add New Address</span>
-                </button>
+                {addresses.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetAddressForm();
+                      setEditingAddressId(null);
+                      setAddressModalOpen(true);
+                    }}
+                    className="flex h-8 sm:h-10 shrink-0 items-center justify-center gap-1 sm:gap-1.5 rounded-full bg-gradient-to-r from-[#D49313] to-[#593102] px-3 sm:px-4 text-[10.5px] sm:text-xs font-bold uppercase tracking-wider text-white hover:opacity-90 transition cursor-pointer shadow-xs border border-[#FFD700]/30 active:scale-95 whitespace-nowrap"
+                  >
+                    <Plus size={13} className="shrink-0" />
+                    <span className="sm:hidden">Add New</span>
+                    <span className="hidden sm:inline">Add New Address</span>
+                  </button>
+                )}
               </div>
 
               {loadingAddresses ? (
@@ -730,8 +732,14 @@ export default function EditProfilePage() {
 
       {/* Address Form Modal */}
       {addressModalOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-5 my-auto">
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto overscroll-contain"
+          onClick={() => setAddressModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl space-y-5 my-auto max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-[#EADCC9] pb-4">
               <h3 className="font-serif text-xl font-bold text-[#593102]">
                 {editingAddressId ? "Edit Address" : "Add New Address"}
