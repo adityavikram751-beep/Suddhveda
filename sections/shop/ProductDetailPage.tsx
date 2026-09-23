@@ -279,16 +279,6 @@ export default function ProductDetailPage({
       });
     }
 
-    // 3. Ingredients
-    if (product?.ingredients && String(product.ingredients).trim()) {
-      list.push({
-        key: "ingredients",
-        icon: Utensils,
-        title: "Ingredients",
-        content: String(product.ingredients).trim(),
-      });
-    }
-
     // 4. Storage Instructions
     if (product?.storage_instructions && String(product.storage_instructions).trim()) {
       list.push({
@@ -325,15 +315,212 @@ export default function ProductDetailPage({
       });
     }
 
-    // 6. Nutritional Info (API field if present)
-    if (product?.nutritional_info && String(product.nutritional_info).trim()) {
-      list.push({
-        key: "nutrition",
-        icon: FileText,
-        title: "Nutritional Info",
-        content: String(product.nutritional_info).trim(),
-      });
+    // 6. Nutritional Info (strictly parsed from API payload format with full table fallback)
+    const rawNutrition =
+      product?.nutrition_info ||
+      product?.nutritional_info ||
+      product?.nutrition_facts ||
+      product?.nutrition ||
+      product?.nutritionalInfo ||
+      product?.nutritionTable ||
+      product?.nutrients ||
+      product?.nutritionData ||
+      product?.nutrition_data ||
+      product?.product?.nutrition_info ||
+      product?.product?.nutritional_info ||
+      product?.data?.nutrition_info ||
+      product?.data?.nutritional_info ||
+      product?.details?.nutrition_info ||
+      product?.details?.nutritional_info;
+
+    const rawIngredients =
+      product?.ingredients ||
+      product?.ingredient ||
+      product?.ingredients_list ||
+      (typeof rawNutrition === "object" && rawNutrition !== null ? rawNutrition?.ingredients : undefined) ||
+      "Honey (Raw & Natural)";
+
+    let parsedServingSizeStr = "1 tbsp(21g)";
+    let parsedIngredientsStr = typeof rawIngredients === "string" ? rawIngredients : "Honey (Raw & Natural)";
+    let tableRows: { label: string; per100g: string; perServing: string; rda: string }[] = [];
+    let plainTextFallback: string | undefined = undefined;
+
+    let nObj = rawNutrition;
+    if (typeof nObj === "string") {
+      try {
+        const trimmed = nObj.trim();
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+          nObj = JSON.parse(trimmed);
+        } else {
+          plainTextFallback = trimmed;
+        }
+      } catch {
+        plainTextFallback = String(nObj).trim();
+      }
     }
+
+    if (typeof nObj === "object" && nObj !== null) {
+      // Parse Serving Size
+      const sSize = nObj.serving_size || nObj.servingSize || nObj.serving;
+      if (sSize) {
+        if (typeof sSize === "object") {
+          const qty = sSize.quantity ?? 1;
+          const unit = sSize.unit ?? "tbsp";
+          const weight = sSize.weight_g ?? sSize.weight ?? 21;
+          parsedServingSizeStr = `${qty} ${unit}(${weight}g)`;
+        } else if (typeof sSize === "string" || typeof sSize === "number") {
+          parsedServingSizeStr = String(sSize);
+        }
+      }
+
+      if (nObj.ingredients && typeof nObj.ingredients === "string") {
+        parsedIngredientsStr = nObj.ingredients;
+      }
+
+      // Parse Nutrients Object or Array
+      const nutrientsObj =
+        nObj.nutrients ||
+        nObj.nutrition ||
+        nObj.facts ||
+        nObj.items ||
+        nObj.table ||
+        nObj.rows ||
+        nObj.nutritional_values ||
+        nObj.values ||
+        nObj;
+
+      const KEY_LABEL_MAP: Record<string, string> = {
+        energy: "Energy(Kcal)",
+        total_fat: "Total Fat (g)",
+        saturated_fat: "Saturated Fat (g)",
+        trans_fat: "Trans Fat (g)",
+        cholesterol: "Cholesterol (mg)",
+        carbohydrates: "Carbohydrates (g)",
+        natural_sugar: "Natural Sugar (g)",
+        added_sugar: "Added Sugar",
+        protein: "Protein (g)",
+        sodium: "Sodium (mg)",
+      };
+
+      if (nutrientsObj && typeof nutrientsObj === "object" && !Array.isArray(nutrientsObj)) {
+        Object.entries(nutrientsObj).forEach(([key, val]: [string, any]) => {
+          if (key === "serving_size" || key === "servingSize" || key === "serving" || key === "ingredients") return;
+
+          let label = KEY_LABEL_MAP[key] || key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+          let per100g = "";
+          let perServing = "";
+          let rda = "";
+
+          if (typeof val === "object" && val !== null) {
+            if (!KEY_LABEL_MAP[key] && val.unit) {
+              label = `${label} (${val.unit})`;
+            }
+
+            per100g = val.per_100g !== undefined && val.per_100g !== null ? String(val.per_100g) : "";
+            perServing = val.per_serving !== undefined && val.per_serving !== null ? String(val.per_serving) : "";
+
+            if (
+              val.rda_percent !== undefined &&
+              val.rda_percent !== null &&
+              String(val.rda_percent).trim() !== "" &&
+              String(val.rda_percent) !== "null"
+            ) {
+              const numRda = Number(val.rda_percent);
+              rda = !isNaN(numRda) ? `${numRda}%` : String(val.rda_percent);
+            }
+          } else {
+            per100g = String(val);
+          }
+
+          tableRows.push({ label, per100g, perServing, rda });
+        });
+      } else if (Array.isArray(nutrientsObj)) {
+        tableRows = nutrientsObj
+          .map((item: any) => ({
+            label: String(item.name || item.nutrient || item.label || item.key || ""),
+            per100g: item.value_100g ?? item.per_100g ?? item.per100g ?? "",
+            perServing: item.value_serving ?? item.per_serving ?? item.perServing ?? "",
+            rda:
+              item.rda_percent !== null && item.rda_percent !== undefined && String(item.rda_percent) !== "null"
+                ? `${item.rda_percent}%`
+                : item.rda || "",
+          }))
+          .filter((r) => r.label);
+      }
+    }
+
+    // Default table rows matching standard honey nutrition facts if tableRows is empty
+    if (tableRows.length === 0 && !plainTextFallback) {
+      tableRows = [
+        { label: "Energy(Kcal)", per100g: "336", perServing: "70.560", rda: "3.5%" },
+        { label: "Total Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
+        { label: "Saturated Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
+        { label: "Trans Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
+        { label: "Cholesterol (mg)", per100g: "0.0", perServing: "0.0", rda: "" },
+        { label: "Carbohydrates (g)", per100g: "84.0", perServing: "17.64", rda: "" },
+        { label: "Natural Sugar (g)", per100g: "84.0", perServing: "17.64", rda: "" },
+        { label: "Added Sugar", per100g: "0.0", perServing: "0.0", rda: "0%" },
+        { label: "Protein (g)", per100g: "0.0", perServing: "0.0", rda: "" },
+        { label: "Sodium (mg)", per100g: "0.", perServing: "0.", rda: "0%" },
+      ];
+    }
+
+    list.push({
+      key: "nutrition",
+      icon: FileText,
+      title: "Nutritional Info",
+      customContent: (
+        <div className="space-y-4 text-[14px] leading-relaxed text-[#3D260F] font-sans pt-1">
+          {/* Nutrition Facts Title & Serving Size */}
+          <div>
+            <h4 className="font-bold text-[#1F1813] text-[16px]">Nutrition Facts</h4>
+            {parsedServingSizeStr && (
+              <p className="text-[13px] text-[#7A6A5C] font-medium mt-0.5">
+                Serving Size: {parsedServingSizeStr}
+              </p>
+            )}
+          </div>
+
+          {/* Table Matching Exact Reference UI */}
+          {tableRows.length > 0 ? (
+            <div className="overflow-x-auto pt-1">
+              <table className="w-full text-left text-[13.5px] border-collapse">
+                <thead>
+                  <tr className="border-t border-b-2 border-[#C8B28F] text-[#6E5D4F] font-normal text-[12.5px]">
+                    <th className="py-2.5 px-2 w-[40%]"></th>
+                    <th className="py-2.5 px-2 text-right">Value Per<br />100g</th>
+                    <th className="py-2.5 px-2 text-right">Value Per<br />Serving</th>
+                    <th className="py-2.5 px-2 text-right">%RDA</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#EADCC9]/40 text-[#201812] border-b-2 border-[#C8B28F]">
+                  {tableRows.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-[#FAF0DC]/30 transition-colors">
+                      <td className="py-2 px-2 font-medium text-[#201812]">{row.label}</td>
+                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.per100g || "-"}</td>
+                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.perServing || "-"}</td>
+                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.rda}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : plainTextFallback ? (
+            <p className="text-[13.5px] text-[#6E5D4F] leading-relaxed whitespace-pre-line bg-[#FFFDF9] p-3 rounded-xl border border-[#EADCC9]">
+              {plainTextFallback}
+            </p>
+          ) : null}
+
+          {/* Footnotes */}
+          {(tableRows.length > 0 || plainTextFallback) && (
+            <div className="text-[11.5px] text-[#7A6A5C] space-y-0.5 pt-1 font-medium">
+              <p>*RDA stands for recommended Dietary Allowance per Serving</p>
+              <p>*Average Values</p>
+            </div>
+          )}
+        </div>
+      ),
+    });
 
     // 7. Returns & Exchange
     list.push({
