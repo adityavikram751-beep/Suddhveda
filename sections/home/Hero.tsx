@@ -185,67 +185,117 @@ export default function Hero() {
       {/* MOBILE & TABLET VIEW (< lg screens)                       */}
       {/* Exactly matching reference screenshots                     */}
       {/* ========================================================= */}
+      {/* Hidden preloader so browser caches all slide background and bottle assets instantly */}
+      <div className="hidden" aria-hidden="true">
+        {slides.map((s) => (
+          <div key={`preload-${s.id}`}>
+            <img src={s.desktopBg || s.mobileBg} alt="" />
+            <img src={s.bottleImg} alt="" />
+          </div>
+        ))}
+      </div>
+
       <div className="block lg:hidden w-full px-3 sm:px-6 pt-3 sm:pt-4 pb-5">
         {/* Mobile Slide Card Container (Compact height & responsive proportion) */}
         <div className="relative w-full rounded-b-[32px] sm:rounded-b-[40px] bg-[#FAF5EE] border border-[#EADBCE]/60 shadow-xs min-h-[500px] xs:min-h-[550px] sm:min-h-[620px] flex flex-col justify-between">
-          
-          {/* Card Inner Background Clipping Container */}
+
+          {/* 1. Background Artworks Container (Clipped strictly to the card's rounded bottom) */}
           <div className="absolute inset-0 w-full h-full rounded-b-[32px] sm:rounded-b-[40px] overflow-hidden">
             {slides.map((slide, index) => {
               const isActive = index === currentSlide;
               return (
                 <div
                   key={`mobile-bg-${slide.id}`}
-                  className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-700 ease-in-out ${
-                    isActive ? "opacity-100 z-0" : "opacity-0 -z-10"
-                  }`}
+                  className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-500 ease-in-out ${isActive ? "opacity-100 z-0" : "opacity-0 -z-10"
+                    }`}
                   style={{ backgroundImage: `url('${slide.desktopBg || slide.mobileBg}')` }}
                 />
               );
             })}
 
-            {/* Soft, Light Gradient Overlay for crisp background artwork clarity */}
+            {/* Soft Gradient Overlay for crisp text legibility */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#FAF5EE]/50 via-transparent to-transparent pointer-events-none z-10" />
           </div>
 
-          {/* Top Content (Pill + Headline + Subtitle with dynamic slide transition) */}
-          <div className="relative z-20 px-4 pt-5 sm:pt-7 text-center flex flex-col items-center">
-            
+          {/* 2. Top Content (Pill + Headline + Subtitle with dynamic slide transition) */}
+          <div className="relative z-20 px-4 xs:px-5 sm:px-8 pt-5 sm:pt-8 text-left flex flex-col items-start w-full">
+
             {/* Top Tagline Pill Badge */}
-            <div className="inline-flex items-center justify-center gap-2 bg-[#FAF3EA]/85 backdrop-blur-sm border border-[#E5D3C2] px-4 py-1.5 rounded-full mb-3.5 shadow-xs">
-              <span className="text-[15px] leading-none">🍯</span>
-              <span className="text-[#D97706] font-semibold text-[13.5px] sm:text-[14.5px] tracking-wide whitespace-nowrap">
+            <div className="inline-flex items-center justify-center gap-2 bg-[#FAF3EA]/90 backdrop-blur-sm border border-[#E5D3C2] px-4.5 py-1.5 rounded-full mb-4 shadow-xs">
+              <span className="text-[16px] leading-none">🍯</span>
+              <span className="text-[#D97706] font-semibold text-[14.5px] xs:text-[15.5px] sm:text-[16.5px] tracking-wide whitespace-nowrap">
                 100% Pure • Raw • Unprocessed
               </span>
             </div>
 
-            {/* Main Headline (Dynamic 3-line breakdown per active slide with bold serif font) */}
-            <h1 className="font-serif text-[32px] xs:text-[36px] sm:text-[44px] font-normal leading-[1.12] text-[#201812] tracking-tight drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)] transition-all duration-500">
-              <span>{slides[currentSlide].mobileTitleLine1}</span>
-              <br />
-              <span className="text-[#D97706]">
-                {slides[currentSlide].mobileAccent}
-              </span>
-              <br />
-              <span>{slides[currentSlide].mobileTitleLine2}</span>
+            {/* Main Headline (Dynamic 3-line breakdown per active slide with larger responsive serif font) */}
+            <h1 className="font-serif text-[38px] xs:text-[44px] sm:text-[52px] md:text-[58px] font-medium sm:font-semibold leading-[1.08] sm:leading-[1.06] text-[#1F1F1F] tracking-tight drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)] transition-all duration-500 text-left">
+              {currentSlide === 0 ? (
+                <>
+                  <span className="text-[#D97706]">Honey</span> with
+                  <br />
+                  nothing to
+                  <br />
+                  hide
+                </>
+              ) : currentSlide === 1 ? (
+                <>
+                  <span className="text-[#D97706]">Pure</span> by
+                  <br />
+                  nature. <span className="text-[#593102]">Honest</span>
+                  <br />
+                  by choice.
+                </>
+              ) : currentSlide === 2 ? (
+                <>
+                  <span className="text-[#D97706]">Clean</span> blossom
+                  <br />
+                  drop. Sweetness
+                  <br />
+                  redefined.
+                </>
+              ) : currentSlide === 3 ? (
+                <>
+                  <span className="text-[#D97706]">Fruity</span> orchard
+                  <br />
+                  nectar. Purely
+                  <br />
+                  authentic.
+                </>
+              ) : currentSlide === 4 ? (
+                <>
+                  <span className="text-[#D97706]">Wild</span> forest
+                  <br />
+                  nectar. Rich &
+                  <br />
+                  unprocessed.
+                </>
+              ) : (
+                <>
+                  <span className="text-[#D97706]">Raw</span> mountain
+                  <br />
+                  honey. Straight
+                  <br />
+                  from hives.
+                </>
+              )}
             </h1>
 
-            {/* Subtitle */}
-            <p className="font-serif italic text-[15.5px] sm:text-[18px] text-[#4A3B30] font-medium leading-relaxed mt-3 sm:mt-4 max-w-[340px] sm:max-w-[440px] drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-500">
+            {/* Subtitle (Larger responsive font size for mobile & tablet) */}
+            <p className="font-serif italic text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] text-[#4A3B30] font-medium leading-relaxed mt-3.5 sm:mt-5 max-w-[360px] xs:max-w-[420px] sm:max-w-[540px] text-left drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-500">
               {slides[currentSlide].mobileSubtitle}
             </p>
           </div>
 
-          {/* Bottom Jar Showcase (Enlarged jar width & height with 3D bottom pop-out) */}
-          <div className="relative z-20 w-full flex justify-center items-end mt-2 pt-2 pb-0 h-[310px] xs:h-[350px] sm:h-[420px]">
+          {/* 3. Bottle Showcase (NOT clipped by overflow-hidden, so bottle extends 3D outside bottom edge!) */}
+          <div className="relative z-20 w-full flex justify-center items-end mt-2 pt-2 pb-0 h-[310px] xs:h-[350px] sm:h-[430px] md:h-[470px]">
             {slides.map((slide, index) => {
               const isActive = index === currentSlide;
               return (
                 <div
                   key={`mobile-jar-${slide.id}`}
-                  className={`absolute bottom-0 flex justify-center items-end w-full h-full transition-all duration-700 ${
-                    isActive ? "opacity-100 scale-100 z-20 pointer-events-auto" : "opacity-0 scale-95 z-0 pointer-events-none"
-                  }`}
+                  className={`absolute bottom-0 flex justify-center items-end w-full h-full transition-opacity duration-500 ease-in-out ${isActive ? "opacity-100 z-20 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
+                    }`}
                 >
                   <Image
                     src={slide.bottleImg}
@@ -264,7 +314,7 @@ export default function Hero() {
 
         {/* Action Buttons Stack (Shifted lower with generous clean spacing from bottle image) */}
         <div className="w-full mt-10 xs:mt-12 sm:mt-14 px-1 flex flex-col items-center gap-3 max-w-[400px] mx-auto relative z-30">
-          
+
           {/* Shop Honey Button (Full Width with larger font) */}
           <Link
             href={slides[currentSlide].link}
@@ -298,9 +348,8 @@ export default function Hero() {
           return (
             <div
               key={`desktop-slide-${slide.id}`}
-              className={`absolute inset-0 w-full h-full flex items-center py-8 transition-opacity duration-1000 ease-in-out ${
-                isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 w-full h-full flex items-center py-8 transition-opacity duration-1000 ease-in-out ${isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
+                }`}
             >
               {/* Desktop Background */}
               <div
@@ -313,9 +362,9 @@ export default function Hero() {
 
               <div className="max-w-[1440px] mx-auto w-full px-14 relative z-10">
                 <div className="grid grid-cols-12 gap-8 items-center">
-                  
+
                   {/* LEFT TEXT CONTENT */}
-                  <div className="col-span-6 flex flex-col items-start text-left -mt-36">
+                  <div className="col-span-7 flex flex-col items-start text-left -mt-22 relative z-20">
                     {/* Top Tagline Pill */}
                     <div className="inline-flex items-center justify-center gap-2.5 bg-[#FAF3EA]/75 backdrop-blur-md border border-[#E5D3C2] px-5 py-2 rounded-full mb-4.5 shadow-xs w-full max-w-[335px] min-h-[42px]">
                       <span className="text-[17px] leading-none">🍯</span>
@@ -356,13 +405,68 @@ export default function Hero() {
                         </div>
                       </Link>
                     </div>
+
+                    {/* Trust Badges Pills Directly Under Buttons (Increased Height, Compact Width) */}
+                    <div className="flex items-center gap-2 xl:gap-2.5 mt-5 flex-nowrap whitespace-nowrap z-30 relative py-1">
+                      <div className="flex items-center gap-2 bg-[#F3E4D4] hover:bg-[#F5EAD9] backdrop-blur-md border border-[#5C3D24]/40 rounded-2xl px-3.5 py-2.5 xl:px-4 xl:py-3 shadow-xs hover:shadow-md transition-all shrink-0">
+                        <Image
+                          src="/Vector (13).png"
+                          alt="Naturally Sourced"
+                          width={18}
+                          height={18}
+                          className="w-4 h-4 object-contain shrink-0 brightness-[0.4] contrast-[1.4]"
+                        />
+                        <span className="font-sans text-[12.5px] lg:text-[13px] xl:text-[13.5px] font-bold text-[#4A2E19]">
+                          Naturally Sourced
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 bg-[#F3E4D4] hover:bg-[#F5EAD9] backdrop-blur-md border border-[#5C3D24]/40 rounded-2xl px-3.5 py-2.5 xl:px-4 xl:py-3 shadow-xs hover:shadow-md transition-all shrink-0">
+                        <Image
+                          src="/majesticons_leaf-3-angled-line.png"
+                          alt="FSSAI Approved"
+                          width={32}
+                          height={18}
+                          className="h-4.5 w-auto object-contain shrink-0 sepia hue-rotate-[15deg] brightness-[0.4] contrast-[1.4]"
+                        />
+                        <span className="font-sans text-[12.5px] lg:text-[13px] xl:text-[13.5px] font-bold text-[#4A2E19]">
+                          FSSAI Approved
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 bg-[#F3E4D4] hover:bg-[#F5EAD9] backdrop-blur-md border border-[#5C3D24]/40 rounded-2xl px-3.5 py-2.5 xl:px-4 xl:py-3 shadow-xs hover:shadow-md transition-all shrink-0">
+                        <Image
+                          src="/Ellipse 19.png"
+                          alt="I.S.O Certificate"
+                          width={18}
+                          height={18}
+                          className="w-4.5 h-4.5 object-contain shrink-0 sepia hue-rotate-[15deg] brightness-[0.4] contrast-[1.4]"
+                        />
+                        <span className="font-sans text-[12.5px] lg:text-[13px] xl:text-[13.5px] font-bold text-[#4A2E19]">
+                          I.S.O Certificate
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 bg-[#F3E4D4] hover:bg-[#F5EAD9] backdrop-blur-md border border-[#5C3D24]/40 rounded-2xl px-3.5 py-2.5 xl:px-4 xl:py-3 shadow-xs hover:shadow-md transition-all shrink-0">
+                        <Image
+                          src="/basil_flask-outline.png"
+                          alt="Lab Tested"
+                          width={18}
+                          height={18}
+                          className="w-4 h-4 object-contain shrink-0 brightness-[0.4] contrast-[1.4]"
+                        />
+                        <span className="font-sans text-[12.5px] lg:text-[13px] xl:text-[13.5px] font-bold text-[#4A2E19]">
+                          Lab Tested
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* RIGHT BOTTLE + GLASS PILLS */}
-                  <div className="col-span-6 flex items-end justify-end relative h-full">
-                    {/* Glassmorphic Info Pills */}
-                    <div className="flex flex-col gap-3.5 absolute left-2 top-3 z-20">
-                      <div className="bg-[#EBD6BF]/60 backdrop-blur-md border border-white/80 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[275px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.20),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
+                  <div className="col-span-5 flex items-end justify-end relative h-full z-10">
+                    {/* Glassmorphic Info Cards (Shifted further left and slightly lower) */}
+                    <div className="flex flex-col gap-3.5 absolute -left-20 top-1 z-20">
+                      <div className="bg-[#FAF0DC]/85 backdrop-blur-md border border-white/90 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[270px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
                         <Image
                           src="/boxicons_location.png"
                           alt="Regions"
@@ -378,7 +482,7 @@ export default function Hero() {
                         </div>
                       </div>
 
-                      <div className="bg-[#EBD6BF]/60 backdrop-blur-md border border-white/80 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[275px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.20),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
+                      <div className="bg-[#FAF0DC]/85 backdrop-blur-md border border-white/90 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[270px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
                         <Image
                           src="/boxicons_honey.png"
                           alt="Flavor Notes"
@@ -394,7 +498,7 @@ export default function Hero() {
                         </div>
                       </div>
 
-                      <div className="bg-[#EBD6BF]/60 backdrop-blur-md border border-white/80 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[275px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.20),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
+                      <div className="bg-[#FAF0DC]/85 backdrop-blur-md border border-white/90 rounded-2xl px-4 py-3 flex items-center gap-3.5 w-[270px] min-h-[66px] shadow-[0_10px_28px_rgba(200,130,20,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.95)] hover:shadow-lg transition-all">
                         <Image
                           src="/mdi_scent.png"
                           alt="Aroma"
@@ -429,67 +533,6 @@ export default function Hero() {
             </div>
           );
         })}
-      </div>
-
-      {/* Seamless Bottom Trust Banner Strip (Hidden on Mobile, Visible on Desktop) */}
-      <div className="hidden lg:block w-full bg-[#FCE0C3] border-t border-[#ECC69A]/80 py-3.5 px-4 z-30 relative">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-center sm:justify-between flex-wrap gap-y-3 gap-x-4 text-[#3C2415] text-[13.5px] sm:text-[15px] font-serif font-medium">
-
-          {/* Item 1 */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/Vector (13).png"
-              alt="Naturally Sourced"
-              width={26}
-              height={26}
-              className="w-5.5 h-5.5 object-contain shrink-0 brightness-[0.7] contrast-[1.4]"
-            />
-            <span>Naturally Sourced</span>
-          </div>
-
-          <div className="hidden sm:block w-[1.5px] h-5 bg-[#A87244]/60" />
-
-          {/* Item 2 */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/majesticons_leaf-3-angled-line.png"
-              alt="FSSAI Approved"
-              width={54}
-              height={34}
-              className="h-7 sm:h-8 w-auto object-contain shrink-0 sepia hue-rotate-[15deg] brightness-[0.5] contrast-[1.4]"
-            />
-            <span>FSSAI Approved</span>
-          </div>
-
-          <div className="hidden sm:block w-[1.5px] h-5 bg-[#A87244]/60" />
-
-          {/* Item 3 */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/Ellipse 19.png"
-              alt="I.S.O Certified"
-              width={32}
-              height={32}
-              className="w-6.5 h-6.5 sm:w-7.5 sm:h-7.5 object-contain shrink-0 sepia hue-rotate-[15deg] brightness-[0.5] contrast-[1.4]"
-            />
-            <span>I.S.O Certified</span>
-          </div>
-
-          <div className="hidden sm:block w-[1.5px] h-5 bg-[#A87244]/60" />
-
-          {/* Item 4 */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/basil_flask-outline.png"
-              alt="Lab Tested"
-              width={26}
-              height={26}
-              className="w-5.5 h-5.5 object-contain shrink-0 brightness-[0.7] contrast-[1.4]"
-            />
-            <span>Lab Tested</span>
-          </div>
-
-        </div>
       </div>
     </section>
   );
