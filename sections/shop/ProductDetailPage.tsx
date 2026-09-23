@@ -335,6 +335,33 @@ export default function ProductDetailPage({
       });
     }
 
+    // 7. Returns & Exchange
+    list.push({
+      key: "returns",
+      icon: Info,
+      title: "Returns & Exchange",
+      customContent: (
+        <div className="space-y-3.5 text-[14px] leading-relaxed text-[#6E5D4F] font-normal pt-1">
+          <p>We keep it sweet and simple:</p>
+          <p>
+            <strong className="font-extrabold text-[#593102]">Sealed bottle?</strong> Of course. Send it back, and we’ll make it right.
+          </p>
+          <p>
+            <strong className="font-extrabold text-[#593102]">Opened bottle?</strong> Sadly, no. Once opened, honey is a food product, we can’t take it back. It would just go to waste, and that&apos;s not fair to bees or humans.
+          </p>
+          <p className="font-extrabold text-[#593102] text-[14.5px]">
+            Please inform us of any issue within 48 hours of receiving your order, along with valid image and video proof.
+          </p>
+          <p>
+            <strong className="font-extrabold text-[#593102]">Start recording before opening or unsealing the courier package</strong>, keeping the entire box clearly visible in the frame, and keep recording in one go until the package is fully open. Take a few clear photos of the product, outer packaging, and any damage or mix-up. A quick 15-second unboxing fuels our hive and earns you honey perks 🍯 Don’t forget to tag @honeyveda.in. Thank you for being wonderful!
+          </p>
+          <p>
+            <strong className="font-extrabold text-[#593102]">Confused? Concerned? Curious?</strong> Message us on WhatsApp or email. We reply faster than a bee spots a flower. 🐝 💬
+          </p>
+        </div>
+      ),
+    });
+
     return list;
   }, [product]);
 
@@ -1138,6 +1165,7 @@ export default function ProductDetailPage({
                         {isOpen && (
                           <div className="pb-4 pl-12 space-y-3 text-[14px] leading-relaxed text-[#6E5D4F] font-medium">
                             {section.content && <p>{section.content}</p>}
+                            {section.customContent && section.customContent}
                             {section.details && section.details.length > 0 && (
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                                 {section.details.map((detail: any, idx: number) => (
@@ -1166,7 +1194,7 @@ export default function ProductDetailPage({
         {/* USES OF HONEY BANNER */}
         <div className="mt-14 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-xl">
           <Image
-            src="/idcard.png"
+            src="/Hive2.png"
             alt="Uses of Honey"
             width={1400}
             height={500}
@@ -1250,10 +1278,10 @@ export default function ProductDetailPage({
         )}
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast Notification (Top Center, Single Line Pill) */}
       {showToast && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in duration-200">
-          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] border border-[#D49313]/50 px-7 py-3.5 text-white font-extrabold shadow-2xl flex items-center gap-2 text-[14px]">
+        <div className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-none">
+          <div className="whitespace-nowrap flex items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#3C1F02] via-[#593102] to-[#3C1F02] border border-[#D49313]/60 px-6 py-2.5 text-white font-extrabold shadow-2xl text-[14px] tracking-wide">
             <span>✨</span> {toastMessage}
           </div>
         </div>

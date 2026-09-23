@@ -141,33 +141,28 @@ export default function HappyCustomersSection() {
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/5 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Floating Decorative Graphics */}
-      <Image src="/customer2.png" alt="" width={70} height={70} className="absolute left-[62%] top-12 z-10 hidden lg:block pointer-events-none opacity-80" />
-      <Image src="/customer.png" alt="" width={240} height={220} className="absolute right-0 top-0 z-10 hidden lg:block pointer-events-none opacity-85" />
 
       <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 z-20">
-        <div className="text-center flex flex-col items-center">
-          <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
-            TRUST &amp; REVIEWS
-          </span>
+        <div className="text-center flex flex-col items-center max-w-[900px] mx-auto">
+          <Image
+            src="/yellow logo.png"
+            alt="ShuddhVeda Honey"
+            width={120}
+            height={120}
+            className="w-[100px] sm:w-[125px] h-auto object-contain mb-4"
+          />
 
-          <h2 className="mt-3 text-[34px] sm:text-[42px] lg:text-[48px] font-serif font-extrabold text-[#593102] leading-tight tracking-tight">
-            Happy Customers
+          <h2 className="text-[32px] sm:text-[40px] lg:text-[44px] font-serif font-bold text-[#3C2415] tracking-tight">
+            How do we get this right?
           </h2>
           
-          <p className="mt-2.5 text-[15px] sm:text-[17px] text-[#6E5D4F] font-medium max-w-[680px] mx-auto leading-relaxed">
-            Trusted by thousands of families who choose raw purity, natural taste, and uncompromised quality every day.
-          </p>
-
-          {/* Rating Showcase Badge */}
-          <div className="mt-4 inline-flex items-center gap-3 bg-white/90 backdrop-blur-md px-6 py-2.5 rounded-full border border-[#D49313]/40 shadow-sm">
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} size={18} fill="#F59E0B" color="#F59E0B" className="text-[#F59E0B]" />
-              ))}
-            </div>
-            <span className="text-[20px] font-black text-[#593102] border-l border-[#EADCC9] pl-3">4.9 / 5.0</span>
-            <span className="text-[13px] font-bold text-[#7A6A5C] uppercase tracking-wider hidden sm:inline">• Loved by 20,000+ Families</span>
+          <div className="mt-4 text-[14px] sm:text-[15.5px] text-[#7C6A5B] font-medium leading-relaxed space-y-3">
+            <p>
+              Each harvest comes from one named apiary partner, in a season we can point to on a calendar — not a blend of sources sold under one label. Nothing is added to bulk it out, and nothing is heated past the point where its character survives.
+            </p>
+            <p>
+              We pay our beekeeper partners a fixed, agreed share of every jar sold — not a rate that moves with our margins.
+            </p>
           </div>
         </div>
 
