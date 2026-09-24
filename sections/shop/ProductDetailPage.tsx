@@ -168,6 +168,7 @@ export default function ProductDetailPage({
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [giftMessage, setGiftMessage] = useState<string>("");
 
   // Recommendations state for selected variants per product ID
   const [recSelectedVariants, setRecSelectedVariants] = useState<Record<string, string>>({});
@@ -597,7 +598,8 @@ export default function ProductDetailPage({
           price,
           weight: weightLabel,
           quantity: selectedQty,
-        },
+          customMessage: giftMessage.trim() || undefined,
+        } as any,
         selectedQty
       );
 
@@ -975,20 +977,22 @@ export default function ProductDetailPage({
                   {product.product_name}
                 </h1>
                 <div className="flex items-center gap-3 mt-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleWishlist(product._id)}
-                    aria-label="Wishlist"
-                    className="w-10 h-10 rounded-full bg-[#FAF6F0] border border-[#EADCC9] flex items-center justify-center transition-all hover:border-[#D49313]"
-                  >
-                    <Heart
-                      size={20}
-                      className={`transition-colors ${wishlistIds.includes(product._id)
-                        ? "fill-[#FA4B1B] text-[#FA4B1B]"
-                        : "text-gray-400 hover:text-[#FA4B1B]"
-                        }`}
-                    />
-                  </button>
+                  {!product?.setPacks && getCategoryName(product) !== "Combo Gift Pack" && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleWishlist(product._id)}
+                      aria-label="Wishlist"
+                      className="w-10 h-10 rounded-full bg-[#FAF6F0] border border-[#EADCC9] flex items-center justify-center transition-all hover:border-[#D49313]"
+                    >
+                      <Heart
+                        size={20}
+                        className={`transition-colors ${wishlistIds.includes(product._id)
+                          ? "fill-[#FA4B1B] text-[#FA4B1B]"
+                          : "text-gray-400 hover:text-[#FA4B1B]"
+                          }`}
+                      />
+                    </button>
+                  )}
                   <button
                     type="button"
                     aria-label="Share product"
@@ -1066,208 +1070,167 @@ export default function ProductDetailPage({
                 </button>
               </div>
 
-              {/* 🎯 PINCODE AVAILABILITY DROPDOWN CONTAINER */}
-              {pincodeStatus.type !== null && (
-                <div className="mt-3 overflow-hidden rounded-2xl border border-[#EADCC9] bg-white shadow-md animate-in fade-in slide-in-from-top-2 duration-300">
-                  {/* Dropdown Header / Toggle Bar */}
-                  <button
-                    type="button"
-                    onClick={() => setIsPincodeDropdownOpen(!isPincodeDropdownOpen)}
-                    className={`w-full px-4 py-3 flex items-center justify-between transition-colors cursor-pointer text-left ${pincodeStatus.type === "success"
-                      ? "bg-[#FAF0DC]/90 hover:bg-[#FAF0DC]"
-                      : "bg-red-50/90 hover:bg-red-50"
-                      }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${pincodeStatus.type === "success" ? "bg-[#16A34A] text-white" : "bg-red-600 text-white"
-                        }`}>
-                        {pincodeStatus.type === "success" ? (
-                          <CheckCircle2 size={16} />
-                        ) : (
-                          <X size={16} />
-                        )}
-                      </div>
-                      <div>
-                        <span className={`text-[14px] font-black tracking-wide ${pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
-                          }`}>
-                          {pincodeStatus.type === "success"
-                            ? `Pincode ${pincodeStatus.pincode || pincode} is Serviceable!`
-                            : `Pincode ${pincodeStatus.pincode || pincode} is Non-Serviceable`}
-                        </span>
-                        <p className="text-[11.5px] font-semibold text-[#6E5D4F] leading-tight">
-                          Click to {isPincodeDropdownOpen ? "collapse" : "expand"} delivery details
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-[#593102]">
-                      <ChevronDown
-                        size={18}
-                        className={`transition-transform duration-300 ${isPincodeDropdownOpen ? "rotate-180 text-[#D49313]" : ""
-                          }`}
-                      />
-                    </div>
-                  </button>
-
-                  {/* Dropdown Expandable Details Body */}
-                  {isPincodeDropdownOpen && (
-                    <div className="p-4 sm:p-5 border-t border-[#EADCC9]/60 space-y-4 bg-gradient-to-b from-white to-[#FFFDF9]">
-                      {/* Delivery Date Highlight */}
-                      {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
-                        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FAF0DC]/60 border border-[#D49313]/30">
-                          <Truck className="w-6 h-6 text-[#D49313] shrink-0 mt-0.5" />
-                          <div>
-                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#593102] block">
-                              Estimated Delivery Date
-                            </span>
-                            <p className="text-[15px] font-bold text-[#16A34A] mt-0.5">
-                              {pincodeStatus.deliveryInfo.day1}
-                              <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord1}</sup>
-                              {pincodeStatus.deliveryInfo.month1 === pincodeStatus.deliveryInfo.month2 ? (
-                                <>
-                                  {" – "}
-                                  {pincodeStatus.deliveryInfo.day2}
-                                  <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
-                                  {" "}
-                                  {pincodeStatus.deliveryInfo.month1}
-                                </>
-                              ) : (
-                                <>
-                                  {" "}
-                                  {pincodeStatus.deliveryInfo.month1}
-                                  {" – "}
-                                  {pincodeStatus.deliveryInfo.day2}
-                                  <sup className="text-[10px] lowercase">{pincodeStatus.deliveryInfo.ord2}</sup>
-                                  {" "}
-                                  {pincodeStatus.deliveryInfo.month2}
-                                </>
-                              )}
-                            </p>
-                          </div>
-                        </div>
+              {/* 🎯 DIRECT CLEAN ESTIMATED DELIVERY DATE CARD (MATCHING USER SCREENSHOT) */}
+              {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
+                <div className="mt-3 flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#FFFBF0] border border-[#EADCC9] shadow-2xs animate-in fade-in slide-in-from-top-1 duration-300">
+                  <div className="w-10 h-10 rounded-xl bg-[#FAF0DC]/70 border border-[#D49313]/30 flex items-center justify-center shrink-0">
+                    <Truck className="w-5 h-5 text-[#D49313] stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <span className="text-[11.5px] font-black uppercase tracking-wider text-[#593102] block leading-tight">
+                      ESTIMATED DELIVERY DATE
+                    </span>
+                    <p className="text-[16px] sm:text-[17px] font-extrabold text-[#16A34A] mt-0.5 leading-tight">
+                      {pincodeStatus.deliveryInfo.day1}
+                      <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord1}</sup>
+                      {pincodeStatus.deliveryInfo.month1 === pincodeStatus.deliveryInfo.month2 ? (
+                        <>
+                          {" – "}
+                          {pincodeStatus.deliveryInfo.day2}
+                          <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord2}</sup>
+                          {" "}
+                          {pincodeStatus.deliveryInfo.month1}
+                        </>
                       ) : (
-                        <p className={`text-[13px] font-semibold ${pincodeStatus.type === "success" ? "text-[#16A34A]" : "text-red-600"
-                          }`}>
-                          {pincodeStatus.message}
-                        </p>
+                        <>
+                          {" "}
+                          {pincodeStatus.deliveryInfo.month1}
+                          {" – "}
+                          {pincodeStatus.deliveryInfo.day2}
+                          <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord2}</sup>
+                          {" "}
+                          {pincodeStatus.deliveryInfo.month2}
+                        </>
                       )}
-
-                      {/* Location & Service Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
-                        {/* City / State */}
-                        {(pincodeStatus.city || pincodeStatus.state) && (
-                          <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white">
-                            <MapPin size={16} className="text-[#D49313] shrink-0" />
-                            <div>
-                              <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Location</span>
-                              <span className="font-extrabold text-[#593102]">
-                                {[pincodeStatus.city, pincodeStatus.state].filter(Boolean).join(", ")}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Cash on Delivery */}
-                        <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white">
-                          <ShieldCheck size={16} className="text-[#16A34A] shrink-0" />
-                          <div>
-                            <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Payment Options</span>
-                            <span className="font-extrabold text-[#593102]">
-                              {pincodeStatus.cod ? "Prepaid & Cash on Delivery (COD)" : "Prepaid Delivery Available"}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Courier Partner */}
-                        {pincodeStatus.courier && (
-                          <div className="flex items-center gap-2.5 p-2.5 rounded-xl border border-[#EADCC9] bg-white col-span-1 sm:col-span-2">
-                            <Truck size={16} className="text-[#593102] shrink-0" />
-                            <div>
-                              <span className="text-[10px] font-bold text-[#8D7F73] uppercase block">Courier Partner</span>
-                              <span className="font-extrabold text-[#593102]">
-                                {pincodeStatus.courier}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Quality Assurance Badges */}
-                      <div className="pt-2 border-t border-[#EADCC9]/50 flex items-center justify-between text-[11px] font-bold text-[#6E5D4F] flex-wrap gap-2">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-[#16A34A]" /> Safe Glass Jar Packaging
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-[#D49313]" /> Pan-India Express Shipping
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                    </p>
+                  </div>
                 </div>
-              )}
+              ) : pincodeStatus.type !== null ? (
+                <div className={`mt-3 p-3.5 rounded-2xl border flex items-center gap-2.5 animate-in fade-in duration-300 ${pincodeStatus.type === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-[#FAF6F0] border-[#EADCC9] text-[#593102]"}`}>
+                  <span className="text-[13.5px] font-bold">{pincodeStatus.message}</span>
+                </div>
+              ) : null}
             </div>
 
             {/* Weight Selection */}
-            {variants.length > 0 && (
-              <div className="space-y-3 pt-1">
-                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
-                  Select Pack Size
-                </h3>
-                <div className="flex gap-3 sm:gap-4 flex-wrap">
-                  {variants.map((option: any) => {
-                    const outOfStock = isVariantOutOfStock(option);
-                    const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
+            {variants.length > 0 && (() => {
+              const isComboProduct = Boolean(
+                product?.setPacks ||
+                product?.combo_name ||
+                getCategoryName(product) === "Combo Gift Pack"
+              );
 
-                    return (
-                      <button
-                        key={getVariantId(option) || option.weight}
-                        onClick={() => setSelectedVariant(option)}
-                        className={`relative flex flex-col items-center rounded-2xl border w-[100px] sm:w-[110px] py-3.5 transition-all overflow-hidden cursor-pointer ${outOfStock
-                          ? isSelectedOption
-                            ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
-                            : "border-red-300 bg-red-50/70"
-                          : isSelectedOption
-                            ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md"
-                            : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
-                          }`}
-                      >
-                        {/* Red Diagonal Cross Line for out of stock variant */}
-                        {outOfStock && (
-                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
-                            <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
-                          </div>
-                        )}
+              return (
+                <div className="space-y-3 pt-1">
+                  <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+                    Select Pack Size
+                  </h3>
+                  <div className={isComboProduct ? "grid grid-cols-2 gap-3 sm:gap-3.5 max-w-[280px] sm:max-w-[320px]" : "flex gap-3 sm:gap-4 flex-wrap"}>
+                    {variants.map((option: any) => {
+                      const outOfStock = isVariantOutOfStock(option);
+                      const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
+                      const optionImg = option.image || option.image_url || (mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url);
 
-                        <span className={`text-[13px] font-extrabold ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
-                          {option.weight}{option.unit}
-                        </span>
-
-                        <div className={`relative my-2 h-[42px] w-[42px] overflow-hidden rounded-xl border ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
-                          {mediaList[0]?.url && (
-                            <Image
-                              src={mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url}
-                              alt={`${option.weight}${option.unit}`}
-                              fill
-                              className="object-cover"
-                            />
+                      return (
+                        <button
+                          key={getVariantId(option) || option.weight}
+                          onClick={() => {
+                            setSelectedVariant(option);
+                            if (option.image || option.image_url) {
+                              setSelectedMedia({
+                                id: getVariantId(option),
+                                type: "image",
+                                url: option.image || option.image_url,
+                                primary: true,
+                              });
+                            }
+                          }}
+                          className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${
+                            isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
+                          } ${outOfStock
+                            ? isSelectedOption
+                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                              : "border-red-300 bg-red-50/70"
+                            : isSelectedOption
+                              ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md scale-102"
+                              : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
+                            }`}
+                        >
+                          {/* Red Diagonal Cross Line for out of stock variant */}
+                          {outOfStock && (
+                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
+                              <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
+                            </div>
                           )}
-                        </div>
 
-                        {outOfStock ? (
-                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
-                            OUT OF STOCK
+                          <span className={`text-[13px] sm:text-[14px] font-extrabold text-center leading-tight px-1 ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
+                            {option.weight}{option.unit}
                           </span>
-                        ) : (
-                          <span className="text-[13px] font-bold text-[#D49313]">
-                            ₹{option.price}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+
+                          <div className={`relative my-2 overflow-hidden rounded-xl border ${
+                            isComboProduct ? "h-[60px] w-[60px] sm:h-[72px] sm:w-[72px]" : "h-[42px] w-[42px]"
+                          } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
+                            {optionImg && (
+                              <Image
+                                src={optionImg}
+                                alt={`${option.weight}${option.unit}`}
+                                fill
+                                className="object-cover"
+                              />
+                            )}
+                          </div>
+
+                          {outOfStock ? (
+                            <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
+                              OUT OF STOCK
+                            </span>
+                          ) : (
+                            <span className="text-[13.5px] sm:text-[14px] font-bold text-[#D49313]">
+                              ₹{option.price}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
+
+            {/* Custom Gift Message / Note Input (For Combo Gift Packs) */}
+            {(() => {
+              const isComboProduct = Boolean(
+                product?.setPacks ||
+                product?.combo_name ||
+                getCategoryName(product) === "Combo Gift Pack"
+              );
+
+              if (!isComboProduct) return null;
+
+              return (
+                <div className="space-y-2 pt-3">
+                  <div className="flex items-center gap-2 text-[#593102] font-bold text-[13px] sm:text-[13.5px] uppercase tracking-wider">
+                    <FileText size={16} className="text-[#D49313]" />
+                    <span>Custom Gift Note / Message</span>
+                    <span className="text-[11px] font-semibold text-[#8C7462] normal-case">(Optional)</span>
+                  </div>
+                  <div className="relative max-w-xl">
+                    <textarea
+                      rows={2}
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value)}
+                      placeholder="Type your custom text or message for this gift set (e.g. Happy Birthday, Best Wishes...)"
+                      maxLength={200}
+                      className="w-full rounded-2xl border-2 border-[#EADCC9] bg-[#FAF6F0]/60 p-3 text-[13.5px] text-[#593102] placeholder-[#A39080] focus:bg-white focus:border-[#D49313] focus:ring-2 focus:ring-[#D49313]/30 outline-none transition-all resize-none shadow-2xs font-medium"
+                    />
+                    <div className="flex items-center justify-between text-[11px] text-[#8C7462] px-1 mt-0.5 font-medium">
+                      <span>✨ Personalized custom note for your gift box</span>
+                      <span>{giftMessage.length}/200</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Quantity & Cart Actions (Desktop) */}
             {(() => {
