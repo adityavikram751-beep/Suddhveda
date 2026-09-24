@@ -147,10 +147,109 @@ export function getProductsFromResponse(data: any): ApiProduct[] {
 }
 
 export function getSingleProductFromResponse(data: any): ApiProduct | null {
-  const product = data?.data?.product || data?.data || data?.product || data;
-  return product && typeof product === "object" && !Array.isArray(product)
-    ? product
-    : null;
+  const product =
+    data?.data?.comboProduct ||
+    data?.data?.product ||
+    data?.data?.combo ||
+    data?.data?.combo_product ||
+    data?.data ||
+    data?.comboProduct ||
+    data?.product ||
+    data?.combo ||
+    data?.combo_product ||
+    data;
+
+  if (!product || typeof product !== "object" || Array.isArray(product)) {
+    return null;
+  }
+
+  const normalized: ApiProduct = { ...product };
+
+  // Normalize product name
+  if (!normalized.product_name) {
+    normalized.product_name =
+      product.combo_name ||
+      product.comboName ||
+      product.name ||
+      product.title ||
+      "Honey Combo Box";
+  }
+
+  // Normalize description
+  if (!normalized.description) {
+    normalized.description =
+      product.combo_description ||
+      product.comboDescription ||
+      product.description ||
+      product.desc ||
+      "";
+  }
+
+  // Handle setPacks variants mapping for prices
+  if (Array.isArray(product.setPacks) && product.setPacks.length > 0) {
+    const primaryPack = product.setPacks[0];
+    if (!normalized.price) {
+      normalized.price = Number(primaryPack.selling_price || primaryPack.price || 0);
+    }
+    if (!normalized.mrp) {
+      normalized.mrp = Number(primaryPack.mrp || (normalized.price ? Math.round(normalized.price * 1.25) : 0));
+    }
+  } else {
+    if (!normalized.price) {
+      normalized.price =
+        Number(product.combo_price || product.comboPrice || product.salePrice || product.price) || 0;
+    }
+    if (!normalized.mrp) {
+      normalized.mrp =
+        Number(product.mrp || product.originalPrice || product.combo_mrp) ||
+        (normalized.price ? Math.round(normalized.price * 1.25) : 0);
+    }
+  }
+
+  // Handle images normalization
+  const existingImages = getProductImages(normalized);
+  if (existingImages.length > 0) {
+    normalized.imageDocumentId = existingImages;
+  } else {
+    const rawImg =
+      product.image_url ||
+      product.imageUrl ||
+      product.image ||
+      (Array.isArray(product.images) && product.images[0]?.url) ||
+      (Array.isArray(product.images) && product.images[0]?.image_url) ||
+      (Array.isArray(product.images) && product.images[0]) ||
+      "/honneycart.png";
+
+    const finalUrl = typeof rawImg === "string" ? rawImg : rawImg?.url || rawImg?.image_url || "/honneycart.png";
+
+    normalized.imageDocumentId = [
+      {
+        _id: "img-1",
+        image_url: finalUrl,
+        is_primary: true,
+      },
+    ];
+  }
+
+  // Handle variants normalization
+  const existingVariants = getProductVariants(normalized);
+  if (existingVariants.length > 0) {
+    normalized.variantDocumentId = existingVariants;
+  } else {
+    normalized.variantDocumentId = [
+      {
+        _id: product._id || product.id || "v-combo-1",
+        weight: product.jar_count ? `${product.jar_count} Jars` : "1 Box",
+        unit: "",
+        price: normalized.price,
+        mrp: normalized.mrp,
+        you_save: Math.max(0, (normalized.mrp || 0) - (normalized.price || 0)),
+        is_out_of_stock: false,
+      },
+    ];
+  }
+
+  return normalized;
 }
 
 export function getProductId(product: ApiProduct): string {
@@ -158,7 +257,7 @@ export function getProductId(product: ApiProduct): string {
 }
 
 export function getProductName(product: ApiProduct): string {
-  return product?.product_name || product?.name || product?.title || "Honey";
+  return product?.product_name || product?.combo_name || product?.name || product?.title || "Honey";
 }
 
 export function getCategoryName(product: ApiProduct): string {
@@ -167,7 +266,7 @@ export function getCategoryName(product: ApiProduct): string {
     product?.category?.category_name ||
     product?.category_name ||
     product?.category ||
-    ""
+    (product?.setPacks ? "Combo Gift Pack" : "")
   );
 }
 
@@ -189,8 +288,19 @@ export function getCategorySlug(product: ApiProduct): string {
 
 export function getProductImages(product: ApiProduct): any[] {
   const imageDoc = product?.imageDocumentId || product?.images || product?.image;
-  if (Array.isArray(imageDoc)) return imageDoc;
-  if (Array.isArray(imageDoc?.images)) return imageDoc.images;
+  if (Array.isArray(imageDoc)) {
+    return imageDoc.map((img: any, idx: number) => {
+      if (typeof img === "string") {
+        return { _id: `img-${idx}`, image_url: img, is_primary: idx === 0 };
+      }
+      return {
+        _id: img._id || img.id || `img-${idx}`,
+        image_url: img.image_url || img.url || img.src || "/honneycart.png",
+        is_primary: img.is_primary ?? idx === 0,
+        thumbnail: img.thumbnail || img.thumbnail_url || img.image_url || img.url || "/honneycart.png",
+      };
+    });
+  }
   return [];
 }
 
@@ -200,14 +310,52 @@ export function getPrimaryImage(product: ApiProduct): string {
     images.find((img: any) => img?.is_primary)?.image_url ||
     images[0]?.image_url ||
     product?.image_url ||
+    product?.imageUrl ||
     product?.image ||
     "/honneycart.png"
   );
 }
 
 export function getProductVariants(product: ApiProduct): ProductVariant[] {
+  const setPacks = product?.setPacks || product?.packs || product?.comboPacks;
+  if (Array.isArray(setPacks) && setPacks.length > 0) {
+    return setPacks.map((p: any) => {
+      const price = Number(p.selling_price || p.price || p.salePrice || 0);
+      const mrp = Number(p.mrp || p.originalPrice || price);
+      const you_save = Math.max(0, mrp - price);
+      const discount_value = Number(p.discount_percent || p.discount || (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0));
+
+      const imgUrl = p.image || p.image_url || p.imageUrl || "";
+
+      return {
+        _id: p._id || p.id,
+        weight: p.pack_name || (p.pack_size ? `Set of ${p.pack_size}` : "Pack"),
+        unit: "",
+        price,
+        mrp,
+        you_save,
+        discount_value,
+        image: typeof imgUrl === "string" ? imgUrl : "",
+        image_url: typeof imgUrl === "string" ? imgUrl : "",
+        is_out_of_stock: p.is_active === false || p.status === "out_of_stock",
+      };
+    });
+  }
+
   const variantDoc = product?.variantDocumentId || product?.variants || product?.variant || product?.variantId;
-  if (Array.isArray(variantDoc)) return variantDoc;
+  if (Array.isArray(variantDoc)) {
+    return variantDoc.map((v: any, idx: number) => {
+      const price = Number(v.price || v.selling_price || v.salePrice || 0);
+      const mrp = Number(v.mrp || v.originalPrice || price);
+      return {
+        ...v,
+        _id: v._id || v.id || `var-${idx}`,
+        price,
+        mrp,
+        you_save: Number(v.you_save || (mrp > price ? mrp - price : 0)),
+      };
+    });
+  }
   if (Array.isArray(variantDoc?.variants)) return variantDoc.variants;
   if (variantDoc && typeof variantDoc === "object") return [variantDoc];
   return [];

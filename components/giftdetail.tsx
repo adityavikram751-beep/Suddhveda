@@ -132,9 +132,6 @@ export default function ProductDetailPage() {
                     <Star size={18} className="fill-[#593102] text-[#593102]" />
                     <span className="font-medium">{product.rating}</span>
                   </div>
-                  <span className="text-[#8D7F73] text-sm">
-                    Reviews: {product.reviews}
-                  </span>
                 </div>
               </div>
               <div className="text-right">

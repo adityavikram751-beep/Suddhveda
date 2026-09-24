@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Gift, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { Check, Gift, Heart, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 import { useCart } from "@/components/cart/CartProvider";
 
@@ -14,9 +14,48 @@ type GiftBox = {
   description: string;
   image: string;
   price: number;
+  originalPrice?: number;
+  discount_percent?: number;
+  tagline?: string;
   jar_count: number;
   isActive?: boolean;
 };
+
+const DEFAULT_GIFT_BOXES: GiftBox[] = [
+  {
+    _id: "default_taster",
+    name: "HoneyVeda Taster Box",
+    tagline: "Raw honey or gifting",
+    description: "Ideal for newcomer in raw honey or gifting.",
+    image: "/home 2.png",
+    price: 451,
+    originalPrice: 594,
+    discount_percent: 24,
+    jar_count: 6,
+  },
+  {
+    _id: "default_buzz",
+    name: "Buzz Box",
+    tagline: "Raw honey or gifting",
+    description: "Assorted collection of 50gm jars.",
+    image: "/dashboardm1.png",
+    price: 597,
+    originalPrice: 756,
+    discount_percent: 21,
+    jar_count: 4,
+  },
+  {
+    _id: "default_signature",
+    name: "Signature Gift Set",
+    tagline: "Premium Gifting",
+    description: "Perfect for Celebrations",
+    image: "/ajwainnew.png",
+    price: 999,
+    originalPrice: 1199,
+    discount_percent: 17,
+    jar_count: 3,
+  },
+];
 
 type SelectedProduct = {
   productId: string;
@@ -51,27 +90,110 @@ export default function CuratedGift() {
   const [addingToCart, setAddingToCart] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // ---------- Fetch Gift Boxes ----------
+  // ---------- Fetch Gift Boxes / Combo Products ----------
   useEffect(() => {
     const fetchGiftBoxes = async () => {
       try {
         setLoadingBoxes(true);
-        const res = await fetch(`${API_BASE_URL}/api/admin/gift-box`, {
+        let res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error("Failed to fetch gift boxes");
+        if (!res.ok) {
+          res = await fetch(`${API_BASE_URL}/api/admin/gift-box`, {
+            credentials: "include",
+          });
+        }
+
+        if (!res.ok) throw new Error("Failed to fetch combo products / gift boxes");
         const data = await res.json();
 
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const activeBoxes = data.data.filter((b: GiftBox) => b.isActive !== false);
-          setGiftBoxes(activeBoxes.length > 0 ? activeBoxes : data.data);
+        const rawList = Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.data?.comboProducts)
+          ? data.data.comboProducts
+          : Array.isArray(data?.comboProducts)
+          ? data.comboProducts
+          : Array.isArray(data?.data?.products)
+          ? data.data.products
+          : Array.isArray(data?.products)
+          ? data.products
+          : Array.isArray(data)
+          ? data
+          : [];
+
+        if (rawList.length > 0) {
+          const activeBoxes = rawList
+            .filter((b: any) => b.isActive !== false && b.status !== "inactive" && b.is_active !== false)
+            .map((b: any) => {
+              // Extract minimum selling price and MRP from setPacks if available
+              let minPrice = 0;
+              let minMrp = 0;
+
+              if (Array.isArray(b.setPacks) && b.setPacks.length > 0) {
+                const sortedPacks = [...b.setPacks].sort((p1: any, p2: any) => {
+                  const pr1 = Number(p1.selling_price || p1.price || p1.salePrice || Infinity);
+                  const pr2 = Number(p2.selling_price || p2.price || p2.salePrice || Infinity);
+                  return pr1 - pr2;
+                });
+                const cheapest = sortedPacks[0];
+                minPrice = Number(cheapest.selling_price || cheapest.price || cheapest.salePrice || 0);
+                minMrp = Number(cheapest.mrp || cheapest.originalPrice || 0);
+              }
+
+              if (!minPrice) {
+                minPrice = Number(b.price || b.salePrice || b.comboPrice || b.selling_price || 597);
+              }
+              if (!minMrp) {
+                minMrp = Number(b.originalPrice || b.mrp || Math.round(minPrice * 1.25));
+              }
+
+              // Extract Image
+              let imgUrl = "";
+              if (Array.isArray(b.images) && b.images.length > 0) {
+                const primary = b.images.find((x: any) => x.is_primary) || b.images[0];
+                imgUrl = typeof primary === "string" ? primary : primary?.url || primary?.image_url || primary?.src || "";
+              }
+              if (!imgUrl && Array.isArray(b.imageDocumentId) && b.imageDocumentId.length > 0) {
+                const primary = b.imageDocumentId.find((x: any) => x.is_primary) || b.imageDocumentId[0];
+                imgUrl = typeof primary === "string" ? primary : primary?.image_url || primary?.url || "";
+              }
+              if (!imgUrl && Array.isArray(b.setPacks) && b.setPacks.length > 0) {
+                imgUrl = b.setPacks[0]?.image || b.setPacks[0]?.image_url || "";
+              }
+              if (!imgUrl) {
+                imgUrl = b.image || b.image_url || b.imageUrl || "/honneycart.png";
+              }
+
+              const count = Number(b.jar_count || b.jarCount || b.count || (Array.isArray(b.setPacks) ? b.setPacks[0]?.pack_size : 0) || (Array.isArray(b.products) ? b.products.length : 0) || 4);
+
+              let discountPct = Number(
+                b.discount_percent || b.discountPercent || b.discount_percentage || b.discountPercentage || 0
+              );
+              if (!discountPct && minMrp > minPrice && minMrp > 0) {
+                discountPct = Math.round(((minMrp - minPrice) / minMrp) * 100);
+              }
+
+              return {
+                _id: b._id || b.id,
+                name: b.combo_name || b.name || b.title || "Gift Box",
+                description: b.description || b.desc || "A specially curated combo of our premium honey varieties.",
+                image: imgUrl,
+                price: minPrice,
+                originalPrice: minMrp,
+                discount_percent: discountPct,
+                tagline: b.tagline || b.tag || "Raw honey or gifting",
+                jar_count: count > 0 ? count : 4,
+                isActive: b.isActive,
+              };
+            });
+          setGiftBoxes(activeBoxes.length > 0 ? activeBoxes : DEFAULT_GIFT_BOXES);
         } else {
-          setGiftBoxes([]);
+          setGiftBoxes(DEFAULT_GIFT_BOXES);
         }
       } catch (err) {
-        console.error("Error fetching gift boxes:", err);
-        setGiftBoxes([]);
+        console.error("Error fetching combo products / gift boxes:", err);
+        setGiftBoxes(DEFAULT_GIFT_BOXES);
       } finally {
         setLoadingBoxes(false);
       }
@@ -414,50 +536,60 @@ export default function CuratedGift() {
       <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16">
 
         {/* ================= SECTION HEADER ================= */}
-        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-          <span className="inline-flex items-center gap-2 text-[#D49313] bg-[#FAF0DC] border border-[#E8D5BA] px-4 py-1.5 rounded-full text-[12px] sm:text-[13px] font-bold tracking-[0.2em] uppercase mb-4 shadow-xs">
-            <Gift size={15} className="text-[#D49313]" />
-            LUXURY GIFT COLLECTION
-          </span>
-
-          <h2 className="font-serif text-[32px] sm:text-[42px] md:text-[52px] font-bold text-[#593102] leading-[1.15] tracking-tight">
-            Thoughtfully Curated Honey Gift Sets
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <h2 className="font-serif text-[34px] sm:text-[44px] md:text-[50px] font-bold text-[#201812] leading-[1.12] tracking-tight">
+            Ready-to-Gift Boxes
           </h2>
 
-          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-4 rounded-full" />
+          <p className="font-serif italic text-[22px] sm:text-[28px] text-[#4A3B30] font-semibold mt-2 leading-snug">
+            Beautifully curated, instantly lovable.
+          </p>
 
-          <p className="text-[#8D7F73] text-[15px] sm:text-[18px] leading-relaxed max-w-2xl mx-auto font-medium">
-            Select your ideal gift box size and customize it with your choice of raw &amp; organic honey flavors.
+          <p className="font-sans text-[14.5px] sm:text-[16.5px] text-[#6E5D4F] leading-relaxed max-w-xl mx-auto font-medium mt-3">
+            Perfect for birthdays, Diwali, housewarmings,
+            <br className="hidden sm:inline" /> or just a &quot;thinking of you&quot; moment.
           </p>
         </div>
 
         {/* ================= CARDS GRID ================= */}
         {loadingBoxes ? (
-          <div className="max-w-[1180px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+          <div className="max-w-[900px] ml-4 sm:ml-8 lg:ml-16 mr-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white/80 rounded-[20px] border border-[#E8D5BA] h-[460px] animate-pulse shadow-sm"
+                className="bg-[#FAF5EE] h-[340px] max-w-[270px] w-full animate-pulse"
               />
             ))}
           </div>
         ) : (
-          <div className="max-w-[1000px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-center">
+          <div className="max-w-[960px] mx-auto sm:ml-8 lg:ml-16 lg:mr-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center sm:justify-items-start lg:justify-start">
             {giftBoxes.map((box) => {
-              const jarText = box.jar_count ? `${box.jar_count}x250g` : "Custom Set";
+              const origPrice = box.originalPrice || (box.price ? Math.round(box.price * 1.25) : 0);
+              const discountPct =
+                box.discount_percent ||
+                (origPrice > box.price && origPrice > 0
+                  ? Math.round(((origPrice - box.price) / origPrice) * 100)
+                  : 0);
 
               return (
                 <div
                   key={box._id}
-                  onClick={() => openCustomizationModal(box)}
-                  className="bg-[#FFFDF9] border border-[#EADCC9] rounded-[24px] overflow-hidden shadow-xs hover:shadow-lg hover:border-[#D49313]/60 transition-all duration-300 group flex flex-col relative max-w-[310px] sm:max-w-none mx-auto w-full cursor-pointer"
+                  onClick={() => router.push(`/shop/products/${box._id}`)}
+                  className="bg-[#FAF5EE] border-2 border-[#E3D3BE] hover:border-[#D49313] transition-all duration-300 group flex flex-col relative w-full max-w-[280px] cursor-pointer pb-5 shadow-xs hover:shadow-xl hover:-translate-y-1 rounded-[24px] overflow-hidden"
                 >
-                  {/* Top Image Banner Area */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F7F0E6]">
+                  {/* Top Image Area */}
+                  <div className="relative aspect-square w-full overflow-hidden bg-[#FAF5EE]">
+                    {discountPct > 0 && (
+                      <span className="bg-[#1F1813] text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider absolute top-3 right-3 z-10 shadow-2xs border border-[#D49313]/30">
+                        {discountPct}% OFF
+                      </span>
+                    )}
+
                     <Image
                       src={box.image || "/honneycart.png"}
                       alt={box.name}
                       fill
+                      priority
                       className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -466,43 +598,37 @@ export default function CuratedGift() {
                     />
                   </div>
 
-                  {/* Content Body */}
-                  <div className="p-4 sm:p-5 flex flex-col flex-1 bg-[#FFFDF9]">
-                    {/* Title */}
-                    <div className="text-center sm:text-left">
-                      <h3 className="font-serif text-[18px] sm:text-[19px] font-bold text-[#3D260F] leading-tight">
+                  {/* Centered Content Body */}
+                  <div className="pt-4 px-3.5 flex flex-col items-center text-center flex-1 bg-[#FAF5EE] justify-between min-h-[145px]">
+                    <div className="flex flex-col items-center">
+                      {/* Title */}
+                      <h3 className="font-sans text-[15.5px] sm:text-[16.5px] font-bold text-[#1F1813] leading-snug tracking-tight group-hover:text-[#B87C0C] transition-colors">
                         {box.name}
                       </h3>
-                    </div>
 
-                    {/* Dynamic API Description */}
-                    <div className="mt-3.5 border-t border-[#EADCC9]/50 pt-3 min-h-[54px]">
-                      {box.description ? (
-                        <p className="text-[13px] text-[#7A6A5C] leading-relaxed line-clamp-2 font-medium text-left">
+                      {/* Description */}
+                      {box.description && (
+                        <p className="text-[12px] text-[#6E5D4F] leading-snug font-normal mt-1.5 line-clamp-2 max-w-[230px] mx-auto text-center">
                           {box.description}
                         </p>
-                      ) : (
-                        <ul className="space-y-1.5 text-[12.5px] text-[#7A6A5C] font-medium">
-                          <li className="flex items-center gap-2">
-                            <span className="text-[#C87F17] font-bold">•</span>
-                            <span>{box.jar_count ? `${box.jar_count} Pure Honey Jars` : "Custom Honey Set"}</span>
-                          </li>
-                        </ul>
                       )}
                     </div>
 
-                    {/* Bottom Action Row */}
-                    <div className="mt-5 pt-1">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openCustomizationModal(box);
-                        }}
-                        className="w-full h-[42px] bg-[#FA4B1B] hover:bg-[#E64216] text-white font-extrabold rounded-2xl transition-all duration-200 text-[13px] tracking-wide shadow-sm active:scale-98 cursor-pointer flex items-center justify-center"
-                      >
-                        Customize Gift Box
-                      </button>
+                    {/* Price Row */}
+                    <div className="mt-2.5 flex items-center justify-center gap-2 font-sans">
+                      {origPrice > box.price && (
+                        <span className="line-through text-[#998A7D] text-[13.5px] font-normal">
+                          ₹{origPrice}
+                        </span>
+                      )}
+                      <span className="text-[#1F1813] text-[17px] font-extrabold tracking-tight">
+                        ₹{box.price}
+                      </span>
+                      {discountPct > 0 && (
+                        <span className="text-[#C2410C] text-[11px] font-bold bg-[#FFF4ED] px-1.5 py-0.5 rounded border border-[#FFD8C2]">
+                          {discountPct}% OFF
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

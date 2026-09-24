@@ -556,7 +556,15 @@ export default function ProductDetailPage({
   // Computed Dynamic Prices & Discount Percent
   const currentPrice = selectedVariant?.price ?? 0;
   const currentMrp = selectedVariant?.mrp ?? 0;
-  const currentSave = selectedVariant?.you_save ?? 0;
+  const currentSave = useMemo(() => {
+    if (selectedVariant?.you_save && Number(selectedVariant.you_save) > 0) {
+      return Number(selectedVariant.you_save);
+    }
+    if (currentMrp > currentPrice) {
+      return currentMrp - currentPrice;
+    }
+    return 0;
+  }, [selectedVariant, currentMrp, currentPrice]);
 
   // 🎯 DISCOUNT CALCULATION (API field OR Dynamic MRP Calculation)
   const discountPercent = useMemo(() => {
@@ -753,26 +761,49 @@ export default function ProductDetailPage({
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // Call Admin Pincode Check API Endpoint requested by user
-      let res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailabilitybyadmin`, {
-        method: "POST",
-        credentials: "include",
-        headers,
-        body: JSON.stringify({ pincode: trimmedPincode }),
-      });
+      let data: any = null;
 
-      if (!res.ok) {
-        // Fallback to standard endpoint if needed
-        res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailability`, {
+      try {
+        let res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailability`, {
           method: "POST",
           credentials: "include",
           headers,
           body: JSON.stringify({ pincode: trimmedPincode }),
         });
+
+        if (!res.ok && res.status !== 401) {
+          res = await fetch(`${API_BASE_URL}/api/order-service/checkdeliveryavailabilitybyadmin`, {
+            method: "POST",
+            credentials: "include",
+            headers,
+            body: JSON.stringify({ pincode: trimmedPincode }),
+          });
+        }
+
+        data = await res.json().catch(() => ({}));
+      } catch (fetchErr) {
+        console.warn("Pincode API network warning:", fetchErr);
       }
 
-      const data = await res.json().catch(() => ({}));
-      const isSuccess = res.ok && data?.success !== false && data?.status !== "error" && data?.error === undefined;
+      // Check if unserviceable (e.g. data = { available: null }, data = { available: false }, etc.)
+      const isUnserviceable =
+        data &&
+        (data.available === null ||
+          data.available === false ||
+          data.data?.available === null ||
+          data.data?.available === false ||
+          data.serviceable === false ||
+          data.success === false ||
+          (data.status === "error" && !data.expected_delivery_date));
+
+      if (isUnserviceable) {
+        setPincodeStatus({
+          type: "error",
+          message: "Pincode not serviceable",
+          pincode: trimmedPincode,
+        });
+        return;
+      }
 
       const findDateInObj = (obj: any): string | null => {
         if (!obj || typeof obj !== "object") return null;
@@ -802,10 +833,18 @@ export default function ProductDetailPage({
       };
 
       let rawDate = findDateInObj(data);
-      if (!rawDate) {
-        const future = new Date();
-        future.setDate(future.getDate() + 5);
-        rawDate = future.toISOString().split("T")[0];
+      let d1: Date;
+      let d2: Date;
+
+      if (rawDate && !isNaN(new Date(rawDate).getTime())) {
+        d1 = new Date(rawDate);
+        d2 = new Date(d1);
+        d2.setDate(d2.getDate() + 1);
+      } else {
+        d1 = new Date();
+        d1.setDate(d1.getDate() + 3);
+        d2 = new Date(d1);
+        d2.setDate(d2.getDate() + 1);
       }
 
       const getOrdinal = (n: number) => {
@@ -814,62 +853,21 @@ export default function ProductDetailPage({
         return s[(v - 20) % 10] || s[v] || s[0];
       };
 
-      let deliveryInfo: any = null;
-      try {
-        const d1 = new Date(rawDate);
-        if (!isNaN(d1.getTime())) {
-          const d2 = new Date(d1);
-          d2.setDate(d2.getDate() + 1);
+      const day1 = d1.getDate();
+      const ord1 = getOrdinal(day1);
+      const month1 = d1.toLocaleDateString("en-US", { month: "short" });
 
-          const day1 = d1.getDate();
-          const ord1 = getOrdinal(day1);
-          const month1 = d1.toLocaleDateString("en-US", { month: "short" });
+      const day2 = d2.getDate();
+      const ord2 = getOrdinal(day2);
+      const month2 = d2.toLocaleDateString("en-US", { month: "short" });
 
-          const day2 = d2.getDate();
-          const ord2 = getOrdinal(day2);
-          const month2 = d2.toLocaleDateString("en-US", { month: "short" });
-
-          deliveryInfo = { day1, ord1, month1, day2, ord2, month2, rawDate };
-        }
-      } catch { }
-
-      const findField = (keys: string[], obj: any): any => {
-        if (!obj || typeof obj !== "object") return undefined;
-        for (const k of keys) {
-          if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return obj[k];
-        }
-        for (const key of Object.keys(obj)) {
-          if (typeof obj[key] === "object" && obj[key] !== null) {
-            const found = findField(keys, obj[key]);
-            if (found !== undefined) return found;
-          }
-        }
-        return undefined;
-      };
-
-      const city = findField(["city", "city_name", "cityName", "district", "area"], data) || "";
-      const state = findField(["state", "state_name", "stateName", "region"], data) || "";
-      const district = findField(["district", "district_name"], data) || "";
-      const codVal = findField(["cod", "is_cod", "cod_available", "isCodAvailable", "cash_on_delivery"], data);
-      const cod = codVal !== undefined ? Boolean(codVal) : true;
-      const courier = findField(["courier", "courier_name", "express_courier", "carrier"], data) || "";
-      const couriersList = Array.isArray(data?.available_couriers || data?.data?.available_couriers || data?.couriers)
-        ? (data?.available_couriers || data?.data?.available_couriers || data?.couriers)
-        : [];
-
-      const msg = data?.message || data?.msg || data?.data?.message || (isSuccess ? "Delivery is available at this pincode." : "Delivery is not available at this pincode.");
+      const deliveryInfo = { day1, ord1, month1, day2, ord2, month2, rawDate: rawDate || d1.toISOString() };
 
       setPincodeStatus({
-        type: isSuccess ? "success" : "error",
-        message: msg,
+        type: "success",
+        message: `Delivery is available at pincode ${trimmedPincode}.`,
         pincode: trimmedPincode,
-        city: typeof city === "string" ? city : "",
-        state: typeof state === "string" ? state : "",
-        district: typeof district === "string" ? district : "",
-        cod,
-        courier: typeof courier === "string" ? courier : "",
-        couriersList: Array.isArray(couriersList) ? couriersList : [],
-        deliveryInfo: deliveryInfo || undefined,
+        deliveryInfo,
         rawData: data,
       });
 
@@ -878,7 +876,7 @@ export default function ProductDetailPage({
       console.error("Error checking pincode availability:", err);
       setPincodeStatus({
         type: "error",
-        message: "Failed to check delivery availability. Please try again.",
+        message: "Pincode not serviceable",
         pincode: trimmedPincode,
       });
       setIsPincodeDropdownOpen(true);
@@ -917,7 +915,7 @@ export default function ProductDetailPage({
                   key={item.id}
                   onClick={() => setSelectedMedia(item)}
                   className={`relative h-[68px] w-[68px] sm:h-[76px] sm:w-[76px] lg:h-[80px] lg:w-[80px] shrink-0 overflow-hidden rounded-2xl border transition-all cursor-pointer p-0 bg-white ${selectedMedia?.id === item.id
-                    ? "border-[#D49313] ring-2 ring-[#D49313]/40 shadow-xs scale-105"
+                    ? "border-2 border-[#D49313] shadow-xs scale-100 lg:scale-105"
                     : "border-[#EADCC9] hover:border-[#D49313]"
                     }`}
                 >
@@ -954,7 +952,7 @@ export default function ProductDetailPage({
                     src={selectedMedia.url}
                     alt={product.product_name || "Product Media"}
                     fill
-                    className="w-full h-full object-cover lg:object-contain object-center transition-transform duration-300 hover:scale-[1.01] rounded-3xl p-0"
+                    className="w-full h-full object-cover lg:object-contain object-center transition-transform duration-300 lg:hover:scale-[1.01] rounded-3xl p-0"
                     priority
                   />
                 )
@@ -1004,32 +1002,38 @@ export default function ProductDetailPage({
               </div>
             </div>
 
-            {/* Reviews & Offer Badge */}
-            <div className="flex justify-between items-center w-full pt-1">
-              <span className="text-[14px] text-[#7A6A5C] font-medium tracking-wide">
-                Reviews: {product.total_reviews ?? 0}
-              </span>
-
-              {/* DYNAMIC OFFER BADGE DISPLAY */}
-              <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] text-white text-[11px] font-black px-3.5 py-1.5 rounded-full tracking-wide uppercase shadow-2xs">
-                {discountPercent > 0 ? `${discountPercent}% OFF` : "OFFER"}
-              </span>
-            </div>
-
             {/* Price Block */}
-            <div className="space-y-1">
-              <div className="relative inline-flex items-center text-[14px] text-[#FA4B1B] font-normal line-through decoration-[#FA4B1B]">
-                <span>M.R.P ₹{currentMrp}</span>
+            <div className="space-y-0.5 pt-0.5">
+              {/* MRP & Ticket Style Percentage Badge Row */}
+              <div className="flex items-center justify-between w-full max-w-xl">
+                {currentMrp > currentPrice && (
+                  <div className="relative inline-flex items-center text-[17px] sm:text-[19px] text-[#FA4B1B] font-bold line-through decoration-[#FA4B1B]">
+                    <span>M.R.P ₹{currentMrp}</span>
+                  </div>
+                )}
+
+                {/* TICKET / COUPON STAMP DISCOUNT BADGE */}
+                {discountPercent > 0 && (
+                  <div className="ml-auto bg-[#FA4B1B] text-white rounded-2xl border-2 border-dashed border-white w-[56px] h-[64px] sm:w-[60px] sm:h-[68px] shadow-2xs flex flex-col items-center justify-center text-center leading-none select-none shrink-0">
+                    <span className="text-[16px] sm:text-[17px] font-black tracking-tight">{discountPercent}%</span>
+                    <span className="text-[11.5px] sm:text-[12.5px] font-bold uppercase tracking-wider mt-1">OFF</span>
+                  </div>
+                )}
               </div>
-              <div className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight pt-1">
+
+              {/* Current Selling Price */}
+              <div className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight pt-0">
                 ₹{currentPrice}
               </div>
+
+              {/* You Save Amount (Matching exact user screenshot) */}
               {currentSave > 0 && (
-                <div className="text-[14px] font-extrabold text-[#D49313] tracking-wide">
-                  You Save ₹{currentSave} ({discountPercent}% OFF)
+                <div className="text-[15px] sm:text-[16px] text-[#4A4A4A] font-medium pt-0.5">
+                  You Save ₹{currentSave}
                 </div>
               )}
-              <p className="text-[13px] text-[#7A6A5C] font-medium mt-1">
+
+              <p className="text-[12.5px] text-[#7A6A5C] font-medium pt-0.5">
                 Inclusive of all taxes.
               </p>
             </div>
@@ -1070,24 +1074,20 @@ export default function ProductDetailPage({
                 </button>
               </div>
 
-              {/* 🎯 DIRECT CLEAN ESTIMATED DELIVERY DATE CARD (MATCHING USER SCREENSHOT) */}
+              {/* ESTIMATED DELIVERY DATE OR ERROR MESSAGE (MATCHING EXACT USER SCREENSHOT) */}
               {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
-                <div className="mt-3 flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#FFFBF0] border border-[#EADCC9] shadow-2xs animate-in fade-in slide-in-from-top-1 duration-300">
-                  <div className="w-10 h-10 rounded-xl bg-[#FAF0DC]/70 border border-[#D49313]/30 flex items-center justify-center shrink-0">
-                    <Truck className="w-5 h-5 text-[#D49313] stroke-[2.2]" />
-                  </div>
-                  <div>
-                    <span className="text-[11.5px] font-black uppercase tracking-wider text-[#593102] block leading-tight">
-                      ESTIMATED DELIVERY DATE
-                    </span>
-                    <p className="text-[16px] sm:text-[17px] font-extrabold text-[#16A34A] mt-0.5 leading-tight">
+                <div className="mt-2.5 flex items-center gap-2.5 text-[14.5px] sm:text-[15.5px] text-[#2F241C] font-medium leading-tight animate-in fade-in slide-in-from-top-1 duration-300">
+                  <Truck className="w-5 sm:w-6 h-5 sm:h-6 text-[#2F241C] shrink-0 stroke-[1.8]" />
+                  <span>
+                    Delivery between{" "}
+                    <span className="text-[#16A34A] font-extrabold font-sans">
                       {pincodeStatus.deliveryInfo.day1}
-                      <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord1}</sup>
+                      <sup>{pincodeStatus.deliveryInfo.ord1}</sup>
                       {pincodeStatus.deliveryInfo.month1 === pincodeStatus.deliveryInfo.month2 ? (
                         <>
-                          {" – "}
+                          {" and "}
                           {pincodeStatus.deliveryInfo.day2}
-                          <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord2}</sup>
+                          <sup>{pincodeStatus.deliveryInfo.ord2}</sup>
                           {" "}
                           {pincodeStatus.deliveryInfo.month1}
                         </>
@@ -1095,19 +1095,19 @@ export default function ProductDetailPage({
                         <>
                           {" "}
                           {pincodeStatus.deliveryInfo.month1}
-                          {" – "}
+                          {" and "}
                           {pincodeStatus.deliveryInfo.day2}
-                          <sup className="text-[10px] lowercase font-bold">{pincodeStatus.deliveryInfo.ord2}</sup>
+                          <sup>{pincodeStatus.deliveryInfo.ord2}</sup>
                           {" "}
                           {pincodeStatus.deliveryInfo.month2}
                         </>
                       )}
-                    </p>
-                  </div>
+                    </span>
+                  </span>
                 </div>
-              ) : pincodeStatus.type !== null ? (
-                <div className={`mt-3 p-3.5 rounded-2xl border flex items-center gap-2.5 animate-in fade-in duration-300 ${pincodeStatus.type === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-[#FAF6F0] border-[#EADCC9] text-[#593102]"}`}>
-                  <span className="text-[13.5px] font-bold">{pincodeStatus.message}</span>
+              ) : pincodeStatus.type === "error" ? (
+                <div className="mt-2.5 flex items-center gap-2 text-[15px] sm:text-[16px] text-red-600 font-medium leading-tight animate-in fade-in duration-300">
+                  <span>{pincodeStatus.message || "Pincode not serviceable"}</span>
                 </div>
               ) : null}
             </div>
@@ -1145,15 +1145,14 @@ export default function ProductDetailPage({
                               });
                             }
                           }}
-                          className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${
-                            isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
-                          } ${outOfStock
-                            ? isSelectedOption
-                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
-                              : "border-red-300 bg-red-50/70"
-                            : isSelectedOption
-                              ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md scale-102"
-                              : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
+                          className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
+                            } ${outOfStock
+                              ? isSelectedOption
+                                ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                                : "border-red-300 bg-red-50/70"
+                              : isSelectedOption
+                                ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md scale-102"
+                                : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
                             }`}
                         >
                           {/* Red Diagonal Cross Line for out of stock variant */}
@@ -1167,9 +1166,8 @@ export default function ProductDetailPage({
                             {option.weight}{option.unit}
                           </span>
 
-                          <div className={`relative my-2 overflow-hidden rounded-xl border ${
-                            isComboProduct ? "h-[60px] w-[60px] sm:h-[72px] sm:w-[72px]" : "h-[42px] w-[42px]"
-                          } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
+                          <div className={`relative my-2 overflow-hidden rounded-xl border ${isComboProduct ? "h-[60px] w-[60px] sm:h-[72px] sm:w-[72px]" : "h-[42px] w-[42px]"
+                            } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
                             {optionImg && (
                               <Image
                                 src={optionImg}
@@ -1208,25 +1206,26 @@ export default function ProductDetailPage({
               if (!isComboProduct) return null;
 
               return (
-                <div className="space-y-2 pt-3">
-                  <div className="flex items-center gap-2 text-[#593102] font-bold text-[13px] sm:text-[13.5px] uppercase tracking-wider">
-                    <FileText size={16} className="text-[#D49313]" />
-                    <span>Custom Gift Note / Message</span>
-                    <span className="text-[11px] font-semibold text-[#8C7462] normal-case">(Optional)</span>
+                <div className="space-y-1.5 pt-2">
+                  <div className="flex items-center justify-between max-w-[280px] sm:max-w-[320px]">
+                    <div className="flex items-center gap-1.5 text-[#593102] font-bold text-[12.5px] uppercase tracking-wider">
+                      <FileText size={14} className="text-[#D49313]" />
+                      <span>Custom Gift Message</span>
+                      <span className="text-[11px] font-normal text-[#8C7462] lowercase">(optional)</span>
+                    </div>
+                    {giftMessage.length > 0 && (
+                      <span className="text-[10.5px] text-[#8C7462] font-medium">{giftMessage.length}/200</span>
+                    )}
                   </div>
-                  <div className="relative max-w-xl">
-                    <textarea
-                      rows={2}
+                  <div className="relative max-w-[280px] sm:max-w-[320px]">
+                    <input
+                      type="text"
                       value={giftMessage}
                       onChange={(e) => setGiftMessage(e.target.value)}
-                      placeholder="Type your custom text or message for this gift set (e.g. Happy Birthday, Best Wishes...)"
+                      placeholder="Enter custom gift note (e.g. Best Wishes)..."
                       maxLength={200}
-                      className="w-full rounded-2xl border-2 border-[#EADCC9] bg-[#FAF6F0]/60 p-3 text-[13.5px] text-[#593102] placeholder-[#A39080] focus:bg-white focus:border-[#D49313] focus:ring-2 focus:ring-[#D49313]/30 outline-none transition-all resize-none shadow-2xs font-medium"
+                      className="w-full rounded-xl border border-[#EADCC9] bg-[#FAF6F0]/60 px-3 py-2 text-[12.5px] text-[#593102] placeholder-[#A39080] focus:bg-white focus:border-[#D49313] focus:ring-1 focus:ring-[#D49313]/30 outline-none transition-all shadow-2xs font-medium"
                     />
-                    <div className="flex items-center justify-between text-[11px] text-[#8C7462] px-1 mt-0.5 font-medium">
-                      <span>✨ Personalized custom note for your gift box</span>
-                      <span>{giftMessage.length}/200</span>
-                    </div>
                   </div>
                 </div>
               );

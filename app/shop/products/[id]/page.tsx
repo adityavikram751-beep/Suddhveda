@@ -18,23 +18,37 @@ export default async function ProductPage({
   let recommendations: ApiProduct[] = [];
 
   try {
-    console.log("🔍 Requesting URL:", `${API_BASE_URL}/api/products/${id}`);
+    console.log("🔍 Requesting Combo Product URL:", `${API_BASE_URL}/api/combo/products/details/${id}`);
 
-    const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+    const comboRes = await fetch(`${API_BASE_URL}/api/combo/products/details/${id}`, {
       cache: "no-store",
     });
 
-    console.log("📡 Response status:", res.status);
-
-    if (res.ok) {
-      const result = await res.json();
-      console.log("📦 API Data:", result);
-      product = getSingleProductFromResponse(result);
-    } else {
-      console.error("❌ API server error with status:", res.status);
+    if (comboRes.ok) {
+      const comboResult = await comboRes.json();
+      console.log("📦 Combo API Data:", comboResult);
+      product = getSingleProductFromResponse(comboResult);
     }
   } catch (error) {
-    console.error("❌ Failed to fetch product:", error);
+    console.error("❌ Failed to fetch combo product:", error);
+  }
+
+  if (!product) {
+    try {
+      console.log("🔍 Requesting Standard Product URL:", `${API_BASE_URL}/api/products/${id}`);
+
+      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        cache: "no-store",
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        console.log("📦 Standard API Data:", result);
+        product = getSingleProductFromResponse(result);
+      }
+    } catch (error) {
+      console.error("❌ Failed to fetch standard product:", error);
+    }
   }
 
   // Agar product fetch nahi hua tabhi notFound() hoga
