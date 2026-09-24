@@ -1,7 +1,6 @@
 
 import Header from "@/components/layout/Header";
 import GiftSets from "@/sections/giftsets/page";
-import GiftOccession from"@/sections/giftsets/giftoccesion";
 import CuratedGift from "@/sections/giftsets/curatedgift";
 // import GiftSelection from "@/sections/giftsets/giftselection";
 import Movement from "@/sections/giftsets/movement";
@@ -12,13 +11,12 @@ export default function GiftsetPage() {
   return (
     <>
       <Header />
-      <GiftSets/>
-      <GiftOccession/>
-      <CuratedGift/>
+      <GiftSets />
+      <CuratedGift />
       {/* <GiftSelection/> */}
-      <Movement/>
-      <RealReview/>
-        <Footer/>
+      <Movement />
+      <RealReview />
+      <Footer />
     </>
   );
 }

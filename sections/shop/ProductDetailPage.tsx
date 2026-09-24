@@ -1378,14 +1378,15 @@ export default function ProductDetailPage({
           </div>
         </div>
 
-        {/* USES OF HONEY BANNER */}
-        <div className="mt-14 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-xl">
+        {/* HONEY PROCESS & TRUST POSTER */}
+        <div className="mt-12 sm:mt-16 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-md bg-white">
           <Image
             src="/Hive2.png"
-            alt="Uses of Honey"
+            alt="ShuddhVeda Honey Journey & Quality Process Poster"
             width={1400}
-            height={500}
-            className="w-full h-auto object-cover"
+            height={2000}
+            className="w-full h-auto object-contain rounded-3xl block"
+            sizes="(max-width: 1280px) 100vw, 1350px"
           />
         </div>
 
