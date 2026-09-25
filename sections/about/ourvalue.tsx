@@ -66,9 +66,7 @@ export default function OurValues() {
                 <span className="text-[#FFD700] text-[12px] tracking-[0.18em] font-black uppercase">
                   — TEAM SHUDHVEDA
                 </span>
-                <span className="text-[11px] font-bold text-white/80 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
-                  Raw &amp; Organic Guarantee
-                </span>
+
               </div>
             </div>
           </div>

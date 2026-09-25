@@ -1,209 +1,146 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Check, Play, Pause, ChevronLeft, ChevronRight, Calendar, Award } from "lucide-react";
-
-const journeyItems = [
-    {
-        month: "JANUARY",
-        stepNumber: "01",
-        title: "Mustard Honey",
-        collection: "Winter Harvest Collection",
-        image: "/mustard honey.png",
-        bgColor: "bg-[#FEF9C3]",
-        textColor: "text-[#854D0E]",
-        borderColor: "border-[#FDE047]",
-        origin: "Rajasthan Mustard Fields",
-        notes: "Light golden texture with warm floral aroma & natural digestive benefits.",
-    },
-    {
-        month: "MARCH",
-        stepNumber: "02",
-        title: "Litchi Honey",
-        collection: "Spring Blossom Collection",
-        image: "/litchi honey.png",
-        bgColor: "bg-[#FCE7F3]",
-        textColor: "text-[#9D174D]",
-        borderColor: "border-[#F472B6]",
-        origin: "Muzaffarpur Orchards",
-        notes: "Fruity, delicate sweetness crafted from spring litchi blossoms.",
-    },
-    {
-        month: "MAY",
-        stepNumber: "03",
-        title: "Multiflora Honey",
-        collection: "Nature's Bouquet Collection",
-        image: "/multi flora.png",
-        bgColor: "bg-[#F3E8FF]",
-        textColor: "text-[#6B21A8]",
-        borderColor: "border-[#C084FC]",
-        origin: "Himalayan Foothills",
-        notes: "Rich multi-flower nectar with complex wild flora honey profile.",
-    },
-    {
-        month: "JULY",
-        stepNumber: "04",
-        title: "Natural Honey",
-        collection: "Pure Origins Collection",
-        image: "/natural honey.png",
-        bgColor: "bg-[#D1FAE5]",
-        textColor: "text-[#065F46]",
-        borderColor: "border-[#34D399]",
-        origin: "Central Forest Reserve",
-        notes: "100% raw unprocessed wildflower honey packed with enzymes.",
-    },
-    {
-        month: "SEPTEMBER",
-        stepNumber: "05",
-        title: "Fennel Honey",
-        collection: "Herbal Wellness Collection",
-        image: "/fennel honey.png",
-        bgColor: "bg-[#DCFCE7]",
-        textColor: "text-[#166534]",
-        borderColor: "border-[#4ADE80]",
-        origin: "Gujarat Herbal Farms",
-        notes: "Aromatic herbal infusion with subtle fennel & cooling notes.",
-    },
-    {
-        month: "NOVEMBER",
-        stepNumber: "06",
-        title: "Ajwain Honey",
-        collection: "Ayurvedic Heritage Collection",
-        image: "/ajwain honey.png",
-        bgColor: "bg-[#FFEDD5]",
-        textColor: "text-[#9A3412]",
-        borderColor: "border-[#FB923C]",
-        origin: "Malwa Plateau",
-        notes: "Deep amber medicinal honey with authentic carom seed warmth.",
-    },
-];
 
 export default function HoneyJourneySection() {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(true);
+  return (
+    <section className="py-16 sm:py-24 bg-[#FAF3E6] border-b border-[#EADCC9]/60 relative overflow-hidden text-[#2F241C]">
+      {/* Background Decorative Glow Blobs for Glass Effect */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />
 
-    // Smooth Auto-Play Sequential Step Animation
-    useEffect(() => {
-        if (!isPlaying) return;
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-10 lg:px-16 relative z-10 text-center">
 
-        const timer = setInterval(() => {
-            setActiveIndex((prev) => (prev + 1) % journeyItems.length);
-        }, 3000);
+        {/* Top Pill Badge */}
+        <div className="inline-flex items-center gap-2 bg-[#FFFDF9]/85 backdrop-blur-md border border-[#E5D8C2] px-4 py-1.5 rounded-xl text-[13px] font-semibold text-[#6E5D4F] shadow-sm mb-5">
+          <div className="relative w-[15px] h-[15px] flex-shrink-0">
+            <Image
+              src="/Vector (15).png"
+              alt="Calendar Icon"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <span>Your Year with shuddhveda</span>
+        </div>
 
-        return () => clearInterval(timer);
-    }, [isPlaying]);
+        {/* Main Section Heading */}
+        <h2 className="font-serif text-[26px] sm:text-[38px] lg:text-[44px] font-medium text-[#2D1F14] tracking-wide uppercase leading-tight">
+          A Little Nature, All Year Long
+        </h2>
 
-    const activeItem = journeyItems[activeIndex];
+        {/* Subtitle Line 1 */}
+        <p className="font-serif italic text-[17px] sm:text-[22px] text-[#4A3423] font-semibold mt-3 max-w-3xl mx-auto leading-snug">
+          Why settle for just one kind of honey when nature has so many flavours to offer?
+        </p>
 
-    const handlePrev = () => {
-        setActiveIndex((prev) => (prev === 0 ? journeyItems.length - 1 : prev - 1));
-    };
+        {/* Subtitle Line 2 */}
+        <p className="text-[13.5px] sm:text-[15px] text-[#8A7A6A] font-normal max-w-[760px] mx-auto mt-2.5 leading-relaxed">
+          Every flower, every season and every landscape gives honey its own character. With the Shuddh Veda Annual Honey Subscription, we bring six distinctive varieties together in a thoughtfully curated experience.
+        </p>
 
-    const handleNext = () => {
-        setActiveIndex((prev) => (prev + 1) % journeyItems.length);
-    };
+        {/* 5 Feature Cards Grid / Row */}
+        <div className="mt-12 lg:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-4.5 max-w-[1160px] mx-auto text-left">
 
-    return (
-        <section className="py-14 sm:py-20 bg-gradient-to-b from-white via-[#FFFDF8] to-white border-b border-[#EADCC9]/60 relative overflow-hidden">
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 text-center relative z-10">
-
-                {/* Section Heading */}
-                <h2 className="text-[34px] sm:text-[44px] md:text-[48px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
-                    YOUR ANNUAL HONEY JOURNEY
-                </h2>
-
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#FA4B1B] to-transparent mx-auto my-3.5 rounded-full" />
-
-                <p className="text-[#6E5D4F] text-base sm:text-lg font-medium">
-                    Six unique seasonal harvests delivered directly to your doorstep throughout the year.
-                </p>
-
-                {/* Timeline Container with Hover Pause */}
-                <div
-                    className="mt-12 relative"
-                    onMouseEnter={() => setIsPlaying(false)}
-                    onMouseLeave={() => setIsPlaying(true)}
-                >
-                    {/* Horizontal Gold Progress Line */}
-                    <div className="hidden lg:block absolute top-[108px] left-[8%] right-[8%] h-1.5 bg-[#FAF0DC] rounded-full z-0 overflow-hidden border border-[#EADCC9]/70 shadow-inner">
-                        <div
-                            className="h-full bg-gradient-to-r from-[#FA4B1B] via-[#FF6F3C] to-[#FA4B1B] transition-all duration-700 ease-out rounded-full"
-                            style={{ width: `${(activeIndex / (journeyItems.length - 1)) * 100}%` }}
-                        />
-                    </div>
-
-                    {/* Timeline 6 Step Nodes */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-8 relative z-10">
-                        {journeyItems.map((item, index) => {
-                            const isCurrent = index === activeIndex;
-                            const isCompleted = index <= activeIndex;
-
-                            return (
-                                <div
-                                    key={index}
-                                    onClick={() => setActiveIndex(index)}
-                                    className="flex flex-col items-center group cursor-pointer"
-                                >
-                                    {/* Month Header with Animated Gold Highlight */}
-                                    <div className="mb-2 sm:mb-3.5 flex items-center gap-1.5">
-                                        <span className={`font-serif text-xs sm:text-sm font-black tracking-widest uppercase transition-all duration-300 ${isCurrent
-                                            ? "text-[#FA4B1B] scale-105 sm:scale-110 font-black"
-                                            : isCompleted
-                                                ? "text-[#593102]"
-                                                : "text-[#8D7F73]"
-                                            }`}>
-                                            {item.month}
-                                        </span>
-                                    </div>
-
-                                    {/* Thumbnail Circle Frame with Glowing Ring */}
-                                    <div
-                                        className={`relative h-28 w-28 sm:h-36 sm:w-36 lg:h-[150px] lg:w-[150px] rounded-full border-3 sm:border-4 transition-all duration-500 flex items-center justify-center overflow-hidden bg-white ${isCurrent
-                                            ? "border-[#FA4B1B] scale-108 sm:scale-112 shadow-[0_10px_30px_rgba(250,75,27,0.45)] ring-4 ring-[#FA4B1B]/30"
-                                            : isCompleted
-                                                ? "border-[#FA4B1B]/80 shadow-md ring-2 ring-[#FA4B1B]/20"
-                                                : "border-white shadow-sm opacity-80 group-hover:opacity-100 group-hover:scale-105"
-                                            }`}
-                                    >
-                                        <Image
-                                            src={item.image}
-                                            alt={item.title}
-                                            fill
-                                            className="object-contain p-1 scale-110 w-full h-full rounded-full transition-transform duration-500 group-hover:scale-125"
-                                        />
-
-                                        {/* Completed Checkmark Badge */}
-                                        {isCompleted && (
-                                            <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#FA4B1B] text-white shadow-md border-2 border-white">
-                                                <Check size={11} strokeWidth={3} className="sm:w-3 sm:h-3" />
-                                            </div>
-                                        )}
-
-                                        {/* Active Pulsing Halo */}
-                                        {isCurrent && (
-                                            <div className="absolute inset-0 rounded-full border-2 border-[#FA4B1B] animate-ping pointer-events-none opacity-50" />
-                                        )}
-                                    </div>
-
-                                    {/* Honey Variety Title */}
-                                    <h3 className={`mt-2.5 sm:mt-4 font-serif text-sm sm:text-lg font-bold leading-snug transition-colors duration-300 ${isCurrent ? "text-[#FA4B1B]" : "text-[#593102]"
-                                        }`}>
-                                        {item.title}
-                                    </h3>
-
-                                    {/* Collection Badge */}
-                                    <span className={`mt-1.5 sm:mt-2 inline-block rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold ${item.bgColor} ${item.textColor} border ${item.borderColor} transition-all duration-300 ${isCurrent ? "scale-105 shadow-sm ring-2 ring-[#FA4B1B]/30" : ""
-                                        }`}>
-                                        {item.collection}
-                                    </span>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                </div>
+          {/* Card 1: 6 Jars Of Seasonal Honey */}
+          <div className="bg-[#FCEBC9] border border-[#F3DFB8] rounded-[20px] p-5 sm:p-5.5 flex flex-col justify-between h-[180px] sm:h-[190px] transition-all hover:shadow-md hover:-translate-y-1">
+            <div className="flex items-start justify-between">
+              <div className="relative w-9 h-9">
+                <Image src="/Vector (14).png" alt="Jar Icon" fill className="object-contain" />
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif italic text-[40px] sm:text-[48px] font-semibold text-[#2D1F14] leading-none">6</span>
+                <span className="text-[13px] text-[#2D1F14] font-semibold">Jars</span>
+              </div>
             </div>
-        </section>
-    );
+            <div>
+              <span className="text-[11.5px] text-[#8A7A6A] block mb-0.5">honey</span>
+              <span className="font-serif text-[16px] font-bold text-[#2D1F14] leading-tight block">
+                Of Seasonal Honey
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2: 4 Months Between Deliveries */}
+          <div className="bg-[#FCEBC9] border border-[#F3DFB8] rounded-[20px] p-5 sm:p-5.5 flex flex-col justify-between h-[180px] sm:h-[190px] transition-all hover:shadow-md hover:-translate-y-1">
+            <div className="flex items-start justify-between">
+              <div className="relative w-9 h-9">
+                <Image src="/Vector (15).png" alt="Calendar Icon" fill className="object-contain" />
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif italic text-[40px] sm:text-[48px] font-semibold text-[#2D1F14] leading-none">4</span>
+                <span className="text-[13px] text-[#2D1F14] font-semibold">Months</span>
+              </div>
+            </div>
+            <div>
+              <span className="font-serif text-[16px] font-bold text-[#2D1F14] leading-tight block">
+                Between Deliveries
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3: 3 Delivery Seasonal Harvest */}
+          <div className="bg-[#FCEBC9] border border-[#F3DFB8] rounded-[20px] p-5 sm:p-5.5 flex flex-col justify-between h-[180px] sm:h-[190px] transition-all hover:shadow-md hover:-translate-y-1">
+            <div className="flex items-start justify-between">
+              <div className="relative w-9 h-9">
+                <Image src="/griddy-icons_package-delivery-fast.png" alt="Delivery Icon" fill className="object-contain" />
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif italic text-[40px] sm:text-[48px] font-semibold text-[#2D1F14] leading-none">3</span>
+                <span className="text-[13px] text-[#2D1F14] font-semibold">Delivery</span>
+              </div>
+            </div>
+            <div>
+              <span className="font-serif text-[16px] font-bold text-[#2D1F14] leading-tight block">
+                Seasonal Harvest
+              </span>
+            </div>
+          </div>
+
+          {/* Card 4: 1 pay Annual Payment */}
+          <div className="bg-[#FCEBC9] border border-[#F3DFB8] rounded-[20px] p-5 sm:p-5.5 flex flex-col justify-between h-[180px] sm:h-[190px] transition-all hover:shadow-md hover:-translate-y-1">
+            <div className="flex items-start justify-between">
+              <div className="relative w-9 h-9">
+                <Image src="/Vector (16).png" alt="Card Icon" fill className="object-contain" />
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif italic text-[40px] sm:text-[48px] font-semibold text-[#2D1F14] leading-none">1</span>
+                <span className="text-[13px] text-[#2D1F14] font-semibold">pay</span>
+              </div>
+            </div>
+            <div>
+              <span className="font-serif text-[16px] font-bold text-[#2D1F14] leading-tight block">
+                Annual Payment
+              </span>
+            </div>
+          </div>
+
+          {/* Card 5: THE HONEY CLUB INCLUDES */}
+          <div className="bg-[#EEDDB6] border border-[#DFC79A] rounded-[20px] p-5 sm:p-5.5 text-left shadow-[0_12px_30px_rgba(212,147,19,0.16)] flex flex-col justify-between min-h-[180px] sm:min-h-[190px] transition-all hover:shadow-xl">
+            <div>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="relative w-4 h-4 flex-shrink-0">
+                  <Image src="/mingcute_polkadot-dot-line.png" alt="Polkadot Icon" fill className="object-contain" />
+                </div>
+                <h4 className="font-serif text-[13px] sm:text-[13.5px] font-extrabold text-[#5B3E1F] uppercase tracking-wider leading-tight">
+                  The Honey Club Includes
+                </h4>
+              </div>
+
+              <ul className="text-[12px] sm:text-[12.5px] text-[#54381C] space-y-1.5 leading-snug font-medium">
+                <li>• 6 distinctive honey varieties</li>
+                <li>• 3 seasonal deliveries</li>
+                <li>• 2 × 500 g jars per delivery</li>
+                <li>• 3 kg of honey per year</li>
+                <li>• 1 simple annual payment</li>
+                <li>• A new flavour every few months</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Gift, Heart, Loader2, Minus, Plus, ShoppingBag, X } from "lucide-react";
+import { ArrowRight, Check, Gift, Heart, Loader2, Minus, Plus, ShoppingBag, Sparkles, Star, Tag, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 import { useCart } from "@/components/cart/CartProvider";
 
@@ -111,16 +111,16 @@ export default function CuratedGift() {
         const rawList = Array.isArray(data?.data)
           ? data.data
           : Array.isArray(data?.data?.comboProducts)
-          ? data.data.comboProducts
-          : Array.isArray(data?.comboProducts)
-          ? data.comboProducts
-          : Array.isArray(data?.data?.products)
-          ? data.data.products
-          : Array.isArray(data?.products)
-          ? data.products
-          : Array.isArray(data)
-          ? data
-          : [];
+            ? data.data.comboProducts
+            : Array.isArray(data?.comboProducts)
+              ? data.comboProducts
+              : Array.isArray(data?.data?.products)
+                ? data.data.products
+                : Array.isArray(data?.products)
+                  ? data.products
+                  : Array.isArray(data)
+                    ? data
+                    : [];
 
         if (rawList.length > 0) {
           const activeBoxes = rawList
@@ -501,7 +501,7 @@ export default function CuratedGift() {
 
       // 3. Refresh Global Cart Provider State & Open Side Cart Drawer
       if (fetchCart) {
-        await fetchCart().catch(() => {});
+        await fetchCart().catch(() => { });
       }
       window.dispatchEvent(new Event("cart-updated"));
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
@@ -528,7 +528,7 @@ export default function CuratedGift() {
   const filledCount = selectedSlots.filter(Boolean).length;
 
   return (
-    <section id="curated-gift-boxes" className="relative bg-gradient-to-b from-[#FDF5E9] via-[#FAF0DC]/50 to-[#FDF5E9] py-16 sm:py-24 md:py-28 transition-colors overflow-hidden scroll-mt-20">
+    <section id="curated-gift-boxes" className="relative bg-gradient-to-b from-[#FDF5E9] via-[#FAF0DC]/50 to-[#FDF5E9] pt-7 sm:pt-10 md:pt-12 pb-14 sm:pb-18 transition-colors overflow-hidden scroll-mt-20">
       {/* Background Decorative Glow Blobs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />
@@ -536,33 +536,43 @@ export default function CuratedGift() {
       <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16">
 
         {/* ================= SECTION HEADER ================= */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <h2 className="font-serif text-[34px] sm:text-[44px] md:text-[50px] font-bold text-[#201812] leading-[1.12] tracking-tight">
-            Ready-to-Gift Boxes
+        <div className="text-center max-w-3xl mx-auto mb-7 sm:mb-9">
+          {/* Top Pill Badge */}
+          <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/35 px-4 py-1 rounded-full text-[11.5px] sm:text-[12px] font-extrabold uppercase text-[#593102] tracking-wider mb-2.5 shadow-2xs">
+            <Gift size={13} className="text-[#D49313]" />
+            <span>CURATED GIFT COLLECTION</span>
+          </div>
+
+          <h2 className="font-serif text-[34px] sm:text-[44px] md:text-[50px] font-extrabold text-[#1F1813] leading-[1.12] tracking-tight">
+            Ready-to-Gift{" "}
+            <span className="text-[#EA580C]">Boxes</span>
           </h2>
 
-          <p className="font-serif italic text-[22px] sm:text-[28px] text-[#4A3B30] font-semibold mt-2 leading-snug">
-            Beautifully curated, instantly lovable.
+          {/* Golden Gradient Glow Accent Line */}
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto mt-2.5 mb-2 rounded-full shadow-[0_0_8px_rgba(212,147,19,0.4)]" />
+
+          <p className="font-serif italic text-[20px] sm:text-[26px] text-[#4A3B30] font-semibold mt-1 leading-snug">
+            Thoughtfully curated, pure organic sweetness.
           </p>
 
-          <p className="font-sans text-[14.5px] sm:text-[16.5px] text-[#6E5D4F] leading-relaxed max-w-xl mx-auto font-medium mt-3">
-            Perfect for birthdays, Diwali, housewarmings,
-            <br className="hidden sm:inline" /> or just a &quot;thinking of you&quot; moment.
+          <p className="font-sans text-[14.5px] sm:text-[16.5px] text-[#6E5D4F] leading-relaxed max-w-xl mx-auto font-medium mt-2">
+            Perfect for birthdays, festive celebrations, housewarmings,
+            <br className="hidden sm:inline" /> or simply sharing heartfelt sweetness with loved ones.
           </p>
         </div>
 
         {/* ================= CARDS GRID ================= */}
         {loadingBoxes ? (
-          <div className="max-w-[900px] ml-4 sm:ml-8 lg:ml-16 mr-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
+          <div className="max-w-[1240px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-[#FAF5EE] h-[340px] max-w-[270px] w-full animate-pulse"
+                className="bg-[#FFFDF9] h-[360px] max-w-[325px] w-full rounded-[24px] animate-pulse border-2 border-[#EADCC9]"
               />
             ))}
           </div>
         ) : (
-          <div className="max-w-[960px] mx-auto sm:ml-8 lg:ml-16 lg:mr-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center sm:justify-items-start lg:justify-start">
+          <div className="max-w-[1240px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center">
             {giftBoxes.map((box) => {
               const origPrice = box.originalPrice || (box.price ? Math.round(box.price * 1.25) : 0);
               const discountPct =
@@ -575,12 +585,12 @@ export default function CuratedGift() {
                 <div
                   key={box._id}
                   onClick={() => router.push(`/shop/products/${box._id}`)}
-                  className="bg-[#FAF5EE] border-2 border-[#E3D3BE] hover:border-[#D49313] transition-all duration-300 group flex flex-col relative w-full max-w-[280px] cursor-pointer pb-5 shadow-xs hover:shadow-xl hover:-translate-y-1 rounded-[24px] overflow-hidden"
+                  className="bg-[#FFFDF9] border-2 border-[#E8DCC9] hover:border-[#D49313] transition-all duration-300 group flex flex-col relative w-full max-w-[325px] cursor-pointer shadow-xs hover:shadow-[0_16px_35px_rgba(212,147,19,0.16)] hover:-translate-y-1 rounded-[24px] overflow-hidden"
                 >
-                  {/* Top Image Area */}
-                  <div className="relative aspect-square w-full overflow-hidden bg-[#FAF5EE]">
+                  {/* Top Image Container (Shorter Aspect 4:3) */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FAF5EE]">
                     {discountPct > 0 && (
-                      <span className="bg-[#1F1813] text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider absolute top-3 right-3 z-10 shadow-2xs border border-[#D49313]/30">
+                      <span className="bg-[#191919] text-white font-extrabold text-[10.5px] sm:text-[11px] px-3 py-1 rounded-full uppercase tracking-wider absolute top-3 right-3 z-10 shadow-md border border-white/20">
                         {discountPct}% OFF
                       </span>
                     )}
@@ -598,35 +608,37 @@ export default function CuratedGift() {
                     />
                   </div>
 
-                  {/* Centered Content Body */}
-                  <div className="pt-4 px-3.5 flex flex-col items-center text-center flex-1 bg-[#FAF5EE] justify-between min-h-[145px]">
-                    <div className="flex flex-col items-center">
-                      {/* Title */}
-                      <h3 className="font-sans text-[15.5px] sm:text-[16.5px] font-bold text-[#1F1813] leading-snug tracking-tight group-hover:text-[#B87C0C] transition-colors">
+                  {/* Compact Card Content Body */}
+                  <div className="p-4 sm:p-4.5 flex flex-col justify-between flex-1 bg-[#FFFDF9] min-h-[135px]">
+                    <div>
+                      {/* Title (Serif Bold) */}
+                      <h3 className="font-serif text-[17px] sm:text-[18.5px] font-bold text-[#0D0B09] leading-snug tracking-tight group-hover:text-[#D49313] transition-colors line-clamp-2">
                         {box.name}
                       </h3>
 
                       {/* Description */}
                       {box.description && (
-                        <p className="text-[12px] text-[#6E5D4F] leading-snug font-normal mt-1.5 line-clamp-2 max-w-[230px] mx-auto text-center">
+                        <p className="font-sans text-[12px] sm:text-[12.5px] text-[#6E5D4F] leading-snug font-normal mt-1.5 line-clamp-2">
                           {box.description}
                         </p>
                       )}
                     </div>
 
-                    {/* Price Row */}
-                    <div className="mt-2.5 flex items-center justify-center gap-2 font-sans">
+                    {/* Price Row (Compact) */}
+                    <div className="mt-3 pt-2.5 flex items-center justify-start gap-2 font-sans">
                       {origPrice > box.price && (
-                        <span className="line-through text-[#998A7D] text-[13.5px] font-normal">
+                        <span className="line-through text-[#88796B] text-[14px] font-medium">
                           ₹{origPrice}
                         </span>
                       )}
-                      <span className="text-[#1F1813] text-[17px] font-extrabold tracking-tight">
+                      <span className="text-[#0D0B09] text-[21px] sm:text-[23px] font-black tracking-tight">
                         ₹{box.price}
                       </span>
+
                       {discountPct > 0 && (
-                        <span className="text-[#C2410C] text-[11px] font-bold bg-[#FFF4ED] px-1.5 py-0.5 rounded border border-[#FFD8C2]">
-                          {discountPct}% OFF
+                        <span className="text-[#C2410C] text-[11.5px] font-bold bg-[#FFF4ED] px-2.5 py-0.5 rounded-lg border border-[#FFD8C2] flex items-center gap-1 ml-auto">
+                          <Tag size={11} className="text-[#C2410C]" />
+                          <span>{discountPct}% OFF</span>
                         </span>
                       )}
                     </div>
