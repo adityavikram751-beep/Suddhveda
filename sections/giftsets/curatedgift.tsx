@@ -3,98 +3,73 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Gift, Heart, Loader2, Minus, Plus, ShoppingBag, Sparkles, Star, Tag, X } from "lucide-react";
+import {
+  Check,
+  Gift,
+  Loader2,
+  Minus,
+  Plus,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Truck,
+  X,
+} from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 import { useCart } from "@/components/cart/CartProvider";
 
 // ================= TYPES =================
-type GiftBox = {
-  _id: string;
+type ProductItem = {
   name: string;
-  description: string;
-  image: string;
-  price: number;
-  originalPrice?: number;
+  weight?: string;
+};
+
+type ImageItem = {
+  url: string;
+  is_primary?: boolean;
+};
+
+type ComboProduct = {
+  _id: string;
+  combo_name: string;
+  slug?: string;
+  brand?: string;
+  combo_size?: number;
+  products?: ProductItem[];
+  mrp?: number;
+  selling_price?: number;
   discount_percent?: number;
-  tagline?: string;
-  jar_count: number;
-  isActive?: boolean;
-};
-
-const DEFAULT_GIFT_BOXES: GiftBox[] = [
-  {
-    _id: "default_taster",
-    name: "HoneyVeda Taster Box",
-    tagline: "Raw honey or gifting",
-    description: "Ideal for newcomer in raw honey or gifting.",
-    image: "/home 2.png",
-    price: 451,
-    originalPrice: 594,
-    discount_percent: 24,
-    jar_count: 6,
-  },
-  {
-    _id: "default_buzz",
-    name: "Buzz Box",
-    tagline: "Raw honey or gifting",
-    description: "Assorted collection of 50gm jars.",
-    image: "/dashboardm1.png",
-    price: 597,
-    originalPrice: 756,
-    discount_percent: 21,
-    jar_count: 4,
-  },
-  {
-    _id: "default_signature",
-    name: "Signature Gift Set",
-    tagline: "Premium Gifting",
-    description: "Perfect for Celebrations",
-    image: "/ajwainnew.png",
-    price: 999,
-    originalPrice: 1199,
-    discount_percent: 17,
-    jar_count: 3,
-  },
-];
-
-type SelectedProduct = {
-  productId: string;
-  selectedWeight: string;
-  name: string;
-  image: string;
-  price?: number;
-};
-
-type HoneyProduct = {
-  _id: string;
-  name: string;
-  image: string;
-  productId: string;
-  selectedWeight: string;
-  price?: number;
+  save?: number;
+  description?: string;
+  key_benefits?: string;
+  manufacturer_information?: string;
+  shelf_life?: string;
+  storage_instructions?: string;
+  country_of_origin?: string;
+  fssai_license_number?: string;
+  is_active?: boolean;
+  images?: ImageItem[];
 };
 
 export default function CuratedGift() {
   const router = useRouter();
   const { fetchCart, openCart } = useCart();
-  const [giftBoxes, setGiftBoxes] = useState<GiftBox[]>([]);
-  const [loadingBoxes, setLoadingBoxes] = useState(true);
 
-  // Modal & Customization States
-  const [activeGiftBox, setActiveGiftBox] = useState<GiftBox | null>(null);
-  const [availableProducts, setAvailableProducts] = useState<HoneyProduct[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [selectedSlots, setSelectedSlots] = useState<(SelectedProduct | null)[]>([]);
+  const [comboProducts, setComboProducts] = useState<ComboProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Submit & Toast states
+  // Selected combo item for Detail Modal Popup
+  const [selectedCombo, setSelectedCombo] = useState<ComboProduct | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // ---------- Fetch Gift Boxes / Combo Products ----------
+  // ---------- FETCH DYNAMIC COMBO PRODUCTS ----------
   useEffect(() => {
-    const fetchGiftBoxes = async () => {
+    const fetchComboProducts = async () => {
       try {
-        setLoadingBoxes(true);
+        setLoading(true);
         let res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
           credentials: "include",
         });
@@ -105,773 +80,649 @@ export default function CuratedGift() {
           });
         }
 
-        if (!res.ok) throw new Error("Failed to fetch combo products / gift boxes");
-        const data = await res.json();
+        if (res.ok) {
+          const json = await res.json();
+          const rawData = Array.isArray(json?.data)
+            ? json.data
+            : Array.isArray(json?.comboProducts)
+            ? json.comboProducts
+            : Array.isArray(json?.products)
+            ? json.products
+            : Array.isArray(json)
+            ? json
+            : [];
 
-        const rawList = Array.isArray(data?.data)
-          ? data.data
-          : Array.isArray(data?.data?.comboProducts)
-            ? data.data.comboProducts
-            : Array.isArray(data?.comboProducts)
-              ? data.comboProducts
-              : Array.isArray(data?.data?.products)
-                ? data.data.products
-                : Array.isArray(data?.products)
-                  ? data.products
-                  : Array.isArray(data)
-                    ? data
-                    : [];
+          if (rawData.length > 0) {
+            const parsed: ComboProduct[] = rawData
+              .filter((item: any) => item.is_active !== false && item.isActive !== false)
+              .map((item: any) => {
+                let imgList: ImageItem[] = [];
 
-        if (rawList.length > 0) {
-          const activeBoxes = rawList
-            .filter((b: any) => b.isActive !== false && b.status !== "inactive" && b.is_active !== false)
-            .map((b: any) => {
-              // Extract minimum selling price and MRP from setPacks if available
-              let minPrice = 0;
-              let minMrp = 0;
+                if (Array.isArray(item.images) && item.images.length > 0) {
+                  imgList = item.images.map((img: any) => ({
+                    url: typeof img === "string" ? img : img?.url || img?.image_url || "/honneycart.png",
+                    is_primary: typeof img === "object" ? !!img?.is_primary : false,
+                  }));
+                } else if (item.image || item.image_url) {
+                  imgList = [{ url: item.image || item.image_url, is_primary: true }];
+                }
 
-              if (Array.isArray(b.setPacks) && b.setPacks.length > 0) {
-                const sortedPacks = [...b.setPacks].sort((p1: any, p2: any) => {
-                  const pr1 = Number(p1.selling_price || p1.price || p1.salePrice || Infinity);
-                  const pr2 = Number(p2.selling_price || p2.price || p2.salePrice || Infinity);
-                  return pr1 - pr2;
-                });
-                const cheapest = sortedPacks[0];
-                minPrice = Number(cheapest.selling_price || cheapest.price || cheapest.salePrice || 0);
-                minMrp = Number(cheapest.mrp || cheapest.originalPrice || 0);
-              }
+                const price = Number(item.selling_price || item.price || item.salePrice || 999);
+                const mrp = Number(item.mrp || item.originalPrice || Math.round(price * 1.2));
+                const discount =
+                  Number(item.discount_percent || item.discountPercent) ||
+                  (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0);
+                const save = Number(item.save) || (mrp > price ? mrp - price : 0);
+                const size = Number(item.combo_size || item.jar_count || (Array.isArray(item.products) ? item.products.length : 2));
 
-              if (!minPrice) {
-                minPrice = Number(b.price || b.salePrice || b.comboPrice || b.selling_price || 597);
-              }
-              if (!minMrp) {
-                minMrp = Number(b.originalPrice || b.mrp || Math.round(minPrice * 1.25));
-              }
+                return {
+                  _id: item._id || item.id,
+                  combo_name: item.combo_name || item.name || item.title || "Curated Gift Box",
+                  slug: item.slug || "",
+                  brand: item.brand || "SudhVeda Honey",
+                  combo_size: size,
+                  products: Array.isArray(item.products)
+                    ? item.products.map((p: any) => ({
+                        name: typeof p === "string" ? p : p.name || p.title || "Honey Jar",
+                        weight: typeof p === "object" ? p.weight || "250g" : "250g",
+                      }))
+                    : [],
+                  mrp,
+                  selling_price: price,
+                  discount_percent: discount,
+                  save,
+                  description:
+                    item.description ||
+                    "A specially curated combo of pure natural raw honeys sourced directly from trusted apiaries.",
+                  key_benefits:
+                    item.key_benefits ||
+                    "Boosts immunity, rich in antioxidants, natural energy booster, aids digestion, no added sugar or preservatives",
+                  manufacturer_information:
+                    item.manufacturer_information ||
+                    "Manufactured and Packed by SudhVeda Honey Pvt. Ltd., Plot No. 12, Industrial Area, Dehradun, Uttarakhand, India - 248001",
+                  shelf_life: item.shelf_life || "24 months from the date of packaging",
+                  storage_instructions:
+                    item.storage_instructions ||
+                    "Store in a cool, dry place away from direct sunlight. Do not refrigerate.",
+                  country_of_origin: item.country_of_origin || "India",
+                  fssai_license_number: item.fssai_license_number || "10021045001234",
+                  is_active: item.is_active !== false,
+                  images: imgList,
+                };
+              });
 
-              // Extract Image
-              let imgUrl = "";
-              if (Array.isArray(b.images) && b.images.length > 0) {
-                const primary = b.images.find((x: any) => x.is_primary) || b.images[0];
-                imgUrl = typeof primary === "string" ? primary : primary?.url || primary?.image_url || primary?.src || "";
-              }
-              if (!imgUrl && Array.isArray(b.imageDocumentId) && b.imageDocumentId.length > 0) {
-                const primary = b.imageDocumentId.find((x: any) => x.is_primary) || b.imageDocumentId[0];
-                imgUrl = typeof primary === "string" ? primary : primary?.image_url || primary?.url || "";
-              }
-              if (!imgUrl && Array.isArray(b.setPacks) && b.setPacks.length > 0) {
-                imgUrl = b.setPacks[0]?.image || b.setPacks[0]?.image_url || "";
-              }
-              if (!imgUrl) {
-                imgUrl = b.image || b.image_url || b.imageUrl || "/honneycart.png";
-              }
-
-              const count = Number(b.jar_count || b.jarCount || b.count || (Array.isArray(b.setPacks) ? b.setPacks[0]?.pack_size : 0) || (Array.isArray(b.products) ? b.products.length : 0) || 4);
-
-              let discountPct = Number(
-                b.discount_percent || b.discountPercent || b.discount_percentage || b.discountPercentage || 0
-              );
-              if (!discountPct && minMrp > minPrice && minMrp > 0) {
-                discountPct = Math.round(((minMrp - minPrice) / minMrp) * 100);
-              }
-
-              return {
-                _id: b._id || b.id,
-                name: b.combo_name || b.name || b.title || "Gift Box",
-                description: b.description || b.desc || "A specially curated combo of our premium honey varieties.",
-                image: imgUrl,
-                price: minPrice,
-                originalPrice: minMrp,
-                discount_percent: discountPct,
-                tagline: b.tagline || b.tag || "Raw honey or gifting",
-                jar_count: count > 0 ? count : 4,
-                isActive: b.isActive,
-              };
-            });
-          setGiftBoxes(activeBoxes.length > 0 ? activeBoxes : DEFAULT_GIFT_BOXES);
+            setComboProducts(parsed);
+          } else {
+            setComboProducts([]);
+          }
         } else {
-          setGiftBoxes(DEFAULT_GIFT_BOXES);
+          setComboProducts([]);
         }
       } catch (err) {
-        console.error("Error fetching combo products / gift boxes:", err);
-        setGiftBoxes(DEFAULT_GIFT_BOXES);
+        console.error("Error fetching combo products API:", err);
+        setComboProducts([]);
       } finally {
-        setLoadingBoxes(false);
+        setLoading(false);
       }
     };
 
-    fetchGiftBoxes();
+    fetchComboProducts();
   }, []);
 
-  // ---------- Prevent Background Scroll When Modal is Open ----------
+  // Prevent Body Scroll when modal is open
   useEffect(() => {
-    if (activeGiftBox) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
+    if (selectedCombo) {
       document.body.style.overflow = "hidden";
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
       document.body.style.overflow = "";
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-      }
     }
-
     return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
       document.body.style.overflow = "";
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-      }
     };
-  }, [activeGiftBox]);
+  }, [selectedCombo]);
 
-  // ---------- Fetch 250g Products when Modal Opens ----------
-  const openCustomizationModal = async (giftBox: GiftBox) => {
-    setActiveGiftBox(giftBox);
-    setSelectedSlots(Array(giftBox.jar_count).fill(null));
-    setLoadingProducts(true);
-
-    try {
-      // Fetch working clean endpoint: GET /api/products
-      let res = await fetch(`${API_BASE_URL}/api/products`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const rawList = Array.isArray(data?.data)
-          ? data.data
-          : Array.isArray(data?.data?.products)
-            ? data.data.products
-            : Array.isArray(data?.products)
-              ? data.products
-              : Array.isArray(data)
-                ? data
-                : [];
-
-        const parsedProducts: HoneyProduct[] = rawList.map((item: any) => {
-          // Exact property mapping according to GET /api/products/weight response:
-          const productId = String(
-            item?.productId || item?._id || item?.id || ""
-          );
-
-          let selectedWeight = "";
-          // 1. Direct variant object fields
-          if (item?.variant?.variantId) {
-            selectedWeight = String(item.variant.variantId);
-          } else if (item?.variant?._id) {
-            selectedWeight = String(item.variant._id);
-          } else if (item?.variant?.id) {
-            selectedWeight = String(item.variant.id);
-          }
-
-          // 2. Check variant arrays (variantDocumentId, variants, weights)
-          if (!selectedWeight) {
-            const arr = Array.isArray(item?.variantDocumentId) && item.variantDocumentId.length > 0
-              ? item.variantDocumentId
-              : Array.isArray(item?.variants) && item.variants.length > 0
-                ? item.variants
-                : Array.isArray(item?.weights) && item.weights.length > 0
-                  ? item.weights
-                  : [];
-
-            if (arr.length > 0) {
-              const v250 = arr.find(
-                (v: any) => String(v?.weight || v?.size || v?.unit) === "250" || v?.weight === 250
-              ) || arr[0];
-
-              selectedWeight = String(
-                v250?.variantId || v250?._id || v250?.id || v250?.variant_id || ""
-              );
-            }
-          }
-
-          // 3. Fallback direct properties if present
-          if (!selectedWeight) {
-            if (typeof item?.selectedWeight === "string" && item.selectedWeight) {
-              selectedWeight = item.selectedWeight;
-            } else if (item?.selectedWeight?._id) {
-              selectedWeight = String(item.selectedWeight._id);
-            } else if (item?.selectedWeight?.variantId) {
-              selectedWeight = String(item.selectedWeight.variantId);
-            } else {
-              selectedWeight = productId;
-            }
-          }
-
-          const name = item?.product_name || item?.name || item?.title || "Natural Honey";
-          const images = item?.imageDocumentId || item?.images || item?.image;
-          const image = Array.isArray(images)
-            ? (images[0]?.image_url || images[0] || "/honneycart.png")
-            : (item?.image_url || item?.image || "/honneycart.png");
-
-          const parseNum = (val: any) => {
-            if (val === undefined || val === null) return 0;
-            const n = Number(val);
-            return !isNaN(n) && n > 0 ? n : 0;
-          };
-
-          let realPrice = parseNum(item?.variant?.price) ||
-            parseNum(item?.variant?.salePrice) ||
-            parseNum(item?.variant?.mrp) ||
-            parseNum(item?.price) ||
-            parseNum(item?.salePrice) ||
-            parseNum(item?.product_price) ||
-            parseNum(item?.mrp);
-
-          if (!realPrice) {
-            const arr = Array.isArray(item?.variantDocumentId) && item.variantDocumentId.length > 0
-              ? item.variantDocumentId
-              : Array.isArray(item?.variants) && item.variants.length > 0
-                ? item.variants
-                : Array.isArray(item?.weights) && item.weights.length > 0
-                  ? item.weights
-                  : [];
-
-            if (arr.length > 0) {
-              const v250 = arr.find(
-                (v: any) => String(v?.weight || v?.size || v?.unit) === "250" || v?.weight === 250
-              ) || arr[0];
-
-              realPrice = parseNum(v250?.price) ||
-                parseNum(v250?.salePrice) ||
-                parseNum(v250?.mrp) ||
-                parseNum(v250?.product_price);
-            }
-          }
-
-          if (!realPrice && giftBox?.price && giftBox?.jar_count) {
-            realPrice = Math.round(giftBox.price / giftBox.jar_count);
-          }
-
-          return {
-            _id: productId,
-            name,
-            image,
-            productId,
-            selectedWeight,
-            price: realPrice,
-          };
-        });
-
-        setAvailableProducts(parsedProducts);
-      }
-    } catch (err) {
-      console.error("Error fetching weight products:", err);
-    } finally {
-      setLoadingProducts(false);
-    }
+  const openComboModal = (combo: ComboProduct) => {
+    setSelectedCombo(combo);
+    setSelectedImageIndex(0);
+    setQuantity(1);
   };
 
-  // ---------- Slot Handler ----------
-  const handleSelectProduct = (product: HoneyProduct) => {
-    if (!activeGiftBox) return;
-
-    // Find first empty slot
-    const emptyIndex = selectedSlots.findIndex((slot) => slot === null);
-    if (emptyIndex === -1) {
-      // ALL SLOTS ARE ALREADY FULL
-      showToast(`⚠️ All ${activeGiftBox.jar_count} slots full! Click 'X' on any jar above to change flavor.`, "warning");
-      return;
-    }
-
-    const updated = [...selectedSlots];
-    updated[emptyIndex] = {
-      productId: product.productId,
-      selectedWeight: product.selectedWeight,
-      name: product.name,
-      image: product.image,
-      price: product.price,
-    };
-    setSelectedSlots(updated);
-
-    const newFilledCount = updated.filter(Boolean).length;
-    if (newFilledCount === activeGiftBox.jar_count) {
-      showToast(`🎉 All ${activeGiftBox.jar_count} jars selected! Ready to add to cart.`, "success");
-    } else {
-      showToast(`✅ Added ${product.name} (${newFilledCount}/${activeGiftBox.jar_count} Jars)`, "info");
-    }
-  };
-
-  const handleRemoveSlot = (index: number) => {
-    if (!activeGiftBox) return;
-    const removedName = selectedSlots[index]?.name || `Jar #${index + 1}`;
-    const updated = [...selectedSlots];
-    updated[index] = null;
-    setSelectedSlots(updated);
-
-    showToast(`ℹ️ Removed ${removedName}. Please select a flavor to fill Jar #${index + 1}.`, "info");
-  };
-
-  const showToast = (msg: string, type: "success" | "warning" | "info" = "info") => {
-    // Toast messages disabled per user request
-    return;
-  };
-
-  // ---------- Add Customize Gift Box to Cart ----------
-  const handleAddGiftBoxToCart = async () => {
-    if (!activeGiftBox) return;
-
-    // Verify all slots are filled
-    const emptyCount = selectedSlots.filter((slot) => slot === null).length;
-    if (emptyCount > 0) {
-      showToast(`⚠️ Please select ${emptyCount} more honey jar(s) to complete your ${activeGiftBox.name}!`, "warning");
-      return;
-    }
+  // ---------- ADD TO CART ----------
+  const handleAddToCart = async (checkoutImmediately: boolean = false) => {
+    if (!selectedCombo) return;
 
     try {
       setAddingToCart(true);
 
-      const payload = {
-        giftBoxId: activeGiftBox._id,
-        quantity: 1,
-        products: selectedSlots
-          .filter((slot): slot is SelectedProduct => slot !== null)
-          .map((slot) => ({
-            productId: slot.productId,
-            selectedWeight: slot.selectedWeight,
-          })),
-      };
-
-      // Extract Auth Token
-      const token = typeof document !== "undefined"
-        ? (document.cookie.match(/(^| )sudhveda_token=([^;]+)/)?.[2] ||
-          document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
-          localStorage.getItem("token") ||
-          localStorage.getItem("sudhveda_token") || "")
-        : "";
+      const token =
+        typeof document !== "undefined"
+          ? document.cookie.match(/(^| )sudhveda_token=([^;]+)/)?.[2] ||
+            document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
+            localStorage.getItem("token") ||
+            localStorage.getItem("sudhveda_token") ||
+            ""
+          : "";
 
       let success = false;
 
-      // 1. If user is logged in, post directly to single official API: POST /api/cart/add-customize/giftbox
       if (token) {
         try {
-          const res = await fetch(`${API_BASE_URL}/api/cart/add-customize/giftbox`, {
+          const res = await fetch(`${API_BASE_URL}/api/cart/add-combo`, {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${decodeURIComponent(token)}`,
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+              comboId: selectedCombo._id,
+              quantity,
+            }),
           });
-
-          if (res.ok) {
-            success = true;
-          }
+          if (res.ok) success = true;
         } catch (e) {
-          console.error("API call failed, falling back to guest local cart:", e);
+          console.error("Cart API failed, fallback to guest cart:", e);
         }
       }
 
-      // 2. If guest user / unauthenticated or API failed -> Save to localStorage (sudhveda_guest_cart)
       if (!success && typeof window !== "undefined") {
-        try {
-          const GUEST_CART_KEY = "sudhveda_guest_cart";
-          const stored = localStorage.getItem(GUEST_CART_KEY);
-          const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
+        const GUEST_CART_KEY = "sudhveda_guest_cart";
+        const stored = localStorage.getItem(GUEST_CART_KEY);
+        const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
 
-          const cartItemId = `guest_gift_${activeGiftBox._id}_${Date.now()}`;
-          const giftBoxTotalPrice = selectedSlots.reduce((acc, slot) => acc + (slot?.price || 0), 0) || activeGiftBox.price || 0;
+        const cartItemId = `guest_combo_${selectedCombo._id}_${Date.now()}`;
+        guestItems[cartItemId] = {
+          type: "COMBO",
+          cartItemId,
+          productName: selectedCombo.combo_name,
+          image: selectedCombo.images?.[0]?.url || "/honneycart.png",
+          price: selectedCombo.selling_price || 999,
+          quantity,
+          comboProduct: selectedCombo,
+        };
 
-          guestItems[cartItemId] = {
-            type: "CUSTOM",
-            cartItemId,
-            productName: activeGiftBox.name,
-            image: activeGiftBox.image || "/honneycart.png",
-            price: giftBoxTotalPrice,
-            quantity: 1,
-            giftBoxPayload: payload,
-          };
-
-          localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
-        } catch (err) {
-          console.error("Failed to save guest gift cart to localStorage:", err);
-        }
+        localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
       }
 
-      // 3. Refresh Global Cart Provider State & Open Side Cart Drawer
-      if (fetchCart) {
-        await fetchCart().catch(() => { });
-      }
+      if (fetchCart) await fetchCart().catch(() => {});
       window.dispatchEvent(new Event("cart-updated"));
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
-      setActiveGiftBox(null);
-      if (openCart) {
+      setSelectedCombo(null);
+
+      if (checkoutImmediately) {
+        router.push("/checkout");
+      } else if (openCart) {
         openCart();
       } else {
         router.push("/cart");
       }
     } catch (err) {
-      console.error("Error in handleAddGiftBoxToCart:", err);
-      setActiveGiftBox(null);
-      if (openCart) {
-        openCart();
-      } else {
-        router.push("/cart");
-      }
+      console.error("Error adding combo to cart:", err);
+      setSelectedCombo(null);
+      if (openCart) openCart();
+      else router.push("/cart");
     } finally {
       setAddingToCart(false);
     }
   };
 
-  const filledCount = selectedSlots.filter(Boolean).length;
+  // ---------- GROUP PRODUCTS BY COMBO SIZE ----------
+  const duoProducts = comboProducts.filter((p) => p.combo_size === 2 || p.combo_name.toLowerCase().includes("duo"));
+  const trioProducts = comboProducts.filter((p) => p.combo_size === 3 || p.combo_name.toLowerCase().includes("trio"));
+  const quartetProducts = comboProducts.filter(
+    (p) => p.combo_size === 4 || p.combo_name.toLowerCase().includes("quartet") || p.combo_name.toLowerCase().includes("quad")
+  );
+  const otherProducts = comboProducts.filter(
+    (p) => !duoProducts.includes(p) && !trioProducts.includes(p) && !quartetProducts.includes(p)
+  );
+
+  const sectionsToRender = [
+    { title: "Duo Sets", items: duoProducts },
+    { title: "Triple Set", items: trioProducts },
+    { title: "Quartet Collection", items: quartetProducts },
+    { title: "Gift Combos", items: otherProducts },
+  ].filter((sec) => sec.items.length > 0);
 
   return (
-    <section id="curated-gift-boxes" className="relative bg-gradient-to-b from-[#FDF5E9] via-[#FAF0DC]/50 to-[#FDF5E9] pt-7 sm:pt-10 md:pt-12 pb-14 sm:pb-18 transition-colors overflow-hidden scroll-mt-20">
-      {/* Background Decorative Glow Blobs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#D49313]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />
+    <section id="curated-gift-boxes" className="relative bg-[#FAF4E8] py-12 sm:py-16 lg:py-20 overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-14 relative z-10">
 
-      <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-16">
-
-        {/* ================= SECTION HEADER ================= */}
-        <div className="text-center max-w-3xl mx-auto mb-7 sm:mb-9">
+        {/* ================= MAIN SECTION HEADER ================= */}
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/35 px-4 py-1 rounded-full text-[11.5px] sm:text-[12px] font-extrabold uppercase text-[#593102] tracking-wider mb-2.5 shadow-2xs">
             <Gift size={13} className="text-[#D49313]" />
             <span>CURATED GIFT COLLECTION</span>
           </div>
 
-          <h2 className="font-serif text-[34px] sm:text-[44px] md:text-[50px] font-extrabold text-[#1F1813] leading-[1.12] tracking-tight">
-            Ready-to-Gift{" "}
-            <span className="text-[#EA580C]">Boxes</span>
+          <h2 className="font-libre-caslon text-[34px] sm:text-[44px] lg:text-[50px] font-normal text-[#1F1813] leading-[1.12] tracking-tight">
+            Ready-to-Gift <span className="text-[#EA580C]">Boxes</span>
           </h2>
 
           {/* Golden Gradient Glow Accent Line */}
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto mt-2.5 mb-2 rounded-full shadow-[0_0_8px_rgba(212,147,19,0.4)]" />
 
-          <p className="font-serif italic text-[20px] sm:text-[26px] text-[#4A3B30] font-semibold mt-1 leading-snug">
+          <p className="font-cormorant italic text-[20px] sm:text-[24px] text-[#593102] font-medium mt-1 leading-snug">
             Thoughtfully curated, pure organic sweetness.
           </p>
 
-          <p className="font-sans text-[14.5px] sm:text-[16.5px] text-[#6E5D4F] leading-relaxed max-w-xl mx-auto font-medium mt-2">
+          <p className="font-sans text-[14px] sm:text-[15.5px] text-[#6E5D4F] leading-relaxed max-w-xl mx-auto font-normal mt-2">
             Perfect for birthdays, festive celebrations, housewarmings,
             <br className="hidden sm:inline" /> or simply sharing heartfelt sweetness with loved ones.
           </p>
         </div>
 
-        {/* ================= CARDS GRID ================= */}
-        {loadingBoxes ? (
-          <div className="max-w-[1240px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-[#FFFDF9] h-[360px] max-w-[325px] w-full rounded-[24px] animate-pulse border-2 border-[#EADCC9]"
-              />
-            ))}
+        {/* ================= DYNAMIC SECTIONS GRID ================= */}
+        {loading ? (
+          <div className="space-y-12">
+            <div>
+              <div className="w-40 h-8 bg-[#EADBCE]/50 rounded-lg animate-pulse mb-6" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-[#FFFDF9] h-[340px] rounded-[20px] animate-pulse border border-[#EADBCE]/60" />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : sectionsToRender.length === 0 ? (
+          <div className="text-center py-16 bg-[#FFFDF9] rounded-[24px] border border-[#EADBCE]/70 max-w-md mx-auto p-6">
+            <Gift className="mx-auto text-[#D97706] mb-3" size={36} />
+            <h3 className="font-libre-caslon text-[20px] text-[#382618] font-bold">No Combo Gift Sets Found</h3>
+            <p className="text-[13.5px] text-[#6E5D4F] mt-1.5">Check back soon for new curated honey gift boxes.</p>
           </div>
         ) : (
-          <div className="max-w-[1240px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 justify-items-center">
-            {giftBoxes.map((box) => {
-              const origPrice = box.originalPrice || (box.price ? Math.round(box.price * 1.25) : 0);
-              const discountPct =
-                box.discount_percent ||
-                (origPrice > box.price && origPrice > 0
-                  ? Math.round(((origPrice - box.price) / origPrice) * 100)
-                  : 0);
-
-              return (
-                <div
-                  key={box._id}
-                  onClick={() => router.push(`/shop/products/${box._id}`)}
-                  className="bg-[#FFFDF9] border-2 border-[#E8DCC9] hover:border-[#D49313] transition-all duration-300 group flex flex-col relative w-full max-w-[325px] cursor-pointer shadow-xs hover:shadow-[0_16px_35px_rgba(212,147,19,0.16)] hover:-translate-y-1 rounded-[24px] overflow-hidden"
-                >
-                  {/* Top Image Container (Shorter Aspect 4:3) */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FAF5EE]">
-                    {discountPct > 0 && (
-                      <span className="bg-[#191919] text-white font-extrabold text-[10.5px] sm:text-[11px] px-3 py-1 rounded-full uppercase tracking-wider absolute top-3 right-3 z-10 shadow-md border border-white/20">
-                        {discountPct}% OFF
-                      </span>
-                    )}
-
-                    <Image
-                      src={box.image || "/honneycart.png"}
-                      alt={box.name}
-                      fill
-                      priority
-                      className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/honneycart.png";
-                      }}
-                    />
-                  </div>
-
-                  {/* Compact Card Content Body */}
-                  <div className="p-4 sm:p-4.5 flex flex-col justify-between flex-1 bg-[#FFFDF9] min-h-[135px]">
-                    <div>
-                      {/* Title (Serif Bold) */}
-                      <h3 className="font-serif text-[17px] sm:text-[18.5px] font-bold text-[#0D0B09] leading-snug tracking-tight group-hover:text-[#D49313] transition-colors line-clamp-2">
-                        {box.name}
-                      </h3>
-
-                      {/* Description */}
-                      {box.description && (
-                        <p className="font-sans text-[12px] sm:text-[12.5px] text-[#6E5D4F] leading-snug font-normal mt-1.5 line-clamp-2">
-                          {box.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Price Row (Compact) */}
-                    <div className="mt-3 pt-2.5 flex items-center justify-start gap-2 font-sans">
-                      {origPrice > box.price && (
-                        <span className="line-through text-[#88796B] text-[14px] font-medium">
-                          ₹{origPrice}
-                        </span>
-                      )}
-                      <span className="text-[#0D0B09] text-[21px] sm:text-[23px] font-black tracking-tight">
-                        ₹{box.price}
-                      </span>
-
-                      {discountPct > 0 && (
-                        <span className="text-[#C2410C] text-[11.5px] font-bold bg-[#FFF4ED] px-2.5 py-0.5 rounded-lg border border-[#FFD8C2] flex items-center gap-1 ml-auto">
-                          <Tag size={11} className="text-[#C2410C]" />
-                          <span>{discountPct}% OFF</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* ================= CUSTOMIZATION MODAL POPUP ================= */}
-      {activeGiftBox && (
-        <div
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-300"
-          onClick={() => setActiveGiftBox(null)}
-        >
-          <div
-            className="relative w-full max-w-2xl bg-gradient-to-b from-[#FDF9F3] to-[#FAF0DC]/30 border-2 border-[#E8D5BA] rounded-[28px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.35)] flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Sticky Header */}
-            <div className="p-4 sm:p-5 bg-white border-b border-[#E8D5BA] flex items-center justify-between shadow-xs">
-              <div className="flex items-center gap-3.5">
-                <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#D49313]/40 bg-[#FAF6F0] flex-shrink-0 shadow-xs">
-                  <Image
-                    src={activeGiftBox.image || "/honneycart.png"}
-                    alt={activeGiftBox.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-serif text-[19px] sm:text-[21px] font-bold text-[#3D260F]">
-                    Customize {activeGiftBox.name}
+          <div className="space-y-12 sm:space-y-16">
+            {sectionsToRender.map((sec) => (
+              <div key={sec.title}>
+                {/* Section Title */}
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="font-libre-caslon text-[28px] sm:text-[38px] lg:text-[44px] text-[#382618] font-normal tracking-tight">
+                    {sec.title}
                   </h3>
-                  <p className="text-[12px] sm:text-[12.5px] text-[#7A6A5C] font-medium">
-                    Pick any {activeGiftBox.jar_count} honey jars below ({filledCount}/{activeGiftBox.jar_count} Selected)
-                  </p>
+                </div>
+
+                {/* Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                  {sec.items.map((item) => (
+                    <ComboCard
+                      key={item._id}
+                      product={item}
+                      onClick={() => router.push(`/shop/products/${item._id}`)}
+                    />
+                  ))}
                 </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              <button
-                type="button"
-                onClick={() => setActiveGiftBox(null)}
-                className="w-9 h-9 rounded-full bg-[#FAF6F0] hover:bg-[#FAF0DC] text-[#3D260F] hover:text-red-600 flex items-center justify-center transition-colors cursor-pointer border border-[#E8D5BA]"
-                title="Close modal"
-              >
-                <X size={19} />
-              </button>
+      </div>
+
+      {/* ================= COMBO PRODUCT DETAIL MODAL POPUP ================= */}
+      {selectedCombo && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setSelectedCombo(null)}
+        >
+          <div
+            className="relative w-full max-w-4xl bg-[#FFFDF9] border border-[#EADBCE] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl flex flex-col lg:flex-row max-h-[92vh] my-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setSelectedCombo(null)}
+              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-[#FAF4E8] text-[#382618] flex items-center justify-center transition-all border border-[#EADBCE] shadow-sm cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+
+            {/* LEFT COLUMN: PRODUCT IMAGE & THUMBNAILS */}
+            <div className="w-full lg:w-1/2 p-5 sm:p-8 bg-[#FAF4E8] flex flex-col items-center justify-between border-b lg:border-b-0 lg:border-r border-[#EADBCE]/70">
+              {/* Primary Image Container */}
+              <div className="relative aspect-[4/3] w-full rounded-[20px] overflow-hidden bg-white shadow-sm border border-[#EADBCE]/50 mb-4">
+                {selectedCombo.discount_percent && selectedCombo.discount_percent > 0 ? (
+                  <span className="absolute top-3 left-3 z-10 bg-[#D97706] text-white font-bold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                    {selectedCombo.discount_percent}% OFF
+                  </span>
+                ) : null}
+
+                <Image
+                  src={
+                    selectedCombo.images?.[selectedImageIndex]?.url ||
+                    selectedCombo.images?.[0]?.url ||
+                    getFallbackImage(selectedCombo._id || selectedCombo.combo_name)
+                  }
+                  alt={selectedCombo.combo_name}
+                  fill
+                  priority
+                  className="object-cover transition-all duration-300"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/honneycart.png";
+                  }}
+                />
+              </div>
+
+              {/* Thumbnails list (if multiple images) */}
+              {selectedCombo.images && selectedCombo.images.length > 1 && (
+                <div className="flex items-center gap-2.5 overflow-x-auto py-1 max-w-full">
+                  {selectedCombo.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedImageIndex(idx)}
+                      className={`relative w-14 h-14 rounded-[12px] overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
+                        selectedImageIndex === idx
+                          ? "border-[#D97706] shadow-sm scale-105"
+                          : "border-[#EADBCE] opacity-70 hover:opacity-100"
+                      }`}
+                    >
+                      <Image src={img.url} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Trust Badges */}
+              <div className="mt-4 w-full grid grid-cols-2 gap-2 text-center pt-3 border-t border-[#EADBCE]/60">
+                <div className="flex items-center justify-center gap-1.5 text-[12px] font-medium text-[#593102]">
+                  <ShieldCheck size={16} className="text-[#D97706]" />
+                  <span>100% Pure & Organic</span>
+                </div>
+                <div className="flex items-center justify-center gap-1.5 text-[12px] font-medium text-[#593102]">
+                  <Truck size={16} className="text-[#D97706]" />
+                  <span>Fast Pan India Shipping</span>
+                </div>
+              </div>
             </div>
 
-            {/* Modal Body: Scrollable */}
-            <div className="p-4 sm:p-5 overflow-y-auto overscroll-contain scroll-smooth touch-pan-y flex-1 space-y-5 bg-[#FAF7F2]">
-
-              {/* SELECTED SLOTS BAR */}
+            {/* RIGHT COLUMN: PRODUCT DETAILS & ACTIONS */}
+            <div className="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto overscroll-contain max-h-[60vh] lg:max-h-[92vh]">
               <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-[13px] font-extrabold text-[#3D260F] uppercase tracking-wider flex items-center gap-2">
-                    <Gift size={15} className="text-[#C87F17]" />
-                    Selected Jars ({filledCount}/{activeGiftBox.jar_count})
+                {/* Brand & Subtitle Tag */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[11.5px] font-extrabold uppercase tracking-widest text-[#D97706] bg-[#FFF3E0] px-3 py-0.5 rounded-full border border-[#FDE68A]">
+                    {selectedCombo.brand || "SudhVeda Honey"}
                   </span>
-                  {filledCount === activeGiftBox.jar_count && (
-                    <span className="text-[11.5px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                      <Check size={13} /> Ready for Cart
+                  <span className="text-[12px] text-[#7A6859] font-medium">
+                    {selectedCombo.combo_size || 2} Jars Box
+                  </span>
+                </div>
+
+                {/* Combo Title */}
+                <h3 className="font-libre-caslon text-[26px] sm:text-[32px] font-bold text-[#382618] leading-tight mb-2">
+                  {selectedCombo.combo_name}
+                </h3>
+
+                {/* Rating Stars */}
+                <div className="flex items-center gap-1.5 mb-4">
+                  <div className="flex text-[#F59E0B]">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={15} fill="currentColor" />
+                    ))}
+                  </div>
+                  <span className="text-[12.5px] font-bold text-[#382618]">5.0</span>
+                  <span className="text-[12px] text-[#7A6859]">(Curated Premium Combo)</span>
+                </div>
+
+                {/* Price Display */}
+                <div className="bg-[#FAF4E8] p-4 rounded-[16px] border border-[#EADBCE]/70 mb-5 flex items-baseline gap-3">
+                  <span className="text-[30px] font-black text-[#593102] font-sans">
+                    ₹{selectedCombo.selling_price || 999}
+                  </span>
+                  {selectedCombo.mrp && selectedCombo.mrp > (selectedCombo.selling_price || 0) && (
+                    <span className="line-through text-[#8C7564] text-[16px] font-medium font-sans">
+                      ₹{selectedCombo.mrp}
+                    </span>
+                  )}
+                  {selectedCombo.save && selectedCombo.save > 0 && (
+                    <span className="ml-auto text-[12px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                      Save ₹{selectedCombo.save}
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  {selectedSlots.map((slot, idx) => (
-                    <div
-                      key={idx}
-                      className={`relative p-2.5 rounded-xl border transition-all flex flex-col items-center justify-center text-center min-h-[110px] ${slot
-                        ? "bg-white border-[#C87F17] shadow-xs"
-                        : "bg-white/60 border-dashed border-[#E8D5BA]"
-                        }`}
-                    >
-                      {slot ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSlot(idx)}
-                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all cursor-pointer"
-                            title="Remove this jar"
-                          >
-                            <X size={12} />
-                          </button>
-                          <div className="relative w-11 h-11 mb-1">
-                            <Image
-                              src={slot.image}
-                              alt={slot.name}
-                              fill
-                              className="object-contain"
-                            />
-                          </div>
-                          <span className="text-[11px] font-bold text-[#3D260F] line-clamp-1">
-                            {slot.name}
-                          </span>
-                          <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full mt-0.5">
-                            Jar #{idx + 1}
-                          </span>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-[#8D7F73]">
-                          <span className="text-[18px] mb-0.5 opacity-70">🫙</span>
-                          <span className="text-[11px] font-bold text-[#3D260F]">Slot #{idx + 1}</span>
-                          <span className="text-[9.5px] opacity-75">Tap flavor below</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* AVAILABLE PRODUCTS GRID */}
-              <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h4 className="text-[12.5px] sm:text-[13px] font-extrabold text-[#3D260F] uppercase tracking-wider">
-                    Select Honey Flavors
-                  </h4>
-                  <span className="text-[11.5px] text-[#8D7F73] font-semibold">
-                    {availableProducts.length} Flavors Available
-                  </span>
-                </div>
-
-                {loadingProducts ? (
-                  <div className="flex items-center justify-center py-10">
-                    <Loader2 className="animate-spin text-[#C87F17]" size={30} />
-                  </div>
-                ) : availableProducts.length === 0 ? (
-                  <div className="text-center py-8 bg-white rounded-xl border border-[#E8D5BA]">
-                    <p className="text-gray-500 text-[12.5px] font-medium">No honey flavors available right now</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
-                    {availableProducts.map((item) => {
-                      const isSlotFull = filledCount === activeGiftBox.jar_count;
-
-                      return (
+                {/* Included Products List */}
+                {selectedCombo.products && selectedCombo.products.length > 0 && (
+                  <div className="mb-5">
+                    <h4 className="text-[13px] font-bold text-[#382618] uppercase tracking-wider mb-2">
+                      Included in this Combo Box:
+                    </h4>
+                    <div className="space-y-1.5">
+                      {selectedCombo.products.map((p, idx) => (
                         <div
-                          key={item.productId}
-                          onClick={() => {
-                            if (!isSlotFull) handleSelectProduct(item);
-                          }}
-                          className={`p-3 rounded-xl bg-white border border-[#EADCC9] flex flex-col items-center text-center transition-all duration-300 relative overflow-hidden ${isSlotFull
-                            ? "opacity-60 cursor-not-allowed border-gray-200"
-                            : "hover:border-[#C87F17] hover:shadow-md cursor-pointer hover:-translate-y-0.5 group"
-                            }`}
+                          key={idx}
+                          className="flex items-center gap-2 text-[13.5px] text-[#593102] font-medium bg-[#FFFDF9] p-2.5 rounded-[10px] border border-[#EADBCE]/60"
                         >
-                          <div className="relative w-14 h-14 sm:w-16 sm:h-16 mb-1">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              fill
-                              className="object-contain transition-transform duration-300 group-hover:scale-105"
-                            />
-                          </div>
-
-                          <h5 className="text-[11.5px] sm:text-[12px] font-bold text-[#3D260F] line-clamp-2 leading-tight min-h-[28px] flex items-center justify-center">
-                            {item.name}
-                          </h5>
-
-                          {item.price && item.price > 0 ? (
-                            <span className="text-[12px] sm:text-[12.5px] font-extrabold text-[#3D260F] mt-1 font-sans">
-                              ₹{item.price}
-                            </span>
-                          ) : null}
-
-                          <button
-                            type="button"
-                            disabled={isSlotFull}
-                            className={`mt-2 py-1 px-3 text-[11px] font-bold rounded-lg transition-all w-full flex items-center justify-center ${isSlotFull
-                              ? "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
-                              : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-2xs cursor-pointer"
-                              }`}
-                          >
-                            {isSlotFull ? "Full" : "Add"}
-                          </button>
+                          <span className="w-5 h-5 rounded-full bg-[#D97706]/15 text-[#D97706] flex items-center justify-center font-bold text-[11px]">
+                            ✓
+                          </span>
+                          <span>{p.name}</span>
+                          {p.weight && <span className="ml-auto text-[12px] text-[#7A6859]">({p.weight})</span>}
                         </div>
-                      );
-                    })}
+                      ))}
+                    </div>
                   </div>
                 )}
-              </div>
-            </div>
 
-            {/* Modal Sticky Footer */}
-            <div className="p-4 sm:p-4.5 bg-white border-t border-[#E8D5BA] flex items-center justify-between flex-wrap gap-3 shadow-lg">
-              <div>
-                <span className="text-[10.5px] text-[#8D7F73] font-bold uppercase tracking-wider block">
-                  Gift Box Total
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[20px] sm:text-[22px] font-extrabold text-[#3D260F] font-sans">
-                    ₹{
-                      (() => {
-                        const sum = selectedSlots.reduce((acc, slot) => acc + (slot?.price || 0), 0);
-                        return sum.toLocaleString("en-IN");
-                      })()
-                    }
-                  </span>
-                  <span className="text-[11.5px] font-bold text-[#7A6A5C]">
-                    ({filledCount}/{activeGiftBox.jar_count} Jars)
-                  </span>
+                {/* Description */}
+                {selectedCombo.description && (
+                  <div className="mb-5">
+                    <h4 className="text-[13px] font-bold text-[#382618] uppercase tracking-wider mb-1">
+                      Description:
+                    </h4>
+                    <p className="font-cormorant italic text-[15px] sm:text-[16px] text-[#593102] leading-relaxed">
+                      {selectedCombo.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Key Benefits */}
+                {selectedCombo.key_benefits && (
+                  <div className="mb-5">
+                    <h4 className="text-[13px] font-bold text-[#382618] uppercase tracking-wider mb-1.5">
+                      Key Benefits:
+                    </h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedCombo.key_benefits.split(",").map((benefit, bIdx) => (
+                        <span
+                          key={bIdx}
+                          className="bg-[#FAF4E8] text-[#593102] text-[12px] font-medium px-3 py-1 rounded-full border border-[#EADBCE]"
+                        >
+                          ✨ {benefit.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Additional Information Grid */}
+                <div className="border-t border-[#EADBCE]/70 pt-4 space-y-2 text-[12px] text-[#7A6859]">
+                  {selectedCombo.shelf_life && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[#382618]">Shelf Life:</span>
+                      <span>{selectedCombo.shelf_life}</span>
+                    </div>
+                  )}
+                  {selectedCombo.storage_instructions && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[#382618]">Storage:</span>
+                      <span className="text-right max-w-[240px]">{selectedCombo.storage_instructions}</span>
+                    </div>
+                  )}
+                  {selectedCombo.fssai_license_number && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[#382618]">FSSAI Lic. No:</span>
+                      <span>{selectedCombo.fssai_license_number}</span>
+                    </div>
+                  )}
+                  {selectedCombo.country_of_origin && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-[#382618]">Country of Origin:</span>
+                      <span>{selectedCombo.country_of_origin}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <button
-                type="button"
-                disabled={filledCount < activeGiftBox.jar_count || addingToCart}
-                onClick={handleAddGiftBoxToCart}
-                className={`w-full sm:w-auto px-7 py-2.5 sm:py-3 rounded-xl font-black transition-all flex items-center justify-center gap-2 cursor-pointer text-[13.5px] uppercase tracking-wider shadow-md ${filledCount === activeGiftBox.jar_count && !addingToCart
-                  ? "bg-[#FA4B1B] hover:bg-[#E64216] text-white hover:scale-105 active:scale-95"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }`}
-              >
-                {addingToCart ? (
-                  <>
-                    <Loader2 className="animate-spin" size={17} /> Adding...
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={17} /> Add to Cart
-                  </>
-                )}
-              </button>
+              {/* QUANTITY & ACTIONS */}
+              <div className="mt-6 pt-5 border-t border-[#EADBCE] space-y-3">
+                <div className="flex items-center gap-3">
+                  {/* Quantity Stepper */}
+                  <div className="inline-flex items-center border border-[#EADBCE] rounded-[16px] bg-[#FAF4E8] p-1 justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="w-9 h-9 rounded-[12px] bg-white text-[#382618] flex items-center justify-center hover:bg-[#D97706] hover:text-white transition-colors cursor-pointer shadow-xs"
+                    >
+                      <Minus size={15} />
+                    </button>
+                    <span className="font-bold text-[15px] text-[#382618] px-4 font-sans">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => q + 1)}
+                      className="w-9 h-9 rounded-[12px] bg-white text-[#382618] flex items-center justify-center hover:bg-[#D97706] hover:text-white transition-colors cursor-pointer shadow-xs"
+                    >
+                      <Plus size={15} />
+                    </button>
+                  </div>
+
+                  {/* Add to Cart Button */}
+                  <button
+                    type="button"
+                    disabled={addingToCart}
+                    onClick={() => handleAddToCart(false)}
+                    className="flex-1 bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-semibold text-[14px] sm:text-[15px] py-3 px-4 rounded-[16px] inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-98 cursor-pointer"
+                  >
+                    {addingToCart ? (
+                      <>
+                        <Loader2 className="animate-spin" size={17} /> Adding...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag size={17} />
+                        <span>Add Combo (₹{((selectedCombo.selling_price || 999) * quantity).toLocaleString("en-IN")})</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Buy Now Button */}
+                <button
+                  type="button"
+                  disabled={addingToCart}
+                  onClick={() => handleAddToCart(true)}
+                  className="w-full bg-[#191919] hover:bg-[#333333] text-white font-sans font-semibold text-[14px] sm:text-[15px] py-3 px-4 rounded-[16px] inline-flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
+                >
+                  <span>Buy Combo Now ⚡</span>
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
       )}
 
-
     </section>
+  );
+}
+
+// Default fallback images
+const FALLBACK_IMAGES = ["/home 2.png", "/ajwainnew.png", "/dashboardm1.png", "/honneycart.png"];
+
+function getFallbackImage(seed: string) {
+  const hash = (seed || "").split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return FALLBACK_IMAGES[hash % FALLBACK_IMAGES.length];
+}
+
+// ================= COMBO CARD COMPONENT =================
+function ComboCard({ product, onClick }: { product: ComboProduct; onClick: () => void }) {
+  let primaryImg = product.images?.find((img) => img.is_primary)?.url || product.images?.[0]?.url;
+  if (!primaryImg || primaryImg.trim() === "") {
+    primaryImg = getFallbackImage(product._id || product.combo_name);
+  }
+
+  const jarCount = product.combo_size || (product.products ? product.products.length : 2);
+
+  const productListLine =
+    product.products && product.products.length > 0
+      ? product.products.map((p) => p.name).join(" + ")
+      : "Two premium varieties, crafted for meaningful impressions";
+
+  return (
+    <div
+      onClick={onClick}
+      className="bg-[#FAF4E8] border border-[#EADBCE]/70 rounded-[20px] overflow-hidden flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_12px_28px_rgba(89,49,2,0.12)] cursor-pointer group"
+    >
+      {/* Top Image Container */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-white/80">
+        {product.discount_percent && product.discount_percent > 0 ? (
+          <span className="absolute top-2.5 right-2.5 z-10 bg-[#191919] text-white font-extrabold text-[10px] sm:text-[10.5px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm border border-white/20">
+            {product.discount_percent}% OFF
+          </span>
+        ) : null}
+
+        <Image
+          src={primaryImg}
+          alt={product.combo_name}
+          fill
+          priority
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "/honneycart.png";
+          }}
+        />
+      </div>
+
+      {/* Card Content Body */}
+      <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
+        <div>
+          {/* Card Title */}
+          <h4 className="font-serif text-[18px] sm:text-[20px] font-bold text-[#382618] leading-tight tracking-tight mb-1 group-hover:text-[#D97706] transition-colors">
+            {product.combo_name}
+          </h4>
+
+          {/* Tagline / Subtitle */}
+          <p className="font-cormorant italic text-[13px] sm:text-[14px] text-[#7A6859] leading-snug mb-2.5 line-clamp-1">
+            {product.description || "Two premium varieties, crafted for meaningful impressions"}
+          </p>
+
+          {/* Product Names Line (e.g. Mustard Honey + Lychee Honey) */}
+          <p className="font-poly text-[12px] sm:text-[12.5px] text-[#593102] leading-tight font-normal mb-3 line-clamp-2 min-h-[32px]">
+            {productListLine}
+          </p>
+        </div>
+
+        {/* Bottom Row: Jar Count & Price */}
+        <div className="pt-2 border-t border-[#EADBCE]/50 flex items-center justify-between">
+          {/* Jar Icon & Count */}
+          <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#593102]">
+            <Image
+              src="/pote.svg"
+              alt="Honey Pot Icon"
+              width={22}
+              height={22}
+              className="object-contain shrink-0"
+            />
+            <span>{jarCount} Jars</span>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-baseline gap-1.5 font-sans">
+            {product.mrp && product.mrp > (product.selling_price || 0) && (
+              <span className="line-through text-[#8C7564] text-[12px] font-medium">
+                ₹{product.mrp}
+              </span>
+            )}
+            <span className="text-[#593102] text-[17px] font-black">
+              ₹{product.selling_price || 999}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

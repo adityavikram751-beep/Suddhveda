@@ -164,6 +164,17 @@ export default function ProductDetailPage({
     return getProductVariants(product);
   }, [product]);
 
+  const isComboProduct = useMemo(() => {
+    return Boolean(
+      product?.combo_name ||
+      product?.combo_size ||
+      (Array.isArray(product?.products) && product.products.length > 0) ||
+      product?.setPacks ||
+      getCategoryName(product) === "CURATED GIFT COLLECTION" ||
+      getCategoryName(product) === "Combo Gift Pack"
+    );
+  }, [product]);
+
   // Selected States
   const [selectedMedia, setSelectedMedia] = useState<any>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
@@ -585,40 +596,106 @@ export default function ProductDetailPage({
 
   // 1. Add to Cart Function (Guest & Logged-In)
   const handleAddToCart = async (redirect = false) => {
-    if (!selectedVariant) return;
-
     try {
       setBtnLoading(true);
-      const weightLabel = selectedVariant.weight ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
-      const price = selectedVariant.price ?? product.price ?? 0;
-      const image = getPrimaryImage(product) || "/placeholder.png";
 
-      // Call context addToCart (handles guest localStorage fallback)
-      await addToCart(
-        product._id,
-        selectedVariant._id,
-        {
-          type: "NORMAL",
-          productId: product._id,
-          variantId: selectedVariant._id,
-          productName: getProductName(product),
-          image,
-          price,
-          weight: weightLabel,
-          quantity: selectedQty,
-          customMessage: giftMessage.trim() || undefined,
-        } as any,
-        selectedQty
+      const isCombo = Boolean(
+        product?.combo_name ||
+        product?.combo_size ||
+        (Array.isArray(product?.products) && product.products.length > 0)
       );
 
-      setSelectedQty(1);
-      window.dispatchEvent(new Event("cart-updated"));
-      window.dispatchEvent(new CustomEvent("trigger-live-update"));
+      if (isCombo) {
+        const token = typeof window !== "undefined"
+          ? document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
+            localStorage.getItem("token") ||
+            localStorage.getItem("sudhveda_token") ||
+            ""
+          : "";
 
-      if (redirect) {
-        router.push("/cart");
-      } else if (openCart) {
-        openCart();
+        let success = false;
+        if (token) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/api/cart/add-combo`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${decodeURIComponent(token)}`,
+              },
+              body: JSON.stringify({
+                comboId: product._id,
+                quantity: selectedQty,
+              }),
+            });
+            if (res.ok) success = true;
+          } catch (e) {
+            console.error("Combo Cart API failed, fallback to guest cart:", e);
+          }
+        }
+
+        if (!success && typeof window !== "undefined") {
+          const GUEST_CART_KEY = "sudhveda_guest_cart";
+          const stored = localStorage.getItem(GUEST_CART_KEY);
+          const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
+
+          const cartItemId = `guest_combo_${product._id}_${Date.now()}`;
+          guestItems[cartItemId] = {
+            type: "COMBO",
+            cartItemId,
+            productName: getProductName(product),
+            image: getPrimaryImage(product),
+            price: currentPrice || product.selling_price || 999,
+            quantity: selectedQty,
+            comboProduct: product,
+            customMessage: giftMessage.trim() || undefined,
+          };
+
+          localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
+        }
+
+        if (fetchCart) await fetchCart().catch(() => {});
+        window.dispatchEvent(new Event("cart-updated"));
+        window.dispatchEvent(new CustomEvent("trigger-live-update"));
+
+        if (redirect) {
+          router.push("/cart");
+        } else if (openCart) {
+          openCart();
+        }
+      } else {
+        if (!selectedVariant) return;
+        const weightLabel = selectedVariant.weight ? `${selectedVariant.weight}${selectedVariant.unit || "g"}` : "";
+        const price = selectedVariant.price ?? product.price ?? 0;
+        const image = getPrimaryImage(product) || "/placeholder.png";
+
+        // Call context addToCart (handles guest localStorage fallback)
+        await addToCart(
+          product._id,
+          selectedVariant._id,
+          {
+            type: "NORMAL",
+            productId: product._id,
+            variantId: selectedVariant._id,
+            productName: getProductName(product),
+            image,
+            price,
+            weight: weightLabel,
+            quantity: selectedQty,
+            customMessage: giftMessage.trim() || undefined,
+          } as any,
+          selectedQty
+        );
+
+        setSelectedQty(1);
+        window.dispatchEvent(new Event("cart-updated"));
+        window.dispatchEvent(new CustomEvent("trigger-live-update"));
+
+        if (redirect) {
+          router.push("/cart");
+        } else if (openCart) {
+          openCart();
+        }
       }
     } catch (err) {
       console.error("Failed to update cart:", err);
@@ -975,7 +1052,7 @@ export default function ProductDetailPage({
                   {product.product_name}
                 </h1>
                 <div className="flex items-center gap-3 mt-2 shrink-0">
-                  {!product?.setPacks && getCategoryName(product) !== "Combo Gift Pack" && (
+                  {!isComboProduct && (
                     <button
                       type="button"
                       onClick={() => handleToggleWishlist(product._id)}
@@ -1112,20 +1189,13 @@ export default function ProductDetailPage({
               ) : null}
             </div>
 
-            {/* Weight Selection */}
-            {variants.length > 0 && (() => {
-              const isComboProduct = Boolean(
-                product?.setPacks ||
-                product?.combo_name ||
-                getCategoryName(product) === "Combo Gift Pack"
-              );
-
-              return (
-                <div className="space-y-3 pt-1">
-                  <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
-                    Select Pack Size
-                  </h3>
-                  <div className={isComboProduct ? "grid grid-cols-2 gap-3 sm:gap-3.5 max-w-[280px] sm:max-w-[320px]" : "flex gap-3 sm:gap-4 flex-wrap"}>
+            {/* Weight Selection - Only for standard products */}
+            {!isComboProduct && variants.length > 0 && (
+              <div className="space-y-3 pt-1">
+                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+                  Select Pack Size
+                </h3>
+                <div className="flex gap-3 sm:gap-4 flex-wrap">
                     {variants.map((option: any) => {
                       const outOfStock = isVariantOutOfStock(option);
                       const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
@@ -1192,8 +1262,7 @@ export default function ProductDetailPage({
                     })}
                   </div>
                 </div>
-              );
-            })()}
+            )}
 
             {/* Custom Gift Message / Note Input (For Combo Gift Packs) */}
             {(() => {
@@ -1282,43 +1351,38 @@ export default function ProductDetailPage({
             })()}
 
 
-            {/* Accordions */}
+            {/* Accordions Container Box */}
             {dynamicAccordionSections.length > 0 && (
-              <div className="pt-6 max-w-xl">
-                <div className="w-full text-center mb-6">
-                  <a href="#compare" className="font-serif text-[20px] sm:text-[24px] font-bold text-[#593102] underline underline-offset-8 decoration-[#D49313] tracking-wide inline-block hover:text-[#D49313] transition-colors">
-                    Compare Honey Flora &amp; Benefits
-                  </a>
-                </div>
-
-                <div className="divide-y divide-[#EADCC9] border-t border-[#EADCC9]">
+              <div className="pt-4 max-w-xl">
+                <div className="border border-[#D6C5B3] rounded-xl sm:rounded-2xl overflow-hidden divide-y divide-[#D6C5B3] shadow-2xs bg-[#FAF6F0]/30">
                   {dynamicAccordionSections.map((section) => {
-                    const Icon = section.icon;
                     const isOpen = openSection === section.key;
                     return (
-                      <div key={section.key} className="py-1">
+                      <div key={section.key} className="transition-colors">
                         <button
                           onClick={() => setOpenSection(isOpen ? null : section.key)}
-                          className="flex w-full items-center justify-between py-4 text-left cursor-pointer"
+                          className={`flex w-full items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 text-left cursor-pointer transition-colors ${
+                            isOpen ? "bg-[#F7EEDC]" : "bg-[#FAF6F0]/60 hover:bg-[#F7EEDC]/50"
+                          }`}
                         >
-                          <span className="flex items-center gap-3.5">
-                            <div className="w-9 h-9 rounded-xl bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
-                              <Icon size={18} className="text-[#D49313] stroke-[2]" />
-                            </div>
-                            <span className="font-serif text-[18px] sm:text-[22px] font-bold text-[#593102] tracking-tight">
-                              {section.title}
-                            </span>
+                          <span className="text-[15.5px] sm:text-[17px] font-semibold text-[#2C1D11] tracking-tight">
+                            {section.title}
                           </span>
-                          {isOpen ? <ChevronUp size={20} className="text-[#593102] shrink-0" /> : <ChevronDown size={20} className="text-[#7A6A5C] shrink-0" />}
+                          {isOpen ? (
+                            <ChevronUp size={18} className="text-[#2C1D11] shrink-0 stroke-[2]" />
+                          ) : (
+                            <ChevronDown size={18} className="text-[#6E5D4F] shrink-0 stroke-[2]" />
+                          )}
                         </button>
+
                         {isOpen && (
-                          <div className="pb-4 pl-12 space-y-3 text-[14px] leading-relaxed text-[#6E5D4F] font-medium">
+                          <div className="px-4 sm:px-5 pb-5 pt-2 space-y-3 text-[14px] leading-relaxed text-[#59483B] font-medium bg-[#FAF6F0]/40 animate-in fade-in duration-200">
                             {section.content && <p>{section.content}</p>}
                             {section.customContent && section.customContent}
                             {section.details && section.details.length > 0 && (
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                                 {section.details.map((detail: any, idx: number) => (
-                                  <div key={idx} className="bg-[#FFFDF9] border border-[#EADCC9] rounded-xl p-2.5 px-3.5 shadow-2xs">
+                                  <div key={idx} className="bg-white border border-[#EADCC9] rounded-xl p-2.5 px-3.5 shadow-2xs">
                                     <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73] block mb-0.5">
                                       {detail.label}
                                     </span>

@@ -4,15 +4,19 @@ import Header from "@/components/layout/Header";
 import ProductDetailPage from "@/sections/shop/ProductDetailPage";
 import { getProductsFromResponse, getSingleProductFromResponse, type ApiProduct } from "@/lib/api-products";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sltwdpp8-3000.inc1.devtunnels.ms";
+
+const FETCH_HEADERS = {
+  "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+};
+
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-
-  // Direct environment variable (Server side par crash nahi hoga)
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://suddhvedha-honey-backend.onrender.com";
 
   let product: ApiProduct | null = null;
   let recommendations: ApiProduct[] = [];
@@ -22,11 +26,12 @@ export default async function ProductPage({
 
     const comboRes = await fetch(`${API_BASE_URL}/api/combo/products/details/${id}`, {
       cache: "no-store",
+      headers: FETCH_HEADERS,
     });
 
     if (comboRes.ok) {
       const comboResult = await comboRes.json();
-      console.log("📦 Combo API Data:", comboResult);
+      console.log("📦 Combo API Data fetched successfully");
       product = getSingleProductFromResponse(comboResult);
     }
   } catch (error) {
@@ -39,11 +44,12 @@ export default async function ProductPage({
 
       const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         cache: "no-store",
+        headers: FETCH_HEADERS,
       });
 
       if (res.ok) {
         const result = await res.json();
-        console.log("📦 Standard API Data:", result);
+        console.log("📦 Standard API Data fetched successfully");
         product = getSingleProductFromResponse(result);
       }
     } catch (error) {
@@ -60,6 +66,7 @@ export default async function ProductPage({
   try {
     const recRes = await fetch(`${API_BASE_URL}/api/products`, {
       cache: "no-store",
+      headers: FETCH_HEADERS,
     });
 
     if (recRes.ok) {

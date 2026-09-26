@@ -195,15 +195,21 @@ export function getSingleProductFromResponse(data: any): ApiProduct | null {
       normalized.mrp = Number(primaryPack.mrp || (normalized.price ? Math.round(normalized.price * 1.25) : 0));
     }
   } else {
-    if (!normalized.price) {
-      normalized.price =
-        Number(product.combo_price || product.comboPrice || product.salePrice || product.price) || 0;
-    }
-    if (!normalized.mrp) {
-      normalized.mrp =
-        Number(product.mrp || product.originalPrice || product.combo_mrp) ||
-        (normalized.price ? Math.round(normalized.price * 1.25) : 0);
-    }
+    normalized.price =
+      Number(product.selling_price || product.combo_price || product.comboPrice || product.salePrice || product.price) || 0;
+    normalized.mrp =
+      Number(product.mrp || product.originalPrice || product.combo_mrp) ||
+      (normalized.price ? Math.round(normalized.price * 1.25) : 0);
+  }
+
+  if (product.save !== undefined && product.save !== null) {
+    normalized.you_save = Number(product.save);
+  } else {
+    normalized.you_save = Math.max(0, (normalized.mrp || 0) - (normalized.price || 0));
+  }
+
+  if (product.discount_percent !== undefined && product.discount_percent !== null) {
+    normalized.discount_value = Number(product.discount_percent);
   }
 
   // Handle images normalization
@@ -236,14 +242,16 @@ export function getSingleProductFromResponse(data: any): ApiProduct | null {
   if (existingVariants.length > 0) {
     normalized.variantDocumentId = existingVariants;
   } else {
+    const weightLabel = product.combo_size ? `${product.combo_size} Jars Set` : product.jar_count ? `${product.jar_count} Jars` : "1 Box";
     normalized.variantDocumentId = [
       {
         _id: product._id || product.id || "v-combo-1",
-        weight: product.jar_count ? `${product.jar_count} Jars` : "1 Box",
+        weight: weightLabel,
         unit: "",
         price: normalized.price,
         mrp: normalized.mrp,
-        you_save: Math.max(0, (normalized.mrp || 0) - (normalized.price || 0)),
+        you_save: normalized.you_save,
+        discount_value: normalized.discount_value,
         is_out_of_stock: false,
       },
     ];
@@ -261,6 +269,9 @@ export function getProductName(product: ApiProduct): string {
 }
 
 export function getCategoryName(product: ApiProduct): string {
+  if (product?.combo_name || product?.combo_size || (Array.isArray(product?.products) && product.products.length > 0)) {
+    return "CURATED GIFT COLLECTION";
+  }
   return (
     product?.categoryId?.category_name ||
     product?.category?.category_name ||
