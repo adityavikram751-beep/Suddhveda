@@ -207,7 +207,8 @@ export default function CuratedGift() {
 
       if (token) {
         try {
-          const res = await fetch(`${API_BASE_URL}/api/cart/add-combo`, {
+          const comboProdId = (selectedCombo as any).comboProductId || (selectedCombo as any).comboId || selectedCombo._id;
+          const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -215,7 +216,7 @@ export default function CuratedGift() {
               Authorization: `Bearer ${decodeURIComponent(token)}`,
             },
             body: JSON.stringify({
-              comboId: selectedCombo._id,
+              comboProductId: comboProdId,
               quantity,
             }),
           });

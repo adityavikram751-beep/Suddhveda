@@ -163,6 +163,23 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         } catch (err) {
           console.error(`Failed to sync guest cart item ${item.productName}:`, err);
         }
+      } else if (
+        ((item as any).type === "COMBO" || (item as any).comboProductId) &&
+        ((item as any).comboProductId || (item as any).productId)
+      ) {
+        try {
+          await authFetch(`${API_BASE_URL}/api/cart/add`, {
+            method: "POST",
+            body: JSON.stringify({
+              comboProductId: (item as any).comboProductId || (item as any).productId,
+              quantity: item.quantity || 1,
+            }),
+          });
+          console.log(`✅ Successfully synced guest combo ${(item as any).productName} to database!`);
+          syncedCount++;
+        } catch (err) {
+          console.error(`Failed to sync guest combo item ${(item as any).productName}:`, err);
+        }
       } else if (item.type === "CUSTOM" && (item as any).giftBoxPayload) {
         try {
           await authFetch(`${API_BASE_URL}/api/cart/add-customize/giftbox`, {
@@ -215,7 +232,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
 
       items.forEach((item: any) => {
         if (item.type === "CUSTOM") {
-          const cartItemId = item.giftCartItemId || item._id;
+          const cartItemId = item.giftCartItemId || item.cartItemId || item._id;
           const qty = item.quantity || 1;
           const totalAmt = item.totalAmount || 0;
           const unitPrice = item.price || item.unitPrice || (totalAmt > 0 ? totalAmt / qty : 0);
@@ -231,18 +248,48 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           return;
         }
 
+        if (item.type === "COMBO" || item.comboProduct || item.combo) {
+          const combo = item.comboProduct || item.combo || item.product || {};
+          const cartItemId = item.cartItemId || item._id || String(Math.random());
+          const comboId = combo._id || item.comboProductId || item.productId || "";
+          const qty = item.quantity || 1;
+          const totalAmt = item.totalAmount || 0;
+          const price = item.price || (totalAmt > 0 ? totalAmt / qty : (combo.selling_price || combo.price || combo.combo_price || 0));
+          const oldPrice = combo.mrp || combo.originalPrice || (price && item.totalsave ? price + (item.totalsave / qty) : undefined);
+          const image = combo.image?.image_url || combo.image?.url || (typeof combo.image === "string" ? combo.image : "") || (combo.images?.[0]?.url || combo.images?.[0]) || item.image || "/placeholder.png";
+          const productName = combo.combo_name || combo.product_name || combo.title || combo.name || "Custom Gift Pack";
+
+          newCartItems[cartItemId] = {
+            type: "NORMAL",
+            cartItemId,
+            productId: comboId,
+            variantId: comboId,
+            productName,
+            categoryName: "Gift Combo",
+            image,
+            price,
+            oldPrice,
+            weight: item.totalWeight ? `${item.totalWeight}g` : "Combo Pack",
+            quantity: qty,
+          };
+          return;
+        }
+
         const product = item.product || {};
         const variant = item.variant || product.variant || {};
 
         const cartItemId = item.cartItemId || item._id || String(Math.random());
-        const productId = product._id || product.productId || product.id || "";
-        const variantId = variant._id || variant.variantId || variant.id || "";
+        const productId = product._id || product.productId || product.id || item.productId || "";
+        const variantId = variant._id || variant.variantId || variant.id || item.variantId || "";
         const productName = product.product_name || product.productName || product.name || "Product";
         const categoryName = getCategoryName(product);
-        const image = product.image?.image_url || product.image?.url || "/placeholder.png";
-        const price = variant.price ?? variant.pricing ?? 0;
-        const oldPrice = variant.mrp ?? variant.oldPrice ?? undefined;
-        const weight = variant.weight ? `${variant.weight}${variant.unit || "g"}` : "";
+        const image = product.image?.image_url || product.image?.url || (typeof product.image === "string" ? product.image : "") || (product.images?.[0]?.url || product.images?.[0]) || item.image || "/placeholder.png";
+
+        const qty = item.quantity || 1;
+        const totalAmt = item.totalAmount || 0;
+        const price = variant.price ?? variant.pricing ?? (totalAmt > 0 ? totalAmt / qty : item.price || 0);
+        const oldPrice = variant.mrp ?? variant.oldPrice ?? (variant.price && variant.save ? variant.price + variant.save : undefined) ?? (item.totalsave && price ? price + (item.totalsave / qty) : undefined);
+        const weight = variant.weight ? `${variant.weight}${variant.unit || "g"}` : (item.totalWeight ? `${item.totalWeight}g` : "");
 
         newCartItems[cartItemId] = {
           type: "NORMAL",
@@ -255,7 +302,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           price,
           oldPrice,
           weight,
-          quantity: item.quantity || 1,
+          quantity: qty,
         };
       });
 

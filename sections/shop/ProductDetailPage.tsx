@@ -651,10 +651,12 @@ export default function ProductDetailPage({
           ""
           : "";
 
+        const comboProdId = product.comboProductId || product.comboId || product._id;
+
         let success = false;
         if (token) {
           try {
-            const res = await fetch(`${API_BASE_URL}/api/cart/add-combo`, {
+            const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
               method: "POST",
               credentials: "include",
               headers: {
@@ -662,7 +664,7 @@ export default function ProductDetailPage({
                 Authorization: `Bearer ${decodeURIComponent(token)}`,
               },
               body: JSON.stringify({
-                comboId: product._id,
+                comboProductId: comboProdId,
                 quantity: selectedQty,
               }),
             });
@@ -677,10 +679,11 @@ export default function ProductDetailPage({
           const stored = localStorage.getItem(GUEST_CART_KEY);
           const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
 
-          const cartItemId = `guest_combo_${product._id}_${Date.now()}`;
+          const cartItemId = `guest_combo_${comboProdId}_${Date.now()}`;
           guestItems[cartItemId] = {
             type: "COMBO",
             cartItemId,
+            comboProductId: comboProdId,
             productName: getProductName(product),
             image: getPrimaryImage(product),
             price: currentPrice || product.selling_price || 999,
