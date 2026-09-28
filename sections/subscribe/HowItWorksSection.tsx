@@ -1,162 +1,149 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, Crown, CreditCard, CalendarCheck, Star, RotateCcw, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
-const steps = [
+interface HarvestItem {
+    icon: string;
+    label: string;
+    desc: string;
+}
+
+const HARVEST_BOX_ITEMS: HarvestItem[] = [
     {
-        number: "01",
-        title: "CHOOSE YOUR PLAN",
-        description: "Select the perfect honey frequency & jar size that suits your lifestyle.",
-        icon: Crown,
-        badge: "STEP 1",
+        icon: "/game-icons_honey-jar.svg",
+        label: "02 × 500 G JARS",
+        desc: "Two distinctive honeys selected for the season.",
     },
     {
-        number: "02",
-        title: "PAY ONCE SECURELY",
-        description: "One single prepaid payment unlocks 6 fresh harvests throughout the year.",
-        icon: CreditCard,
-        badge: "STEP 2",
+        icon: "/fluent_contact-card-generic-20-regular.svg",
+        label: "HARVEST CARD",
+        desc: "The story, origin and character behind your honey.",
     },
     {
-        number: "03",
-        title: "WE SCHEDULE DELIVERIES",
-        description: "We handpick, test & prepare every shipment every two months.",
-        icon: CalendarCheck,
-        badge: "STEP 3",
+        icon: "/lucide-lab_flower-lotus.svg",
+        label: "FLORAL ORIGIN",
+        desc: "Discover the flowers and landscapes that shape its flavour.",
     },
     {
-        number: "04",
-        title: "RECEIVE & UNBOX",
-        description: "Unbox rare raw honey varieties delivered straight to your doorstep.",
-        icon: Star,
-        badge: "STEP 4",
+        icon: "/gg_notes.svg",
+        label: "SERVING NOTES",
+        desc: "Simple ways to enjoy each honey in your everyday rituals.",
     },
     {
-        number: "05",
-        title: "RENEW & CONTINUE",
-        description: "Enjoy effortless annual renewals & exclusive subscriber perks.",
-        icon: RotateCcw,
-        badge: "STEP 5",
+        icon: "/botelsub.svg",
+        label: "STORAGE GUIDE",
+        desc: "Easy guidance to preserve its natural character.",
+    },
+    {
+        icon: "/lucide_qr-code.svg",
+        label: "SCAN TO DISCOVER",
+        desc: "Explore more about your honey, its harvest and its journey.",
     },
 ];
 
 export default function HowItWorksSection() {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
-
-    // 3-Second Step Progress Animation
-    useEffect(() => {
-        if (isPaused) return;
-
-        const timer = setInterval(() => {
-            setActiveIndex((prev) => (prev + 1) % steps.length);
-        }, 3000);
-
-        return () => clearInterval(timer);
-    }, [isPaused]);
-
     return (
-        <section className="py-16 sm:py-24 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#FFFDF9] relative overflow-hidden border-y border-[#EADCC9]/50">
-            {/* Ambient Background Warm Glows */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[900px] rounded-full bg-[#D49313]/5 blur-3xl pointer-events-none" />
+        <section className="py-10 sm:py-14 bg-[#F9F0DF] relative overflow-hidden text-[#593102]">
+            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                    
+                    {/* Left 4-5 Columns: Large Open Harvest Box Photo spanning full height */}
+                    <div className="lg:col-span-4 flex items-center justify-center">
+                        <div className="relative w-full h-full min-h-[340px] sm:min-h-[400px] rounded-[18px] overflow-hidden shadow-sm border border-[#8D7F67]/20">
+                            <Image
+                                src="/subscribe plan.png"
+                                alt="Inside Every Harvest Box - Shuddhveda Honey"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        </div>
+                    </div>
 
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 text-center relative z-10">
+                    {/* Right 7-8 Columns: Badge, Heading, Subtitle + 6 Feature Items */}
+                    <div className="lg:col-span-8 flex flex-col justify-between">
+                        
+                        {/* Top: Badge, Heading, Subtitle */}
+                        <div className="flex flex-col mb-6 sm:mb-8">
+                            {/* Pill Badge */}
+                            <div className="inline-flex items-center gap-2 bg-[#FAF3E8]/90 border border-[#8D7F67]/40 px-4 py-1.5 rounded-[12px] mb-3 shadow-2xs self-start">
+                                <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
+                                    INSIDE EVERY HARVEST BOX
+                                </span>
+                                <div className="relative w-3.5 h-3.5 opacity-80">
+                                    <Image src="/group.svg" alt="Leaf" fill className="object-contain" />
+                                </div>
+                                <span className="text-[12px] text-[#593102]/60 font-light">──</span>
+                            </div>
 
-                {/* Section Subtitle Badge */}
-                <div className="inline-flex items-center gap-2 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 text-xs font-black tracking-widest uppercase text-[#593102] shadow-2xs mb-3">
-                    <span>SIMPLE 5-STEP EXPERIENCE</span>
-                </div>
+                            {/* Heading */}
+                            <h2 className="font-playfair font-normal not-italic text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.12] tracking-tight">
+                                <span className="text-[#A86C06] block">Everything You Need to Know</span>
+                                <span className="text-[#4A2D0E] block mt-1">About Your Honey.</span>
+                            </h2>
 
-                {/* Section Heading */}
-                <h2 className="text-[34px] sm:text-[44px] md:text-[48px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
-                    HOW IT WORKS
-                </h2>
+                            {/* Subtitle Paragraph */}
+                            <p className="font-cormorant font-normal text-[15px] sm:text-[17.5px] text-[#6E5B4B] leading-relaxed mt-2.5 max-w-2xl">
+                                Every delivery is thoughtfully packed with your seasonal honeys and a few details to help you understand, enjoy and make the most of each harvest.
+                            </p>
+                        </div>
 
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3.5 rounded-full" />
-
-                <p className="text-[#6E5D4F] text-base sm:text-lg font-medium max-w-xl mx-auto">
-                    Sit back and relax while we bring nature&apos;s finest honey harvests to your table.
-                </p>
-
-                {/* 5-Step 3D Glassmorphic Cards Flow Container */}
-                <div
-                    className="mt-10 sm:mt-14 relative"
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 relative z-10 items-stretch">
-                        {steps.map((step, index) => {
-                            const isCurrent = index === activeIndex;
-                            const isCompleted = index <= activeIndex;
-                            const StepIcon = step.icon;
-
-                            return (
+                        {/* Bottom: 6 Feature Columns Grid in a row */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative pt-2">
+                            {HARVEST_BOX_ITEMS.map((item, idx) => (
                                 <div
-                                    key={step.number}
-                                    onClick={() => setActiveIndex(index)}
-                                    className={`relative flex flex-col justify-between rounded-3xl p-5 sm:p-6 transition-all duration-500 cursor-pointer h-full border-2 ${isCurrent
-                                        ? "bg-white border-[#D49313] shadow-[0_15px_35px_rgba(212,147,19,0.3)] -translate-y-2 sm:-translate-y-3 ring-4 ring-[#D49313]/20"
-                                        : isCompleted
-                                            ? "bg-white/90 border-[#D49313]/50 shadow-md hover:-translate-y-1.5"
-                                            : "bg-white/60 border-[#EADCC9] shadow-2xs hover:bg-white hover:border-[#D49313]/40 hover:-translate-y-1.5"
-                                        }`}
+                                    key={idx}
+                                    className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
                                 >
-                                    {/* Top Step Pill & Completed Badge */}
-                                    <div className="flex items-center justify-between mb-4 sm:mb-5">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black tracking-wider uppercase transition-colors ${isCurrent
-                                            ? "bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white shadow-sm"
-                                            : "bg-[#FAF0DC] text-[#593102] border border-[#EADCC9]"
-                                            }`}>
-                                            {step.badge}
-                                        </span>
-
-                                        {isCompleted ? (
-                                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D49313] text-white shadow-xs">
-                                                <Check size={13} strokeWidth={3} />
-                                            </div>
-                                        ) : (
-                                            <span className="font-serif text-sm font-black text-[#8D7F73]">
-                                                {step.number}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Step Icon Box */}
-                                    <div className="my-2 flex justify-center">
-                                        <div className={`flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border transition-all duration-500 ${isCurrent
-                                            ? "bg-gradient-to-br from-[#FAF0DC] to-[#FFF8EF] border-[#D49313] text-[#D49313] shadow-md scale-105 sm:scale-110"
-                                            : "bg-[#FAF6F0] border-[#EADCC9] text-[#593102]"
-                                            }`}>
-                                            <StepIcon size={24} className="sm:w-[28px] sm:h-[28px]" />
-                                        </div>
-                                    </div>
-
-                                    {/* Step Content */}
-                                    <div className="mt-3 sm:mt-4 text-center">
-                                        <h3 className={`font-serif text-sm sm:text-base font-bold uppercase leading-snug transition-colors duration-300 ${isCurrent ? "text-[#D49313]" : "text-[#593102]"
-                                            }`}>
-                                            {step.title}
-                                        </h3>
-
-                                        <p className="mt-1.5 sm:mt-2 text-xs text-[#6E5D4F] leading-relaxed font-medium">
-                                            {step.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Animated Bottom Active Line */}
-                                    <div className="mt-4 sm:mt-5 w-full h-1 bg-[#FAF0DC] rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full bg-gradient-to-r from-[#D49313] to-[#593102] transition-all duration-500 ${isCurrent ? "w-full" : isCompleted ? "w-full opacity-60" : "w-0"
-                                                }`}
+                                    {/* Built-in Circle SVG Icon directly without extra outer circle */}
+                                    <div className="relative w-11 h-11 sm:w-12 sm:h-12 mb-2 flex items-center justify-center">
+                                        <Image
+                                            src={item.icon}
+                                            alt={item.label}
+                                            fill
+                                            className="object-contain"
                                         />
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
 
+                                    {/* Title Label */}
+                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
+                                        {item.label}
+                                    </h4>
+
+                                    {/* Brush Underline Vector 27 SVG */}
+                                    <div className="my-1.5 relative w-[70px] h-[5px] flex items-center justify-center">
+                                        <Image
+                                            src="/Vector 27.svg"
+                                            alt="Underline"
+                                            width={70}
+                                            height={5}
+                                            className="object-contain opacity-90"
+                                        />
+                                    </div>
+
+                                    {/* Description Text */}
+                                    <p className="font-cormorant italic text-[11.5px] sm:text-[12.5px] text-[#6E5B4B] leading-snug max-w-[125px]">
+                                        {item.desc}
+                                    </p>
+
+                                    {/* Line 10 SVG Vertical Divider between columns (except last column) */}
+                                    {idx < HARVEST_BOX_ITEMS.length - 1 && (
+                                        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 h-[95px] w-[2px] pointer-events-none">
+                                            <Image
+                                                src="/Line 10.svg"
+                                                alt="Divider"
+                                                fill
+                                                className="object-contain opacity-80"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
         </section>
     );

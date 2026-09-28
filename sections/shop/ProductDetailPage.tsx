@@ -187,6 +187,44 @@ export default function ProductDetailPage({
   // Wishlist store state (Array of Product IDs)
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
 
+  // Recommended Combo Products State
+  const [comboRecommendations, setComboRecommendations] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isComboProduct) {
+      fetchComboRecommendations();
+    }
+  }, [isComboProduct, product?._id]);
+
+  const fetchComboRecommendations = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/combo/products/recommended`, {
+        method: "GET",
+        headers: {
+          "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const list =
+          data?.data?.combos ||
+          data?.data?.products ||
+          data?.data?.recommended ||
+          data?.data ||
+          data?.combos ||
+          data?.products ||
+          data?.recommended ||
+          (Array.isArray(data) ? data : []);
+        if (Array.isArray(list)) {
+          setComboRecommendations(list);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch recommended combos:", err);
+    }
+  };
+
   // Local quantity picker
   const [selectedQty, setSelectedQty] = useState(1);
 
@@ -608,9 +646,9 @@ export default function ProductDetailPage({
       if (isCombo) {
         const token = typeof window !== "undefined"
           ? document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
-            localStorage.getItem("token") ||
-            localStorage.getItem("sudhveda_token") ||
-            ""
+          localStorage.getItem("token") ||
+          localStorage.getItem("sudhveda_token") ||
+          ""
           : "";
 
         let success = false;
@@ -654,7 +692,7 @@ export default function ProductDetailPage({
           localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
         }
 
-        if (fetchCart) await fetchCart().catch(() => {});
+        if (fetchCart) await fetchCart().catch(() => { });
         window.dispatchEvent(new Event("cart-updated"));
         window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
@@ -1196,72 +1234,72 @@ export default function ProductDetailPage({
                   Select Pack Size
                 </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
-                    {variants.map((option: any) => {
-                      const outOfStock = isVariantOutOfStock(option);
-                      const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
-                      const optionImg = option.image || option.image_url || (mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url);
+                  {variants.map((option: any) => {
+                    const outOfStock = isVariantOutOfStock(option);
+                    const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
+                    const optionImg = option.image || option.image_url || (mediaList[0]?.type === "video" ? mediaList[0]?.thumbnail : mediaList[0]?.url);
 
-                      return (
-                        <button
-                          key={getVariantId(option) || option.weight}
-                          onClick={() => {
-                            setSelectedVariant(option);
-                            if (option.image || option.image_url) {
-                              setSelectedMedia({
-                                id: getVariantId(option),
-                                type: "image",
-                                url: option.image || option.image_url,
-                                primary: true,
-                              });
-                            }
-                          }}
-                          className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
-                            } ${outOfStock
-                              ? isSelectedOption
-                                ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
-                                : "border-red-300 bg-red-50/70"
-                              : isSelectedOption
-                                ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md scale-102"
-                                : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
-                            }`}
-                        >
-                          {/* Red Diagonal Cross Line for out of stock variant */}
-                          {outOfStock && (
-                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
-                              <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
-                            </div>
-                          )}
-
-                          <span className={`text-[13px] sm:text-[14px] font-extrabold text-center leading-tight px-1 ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
-                            {option.weight}{option.unit}
-                          </span>
-
-                          <div className={`relative my-2 overflow-hidden rounded-xl border ${isComboProduct ? "h-[60px] w-[60px] sm:h-[72px] sm:w-[72px]" : "h-[42px] w-[42px]"
-                            } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
-                            {optionImg && (
-                              <Image
-                                src={optionImg}
-                                alt={`${option.weight}${option.unit}`}
-                                fill
-                                className="object-cover"
-                              />
-                            )}
+                    return (
+                      <button
+                        key={getVariantId(option) || option.weight}
+                        onClick={() => {
+                          setSelectedVariant(option);
+                          if (option.image || option.image_url) {
+                            setSelectedMedia({
+                              id: getVariantId(option),
+                              type: "image",
+                              url: option.image || option.image_url,
+                              primary: true,
+                            });
+                          }
+                        }}
+                        className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
+                          } ${outOfStock
+                            ? isSelectedOption
+                              ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
+                              : "border-red-300 bg-red-50/70"
+                            : isSelectedOption
+                              ? "border-[#D49313] bg-[#FAF0DC]/40 ring-2 ring-[#D49313]/50 shadow-md scale-102"
+                              : "border-[#EADCC9] bg-white hover:border-[#D49313]/60"
+                          }`}
+                      >
+                        {/* Red Diagonal Cross Line for out of stock variant */}
+                        {outOfStock && (
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
+                            <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
                           </div>
+                        )}
 
-                          {outOfStock ? (
-                            <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
-                              OUT OF STOCK
-                            </span>
-                          ) : (
-                            <span className="text-[13.5px] sm:text-[14px] font-bold text-[#D49313]">
-                              ₹{option.price}
-                            </span>
+                        <span className={`text-[13px] sm:text-[14px] font-extrabold text-center leading-tight px-1 ${outOfStock ? "text-red-700 line-through decoration-red-600 decoration-2" : "text-[#593102]"}`}>
+                          {option.weight}{option.unit}
+                        </span>
+
+                        <div className={`relative my-2 overflow-hidden rounded-xl border ${isComboProduct ? "h-[60px] w-[60px] sm:h-[72px] sm:w-[72px]" : "h-[42px] w-[42px]"
+                          } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
+                          {optionImg && (
+                            <Image
+                              src={optionImg}
+                              alt={`${option.weight}${option.unit}`}
+                              fill
+                              className="object-cover"
+                            />
                           )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                        </div>
+
+                        {outOfStock ? (
+                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
+                            OUT OF STOCK
+                          </span>
+                        ) : (
+                          <span className="text-[13.5px] sm:text-[14px] font-bold text-[#D49313]">
+                            ₹{option.price}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+              </div>
             )}
 
             {/* Custom Gift Message / Note Input (For Combo Gift Packs) */}
@@ -1350,6 +1388,133 @@ export default function ProductDetailPage({
               );
             })()}
 
+            {/* 🎁 RECOMMENDED COMBO PACKS (2set, 3set, 4set) - ONLY FOR GIFT COMBOS */}
+            {isComboProduct && (
+              <div className="pt-3 space-y-2.5 max-w-xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#593102] uppercase tracking-wider flex items-center gap-2">
+                    <span>Select Gift Combo Set</span>
+                  </h3>
+                </div>
+
+                {comboRecommendations.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {comboRecommendations.map((comboItem: any) => {
+                      const comboId = comboItem._id || comboItem.id;
+                      if (!comboId) return null;
+                      const isCurrentProduct = comboId === product._id;
+
+                      const name = getProductName(comboItem);
+                      const price = comboItem.selling_price || comboItem.combo_price || comboItem.price || (comboItem.setPacks && comboItem.setPacks[0]?.selling_price) || 0;
+                      const mrp = comboItem.mrp || (price ? Math.round(price * 1.25) : 0);
+                      const img = getPrimaryImage(comboItem);
+                      const packSize = comboItem.combo_size || comboItem.jar_count || (comboItem.setPacks ? comboItem.setPacks.length : null);
+
+                      return (
+                        <button
+                          key={comboId}
+                          type="button"
+                          onClick={() => {
+                            if (!isCurrentProduct) {
+                              router.push(`/shop/products/${comboId}`);
+                            }
+                          }}
+                          className={`group relative flex flex-col items-center border rounded-2xl p-2.5 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isCurrentProduct
+                              ? "border-[#D49313] bg-[#FAF0DC]/50 ring-2 ring-[#D49313]/60 shadow-sm"
+                              : "border-[#EADCC9] bg-white hover:border-[#D49313]"
+                            }`}
+                        >
+                          <div className="relative w-full aspect-square max-h-[105px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2">
+                            <Image
+                              src={img}
+                              alt={name}
+                              fill
+                              className="object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                            />
+                            {packSize && (
+                              <span className="absolute top-1 left-1 bg-[#593102] text-white text-[9.5px] font-extrabold px-2 py-0.5 rounded-full shadow-2xs">
+                                {packSize} Jars Set
+                              </span>
+                            )}
+                          </div>
+                          <div className="w-full space-y-0.5">
+                            <h4 className="font-serif font-bold text-[13px] text-[#593102] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
+                              {name}
+                            </h4>
+                            <div className="flex items-baseline gap-1.5 pt-0.5">
+                              <span className="font-bold text-[13.5px] text-[#FA4B1B]">
+                                ₹{price}
+                              </span>
+                              {mrp > price && (
+                                <span className="text-[11.5px] text-gray-400 line-through">
+                                  ₹{mrp}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  product?.setPacks && Array.isArray(product.setPacks) && product.setPacks.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {product.setPacks.map((pack: any, idx: number) => {
+                        const price = pack.selling_price || pack.price || 0;
+                        const mrp = pack.mrp || (price ? Math.round(price * 1.25) : 0);
+                        const packImg = pack.image || pack.image_url || getPrimaryImage(product);
+                        const packName = pack.pack_name || (pack.pack_size ? `Set of ${pack.pack_size}` : `${idx + 2} Set Combo`);
+                        const isSelectedPack = selectedVariant?._id === variants[idx]?._id || selectedVariant?.weight === packName;
+
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              if (variants[idx]) {
+                                setSelectedVariant(variants[idx]);
+                              }
+                            }}
+                            className={`group relative flex flex-col items-center border rounded-2xl p-2.5 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isSelectedPack
+                                ? "border-[#D49313] bg-[#FAF0DC]/50 ring-2 ring-[#D49313]/60 shadow-sm"
+                                : "border-[#EADCC9] bg-white hover:border-[#D49313]"
+                              }`}
+                          >
+                            <div className="relative w-full aspect-square max-h-[105px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2">
+                              <Image
+                                src={packImg}
+                                alt={packName}
+                                fill
+                                className="object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <span className="absolute top-1 left-1 bg-[#593102] text-white text-[9.5px] font-extrabold px-2 py-0.5 rounded-full shadow-2xs">
+                                {pack.pack_size ? `${pack.pack_size} Jars Set` : `Set ${idx + 2}`}
+                              </span>
+                            </div>
+                            <div className="w-full space-y-0.5">
+                              <h4 className="font-serif font-bold text-[13px] text-[#593102] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
+                                {packName}
+                              </h4>
+                              <div className="flex items-baseline gap-1.5 pt-0.5">
+                                <span className="font-bold text-[13.5px] text-[#FA4B1B]">
+                                  ₹{price}
+                                </span>
+                                {mrp > price && (
+                                  <span className="text-[11.5px] text-gray-400 line-through">
+                                    ₹{mrp}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+
 
             {/* Accordions Container Box */}
             {dynamicAccordionSections.length > 0 && (
@@ -1361,9 +1526,8 @@ export default function ProductDetailPage({
                       <div key={section.key} className="transition-colors">
                         <button
                           onClick={() => setOpenSection(isOpen ? null : section.key)}
-                          className={`flex w-full items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 text-left cursor-pointer transition-colors ${
-                            isOpen ? "bg-[#F7EEDC]" : "bg-[#FAF6F0]/60 hover:bg-[#F7EEDC]/50"
-                          }`}
+                          className={`flex w-full items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 text-left cursor-pointer transition-colors ${isOpen ? "bg-[#F7EEDC]" : "bg-[#FAF6F0]/60 hover:bg-[#F7EEDC]/50"
+                            }`}
                         >
                           <span className="text-[15.5px] sm:text-[17px] font-semibold text-[#2C1D11] tracking-tight">
                             {section.title}

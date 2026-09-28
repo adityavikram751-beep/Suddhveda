@@ -35,7 +35,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans: () =
           {/* Main Title (Responsive size: 30px on mobile, 48px on tablet, 64px on desktop) */}
           <h1 className="font-libre-caslon text-[30px] xs:text-[36px] sm:text-[48px] lg:text-[64px] text-[#1A1410] leading-[1.12] tracking-normal">
             A Year of Honey.<br />
-            A Journey of <span className="text-[#E08A00] font-normal">Flavours.</span>
+            A Journey of <span className="text-[#E08A00] ">Flavours.</span>
           </h1>
 
           {/* Subtitle Paragraph */}

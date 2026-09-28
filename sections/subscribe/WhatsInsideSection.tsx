@@ -1,151 +1,146 @@
 "use client";
 
 import Image from "next/image";
-import { Box, BookOpen, Star, Layers, QrCode } from "lucide-react";
+
+interface FeatureItem {
+    icon: string;
+    label: string;
+    desc: string;
+}
+
+const PRIVILEGES_ITEMS: FeatureItem[] = [
+    {
+        icon: "/ph_seal-percent-light.svg",
+        label: "13% SAVINGS",
+        desc: "Enjoy preferred pricing across your annual subscription.",
+    },
+    {
+        icon: "/carbon_delivery-parcel (1).svg",
+        label: "COMPLIMENTARY DELIVERY",
+        desc: "Every seasonal delivery arrives at your doorstep, at no extra cost.",
+    },
+    {
+        icon: "/akar-icons_plant.svg",
+        label: "EARLY HARVEST ACCESS",
+        desc: "Every seasonal delivery arrives at your doorstep, at no extra cost.",
+    },
+    {
+        icon: "/mingcute_coupon-line.svg",
+        label: "EXCLUSIVE OFFERS",
+        desc: "Thoughtful privileges reserved for our annual subscribers.",
+    },
+    {
+        icon: "/mage_stars-b.svg",
+        label: "SEASONAL DISCOVERIES",
+        desc: "Experience honey as the landscape changes — one harvest at a time.",
+    },
+    {
+        icon: "/bx_hive.svg",
+        label: "A YEAR OF GOODNESS",
+        desc: "Experience honey as the landscape changes — one harvest at a time.",
+    },
+];
 
 export default function WhatsInsideSection() {
     return (
-        <section className="py-14 sm:py-20 bg-white border-y border-[#EADCC9]/60">
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-12 text-center">
+        <section className="py-10 sm:py-14 bg-[#F9F0DF] relative overflow-hidden text-[#593102]">
+            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 relative z-10">
 
-                {/* Heading */}
-                <h2 className="text-[34px] sm:text-[44px] md:text-[48px] font-serif font-bold text-[#593102] leading-tight tracking-tight">
-                    WHAT&apos;S INSIDE EVERY DELIVERY?
-                </h2>
-
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D49313] to-transparent mx-auto my-3.5 rounded-full" />
-
-                <div className="mt-14 grid gap-8 lg:grid-cols-3 items-center">
-                    {/* Left Column Badges */}
-                    <div className="space-y-6 text-right hidden lg:block">
-                        <div className="flex items-center gap-4 justify-end rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="text-right">
-                                <h4 className="font-bold text-base text-[#593102]">Premium Glass Jar</h4>
-                                <p className="text-xs text-[#8D7F73]">Aesthetic airtight glass packaging</p>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    
+                    {/* Left 8 Columns: Top (Badge + Heading) and Bottom (6 Feature Items Row) */}
+                    <div className="lg:col-span-8 flex flex-col justify-between">
+                        
+                        {/* Top Area: Badge & Heading */}
+                        <div className="flex flex-col">
+                            {/* Badge */}
+                            <div className="inline-flex items-center gap-2 bg-[#FAF3E8]/90 border border-[#8D7F67]/40 px-4 py-1.5 rounded-[12px] mb-4 shadow-2xs self-start">
+                                <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
+                                    SUBSCRIBER PRIVILEGES
+                                </span>
+                                <div className="relative w-3.5 h-3.5 opacity-80">
+                                    <Image src="/group.svg" alt="Leaf" fill className="object-contain" />
+                                </div>
+                                <span className="text-[12px] text-[#593102]/60 font-light">──</span>
                             </div>
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <Box size={22} />
-                            </div>
+
+                            {/* Heading */}
+                            <h2 className="font-playfair font-normal not-italic text-[36px] sm:text-[48px] lg:text-[52px] leading-[1.12] tracking-tight text-[#A86C06]">
+                                <span className="block">A Little More Honey.</span>
+                                <span className="block mt-1">A Lot More to Discover.</span>
+                            </h2>
                         </div>
 
-                        <div className="flex items-center gap-4 justify-end rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="text-right">
-                                <h4 className="font-bold text-base text-[#593102]">Floral Source &amp; Harvest detail</h4>
-                                <p className="text-xs text-[#8D7F73]">Know the exact origin &amp; batch</p>
-                            </div>
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <Star size={22} />
-                            </div>
+                        {/* Bottom Area: 6 Feature Columns Row */}
+                        <div className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-8 gap-x-0 relative">
+                            {PRIVILEGES_ITEMS.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
+                                >
+                                    {/* Built-in Circle SVG Icon directly without extra outer circle */}
+                                    <div className="relative w-11 h-11 sm:w-12 sm:h-12 mb-3 flex items-center justify-center">
+                                        <Image
+                                            src={item.icon}
+                                            alt={item.label}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+
+                                    {/* Title Label */}
+                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
+                                        {item.label}
+                                    </h4>
+
+                                    {/* Brush Underline Vector 27 SVG */}
+                                    <div className="my-2 relative w-[70px] h-[5px] flex items-center justify-center">
+                                        <Image
+                                            src="/Vector 27.svg"
+                                            alt="Underline"
+                                            width={70}
+                                            height={5}
+                                            className="object-contain opacity-90"
+                                        />
+                                    </div>
+
+                                    {/* Description Text */}
+                                    <p className="font-cormorant italic text-[11.5px] sm:text-[12.5px] text-[#6E5B4B] leading-snug max-w-[125px]">
+                                        {item.desc}
+                                    </p>
+
+                                    {/* Line 10 SVG Vertical Divider between columns (except last column) */}
+                                    {idx < PRIVILEGES_ITEMS.length - 1 && (
+                                        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 h-[100px] w-[2px] pointer-events-none">
+                                            <Image
+                                                src="/Line 10.svg"
+                                                alt="Divider"
+                                                fill
+                                                className="object-contain opacity-80"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
 
-                        <div className="flex items-center gap-4 justify-end rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="text-right">
-                                <h4 className="font-bold text-base text-[#593102]">Information Card</h4>
-                                <p className="text-xs text-[#8D7F73]">Story &amp; tasting notes included</p>
-                            </div>
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <BookOpen size={22} />
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Center Visual Graphic */}
-                    <div className="relative mx-auto w-full max-w-[420px] h-[340px] sm:h-[420px] rounded-3xl bg-gradient-to-b from-[#FAF5EC] to-white border-2 border-[#EADCC9] flex items-center justify-center shadow-xl overflow-hidden group">
-                        <div className="relative w-full h-full">
+                    {/* Right 4 Columns: Big Honey Jar Photo Spanning Vertically on Right */}
+                    <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0">
+                        <div className="relative w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[420px] aspect-[0.92/1]">
                             <Image
-                                src="/subscriber.png"
-                                alt="Inside Every Delivery"
+                                src="/image 1861 (3).png"
+                                alt="Shuddhveda Natural Honey Jar"
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="object-contain object-right"
                                 priority
                             />
                         </div>
                     </div>
 
-                    {/* Right Column Badges */}
-                    <div className="space-y-6 text-left hidden lg:block">
-                        <div className="flex items-center gap-4 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <Star size={22} />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-base text-[#593102]">Suggested Uses</h4>
-                                <p className="text-xs text-[#8D7F73]">Chef &amp; Ayurvedic recommendations</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <Layers size={22} />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-base text-[#593102]">Storage guide</h4>
-                                <p className="text-xs text-[#8D7F73]">Tips to preserve raw freshness</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-4 shadow-2xs hover:border-[#D49313] transition-all">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white border border-[#EADCC9] text-[#D49313]">
-                                <QrCode size={22} />
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-base text-[#593102]">QR code to learn more</h4>
-                                <p className="text-xs text-[#8D7F73]">Scan for lab test reports</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mobile Badges Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden text-left mt-4 sm:mt-0">
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <Box size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">Premium Glass Jar</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Aesthetic airtight glass packaging</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <Star size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">Floral Source &amp; Harvest</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Know exact origin &amp; batch</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <BookOpen size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">Information Card</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Story &amp; tasting notes</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <Star size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">Suggested Uses</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Chef &amp; Ayurvedic tips</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <Layers size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">Storage Guide</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Tips to preserve raw freshness</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 rounded-2xl bg-[#FFF8EF] border border-[#EADCC9] p-3 sm:p-3.5">
-                            <QrCode size={20} className="text-[#D49313] shrink-0" />
-                            <div>
-                                <h4 className="font-bold text-sm text-[#593102]">QR Code Report</h4>
-                                <p className="text-[11px] text-[#8D7F73]">Scan for lab test reports</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
             </div>
         </section>
     );

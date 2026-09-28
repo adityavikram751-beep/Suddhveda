@@ -3,6 +3,7 @@
 import HeroSection from "@/sections/subscribe/HeroSection";
 import HoneyJourneySection from "@/sections/subscribe/HoneyJourneySection";
 import SubscriptionPlansSection from "@/sections/subscribe/SubscriptionPlansSection";
+import ThreeDeliveriesSection from "@/sections/subscribe/ThreeDeliveriesSection";
 import WhatsInsideSection from "@/sections/subscribe/WhatsInsideSection";
 import HowItWorksSection from "@/sections/subscribe/HowItWorksSection";
 
@@ -16,6 +17,7 @@ export default function SubscribeSection() {
             <HeroSection onScrollToPlans={scrollToPlans} />
             <HoneyJourneySection />
             <SubscriptionPlansSection />
+            <ThreeDeliveriesSection />
             <WhatsInsideSection />
             <HowItWorksSection />
         </div>
