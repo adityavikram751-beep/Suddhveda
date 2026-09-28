@@ -6,6 +6,7 @@ import SubscriptionPlansSection from "@/sections/subscribe/SubscriptionPlansSect
 import ThreeDeliveriesSection from "@/sections/subscribe/ThreeDeliveriesSection";
 import WhatsInsideSection from "@/sections/subscribe/WhatsInsideSection";
 import HowItWorksSection from "@/sections/subscribe/HowItWorksSection";
+import SubscribeFaqSection from "@/sections/subscribe/SubscribeFaqSection";
 
 export default function SubscribeSection() {
     const scrollToPlans = () => {
@@ -13,13 +14,14 @@ export default function SubscribeSection() {
     };
 
     return (
-        <div className="bg-[#FFF9F2] min-h-screen text-[#2F241C] font-sans">
+        <div className="bg-[#F9F0DF] min-h-screen text-[#2F241C] font-sans">
             <HeroSection onScrollToPlans={scrollToPlans} />
             <HoneyJourneySection />
             <SubscriptionPlansSection />
             <ThreeDeliveriesSection />
             <WhatsInsideSection />
             <HowItWorksSection />
+            <SubscribeFaqSection />
         </div>
     );
 }

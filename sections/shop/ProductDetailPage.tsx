@@ -1401,7 +1401,7 @@ export default function ProductDetailPage({
                 </div>
 
                 {comboRecommendations.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                     {comboRecommendations.map((comboItem: any) => {
                       const comboId = comboItem._id || comboItem.id;
                       if (!comboId) return null;
@@ -1422,34 +1422,35 @@ export default function ProductDetailPage({
                               router.push(`/shop/products/${comboId}`);
                             }
                           }}
-                          className={`group relative flex flex-col items-center border rounded-2xl p-2.5 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isCurrentProduct
-                              ? "border-[#D49313] bg-[#FAF0DC]/50 ring-2 ring-[#D49313]/60 shadow-sm"
+                          className={`group relative flex flex-col border-2 rounded-2xl p-2.5 sm:p-3 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isCurrentProduct
+                              ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
                               : "border-[#EADCC9] bg-white hover:border-[#D49313]"
                             }`}
                         >
-                          <div className="relative w-full aspect-square max-h-[105px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2">
+                          <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">
                             <Image
                               src={img}
                               alt={name}
                               fill
-                              className="object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                              unoptimized
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                             {packSize && (
-                              <span className="absolute top-1 left-1 bg-[#593102] text-white text-[9.5px] font-extrabold px-2 py-0.5 rounded-full shadow-2xs">
+                              <span className="absolute top-2 left-2 bg-[#4A2B0F] text-white text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shadow-md z-10">
                                 {packSize} Jars Set
                               </span>
                             )}
                           </div>
-                          <div className="w-full space-y-0.5">
-                            <h4 className="font-serif font-bold text-[13px] text-[#593102] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
+                          <div className="w-full space-y-1">
+                            <h4 className="font-sans font-bold text-[13.5px] sm:text-[14.5px] text-[#2C1D11] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
                               {name}
                             </h4>
                             <div className="flex items-baseline gap-1.5 pt-0.5">
-                              <span className="font-bold text-[13.5px] text-[#FA4B1B]">
+                              <span className="font-extrabold text-[14.5px] sm:text-[15.5px] text-[#EA580C]">
                                 ₹{price}
                               </span>
                               {mrp > price && (
-                                <span className="text-[11.5px] text-gray-400 line-through">
+                                <span className="text-[12px] sm:text-[12.5px] text-[#9E8B7A] line-through font-normal">
                                   ₹{mrp}
                                 </span>
                               )}
@@ -1461,7 +1462,7 @@ export default function ProductDetailPage({
                   </div>
                 ) : (
                   product?.setPacks && Array.isArray(product.setPacks) && product.setPacks.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                       {product.setPacks.map((pack: any, idx: number) => {
                         const price = pack.selling_price || pack.price || 0;
                         const mrp = pack.mrp || (price ? Math.round(price * 1.25) : 0);
@@ -1478,32 +1479,33 @@ export default function ProductDetailPage({
                                 setSelectedVariant(variants[idx]);
                               }
                             }}
-                            className={`group relative flex flex-col items-center border rounded-2xl p-2.5 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isSelectedPack
-                                ? "border-[#D49313] bg-[#FAF0DC]/50 ring-2 ring-[#D49313]/60 shadow-sm"
+                            className={`group relative flex flex-col border-2 rounded-2xl p-2.5 sm:p-3 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isSelectedPack
+                                ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
                                 : "border-[#EADCC9] bg-white hover:border-[#D49313]"
                               }`}
                           >
-                            <div className="relative w-full aspect-square max-h-[105px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2">
+                            <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">
                               <Image
                                 src={packImg}
                                 alt={packName}
                                 fill
-                                className="object-contain p-1 group-hover:scale-105 transition-transform duration-300"
+                                unoptimized
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
                               />
-                              <span className="absolute top-1 left-1 bg-[#593102] text-white text-[9.5px] font-extrabold px-2 py-0.5 rounded-full shadow-2xs">
+                              <span className="absolute top-2 left-2 bg-[#4A2B0F] text-white text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shadow-md z-10">
                                 {pack.pack_size ? `${pack.pack_size} Jars Set` : `Set ${idx + 2}`}
                               </span>
                             </div>
-                            <div className="w-full space-y-0.5">
-                              <h4 className="font-serif font-bold text-[13px] text-[#593102] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
+                            <div className="w-full space-y-1">
+                              <h4 className="font-sans font-bold text-[13.5px] sm:text-[14.5px] text-[#2C1D11] line-clamp-1 leading-tight group-hover:text-[#D49313] transition-colors">
                                 {packName}
                               </h4>
                               <div className="flex items-baseline gap-1.5 pt-0.5">
-                                <span className="font-bold text-[13.5px] text-[#FA4B1B]">
+                                <span className="font-extrabold text-[14.5px] sm:text-[15.5px] text-[#EA580C]">
                                   ₹{price}
                                 </span>
                                 {mrp > price && (
-                                  <span className="text-[11.5px] text-gray-400 line-through">
+                                  <span className="text-[12px] sm:text-[12.5px] text-[#9E8B7A] line-through font-normal">
                                     ₹{mrp}
                                   </span>
                                 )}

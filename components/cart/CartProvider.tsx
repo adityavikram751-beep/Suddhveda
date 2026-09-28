@@ -217,7 +217,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         setApiCartCount(null);
         return guestItems;
       }
-      
+
       // 1. Sync guest cart items to backend database FIRST if any exist
       await syncGuestCartOnLogin();
 
@@ -259,6 +259,16 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           const image = combo.image?.image_url || combo.image?.url || (typeof combo.image === "string" ? combo.image : "") || (combo.images?.[0]?.url || combo.images?.[0]) || item.image || "/placeholder.png";
           const productName = combo.combo_name || combo.product_name || combo.title || combo.name || "Custom Gift Pack";
 
+          let comboWeight = "";
+          if (item.totalWeight) {
+            const unit = item.totalWeightUnit || "g";
+            comboWeight = `${item.totalWeight}${unit}`;
+          } else if (combo.combo_size || combo.jar_count) {
+            comboWeight = `${combo.combo_size || combo.jar_count} Jars Set`;
+          } else {
+            comboWeight = "Combo Pack";
+          }
+
           newCartItems[cartItemId] = {
             type: "NORMAL",
             cartItemId,
@@ -269,7 +279,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
             image,
             price,
             oldPrice,
-            weight: item.totalWeight ? `${item.totalWeight}g` : "Combo Pack",
+            weight: comboWeight,
             quantity: qty,
           };
           return;
@@ -289,7 +299,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         const totalAmt = item.totalAmount || 0;
         const price = variant.price ?? variant.pricing ?? (totalAmt > 0 ? totalAmt / qty : item.price || 0);
         const oldPrice = variant.mrp ?? variant.oldPrice ?? (variant.price && variant.save ? variant.price + variant.save : undefined) ?? (item.totalsave && price ? price + (item.totalsave / qty) : undefined);
-        const weight = variant.weight ? `${variant.weight}${variant.unit || "g"}` : (item.totalWeight ? `${item.totalWeight}g` : "");
+
+        const unit = item.totalWeightUnit || variant.unit || "g";
+        const weight = variant.weight
+          ? `${variant.weight}${variant.unit || "g"}`
+          : (item.totalWeight ? `${item.totalWeight}${unit}` : "");
 
         newCartItems[cartItemId] = {
           type: "NORMAL",
