@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Playfair_Display } from "next/font/google";
+import { API_BASE_URL } from "@/lib/auth";
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -12,43 +14,102 @@ const playfair = Playfair_Display({
 interface FeatureItem {
     icon: string;
     label: string;
-    desc: string;
+    descLines: string[];
 }
 
-const PRIVILEGES_ITEMS: FeatureItem[] = [
-    {
-        icon: "/ph_seal-percent-light.svg",
-        label: "13% SAVINGS",
-        desc: "Enjoy preferred pricing across your annual subscription.",
-    },
-    {
-        icon: "/carbon_delivery-parcel (1).svg",
-        label: "COMPLIMENTARY DELIVERY",
-        desc: "Every seasonal delivery arrives at your doorstep, at no extra cost.",
-    },
-    {
-        icon: "/akar-icons_plant.svg",
-        label: "EARLY HARVEST ACCESS",
-        desc: "Every seasonal delivery arrives at your doorstep, at no extra cost.",
-    },
-    {
-        icon: "/mingcute_coupon-line.svg",
-        label: "EXCLUSIVE OFFERS",
-        desc: "Thoughtful privileges reserved for our annual subscribers.",
-    },
-    {
-        icon: "/mage_stars-b.svg",
-        label: "SEASONAL DISCOVERIES",
-        desc: "Experience honey as the landscape changes — one harvest at a time.",
-    },
-    {
-        icon: "/bx_hive.svg",
-        label: "A YEAR OF GOODNESS",
-        desc: "Experience honey as the landscape changes — one harvest at a time.",
-    },
-];
-
 export default function WhatsInsideSection() {
+    const [savingsPercent, setSavingsPercent] = useState<number>(13);
+
+    useEffect(() => {
+        const fetchPlanSavings = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/subscripation/plan/all-plans`);
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const rawList = data.data || data.plans || data || [];
+
+                if (Array.isArray(rawList) && rawList.length > 0) {
+                    const plan = rawList[0];
+                    const price = typeof plan.price === "number" ? plan.price : null;
+                    const mrp = typeof plan.originalPrice === "number" ? plan.originalPrice : (typeof plan.mrp === "number" ? plan.mrp : null);
+
+                    if (price && mrp && mrp > price) {
+                        const computed = Math.round(((mrp - price) / mrp) * 100);
+                        if (computed > 0) {
+                            setSavingsPercent(computed);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching plan savings in WhatsInsideSection:", error);
+            }
+        };
+
+        fetchPlanSavings();
+    }, []);
+
+    const privilegeItems: FeatureItem[] = [
+        {
+            icon: "/ph_seal-percent-light.svg",
+            label: `${savingsPercent}% SAVINGS`,
+            descLines: [
+                "Enjoy preferred",
+                "pricing across your",
+                "annual subscription.",
+            ],
+        },
+        {
+            icon: "/carbon_delivery-parcel (1).svg",
+            label: "COMPLIMENTARY DELIVERY",
+            descLines: [
+                "Every seasonal",
+                "delivery arrives at",
+                "your doorstep, at no",
+                "extra cost.",
+            ],
+        },
+        {
+            icon: "/akar-icons_plant.svg",
+            label: "EARLY HARVEST ACCESS",
+            descLines: [
+                "Every seasonal",
+                "delivery arrives at",
+                "your doorstep, at no",
+                "extra cost.",
+            ],
+        },
+        {
+            icon: "/mingcute_coupon-line.svg",
+            label: "EXCLUSIVE OFFERS",
+            descLines: [
+                "Thoughtful privileges",
+                "reserved for our",
+                "annual subscribers.",
+            ],
+        },
+        {
+            icon: "/mage_stars-b.svg",
+            label: "SEASONAL DISCOVERIES",
+            descLines: [
+                "Experience honey as",
+                "the landscape changes",
+                "── one harvest at a",
+                "time.",
+            ],
+        },
+        {
+            icon: "/bx_hive.svg",
+            label: "A YEAR OF GOODNESS",
+            descLines: [
+                "Experience honey as",
+                "the landscape changes",
+                "── one harvest at a",
+                "time.",
+            ],
+        },
+    ];
+
     return (
         <section className="py-10 sm:py-14 bg-[#F9F0DF] relative overflow-hidden text-[#593102]">
             <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 relative z-10">
@@ -91,7 +152,7 @@ export default function WhatsInsideSection() {
 
                         {/* Bottom Area: 6 Feature Columns Row with /Line 10.svg Vertical Dividers */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative w-full">
-                            {PRIVILEGES_ITEMS.map((item, idx) => (
+                            {privilegeItems.map((item, idx) => (
                                 <div
                                     key={idx}
                                     className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
@@ -122,31 +183,37 @@ export default function WhatsInsideSection() {
                                         />
                                     </div>
 
-                                    {/* Description Text */}
-                                    <p className="font-cormorant italic text-[12px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.3] max-w-[132px] sm:max-w-[142px]">
-                                        {item.desc}
+                                    {/* Description Text (Formatted with exact line breaks from screenshot) */}
+                                    <p className="font-cormorant italic text-[12px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.3] max-w-[145px]">
+                                        {item.descLines.map((line, lIdx) => (
+                                            <span key={lIdx} className="block">
+                                                {line}
+                                            </span>
+                                        ))}
                                     </p>
 
                                     {/* /Line 10.svg Vertical Divider from public folder on Desktop (lg) */}
-                                    {idx < PRIVILEGES_ITEMS.length - 1 && (
+                                    {idx < privilegeItems.length - 1 && (
                                         <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 h-[120px] w-[2px] items-center justify-center pointer-events-none">
                                             <Image
                                                 src="/Line 10.svg"
                                                 alt="Divider"
-                                                fill
-                                                className="object-contain opacity-85"
+                                                width={2}
+                                                height={120}
+                                                className="h-full w-auto opacity-85"
                                             />
                                         </div>
                                     )}
 
                                     {/* /Line 10.svg Vertical Divider on Tablet (sm: 3 cols per row) */}
-                                    {idx < PRIVILEGES_ITEMS.length - 1 && (idx + 1) % 3 !== 0 && (
+                                    {idx < privilegeItems.length - 1 && (idx + 1) % 3 !== 0 && (
                                         <div className="hidden sm:flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[115px] w-[2px] items-center justify-center pointer-events-none">
                                             <Image
                                                 src="/Line 10.svg"
                                                 alt="Divider"
-                                                fill
-                                                className="object-contain opacity-85"
+                                                width={2}
+                                                height={115}
+                                                className="h-full w-auto opacity-85"
                                             />
                                         </div>
                                     )}
