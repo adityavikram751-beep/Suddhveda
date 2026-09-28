@@ -17,7 +17,7 @@ interface HarvestItem {
 
 const HARVEST_BOX_ITEMS: HarvestItem[] = [
     {
-        icon: "/game-icons_honey-jar.svg",
+        icon: "/botel2 (1).svg",
         label: "02 × 500 G JARS",
         descLines: ["Two distinctive", "honeys selected for", "the season."],
     },
@@ -37,7 +37,7 @@ const HARVEST_BOX_ITEMS: HarvestItem[] = [
         descLines: ["Simple ways to enjoy", "each honey in your", "everyday rituals."],
     },
     {
-        icon: "/botelsub.svg",
+        icon: "/botel2 (2).svg",
         label: "STORAGE GUIDE",
         descLines: ["Easy guidance to", "preserve its natural", "character."],
     },
@@ -53,15 +53,15 @@ export default function HowItWorksSection() {
         <section className="py-10 sm:py-14 bg-[#F9F0DF] relative overflow-hidden text-[#593102]">
             <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-                    
+
                     {/* Left 4-5 Columns: Large Open Harvest Box Photo spanning full height */}
                     <div className="lg:col-span-4 flex items-center justify-center">
-                        <div className="relative w-full h-full min-h-[340px] sm:min-h-[400px] rounded-[18px] overflow-hidden shadow-sm border border-[#8D7F67]/20">
+                        <div className="relative w-full h-full min-h-[340px] sm:min-h-[400px] lg:min-h-[440px] flex items-center justify-center overflow-hidden">
                             <Image
-                                src="/subscribe plan.png"
+                                src="/lastppp.png"
                                 alt="Inside Every Harvest Box - Shuddhveda Honey"
                                 fill
-                                className="object-cover"
+                                className="object-contain object-center"
                                 priority
                             />
                         </div>
@@ -69,11 +69,11 @@ export default function HowItWorksSection() {
 
                     {/* Right 7-8 Columns: Badge, Heading, Subtitle + 6 Feature Items */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
-                        
+
                         {/* Top: Badge, Heading, Subtitle */}
                         <div className="flex flex-col mb-6 sm:mb-8">
                             {/* Pill Badge */}
-                            <div className="inline-flex items-center gap-2.5 bg-[#FAF3E8] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-3 sm:mb-4 self-start shadow-2xs">
+                            <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-3 sm:mb-4 self-start shadow-2xs">
                                 <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
                                     INSIDE EVERY HARVEST BOX
                                 </span>

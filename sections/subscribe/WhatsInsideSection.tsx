@@ -122,7 +122,7 @@ export default function WhatsInsideSection() {
                         {/* Top Area: Badge & Heading - shifted right with pl-3 sm:pl-6 lg:pl-10 */}
                         <div className="flex flex-col mb-8 lg:mb-10 pl-3 sm:pl-6 lg:pl-10">
                             {/* Pill Badge */}
-                            <div className="inline-flex items-center gap-2.5 bg-[#FAF3E8] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-4 sm:mb-5 self-start shadow-2xs">
+                            <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-4 sm:mb-5 self-start shadow-2xs">
                                 <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
                                     SUBSCRIBER PRIVILEGES
                                 </span>
