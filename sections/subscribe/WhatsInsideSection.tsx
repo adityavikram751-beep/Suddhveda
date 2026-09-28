@@ -1,6 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { Playfair_Display } from "next/font/google";
+
+const playfair = Playfair_Display({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    display: "swap",
+});
 
 interface FeatureItem {
     icon: string;
@@ -44,42 +51,53 @@ const PRIVILEGES_ITEMS: FeatureItem[] = [
 export default function WhatsInsideSection() {
     return (
         <section className="py-10 sm:py-14 bg-[#F9F0DF] relative overflow-hidden text-[#593102]">
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 relative z-10">
+            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 relative z-10">
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    
-                    {/* Left 8 Columns: Top (Badge + Heading) and Bottom (6 Feature Items Row) */}
+
+                    {/* Left 8 Columns: Badge, Heading, and 6 Feature Columns Row */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
-                        
-                        {/* Top Area: Badge & Heading */}
-                        <div className="flex flex-col">
-                            {/* Badge */}
-                            <div className="inline-flex items-center gap-2 bg-[#FAF3E8]/90 border border-[#8D7F67]/40 px-4 py-1.5 rounded-[12px] mb-4 shadow-2xs self-start">
+
+                        {/* Top Area: Badge & Heading - shifted right with pl-3 sm:pl-6 lg:pl-10 */}
+                        <div className="flex flex-col mb-8 lg:mb-10 pl-3 sm:pl-6 lg:pl-10">
+                            {/* Pill Badge */}
+                            <div className="inline-flex items-center gap-2.5 bg-[#FAF3E8] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-4 sm:mb-5 self-start shadow-2xs">
                                 <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
                                     SUBSCRIBER PRIVILEGES
                                 </span>
-                                <div className="relative w-3.5 h-3.5 opacity-80">
-                                    <Image src="/group.svg" alt="Leaf" fill className="object-contain" />
+                                <div className="relative w-4 h-4 opacity-85 flex items-center justify-center">
+                                    <Image src="/group.svg" alt="Leaf" width={14} height={14} className="object-contain" />
                                 </div>
-                                <span className="text-[12px] text-[#593102]/60 font-light">──</span>
+                                <span className="text-[12px] text-[#593102]/60 font-light">──→</span>
                             </div>
 
-                            {/* Heading */}
-                            <h2 className="font-playfair font-normal not-italic text-[36px] sm:text-[48px] lg:text-[52px] leading-[1.12] tracking-tight text-[#A86C06]">
-                                <span className="block">A Little More Honey.</span>
-                                <span className="block mt-1">A Lot More to Discover.</span>
+                            {/* Heading rendered with next/font Playfair_Display */}
+                            <h2
+                                className={`${playfair.className} font-playfair not-italic text-[32px] sm:text-[44px] lg:text-[53px] leading-[1.18] lg:leading-[69px] tracking-[0px] align-middle text-[#A27514]`}
+                                style={{
+                                    fontFamily: playfair.style.fontFamily,
+                                    fontWeight: 400,
+                                    fontStyle: "normal",
+                                    lineHeight: "69px",
+                                    letterSpacing: "0px",
+                                    verticalAlign: "middle",
+                                    color: "#A27514",
+                                }}
+                            >
+                                <span className="block font-playfair" style={{ fontFamily: playfair.style.fontFamily }}>A Little More Honey.</span>
+                                <span className="block font-playfair" style={{ fontFamily: playfair.style.fontFamily }}>A Lot More to Discover.</span>
                             </h2>
                         </div>
 
-                        {/* Bottom Area: 6 Feature Columns Row */}
-                        <div className="mt-8 sm:mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-8 gap-x-0 relative">
+                        {/* Bottom Area: 6 Feature Columns Row with /Line 10.svg Vertical Dividers */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative w-full">
                             {PRIVILEGES_ITEMS.map((item, idx) => (
                                 <div
                                     key={idx}
                                     className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
                                 >
-                                    {/* Built-in Circle SVG Icon directly without extra outer circle */}
-                                    <div className="relative w-11 h-11 sm:w-12 sm:h-12 mb-3 flex items-center justify-center">
+                                    {/* Circle Icon */}
+                                    <div className="relative w-12 h-12 sm:w-13 sm:h-13 mb-2.5 flex items-center justify-center">
                                         <Image
                                             src={item.icon}
                                             alt={item.label}
@@ -89,34 +107,46 @@ export default function WhatsInsideSection() {
                                     </div>
 
                                     {/* Title Label */}
-                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
+                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[28px] flex items-center justify-center">
                                         {item.label}
                                     </h4>
 
-                                    {/* Brush Underline Vector 27 SVG */}
-                                    <div className="my-2 relative w-[70px] h-[5px] flex items-center justify-center">
+                                    {/* Wavy Underline Vector 27 SVG */}
+                                    <div className="my-1.5 relative w-[72px] h-[5px] flex items-center justify-center">
                                         <Image
                                             src="/Vector 27.svg"
                                             alt="Underline"
-                                            width={70}
+                                            width={72}
                                             height={5}
                                             className="object-contain opacity-90"
                                         />
                                     </div>
 
                                     {/* Description Text */}
-                                    <p className="font-cormorant italic text-[11.5px] sm:text-[12.5px] text-[#6E5B4B] leading-snug max-w-[125px]">
+                                    <p className="font-cormorant italic text-[12px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.3] max-w-[132px] sm:max-w-[142px]">
                                         {item.desc}
                                     </p>
 
-                                    {/* Line 10 SVG Vertical Divider between columns (except last column) */}
+                                    {/* /Line 10.svg Vertical Divider from public folder on Desktop (lg) */}
                                     {idx < PRIVILEGES_ITEMS.length - 1 && (
-                                        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 h-[100px] w-[2px] pointer-events-none">
+                                        <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 h-[120px] w-[2px] items-center justify-center pointer-events-none">
                                             <Image
                                                 src="/Line 10.svg"
                                                 alt="Divider"
                                                 fill
-                                                className="object-contain opacity-80"
+                                                className="object-contain opacity-85"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* /Line 10.svg Vertical Divider on Tablet (sm: 3 cols per row) */}
+                                    {idx < PRIVILEGES_ITEMS.length - 1 && (idx + 1) % 3 !== 0 && (
+                                        <div className="hidden sm:flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[115px] w-[2px] items-center justify-center pointer-events-none">
+                                            <Image
+                                                src="/Line 10.svg"
+                                                alt="Divider"
+                                                fill
+                                                className="object-contain opacity-85"
                                             />
                                         </div>
                                     )}
@@ -126,9 +156,9 @@ export default function WhatsInsideSection() {
 
                     </div>
 
-                    {/* Right 4 Columns: Big Honey Jar Photo Spanning Vertically on Right */}
-                    <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0">
-                        <div className="relative w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[420px] aspect-[0.92/1]">
+                    {/* Right 4 Columns: Honey Jar Image (Nudged slightly right) */}
+                    <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0 lg:-mr-12 xl:-mr-18">
+                        <div className="relative w-full max-w-[360px] sm:max-w-[440px] lg:max-w-[500px] xl:max-w-[550px] h-[330px] sm:h-[390px] lg:h-[430px] xl:h-[470px] flex items-center justify-end">
                             <Image
                                 src="/image 1861 (3).png"
                                 alt="Shuddhveda Natural Honey Jar"
