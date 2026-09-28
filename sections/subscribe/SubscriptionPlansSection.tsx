@@ -131,14 +131,16 @@ export default function SubscriptionPlansSection() {
     };
 
     return (
-        <section id="subscription-plans" className="pt-0 sm:pt-1 pb-4 sm:pb-6 bg-[#F9F0DF] relative overflow-hidden -mt-4 sm:-mt-6">
+        <section id="subscription-plans" className="pt-4 sm:pt-6 pb-6 sm:pb-10 bg-[#F9F0DF] relative overflow-hidden">
             <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 items-center">
+                
+                {/* ==================== DESKTOP MODE (lg and up) ==================== */}
+                <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
 
                     {/* Left Column: Heading, Price, CTA Button */}
-                    <div className="lg:col-span-5 xl:col-span-5 flex flex-col items-start text-left z-10">
+                    <div className="col-span-5 xl:col-span-5 flex flex-col items-start text-left z-10">
 
-                        {/* Top Pill Badge - Matching Reference Screenshot 4 */}
+                        {/* Top Pill Badge */}
                         <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#E6D5C3] px-5 sm:px-6 py-2 rounded-full mb-6 text-[#593102] shadow-2xs">
                             <span className="text-[13px] text-[#593102] select-none font-medium">←</span>
                             <div className="relative w-4 h-4 flex-shrink-0">
@@ -163,19 +165,19 @@ export default function SubscriptionPlansSection() {
                             <span className="text-[13px] text-[#593102] select-none font-medium">→</span>
                         </div>
 
-                        {/* Main Title - Dynamic API Plan Name */}
+                        {/* Main Title */}
                         <h2 className="-mt-2 font-playfair font-medium not-italic text-[32px] sm:text-[42px] lg:text-[50px] leading-[44px] sm:leading-[56px] lg:leading-[64px] tracking-normal max-w-xl">
                             <span className="bg-gradient-to-r from-[#C6900E] to-[#4A2E0A] bg-clip-text text-transparent">
                                 {activePlan.name || "A Year of Honey, Delivered to Your Door."}
                             </span>
                         </h2>
 
-                        {/* Subtitle - Dynamic API Plan Description */}
+                        {/* Subtitle */}
                         <p className="-mt-2 font-cormorant font-semibold not-italic text-[19px] sm:text-[23px] lg:text-[25px] leading-[26px] sm:leading-[32px] lg:leading-[34px] text-[#593102] max-w-xl mt-4 sm:mt-5">
                             {activePlan.description || "Discover Six distinctive Shuddhveda Honey Varieties delivered throughout the Year"}
                         </p>
 
-                        {/* Multiple Plans Selection Bar (if API returns more than 1 plan) */}
+                        {/* Multiple Plans Selection Bar */}
                         {plans.length > 1 && (
                             <div className="flex flex-wrap gap-2.5 mt-3 mb-1">
                                 {plans.map((p) => (
@@ -194,7 +196,7 @@ export default function SubscriptionPlansSection() {
                             </div>
                         )}
 
-                        {/* Price Display - Vertically centered with wider spacing to the right */}
+                        {/* Price Display */}
                         <div className="flex items-center gap-5 sm:gap-6 my-5 sm:my-6">
                             <span className="font-sans font-bold text-[38px] sm:text-[46px] text-[#331B02] tracking-tight">
                                 ₹{activePlan.price.toLocaleString("en-IN")}
@@ -204,11 +206,11 @@ export default function SubscriptionPlansSection() {
                             </span>
                         </div>
 
-                        {/* Subscribe Now Button - Passes planId (_id) directly */}
+                        {/* Subscribe Now Button */}
                         <button
                             type="button"
                             onClick={() => handleOpenSubscribeModal(activePlan)}
-                            className=" -mt-5 bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-medium text-[16px] sm:text-[18px] py-2.5 sm:py-3 px-10 sm:px-14 min-w-[240px] sm:min-w-[270px] justify-center rounded-[16px] inline-flex items-center gap-3 shadow-md hover:shadow-lg transition-all duration-300 active:scale-98 cursor-pointer"
+                            className="-mt-5 bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-medium text-[16px] sm:text-[18px] py-2.5 sm:py-3 px-10 sm:px-14 min-w-[240px] sm:min-w-[270px] justify-center rounded-[16px] inline-flex items-center gap-3 shadow-md hover:shadow-lg transition-all duration-300 active:scale-98 cursor-pointer"
                         >
                             <span>Subscribe Now</span>
                             <ArrowRight size={19} />
@@ -216,9 +218,9 @@ export default function SubscriptionPlansSection() {
 
                     </div>
 
-                    {/* Right Column: Hero Product Image (subscribe2.0.png) - Shifted slightly down */}
-                    <div className="lg:col-span-7 xl:col-span-7 flex justify-center lg:justify-end mt-4 sm:mt-6 lg:mt-8 lg:-mr-12 xl:-mr-17">
-                        <div className="relative w-full max-w-[690px] h-[380px] sm:h-[480px] lg:h-[550px] translate-x-4 sm:translate-x-6 lg:translate-x-10">
+                    {/* Right Column: Hero Product Image */}
+                    <div className="col-span-7 xl:col-span-7 flex justify-end mt-8 lg:-mr-12 xl:-mr-17">
+                        <div className="relative w-full max-w-[690px] h-[550px] translate-x-10">
                             <Image
                                 src="/subscribe2.0.png"
                                 alt="Shuddhveda A Year of Honey Subscription"
@@ -230,18 +232,114 @@ export default function SubscriptionPlansSection() {
                     </div>
 
                 </div>
+
+                {/* ==================== MOBILE MODE (< lg) ==================== */}
+                <div className="flex lg:hidden flex-col items-center text-left py-4 w-full max-w-[540px] mx-auto">
+
+                    {/* Top Pill Badge */}
+                    <div className="inline-flex items-center gap-2 bg-[#F9F0DF] border border-[#E6D5C3] px-4 py-1.5 rounded-full mb-5 text-[#593102] shadow-2xs self-center">
+                        <span className="text-[12px] text-[#593102] select-none">←</span>
+                        <div className="relative w-3.5 h-3.5 flex-shrink-0">
+                            <Image
+                                src="/group.svg"
+                                alt="Leaf Icon"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <span className="font-cormorant text-[13.5px] font-normal tracking-wide text-[#593102]">
+                            {'Let the season choose your Honey'}
+                        </span>
+                        <div className="relative w-3.5 h-3.5 flex-shrink-0">
+                            <Image
+                                src="/group.svg"
+                                alt="Leaf Icon"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <span className="text-[12px] text-[#593102] select-none">→</span>
+                    </div>
+
+                    {/* Main Title */}
+                    <h2 className="font-playfair font-normal not-italic text-[28px] xs:text-[32px] sm:text-[38px] leading-[1.18] tracking-normal w-full text-left">
+                        <span className="bg-gradient-to-r from-[#C6900E] via-[#A8720A] to-[#4A2E0A] bg-clip-text text-transparent block">
+                            A Year of Honey,
+                        </span>
+                        <span className="bg-gradient-to-r from-[#C6900E] via-[#A8720A] to-[#4A2E0A] bg-clip-text text-transparent block">
+                            Delivered to Your Door.
+                        </span>
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="font-cormorant font-normal not-italic text-[16px] xs:text-[18px] sm:text-[20px] leading-[22px] sm:leading-[26px] text-[#593102] opacity-90 mt-3 mb-4 w-full text-left">
+                        {activePlan.description || "Discover Six distinctive Shuddhveda Honey Verieties delivered throughout the Year"}
+                    </p>
+
+                    {/* Multiple Plans Selection Bar (Mobile) */}
+                    {plans.length > 1 && (
+                        <div className="flex flex-wrap gap-2 my-2 w-full">
+                            {plans.map((p) => (
+                                <button
+                                    key={p.id}
+                                    type="button"
+                                    onClick={() => setSelectedPlanId(p.id)}
+                                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${activePlan.id === p.id
+                                        ? "bg-[#D97706] text-white shadow-sm"
+                                        : "bg-[#FAF4E8] text-[#593102] border border-[#E6D5C3]"
+                                        }`}
+                                >
+                                    {p.name} — ₹{p.price.toLocaleString("en-IN")}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Jars Showcase Image (Centered in mobile flow) */}
+                    <div className="relative w-full max-w-[360px] xs:max-w-[400px] aspect-[4/3] mx-auto my-3 sm:my-5">
+                        <Image
+                            src="/subscribe2.0.png"
+                            alt="Shuddhveda Honey Subscription Jars"
+                            fill
+                            priority
+                            className="object-contain"
+                        />
+                    </div>
+
+                    {/* Price Display */}
+                    <div className="flex items-baseline justify-center gap-3.5 my-3 w-full text-center">
+                        <span className="font-sans font-bold text-[36px] xs:text-[40px] text-[#331B02] tracking-tight">
+                            ₹{activePlan.price.toLocaleString("en-IN")}
+                        </span>
+                        <span className="font-sans font-medium text-[20px] xs:text-[22px] text-[#88725A] line-through">
+                            ₹{activePlan.mrp.toLocaleString("en-IN")}
+                        </span>
+                    </div>
+
+                    {/* Subscribe Now Button */}
+                    <div className="w-full mt-2">
+                        <button
+                            type="button"
+                            onClick={() => handleOpenSubscribeModal(activePlan)}
+                            className="bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-medium text-[16px] sm:text-[17px] py-3.5 px-6 rounded-[16px] inline-flex items-center justify-center gap-2.5 shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer w-full"
+                        >
+                            <span>Subscribe Now</span>
+                            <ArrowRight size={18} />
+                        </button>
+                    </div>
+
+                </div>
+
             </div>
 
             {/* Subscription Form Overlay Modal Popup */}
             {isCheckoutModalOpen && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden animate-in fade-in duration-200">
-                    {/* Backdrop overlay click to close */}
                     <div
                         className="fixed inset-0"
                         onClick={() => setIsCheckoutModalOpen(false)}
                     />
 
-                    {/* Modal Popup Box with hidden scrollbar and wider width (1150px) */}
                     <div className="relative w-full max-w-[1150px] max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#FAF4E8] rounded-[24px] sm:rounded-[32px] shadow-2xl p-4 sm:p-8 my-auto border border-[#EADBCA] z-10">
                         <button
                             type="button"

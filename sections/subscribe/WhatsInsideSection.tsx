@@ -18,7 +18,7 @@ interface FeatureItem {
 }
 
 export default function WhatsInsideSection() {
-    const [savingsPercent, setSavingsPercent] = useState<number>(13);
+    const [savingsPercent, setSavingsPercent] = useState<number>(16);
 
     useEffect(() => {
         const fetchPlanSavings = async () => {
@@ -31,13 +31,27 @@ export default function WhatsInsideSection() {
 
                 if (Array.isArray(rawList) && rawList.length > 0) {
                     const plan = rawList[0];
-                    const price = typeof plan.price === "number" ? plan.price : null;
-                    const mrp = typeof plan.originalPrice === "number" ? plan.originalPrice : (typeof plan.mrp === "number" ? plan.mrp : null);
+                    let disc: number | null = null;
 
-                    if (price && mrp && mrp > price) {
-                        const computed = Math.round(((mrp - price) / mrp) * 100);
-                        if (computed > 0) {
-                            setSavingsPercent(computed);
+                    if (typeof plan.discountPercentage === "number") {
+                        disc = plan.discountPercentage;
+                    } else if (typeof plan.discountPercentage === "string") {
+                        disc = parseFloat(plan.discountPercentage);
+                    } else if (typeof plan.discount_percentage === "number") {
+                        disc = plan.discount_percentage;
+                    }
+
+                    if (disc !== null && !isNaN(disc) && disc > 0) {
+                        setSavingsPercent(Math.round(disc));
+                    } else {
+                        const price = typeof plan.price === "number" ? plan.price : null;
+                        const mrp = typeof plan.originalPrice === "number" ? plan.originalPrice : (typeof plan.mrp === "number" ? plan.mrp : null);
+
+                        if (price && mrp && mrp > price) {
+                            const computed = Math.round(((mrp - price) / mrp) * 100);
+                            if (computed > 0) {
+                                setSavingsPercent(computed);
+                            }
                         }
                     }
                 }
@@ -119,29 +133,27 @@ export default function WhatsInsideSection() {
                     {/* Left 8 Columns: Badge, Heading, and 6 Feature Columns Row */}
                     <div className="lg:col-span-8 flex flex-col justify-between">
 
-                        {/* Top Area: Badge & Heading - shifted right with pl-3 sm:pl-6 lg:pl-10 */}
-                        <div className="flex flex-col mb-8 lg:mb-10 pl-3 sm:pl-6 lg:pl-10">
+                        {/* Top Area: Badge & Heading */}
+                        <div className="flex flex-col mb-7 lg:mb-10 pl-1 sm:pl-6 lg:pl-10">
                             {/* Pill Badge */}
-                            <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#8D7F67]/35 px-4 py-1.5 rounded-[12px] mb-4 sm:mb-5 self-start shadow-2xs">
-                                <span className="font-cormorant text-[13px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
+                            <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#8D7F67]/35 px-3.5 sm:px-4 py-1.5 rounded-[12px] mb-3.5 sm:mb-5 self-start shadow-2xs">
+                                <span className="font-cormorant text-[12px] sm:text-[14px] font-semibold tracking-[0.14em] text-[#593102] uppercase">
                                     SUBSCRIBER PRIVILEGES
                                 </span>
-                                <div className="relative w-4 h-4 opacity-85 flex items-center justify-center">
+                                <div className="relative w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-85 flex items-center justify-center">
                                     <Image src="/group.svg" alt="Leaf" width={14} height={14} className="object-contain" />
                                 </div>
-                                <span className="text-[12px] text-[#593102]/60 font-light">──→</span>
+                                <span className="text-[11px] sm:text-[12px] text-[#593102]/60 font-light">──→</span>
                             </div>
 
                             {/* Heading rendered with next/font Playfair_Display */}
                             <h2
-                                className={`${playfair.className} font-playfair not-italic text-[32px] sm:text-[44px] lg:text-[53px] leading-[1.18] lg:leading-[69px] tracking-[0px] align-middle text-[#A27514]`}
+                                className={`${playfair.className} font-playfair not-italic text-[30px] xs:text-[34px] sm:text-[44px] lg:text-[53px] leading-[1.15] lg:leading-[64px] tracking-[0px] align-middle text-[#A27514]`}
                                 style={{
                                     fontFamily: playfair.style.fontFamily,
                                     fontWeight: 400,
                                     fontStyle: "normal",
-                                    lineHeight: "69px",
                                     letterSpacing: "0px",
-                                    verticalAlign: "middle",
                                     color: "#A27514",
                                 }}
                             >
@@ -151,14 +163,14 @@ export default function WhatsInsideSection() {
                         </div>
 
                         {/* Bottom Area: 6 Feature Columns Row with /Line 10.svg Vertical Dividers */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative w-full">
+                        <div className="grid grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative w-full">
                             {privilegeItems.map((item, idx) => (
                                 <div
                                     key={idx}
-                                    className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
+                                    className="flex flex-col items-center text-center px-1 sm:px-2 relative"
                                 >
                                     {/* Circle Icon */}
-                                    <div className="relative w-12 h-12 sm:w-13 sm:h-13 mb-2.5 flex items-center justify-center">
+                                    <div className="relative w-11 h-11 sm:w-13 sm:h-13 mb-2 flex items-center justify-center">
                                         <Image
                                             src={item.icon}
                                             alt={item.label}
@@ -168,12 +180,12 @@ export default function WhatsInsideSection() {
                                     </div>
 
                                     {/* Title Label */}
-                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[28px] flex items-center justify-center">
+                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
                                         {item.label}
                                     </h4>
 
                                     {/* Wavy Underline Vector 27 SVG */}
-                                    <div className="my-1.5 relative w-[72px] h-[5px] flex items-center justify-center">
+                                    <div className="my-1 sm:my-1.5 relative w-[60px] sm:w-[72px] h-[4px] sm:h-[5px] flex items-center justify-center">
                                         <Image
                                             src="/Vector 27.svg"
                                             alt="Underline"
@@ -184,7 +196,7 @@ export default function WhatsInsideSection() {
                                     </div>
 
                                     {/* Description Text (Formatted with exact line breaks from screenshot) */}
-                                    <p className="font-cormorant italic text-[12px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.3] max-w-[145px]">
+                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[145px]">
                                         {item.descLines.map((line, lIdx) => (
                                             <span key={lIdx} className="block">
                                                 {line}
@@ -205,9 +217,9 @@ export default function WhatsInsideSection() {
                                         </div>
                                     )}
 
-                                    {/* /Line 10.svg Vertical Divider on Tablet (sm: 3 cols per row) */}
+                                    {/* /Line 10.svg Vertical Divider on Mobile & Tablet (3 cols per row) */}
                                     {idx < privilegeItems.length - 1 && (idx + 1) % 3 !== 0 && (
-                                        <div className="hidden sm:flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[115px] w-[2px] items-center justify-center pointer-events-none">
+                                        <div className="flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[100px] sm:h-[115px] w-[2px] items-center justify-center pointer-events-none">
                                             <Image
                                                 src="/Line 10.svg"
                                                 alt="Divider"

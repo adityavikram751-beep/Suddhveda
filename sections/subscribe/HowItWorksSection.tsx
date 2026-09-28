@@ -120,14 +120,14 @@ export default function HowItWorksSection() {
                         </div>
 
                         {/* Bottom: 6 Feature Columns Grid in a row */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative pt-2">
+                        <div className="grid grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-0 relative pt-2">
                             {HARVEST_BOX_ITEMS.map((item, idx) => (
                                 <div
                                     key={idx}
-                                    className="flex flex-col items-center text-center px-1.5 sm:px-2 relative"
+                                    className="flex flex-col items-center text-center px-1 sm:px-2 relative"
                                 >
                                     {/* Built-in Circle SVG Icon directly */}
-                                    <div className="relative w-12 h-12 sm:w-13 sm:h-13 mb-2.5 flex items-center justify-center">
+                                    <div className="relative w-11 h-11 sm:w-13 sm:h-13 mb-2 flex items-center justify-center">
                                         <Image
                                             src={item.icon}
                                             alt={item.label}
@@ -137,12 +137,12 @@ export default function HowItWorksSection() {
                                     </div>
 
                                     {/* Title Label */}
-                                    <h4 className="font-cormorant font-semibold text-[10.5px] sm:text-[11.5px] tracking-[0.06em] text-[#4A2D0E] uppercase leading-tight min-h-[28px] flex items-center justify-center">
+                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
                                         {item.label}
                                     </h4>
 
                                     {/* Brush Underline Vector 27 SVG */}
-                                    <div className="my-1.5 relative w-[72px] h-[5px] flex items-center justify-center">
+                                    <div className="my-1 sm:my-1.5 relative w-[60px] sm:w-[72px] h-[4px] sm:h-[5px] flex items-center justify-center">
                                         <Image
                                             src="/Vector 27.svg"
                                             alt="Underline"
@@ -153,7 +153,7 @@ export default function HowItWorksSection() {
                                     </div>
 
                                     {/* Description Text (3 lines matching exact visual format) */}
-                                    <p className="font-cormorant italic text-[12px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.3] max-w-[150px]">
+                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[150px]">
                                         {item.descLines.map((line, lIdx) => (
                                             <span key={lIdx} className="block">
                                                 {line}
@@ -174,9 +174,9 @@ export default function HowItWorksSection() {
                                         </div>
                                     )}
 
-                                    {/* /Line 10.svg Vertical Divider on Tablet (sm: 3 cols per row) */}
+                                    {/* /Line 10.svg Vertical Divider on Mobile & Tablet (3 cols per row) */}
                                     {idx < HARVEST_BOX_ITEMS.length - 1 && (idx + 1) % 3 !== 0 && (
-                                        <div className="hidden sm:flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[115px] w-[2px] items-center justify-center pointer-events-none">
+                                        <div className="flex lg:hidden absolute right-0 top-1/2 -translate-y-1/2 h-[100px] sm:h-[115px] w-[2px] items-center justify-center pointer-events-none">
                                             <Image
                                                 src="/Line 10.svg"
                                                 alt="Divider"
