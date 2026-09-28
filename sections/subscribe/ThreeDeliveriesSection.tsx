@@ -117,7 +117,8 @@ export default function ThreeDeliveriesSection() {
                     {deliveries.map((item, idx) => (
                         <div
                             key={idx}
-                            className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[20px] sm:rounded-[24px] shadow-[0_6px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_35px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col overflow-hidden group"
+                            onClick={() => document.getElementById("subscription-plans")?.scrollIntoView({ behavior: "smooth" })}
+                            className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[20px] sm:rounded-[24px] shadow-[0_6px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_35px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col overflow-hidden group cursor-pointer"
                         >
                             {/* Card Top Image Container */}
                             <div className="relative w-full h-[285px] sm:h-[330px] bg-[#F4EADA]/40 overflow-hidden">
@@ -178,7 +179,8 @@ export default function ThreeDeliveriesSection() {
                     {deliveries.map((item, idx) => (
                         <div
                             key={idx}
-                            className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[22px] shadow-[0_4px_20px_rgba(89,49,2,0.05)] transition-all duration-300 flex flex-col overflow-hidden w-full"
+                            onClick={() => document.getElementById("subscription-plans")?.scrollIntoView({ behavior: "smooth" })}
+                            className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[22px] shadow-[0_4px_20px_rgba(89,49,2,0.05)] transition-all duration-300 flex flex-col overflow-hidden w-full cursor-pointer"
                         >
                             {/* Card Top Image Container */}
                             <div className="relative w-full h-[275px] xs:h-[300px] bg-[#F4EADA]/40 overflow-hidden">

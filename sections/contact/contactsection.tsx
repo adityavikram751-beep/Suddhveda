@@ -169,10 +169,10 @@ export default function ContactSection() {
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         setSubmitStatus({
           type: "success",
-          message: "Your enquiry has been sent successfully!",
+          message: data.message || "Your enquiry has been sent successfully!",
         });
         setFormData({
           name: "",
@@ -182,21 +182,25 @@ export default function ContactSection() {
           message: "",
         });
       } else {
-        let errorMsg = data.message || "Failed to send enquiry. Please try again.";
+        let errorMsg =
+          data.message ||
+          (typeof data.error === "string" ? data.error : data.error?.message) ||
+          data.msg ||
+          "Failed to send enquiry. Please try again.";
 
         // Extract detailed validation errors if returned by API
         if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-          errorMsg = data.errors.map((err: any) => (typeof err === "string" ? err : err.msg || err.message)).join(". ");
+          errorMsg = data.errors
+            .map((err: any) => (typeof err === "string" ? err : err.msg || err.message))
+            .join(". ");
         } else if (data.errors && typeof data.errors === "object") {
           errorMsg = Object.values(data.errors)
             .map((err: any) => (typeof err === "string" ? err : err.msg || err.message))
             .join(". ");
-        } else if (data.error) {
-          errorMsg = typeof data.error === "string" ? data.error : data.error.message || errorMsg;
         }
 
         // If backend message is generic "Validation failed", provide helpful specific guidance
-        if (errorMsg.toLowerCase() === "validation failed") {
+        if (typeof errorMsg === "string" && errorMsg.toLowerCase() === "validation failed") {
           if (formData.message.trim().length < 10) {
             errorMsg = "Message must be at least 10 characters.";
           } else {

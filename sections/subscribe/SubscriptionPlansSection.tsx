@@ -39,19 +39,27 @@ export default function SubscriptionPlansSection() {
                 if (Array.isArray(rawList) && rawList.length > 0) {
                     const formattedPlans: PlanItem[] = rawList
                         .filter((item: any) => item.isActive !== false)
-                        .map((item: any) => ({
-                            id: item._id || item.id,
-                            name: item.name || "Good Plan",
-                            description: item.description || "Our most popular plan",
-                            tagline: item.description || item.badge || "Discover Six distinctive Shuddhveda Honey Varieties",
-                            detail: item.packageLabel || `${item.quantityPerJar || 500}g × ${item.numberOfJars || 6} Jars`,
-                            totalWeight: `Total: ${item.totalQuantity || 3} ${(item.totalQuantityUnit || 'kg').toUpperCase()} Honey`,
-                            price: typeof item.price === "number" ? item.price : 2099,
-                            mrp: typeof item.originalPrice === "number" ? item.originalPrice : (typeof item.mrp === "number" ? item.mrp : 2394),
-                            badge: item.badge,
-                            isPopular: Boolean(item.isPopular || item.badge === "MOST POPULAR"),
-                            image: item.image || "/subscribe2.0.png",
-                        }));
+                        .map((item: any) => {
+                            const planImg =
+                                item.image_url ||
+                                (typeof item.image === "string" ? item.image : (item.image?.image_url || item.image?.url)) ||
+                                item.imageUrl ||
+                                "/subscribe2.0.png";
+
+                            return {
+                                id: item._id || item.id,
+                                name: item.name || "Good Plan",
+                                description: item.description || "Our most popular plan",
+                                tagline: item.description || item.badge || "Discover Six distinctive Shuddhveda Honey Varieties",
+                                detail: item.packageLabel || `${item.quantityPerJar || 500}g × ${item.numberOfJars || 6} Jars`,
+                                totalWeight: `Total: ${item.totalQuantity || 3} ${(item.totalQuantityUnit || 'kg').toUpperCase()} Honey`,
+                                price: typeof item.price === "number" ? item.price : 2099,
+                                mrp: typeof item.originalPrice === "number" ? item.originalPrice : (typeof item.mrp === "number" ? item.mrp : 2394),
+                                badge: item.badge,
+                                isPopular: Boolean(item.isPopular || item.badge === "MOST POPULAR"),
+                                image: planImg,
+                            };
+                        });
 
                     setPlans(formattedPlans);
                 } else {
@@ -222,9 +230,10 @@ export default function SubscriptionPlansSection() {
                     <div className="col-span-7 xl:col-span-7 flex justify-end mt-8 lg:-mr-12 xl:-mr-17">
                         <div className="relative w-full max-w-[690px] h-[550px] translate-x-10">
                             <Image
-                                src="/subscribe2.0.png"
-                                alt="Shuddhveda A Year of Honey Subscription"
+                                src={activePlan.image || "/subscribe2.0.png"}
+                                alt={activePlan.name || "Shuddhveda A Year of Honey Subscription"}
                                 fill
+                                unoptimized
                                 priority
                                 className="object-contain object-right"
                             />
@@ -298,9 +307,10 @@ export default function SubscriptionPlansSection() {
                     {/* Jars Showcase Image (Centered in mobile flow) */}
                     <div className="relative w-full max-w-[360px] xs:max-w-[400px] aspect-[4/3] mx-auto my-3 sm:my-5">
                         <Image
-                            src="/subscribe2.0.png"
-                            alt="Shuddhveda Honey Subscription Jars"
+                            src={activePlan.image || "/subscribe2.0.png"}
+                            alt={activePlan.name || "Shuddhveda Honey Subscription Jars"}
                             fill
+                            unoptimized
                             priority
                             className="object-contain"
                         />
