@@ -320,11 +320,40 @@ export default function ProductDetailPage({
       if (product?.floral_source && String(product.floral_source).trim()) {
         benefitDetails.push({ label: "Floral Source", value: String(product.floral_source).trim() });
       }
+
+      const rawBenefits = product?.key_benefits;
+      let benefitsList: string[] = [];
+
+      if (rawBenefits) {
+        if (Array.isArray(rawBenefits)) {
+          benefitsList = rawBenefits.map((b) => String(b).trim()).filter(Boolean);
+        } else {
+          const str = String(rawBenefits).trim();
+          let lines = str.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+          if (lines.length <= 1) {
+            const splitByNumbers = str.split(/(?=\b\d+[\.\)]\s*)/).map((s) => s.trim()).filter(Boolean);
+            if (splitByNumbers.length > 1) {
+              lines = splitByNumbers;
+            }
+          }
+          benefitsList = lines.map((line) => line.replace(/^[\d+[\.\)]\s*•\-\*]+/, "").trim()).filter(Boolean);
+        }
+      }
+
       list.push({
         key: "benefits",
         icon: Sparkles,
         title: "Key Benefits & Flora",
-        content: product?.key_benefits ? String(product.key_benefits).trim() : undefined,
+        customContent: benefitsList.length > 0 ? (
+          <div className="space-y-2.5 pt-1">
+            {benefitsList.map((benefit, idx) => (
+              <div key={idx} className="flex items-start gap-2.5 text-[14px] text-[#3D260F] font-medium leading-snug">
+
+                <span>{benefit}</span>
+              </div>
+            ))}
+          </div>
+        ) : undefined,
         details: benefitDetails.length > 0 ? benefitDetails : undefined,
       });
     }
@@ -1423,8 +1452,8 @@ export default function ProductDetailPage({
                             }
                           }}
                           className={`group relative flex flex-col border-2 rounded-2xl p-2.5 sm:p-3 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isCurrentProduct
-                              ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
-                              : "border-[#EADCC9] bg-white hover:border-[#D49313]"
+                            ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
+                            : "border-[#EADCC9] bg-white hover:border-[#D49313]"
                             }`}
                         >
                           <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">
@@ -1480,8 +1509,8 @@ export default function ProductDetailPage({
                               }
                             }}
                             className={`group relative flex flex-col border-2 rounded-2xl p-2.5 sm:p-3 transition-all cursor-pointer shadow-2xs hover:shadow-md text-left ${isSelectedPack
-                                ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
-                                : "border-[#EADCC9] bg-white hover:border-[#D49313]"
+                              ? "border-[#D49313] bg-[#FFFDF5] ring-2 ring-[#D49313]/60 shadow-md"
+                              : "border-[#EADCC9] bg-white hover:border-[#D49313]"
                               }`}
                           >
                             <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">

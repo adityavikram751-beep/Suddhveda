@@ -435,7 +435,9 @@ export default function ReviewPage() {
       const sourceItems = rawApiCartItems.length > 0 ? rawApiCartItems : cartProducts;
 
       const formattedItems = sourceItems.map((item: any) => {
-        const isCustom = item.type === "CUSTOM";
+        const itemType = String(item.type || "").toUpperCase();
+        const isCustom = itemType === "CUSTOM";
+        const isCombo = itemType === "COMBO" || item.product_details?.product?.product_type === "combo";
         const quantity = item.quantity || 1;
         const reservedQuantity = item.reserved_quantity || quantity;
 
@@ -461,13 +463,15 @@ export default function ReviewPage() {
               description: prodObj.description || "Raw and organic honey.",
               image: {
                 image_url: imgUrl,
+                public_id: prodObj.image?.public_id || "products/default",
               },
               variant: {
                 _id: variantObj._id || variantObj.variantId || variantObj.id || "",
                 weight: variantObj.weight || 250,
+                unit: variantObj.unit || "g",
                 price: variantObj.price || 0,
                 mrp: variantObj.mrp || variantObj.price || 0,
-                save: variantObj.save || 0,
+                save: variantObj.save || Math.max((variantObj.mrp || 0) - (variantObj.price || 0), 0),
                 sku: productSku,
               },
               reserved_quantity: p.reserved_quantity || 1,
@@ -495,10 +499,61 @@ export default function ReviewPage() {
               products: formattedProducts,
               coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
               totalWeight: totalWeight,
+              totalWeightUnit: "g",
               packingPrice: packingPrice,
               totalAmount: totalAmount,
               couponDiscount: itemCouponDiscount,
               finalAmount: finalAmount,
+              totalsave: totalsave,
+            },
+            quantity: quantity,
+            reserved_quantity: reservedQuantity,
+          };
+        } else if (isCombo) {
+          const pd = item.product_details || item;
+          const prodObj = pd.product || item.product || item;
+          const variantObj = pd.variant || prodObj.variant || item.variant || {};
+          const imgUrl =
+            typeof prodObj.image === "string"
+              ? prodObj.image
+              : (prodObj.image?.image_url || prodObj.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1790229042/comboProducts/m87taydd9m5tnhbfx90q.png");
+
+          const weightVal = typeof variantObj.weight === "number" ? variantObj.weight : (parseInt(variantObj.weight || item.weight) || 500);
+          const weightUnit = variantObj.unit || "g";
+          const priceVal = variantObj.price || item.price || prodObj.selling_price || 0;
+          const mrpVal = variantObj.mrp || item.oldPrice || priceVal;
+          const saveVal = variantObj.save || Math.max(mrpVal - priceVal, 0);
+
+          const totalAmount = pd.totalAmount || item.totalAmount || (priceVal * quantity);
+          const totalWeight = pd.totalWeight || item.totalWeight || (weightVal * quantity);
+          const totalsave = pd.totalsave || item.totalsave || (saveVal * quantity);
+
+          return {
+            type: "COMBO",
+            product_details: {
+              cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
+              product: {
+                _id: prodObj._id || prodObj.comboProductId || prodObj.id || item.comboProductId || item.id || "",
+                product_name: prodObj.product_name || prodObj.combo_name || prodObj.name || item.title || "Golden Duo",
+                brand: prodObj.brand || "SudhVeda Honey",
+                description: prodObj.description || "A specially curated combo of pure honey.",
+                product_type: "combo",
+                image: {
+                  image_url: imgUrl,
+                  public_id: prodObj.image?.public_id || "comboProducts/default",
+                },
+                variant: {
+                  _id: variantObj._id || prodObj._id || item._id || "",
+                  weight: weightVal,
+                  unit: weightUnit,
+                  price: priceVal,
+                  mrp: mrpVal,
+                  save: saveVal,
+                },
+              },
+              totalAmount: totalAmount,
+              totalWeight: totalWeight,
+              totalWeightUnit: weightUnit,
               totalsave: totalsave,
             },
             quantity: quantity,
@@ -512,42 +567,47 @@ export default function ReviewPage() {
           const imgUrl =
             typeof prodObj.image === "string"
               ? prodObj.image
-              : (prodObj.image?.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg");
+              : (prodObj.image?.image_url || prodObj.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636391/products/imor2dfkvout1guknsnz.jpg");
 
-          const totalAmount = pd.totalAmount || item.totalAmount || ((variantObj.price || item.price || 0) * quantity);
-          const itemCouponDiscount = pd.couponDiscount || 0;
-          const finalAmount = pd.finalAmount || Math.max(totalAmount - itemCouponDiscount, 0);
-          const totalWeight = pd.totalWeight || item.totalWeight || ((variantObj.weight || 250) * quantity);
-          const totalsave = pd.totalsave || item.totalsave || ((variantObj.save || 0) * quantity);
-          const itemSku = item.sku || variantObj.sku || prodObj.sku || pd.sku || "SHV-WFR-250";
+          const weightVal = typeof variantObj.weight === "number" ? variantObj.weight : (parseInt(variantObj.weight || item.weight) || 250);
+          const weightUnit = variantObj.unit || (typeof variantObj.weight === "string" && variantObj.weight.includes("kg") ? "kg" : "g");
+          const priceVal = variantObj.price || item.price || 0;
+          const mrpVal = variantObj.mrp || item.oldPrice || priceVal;
+          const saveVal = variantObj.save || Math.max(mrpVal - priceVal, 0);
+
+          const totalAmount = pd.totalAmount || item.totalAmount || (priceVal * quantity);
+          const totalWeight = pd.totalWeight || item.totalWeight || (weightVal * quantity);
+          const totalsave = pd.totalsave || item.totalsave || (saveVal * quantity);
+          const itemSku = variantObj.sku || prodObj.sku || item.sku || pd.sku || "SHV-MST-250";
 
           return {
             type: "NORMAL",
-            sku: itemSku,
             product_details: {
               cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
               product: {
                 _id: prodObj._id || prodObj.productId || prodObj.id || item.productId || item.id || "",
-                product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Pure Honey",
+                product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Premium Pure Mustard Honey",
                 brand: prodObj.brand || "SudhVeda Honey",
                 description: prodObj.description || "Raw and organic honey collected directly from natural hives.",
+                product_type: prodObj.product_type || "honey",
+                floral_source: prodObj.floral_source || "Mustard Blossom (Brassica)",
                 image: {
                   image_url: imgUrl,
+                  public_id: prodObj.image?.public_id || "products/default",
                 },
                 variant: {
                   _id: variantObj._id || variantObj.variantId || variantObj.id || item.variantId || "",
-                  weight: variantObj.weight || parseInt(item.weight) || 250,
-                  price: variantObj.price || item.price || 0,
-                  mrp: variantObj.mrp || item.oldPrice || variantObj.price || item.price || 0,
-                  save: variantObj.save || Math.max((item.oldPrice || 0) - (item.price || 0), 0),
+                  weight: weightVal,
+                  unit: weightUnit,
                   sku: itemSku,
+                  price: priceVal,
+                  mrp: mrpVal,
+                  save: saveVal,
                 },
               },
-              coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
               totalAmount: totalAmount,
-              couponDiscount: itemCouponDiscount,
-              finalAmount: finalAmount,
               totalWeight: totalWeight,
+              totalWeightUnit: weightUnit,
               totalsave: totalsave,
             },
             quantity: quantity,
@@ -556,15 +616,11 @@ export default function ReviewPage() {
         }
       });
 
-      const calculatedFinalAmount = total > 0 ? total : formattedItems.reduce((sum: number, it: any) => sum + (it.product_details?.finalAmount || 0), 0);
+      const calculatedFinalAmount = total > 0 ? total : formattedItems.reduce((sum: number, it: any) => sum + (it.product_details?.totalAmount || 0), 0);
 
       const payload = {
         items: formattedItems,
         finalAmount: calculatedFinalAmount,
-        couponCode: appliedCouponCode || null,
-        coupon_code: appliedCouponCode || null,
-        couponDiscount: couponDiscount || 0,
-        coupon: appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null,
         shipping_address: shippingAddressObj,
         billing_address: billingAddressObj,
         payment_mode: isCodMode || isCod ? "cod" : (storedPayment || "upi"),
