@@ -141,7 +141,7 @@ export default function SubscriptionPlansSection() {
     return (
         <section id="subscription-plans" className="pt-4 sm:pt-6 pb-6 sm:pb-10 bg-[#F9F0DF] relative overflow-hidden">
             <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12 relative z-10">
-                
+
                 {/* ==================== DESKTOP MODE (lg and up) ==================== */}
                 <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
 
@@ -153,7 +153,7 @@ export default function SubscriptionPlansSection() {
                             <span className="text-[13px] text-[#593102] select-none font-medium">←</span>
                             <div className="relative w-4 h-4 flex-shrink-0">
                                 <Image
-                                    src="/group.svg"
+                                    src="/leaf.svg"
                                     alt="Leaf Icon"
                                     fill
                                     className="object-contain"
@@ -164,7 +164,7 @@ export default function SubscriptionPlansSection() {
                             </span>
                             <div className="relative w-4 h-4 flex-shrink-0">
                                 <Image
-                                    src="/group.svg"
+                                    src="/leaf.svg"
                                     alt="Leaf Icon"
                                     fill
                                     className="object-contain"

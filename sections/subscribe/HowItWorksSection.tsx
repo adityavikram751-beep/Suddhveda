@@ -1,13 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Playfair_Display } from "next/font/google";
-
-const playfair = Playfair_Display({
-    subsets: ["latin"],
-    weight: ["400", "500", "600", "700"],
-    display: "swap",
-});
 
 interface HarvestItem {
     icon: string;
@@ -78,7 +71,7 @@ export default function HowItWorksSection() {
                                     INSIDE EVERY HARVEST BOX
                                 </span>
                                 <div className="relative w-4 h-4 opacity-85 flex items-center justify-center">
-                                    <Image src="/group.svg" alt="Leaf" width={14} height={14} className="object-contain" />
+                                    <Image src="/leaf.svg" alt="Leaf" width={14} height={14} className="object-contain" />
                                 </div>
                                 <span className="text-[12px] text-[#593102]/60 font-light">──→</span>
                             </div>
@@ -93,11 +86,9 @@ export default function HowItWorksSection() {
                                 letter-spacing: 0px;
                                 vertical-align: middle;
                             */}
-                            {/* Heading rendered per user request (enlarged font size) */}
                             <h2
-                                className={`${playfair.className} font-playfair not-italic text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] tracking-[0px] align-middle`}
+                                className="font-playfair not-italic text-[32px] sm:text-[42px] lg:text-[48px] leading-[1.1] tracking-[0px] align-middle"
                                 style={{
-                                    fontFamily: playfair.style.fontFamily,
                                     fontWeight: 400,
                                     fontStyle: "normal",
                                     lineHeight: "1.1",
@@ -105,10 +96,10 @@ export default function HowItWorksSection() {
                                     verticalAlign: "middle",
                                 }}
                             >
-                                <span className="block font-playfair text-[#A27514]" style={{ fontFamily: playfair.style.fontFamily }}>
+                                <span className="block font-playfair text-[#A27514]">
                                     Everything You Need to Know
                                 </span>
-                                <span className="block font-playfair text-[#4A2D0E]" style={{ fontFamily: playfair.style.fontFamily }}>
+                                <span className="block font-playfair text-[#4A2D0E]">
                                     About Your Honey.
                                 </span>
                             </h2>

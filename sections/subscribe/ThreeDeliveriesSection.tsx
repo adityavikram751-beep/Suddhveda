@@ -81,7 +81,7 @@ export default function ThreeDeliveriesSection() {
                     </span>
                     <div className="relative w-3 h-3 flex-shrink-0 opacity-75">
                         <Image
-                            src="/group.svg"
+                            src="/leaf.svg"
                             alt="Leaf Icon"
                             fill
                             className="object-contain"
@@ -159,7 +159,7 @@ export default function ThreeDeliveriesSection() {
                                     <div className="font-cormorant text-[12.5px] sm:text-[13.5px] text-[#8C7561] flex items-center gap-1.5 hover:text-[#C6900E] transition cursor-pointer group/link whitespace-nowrap">
                                         <span>Know more</span>
                                         <Image
-                                            src="/group.svg"
+                                            src="/leaf.svg"
                                             alt="Leaf Icon"
                                             width={13}
                                             height={13}
@@ -221,7 +221,7 @@ export default function ThreeDeliveriesSection() {
                                     <div className="font-cormorant text-[12px] xs:text-[13px] text-[#8C7561] flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                                         <span>Know more</span>
                                         <Image
-                                            src="/group.svg"
+                                            src="/leaf.svg"
                                             alt="Leaf Icon"
                                             width={12}
                                             height={12}

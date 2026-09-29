@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Playfair_Display } from "next/font/google";
 import { API_BASE_URL } from "@/lib/auth";
-
-const playfair = Playfair_Display({
-    subsets: ["latin"],
-    weight: ["400", "500", "600", "700"],
-    display: "swap",
-});
 
 interface FeatureItem {
     icon: string;
@@ -141,24 +134,22 @@ export default function WhatsInsideSection() {
                                     SUBSCRIBER PRIVILEGES
                                 </span>
                                 <div className="relative w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-85 flex items-center justify-center">
-                                    <Image src="/group.svg" alt="Leaf" width={14} height={14} className="object-contain" />
+                                    <Image src="/leaf.svg" alt="Leaf" width={14} height={14} className="object-contain" />
                                 </div>
                                 <span className="text-[11px] sm:text-[12px] text-[#593102]/60 font-light">──→</span>
                             </div>
 
-                            {/* Heading rendered with next/font Playfair_Display */}
                             <h2
-                                className={`${playfair.className} font-playfair not-italic text-[30px] xs:text-[34px] sm:text-[44px] lg:text-[53px] leading-[1.15] lg:leading-[64px] tracking-[0px] align-middle text-[#A27514]`}
+                                className="font-playfair not-italic text-[30px] xs:text-[34px] sm:text-[44px] lg:text-[53px] leading-[1.15] lg:leading-[64px] tracking-[0px] align-middle text-[#A27514]"
                                 style={{
-                                    fontFamily: playfair.style.fontFamily,
                                     fontWeight: 400,
                                     fontStyle: "normal",
                                     letterSpacing: "0px",
                                     color: "#A27514",
                                 }}
                             >
-                                <span className="block font-playfair" style={{ fontFamily: playfair.style.fontFamily }}>A Little More Honey.</span>
-                                <span className="block font-playfair" style={{ fontFamily: playfair.style.fontFamily }}>A Lot More to Discover.</span>
+                                <span className="block font-playfair">A Little More Honey.</span>
+                                <span className="block font-playfair">A Lot More to Discover.</span>
                             </h2>
                         </div>
 
