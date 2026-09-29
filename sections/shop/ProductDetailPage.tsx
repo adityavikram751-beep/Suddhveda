@@ -310,17 +310,16 @@ export default function ProductDetailPage({
         key: "description",
         icon: Info,
         title: "Description",
-        content: String(product.description).trim(),
+        customContent: (
+          <p className="text-[14px] leading-relaxed text-[#59483B] font-medium whitespace-pre-line pt-1">
+            {String(product.description).trim()}
+          </p>
+        ),
       });
     }
 
-    // 2. Key Benefits & Flora
-    if ((product?.key_benefits && String(product.key_benefits).trim()) || (product?.floral_source && String(product.floral_source).trim())) {
-      const benefitDetails: any[] = [];
-      if (product?.floral_source && String(product.floral_source).trim()) {
-        benefitDetails.push({ label: "Floral Source", value: String(product.floral_source).trim() });
-      }
-
+    // 2. Key Benefits
+    if (product?.key_benefits && String(product.key_benefits).trim()) {
       const rawBenefits = product?.key_benefits;
       let benefitsList: string[] = [];
 
@@ -340,22 +339,28 @@ export default function ProductDetailPage({
         }
       }
 
-      list.push({
-        key: "benefits",
-        icon: Sparkles,
-        title: "Key Benefits & Flora",
-        customContent: benefitsList.length > 0 ? (
-          <div className="space-y-2.5 pt-1">
-            {benefitsList.map((benefit, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-[14px] text-[#3D260F] font-medium leading-snug">
-
-                <span>{benefit}</span>
-              </div>
-            ))}
-          </div>
-        ) : undefined,
-        details: benefitDetails.length > 0 ? benefitDetails : undefined,
-      });
+      if (benefitsList.length > 0) {
+        list.push({
+          key: "benefits",
+          icon: Sparkles,
+          title: "Key Benefits",
+          customContent: (
+            <div className="space-y-2.5 pt-1">
+              {benefitsList.map((benefit, idx) => {
+                const hasBulletOrNumber = /^(\d+[\.\)]|[•\-\*])\s*/.test(benefit);
+                return (
+                  <div key={idx} className="flex items-start gap-2.5 text-[14px] text-[#3D260F] font-medium leading-snug">
+                    {!hasBulletOrNumber && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                    )}
+                    <span>{benefit}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ),
+        });
+      }
     }
 
     // 4. Storage Instructions
@@ -368,18 +373,27 @@ export default function ProductDetailPage({
       });
     }
 
+    // Helper to format values with first letter capitalized
+    const formatSpecValue = (val: string) => {
+      if (!val) return "";
+      const trimmed = String(val).replace(/_/g, " ").trim();
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    };
+
     // 5. Product Specifications & Manufacturing Details (API fields)
     const specDetails: any[] = [];
     if (product?.brand && String(product.brand).trim())
-      specDetails.push({ label: "Brand", value: String(product.brand).trim() });
+      specDetails.push({ label: "Brand", value: formatSpecValue(String(product.brand)) });
     if (product?.product_type && String(product.product_type).trim())
-      specDetails.push({ label: "Product Type", value: String(product.product_type).trim() });
+      specDetails.push({ label: "Product Type", value: formatSpecValue(String(product.product_type)) });
+    if (product?.floral_source && String(product.floral_source).trim())
+      specDetails.push({ label: "Floral Source", value: formatSpecValue(String(product.floral_source)) });
     if (product?.manufacturer_information && String(product.manufacturer_information).trim())
-      specDetails.push({ label: "Manufacturer Info", value: String(product.manufacturer_information).trim() });
+      specDetails.push({ label: "Manufacturer Info", value: formatSpecValue(String(product.manufacturer_information)) });
     if (product?.shelf_life && String(product.shelf_life).trim())
-      specDetails.push({ label: "Shelf Life", value: String(product.shelf_life).trim() });
+      specDetails.push({ label: "Shelf Life", value: formatSpecValue(String(product.shelf_life)) });
     if (product?.country_of_origin && String(product.country_of_origin).trim())
-      specDetails.push({ label: "Country of Origin", value: String(product.country_of_origin).trim() });
+      specDetails.push({ label: "Country of Origin", value: formatSpecValue(String(product.country_of_origin)) });
     if (product?.fssai_license_number && String(product.fssai_license_number).trim())
       specDetails.push({ label: "FSSAI License No.", value: String(product.fssai_license_number).trim() });
     if (product?.batch_number && String(product.batch_number).trim())
@@ -528,78 +542,64 @@ export default function ProductDetailPage({
       }
     }
 
-    // Default table rows matching standard honey nutrition facts if tableRows is empty
-    if (tableRows.length === 0 && !plainTextFallback) {
-      tableRows = [
-        { label: "Energy(Kcal)", per100g: "336", perServing: "70.560", rda: "3.5%" },
-        { label: "Total Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
-        { label: "Saturated Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
-        { label: "Trans Fat (g)", per100g: "0.0", perServing: "0.0", rda: "0%" },
-        { label: "Cholesterol (mg)", per100g: "0.0", perServing: "0.0", rda: "" },
-        { label: "Carbohydrates (g)", per100g: "84.0", perServing: "17.64", rda: "" },
-        { label: "Natural Sugar (g)", per100g: "84.0", perServing: "17.64", rda: "" },
-        { label: "Added Sugar", per100g: "0.0", perServing: "0.0", rda: "0%" },
-        { label: "Protein (g)", per100g: "0.0", perServing: "0.0", rda: "" },
-        { label: "Sodium (mg)", per100g: "0.", perServing: "0.", rda: "0%" },
-      ];
-    }
+    if (tableRows.length > 0 || plainTextFallback) {
+      list.push({
+        key: "nutrition",
+        icon: FileText,
+        title: "Nutritional Info",
+        customContent: (
+          <div className="space-y-4 text-[14px] leading-relaxed text-[#3D260F] font-sans pt-1">
+            {/* Nutrition Facts Title & Serving Size */}
+            <div>
+              <h4 className="font-bold text-[#1F1813] text-[16px]">Nutrition Facts</h4>
+              {parsedServingSizeStr && (
+                <p className="text-[13px] text-[#7A6A5C] font-medium mt-0.5">
+                  Serving Size: {parsedServingSizeStr}
+                </p>
+              )}
+            </div>
 
-    list.push({
-      key: "nutrition",
-      icon: FileText,
-      title: "Nutritional Info",
-      customContent: (
-        <div className="space-y-4 text-[14px] leading-relaxed text-[#3D260F] font-sans pt-1">
-          {/* Nutrition Facts Title & Serving Size */}
-          <div>
-            <h4 className="font-bold text-[#1F1813] text-[16px]">Nutrition Facts</h4>
-            {parsedServingSizeStr && (
-              <p className="text-[13px] text-[#7A6A5C] font-medium mt-0.5">
-                Serving Size: {parsedServingSizeStr}
+            {/* Table Matching Exact API Data */}
+            {tableRows.length > 0 ? (
+              <div className="overflow-x-auto pt-1">
+                <table className="w-full text-left text-[13.5px] border-collapse">
+                  <thead>
+                    <tr className="border-t border-b-2 border-[#C8B28F] text-[#6E5D4F] font-normal text-[12.5px]">
+                      <th className="py-2.5 px-2 w-[40%]"></th>
+                      <th className="py-2.5 px-2 text-right">Value Per<br />100g</th>
+                      <th className="py-2.5 px-2 text-right">Value Per<br />Serving</th>
+                      <th className="py-2.5 px-2 text-right">%RDA</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#EADCC9]/40 text-[#201812] border-b-2 border-[#C8B28F]">
+                    {tableRows.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-[#FAF0DC]/30 transition-colors">
+                        <td className="py-2 px-2 font-medium text-[#201812]">{row.label}</td>
+                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.per100g || "-"}</td>
+                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.perServing || "-"}</td>
+                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.rda}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : plainTextFallback ? (
+              <p className="text-[13.5px] text-[#6E5D4F] leading-relaxed whitespace-pre-line bg-[#FFFDF9] p-3 rounded-xl border border-[#EADCC9]">
+                {plainTextFallback}
               </p>
+            ) : null}
+
+            {/* Footnotes */}
+            {(tableRows.length > 0 || plainTextFallback) && (
+              <div className="text-[11.5px] text-[#7A6A5C] space-y-0.5 pt-1 font-medium">
+                <p>*RDA stands for recommended Dietary Allowance per Serving</p>
+                <p>*Average Values</p>
+              </div>
             )}
           </div>
-
-          {/* Table Matching Exact Reference UI */}
-          {tableRows.length > 0 ? (
-            <div className="overflow-x-auto pt-1">
-              <table className="w-full text-left text-[13.5px] border-collapse">
-                <thead>
-                  <tr className="border-t border-b-2 border-[#C8B28F] text-[#6E5D4F] font-normal text-[12.5px]">
-                    <th className="py-2.5 px-2 w-[40%]"></th>
-                    <th className="py-2.5 px-2 text-right">Value Per<br />100g</th>
-                    <th className="py-2.5 px-2 text-right">Value Per<br />Serving</th>
-                    <th className="py-2.5 px-2 text-right">%RDA</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#EADCC9]/40 text-[#201812] border-b-2 border-[#C8B28F]">
-                  {tableRows.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-[#FAF0DC]/30 transition-colors">
-                      <td className="py-2 px-2 font-medium text-[#201812]">{row.label}</td>
-                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.per100g || "-"}</td>
-                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.perServing || "-"}</td>
-                      <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.rda}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : plainTextFallback ? (
-            <p className="text-[13.5px] text-[#6E5D4F] leading-relaxed whitespace-pre-line bg-[#FFFDF9] p-3 rounded-xl border border-[#EADCC9]">
-              {plainTextFallback}
-            </p>
-          ) : null}
-
-          {/* Footnotes */}
-          {(tableRows.length > 0 || plainTextFallback) && (
-            <div className="text-[11.5px] text-[#7A6A5C] space-y-0.5 pt-1 font-medium">
-              <p>*RDA stands for recommended Dietary Allowance per Serving</p>
-              <p>*Average Values</p>
-            </div>
-          )}
-        </div>
-      ),
-    });
+        ),
+      });
+    }
 
     // 7. Returns & Exchange
     list.push({
@@ -607,22 +607,60 @@ export default function ProductDetailPage({
       icon: Info,
       title: "Returns & Exchange",
       customContent: (
-        <div className="space-y-3.5 text-[14px] leading-relaxed text-[#6E5D4F] font-normal pt-1">
-          <p>We keep it sweet and simple:</p>
+        <div className="space-y-3.5 text-[14px] leading-relaxed text-[#59483B] font-medium pt-1">
           <p>
-            <strong className="font-extrabold text-[#593102]">Sealed bottle?</strong> Of course. Send it back, and we’ll make it right.
+            At ShuddhVeda Honey, we take great care to ensure that every product reaches you safely and in perfect condition.
           </p>
           <p>
-            <strong className="font-extrabold text-[#593102]">Opened bottle?</strong> Sadly, no. Once opened, honey is a food product, we can’t take it back. It would just go to waste, and that&apos;s not fair to bees or humans.
+            Due to the nature of honey as a food product, we do not accept returns or exchanges for products that have been opened, used, tasted, or where the product seal has been broken.
           </p>
-          <p className="font-extrabold text-[#593102] text-[14.5px]">
-            Please inform us of any issue within 48 hours of receiving your order, along with valid image and video proof.
+          <div>
+            <p className="font-bold text-[#3D260F] mb-1.5">However, you may request a replacement or refund if:</p>
+            <ul className="space-y-1.5 pl-1">
+              <li className="flex items-start gap-2 text-[13.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                <span>You receive a damaged, broken or leaking jar.</span>
+              </li>
+              <li className="flex items-start gap-2 text-[13.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                <span>You receive a different product from what you ordered.</span>
+              </li>
+              <li className="flex items-start gap-2 text-[13.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                <span>The product arrives with a damaged or broken seal.</span>
+              </li>
+              <li className="flex items-start gap-2 text-[13.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                <span>The product is expired or past its Best Before date at the time of delivery.</span>
+              </li>
+              <li className="flex items-start gap-2 text-[13.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
+                <span>Any product from your order is missing.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="pt-1">
+            <h5 className="font-extrabold text-[#3D260F] text-[15px] mb-1">Unboxing Video Required</h5>
+            <p>
+              We strongly recommend recording a clear, continuous unboxing video before opening the outer shipping packet/box.
+            </p>
+            <p className="mt-2">
+              Start recording while the package is still completely sealed and continue recording while opening the parcel and checking all products inside.
+            </p>
+            <p className="mt-2">
+              For claims related to damage, leakage, missing products, incorrect products or tampered packaging, an unboxing video may be required to verify the issue. The video should clearly show the sealed outer packaging, shipping label, opening of the parcel, and condition of the products received.
+            </p>
+          </div>
+
+          <p className="font-semibold text-[#3D260F]">
+            Please contact our customer support team within 48 hours of delivery and provide your Order ID, clear photographs and unboxing video.
           </p>
           <p>
-            <strong className="font-extrabold text-[#593102]">Start recording before opening or unsealing the courier package</strong>, keeping the entire box clearly visible in the frame, and keep recording in one go until the package is fully open. Take a few clear photos of the product, outer packaging, and any damage or mix-up. A quick 15-second unboxing fuels our hive and earns you honey perks 🍯 Don’t forget to tag @honeyveda.in. Thank you for being wonderful!
+            Once the claim is reviewed and verified, ShuddhVeda Honey will arrange an appropriate replacement or refund, as applicable.
           </p>
-          <p>
-            <strong className="font-extrabold text-[#593102]">Confused? Concerned? Curious?</strong> Message us on WhatsApp or email. We reply faster than a bee spots a flower. 🐝 💬
+          <p className="text-[13px] text-[#7A6A5C] italic pt-1 border-t border-[#EADCC9]">
+            Natural variations in the colour, taste, aroma, consistency or crystallisation of honey are not considered product defects and therefore do not qualify for return or replacement.
           </p>
         </div>
       ),

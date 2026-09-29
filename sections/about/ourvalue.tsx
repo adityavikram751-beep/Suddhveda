@@ -49,7 +49,7 @@ export default function OurValues() {
           {/* LEFT IMAGE + QUOTE */}
           <div className="relative w-full h-[460px] sm:h-[520px] lg:h-full lg:min-h-[560px] rounded-3xl overflow-hidden shadow-2xl group cursor-pointer border-2 border-[#D49313]/60 bg-white flex items-center justify-center">
             <Image
-              src="/beehoney.png"
+              src="/about1.webp"
               alt="Beekeeper pouring honey into jars"
               fill
               className="object-contain p-1 transition-transform duration-700 ease-out group-hover:scale-105"

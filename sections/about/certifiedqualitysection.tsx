@@ -100,7 +100,7 @@ export default function CertifiedQualitySection() {
           <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end w-full pt-6 lg:pt-10">
             <div className="relative w-full max-w-[620px] rounded-[24px] overflow-hidden border-2 border-[#D49313]/70 shadow-[0_20px_50px_rgba(89,49,2,0.15)]">
               <img
-                src="/shop 3.png"
+                src="/about2.webp"
                 alt="Certified Quality ShudhVeda Honey"
                 className="w-full h-auto block rounded-[22px]"
               />

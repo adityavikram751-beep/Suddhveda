@@ -46,7 +46,7 @@ export default function ShopHero() {
 
                 {/* Product Image - Edge to Edge 100% Full Fit */}
                 <Image
-                  src="/shop.png"
+                  src="/shop1.webp"
                   alt="ShudhVeda Honey Jars"
                   fill
                   priority

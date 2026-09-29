@@ -35,7 +35,7 @@ export default function Hero() {
             <div className="block lg:hidden w-full my-5">
               <div className="relative w-full max-w-[480px] mx-auto rounded-[24px] overflow-hidden border-2 border-[#D49313]/70 shadow-lg">
                 <img
-                  src="/home 1.png"
+                  src="/shop2.webp"
                   alt="ShuddhaVeda Natural Honey Jar"
                   className="w-full h-auto block rounded-[22px]"
                 />
@@ -99,7 +99,7 @@ export default function Hero() {
           <div className="hidden lg:flex lg:col-span-5 relative justify-end w-full">
             <div className="relative w-full max-w-[540px] rounded-[24px] overflow-hidden border-2 border-[#D49313]/70 shadow-[0_20px_50px_rgba(89,49,2,0.15)]">
               <img
-                src="/home 1.png"
+                src="/shop2.webp"
                 alt="ShuddhaVeda Natural Honey Jar"
                 className="w-full h-auto block rounded-[22px]"
               />

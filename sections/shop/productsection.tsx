@@ -404,7 +404,7 @@ export default function ShopPage() {
         Boost your wellness with nature&apos;s sweetest gift.
       </p>
       <div className="relative mt-5 h-[275px] sm:h-[300px] w-full overflow-hidden rounded-[16px] border border-[#D49313]/40 shadow-sm">
-        <Image src="/shop 2.png" alt="Raw Honey Pure You" fill priority className="object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+        <Image src="/shop3.webp" alt="Raw Honey Pure You" fill priority className="object-cover object-center group-hover:scale-105 transition-transform duration-700" />
       </div>
     </div>
   );
@@ -507,7 +507,7 @@ export default function ShopPage() {
     <main className="bg-[#FAF7F2] text-[#2F241C]">
       <div className="border-t border-[#E8E0D8]" />
       <div className="mx-auto max-w-[1490px] px-4 py-4 lg:py-8 pb-6 lg:pb-12 sm:px-6 lg:px-8">
-        
+
         {/* Page Heading (Centered & Refined) */}
         <div className="mb-8 lg:mb-10 text-center mx-auto max-w-[760px] px-4 flex flex-col items-center">
           <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-3">
@@ -538,7 +538,7 @@ export default function ShopPage() {
 
         {/* Main Shop Section Grid: Sidebar + Products */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Desktop Left Sidebar (Filters + Promo Banner) */}
           <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-[135px]">
             {filterContent}
@@ -589,8 +589,8 @@ export default function ShopPage() {
                       onToggleWishlist={() => handleToggleWishlist(productId)}
                       onAddToCart={() => handleAddToCart(item)}
                       onBuyNow={() => handleBuyNow(item)}
-                      onIncrement={() => {}}
-                      onDecrement={() => {}}
+                      onIncrement={() => { }}
+                      onDecrement={() => { }}
                       onOpenDetails={() => router.push(`/shop/products/${productId}`)}
                     />
                   </div>
@@ -631,8 +631,8 @@ export default function ShopPage() {
                       onToggleWishlist={() => handleToggleWishlist(productId)}
                       onAddToCart={() => handleAddToCart(item)}
                       onBuyNow={() => handleBuyNow(item)}
-                      onIncrement={() => {}}
-                      onDecrement={() => {}}
+                      onIncrement={() => { }}
+                      onDecrement={() => { }}
                       onOpenDetails={() => router.push(`/shop/products/${productId}`)}
                     />
                   </div>
