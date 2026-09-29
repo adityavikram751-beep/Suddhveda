@@ -67,7 +67,7 @@ export default function ThreeDeliveriesSection() {
                 <div className="inline-flex items-center gap-1.5 sm:gap-2 whitespace-nowrap bg-[#FDF5E6]/90 border border-[#E6D7C3] px-3 sm:px-4 py-1.5 rounded-[14px] mb-4 sm:mb-5 shadow-2xs max-w-full overflow-hidden select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     <div className="relative w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 opacity-80">
                         <Image
-                            src="/group.svg"
+                            src="/leaf.svg"
                             alt="Leaf Icon"
                             fill
                             className="object-contain"
