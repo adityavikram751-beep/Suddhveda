@@ -37,6 +37,8 @@ interface PlanItem {
     detail: string;
     price: number;
     mrp: number;
+    image_url?: string;
+    image?: string;
 }
 
 interface SubscriptionCheckoutFormProps {
@@ -56,6 +58,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
         detail: "500g × 6 Jars",
         price: 2099,
         mrp: 2394,
+        image_url: "/subscribe2.0.png",
     });
 
     const [submittingCheckout, setSubmittingCheckout] = useState(false);
@@ -117,12 +120,19 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                 if (Array.isArray(rawList)) {
                     const found = rawList.find((p: any) => (p._id || p.id) === targetPlanId);
                     if (found) {
+                        const foundImg =
+                            found.image_url ||
+                            (typeof found.image === "string" ? found.image : (found.image?.image_url || found.image?.url)) ||
+                            found.imageUrl ||
+                            "/subscribe2.0.png";
+
                         setSelectedPlan({
                             id: found._id || found.id,
                             name: found.name || "A Year of Honey Subscription",
                             detail: found.packageLabel || `${found.quantityPerJar || 500}g × ${found.numberOfJars || 6} Jars`,
                             price: found.price || 2099,
                             mrp: found.originalPrice || found.mrp || 2394,
+                            image_url: foundImg,
                         });
                     }
                 }
@@ -194,6 +204,13 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
             const resData = await res.json().catch(() => ({}));
 
             if (res.ok && (resData.success !== false)) {
+                const planImage =
+                    resData.purchase?.plan?.image_url ||
+                    (typeof resData.purchase?.plan?.image === "string" ? resData.purchase?.plan?.image : resData.purchase?.plan?.image?.image_url) ||
+                    selectedPlan.image_url ||
+                    selectedPlan.image ||
+                    "/subscribe2.0.png";
+
                 if (resData.payment_required && resData.razorpay) {
                     await loadRazorpayScript();
                     if (typeof window !== "undefined" && (window as any).Razorpay) {
@@ -214,6 +231,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                                     razorpayOrderId: response.razorpay_order_id,
                                     razorpaySignature: response.razorpay_signature,
                                     planName: resData.purchase?.plan?.name || selectedPlan.name,
+                                    planImage: planImage,
                                     purchase: resData.purchase,
                                     shippingAddress: {
                                         name: payload.shipping_address.full_name,
@@ -244,7 +262,21 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                     }
                 }
 
-                const createdOrder = resData.purchase || resData.data || resData.order || resData;
+                const rawCreated = resData.purchase || resData.data || resData.order || resData;
+                const createdOrder = {
+                    ...rawCreated,
+                    planName: resData.purchase?.plan?.name || rawCreated.planName || selectedPlan.name,
+                    planImage: planImage,
+                    shippingAddress: rawCreated.shippingAddress || {
+                        name: payload.shipping_address.full_name,
+                        phone: payload.shipping_address.phone,
+                        addressLine: payload.shipping_address.address_line1,
+                        city: payload.shipping_address.city,
+                        state: payload.shipping_address.state,
+                        pincode: payload.shipping_address.pincode,
+                    },
+                    pricing: rawCreated.pricing || { total: resData.purchase?.finalAmount || selectedPlan.price },
+                };
                 if (typeof window !== "undefined") {
                     localStorage.setItem("latest_order", JSON.stringify(createdOrder));
                 }
