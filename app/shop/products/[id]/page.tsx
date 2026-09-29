@@ -4,7 +4,7 @@ import Header from "@/components/layout/Header";
 import ProductDetailPage from "@/sections/shop/ProductDetailPage";
 import { getProductsFromResponse, getSingleProductFromResponse, type ApiProduct } from "@/lib/api-products";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sltwdpp8-3000.inc1.devtunnels.ms";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://suddhvedha-honey-backend.onrender.com";
 
 const FETCH_HEADERS = {
   "X-Tunnel-Skip-Anti-Phishing-Page": "true",
