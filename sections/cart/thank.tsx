@@ -179,7 +179,14 @@ export default function OrderConfirmation() {
           weight: order?.purchase?.plan?.packageLabel || `${order?.purchase?.plan?.numberOfJars || 6} Jars Delivery`,
           quantity: 1,
           price: order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || 4299,
-          image: order?.purchase?.plan?.image || "/giftset.png",
+          image:
+            order?.planImage ||
+            order?.purchase?.plan?.image_url ||
+            (typeof order?.purchase?.plan?.image === "string" ? order?.purchase?.plan?.image : order?.purchase?.plan?.image?.image_url) ||
+            order?.plan?.image_url ||
+            (typeof order?.plan?.image === "string" ? order?.plan?.image : order?.plan?.image?.image_url) ||
+            order?.image ||
+            "/subscribe2.0.png",
         },
       ]
     : [];
