@@ -298,20 +298,43 @@ export function getCategorySlug(product: ApiProduct): string {
 }
 
 export function getProductImages(product: ApiProduct): any[] {
-  const imageDoc = product?.imageDocumentId || product?.images || product?.image;
-  if (Array.isArray(imageDoc)) {
-    return imageDoc.map((img: any, idx: number) => {
+  if (!product || typeof product !== "object") return [];
+
+  let rawList: any[] = [];
+
+  if (Array.isArray(product?.imageDocumentId?.images)) {
+    rawList = product.imageDocumentId.images;
+  } else if (Array.isArray(product?.imageDocumentId)) {
+    rawList = product.imageDocumentId;
+  } else if (Array.isArray(product?.images)) {
+    rawList = product.images;
+  } else if (Array.isArray(product?.image?.images)) {
+    rawList = product.image.images;
+  } else if (Array.isArray(product?.image)) {
+    rawList = product.image;
+  } else if (product?.image_url || product?.imageUrl) {
+    const url = product.image_url || product.imageUrl;
+    rawList = [{ _id: "img-1", image_url: url, is_primary: true }];
+  } else if (typeof product?.image === "string") {
+    rawList = [{ _id: "img-1", image_url: product.image, is_primary: true }];
+  } else if (product?.imageDocumentId && typeof product.imageDocumentId === "object" && (product.imageDocumentId.image_url || product.imageDocumentId.url)) {
+    rawList = [product.imageDocumentId];
+  }
+
+  if (rawList.length > 0) {
+    return rawList.map((img: any, idx: number) => {
       if (typeof img === "string") {
         return { _id: `img-${idx}`, image_url: img, is_primary: idx === 0 };
       }
       return {
         _id: img._id || img.id || `img-${idx}`,
-        image_url: img.image_url || img.url || img.src || "/honneycart.png",
+        image_url: img.image_url || img.url || img.src || img.secure_url || "/placeholder.png",
         is_primary: img.is_primary ?? idx === 0,
-        thumbnail: img.thumbnail || img.thumbnail_url || img.image_url || img.url || "/honneycart.png",
+        thumbnail: img.thumbnail || img.thumbnail_url || img.image_url || img.url || img.secure_url || "/placeholder.png",
       };
     });
   }
+
   return [];
 }
 
@@ -322,8 +345,8 @@ export function getPrimaryImage(product: ApiProduct): string {
     images[0]?.image_url ||
     product?.image_url ||
     product?.imageUrl ||
-    product?.image ||
-    "/honneycart.png"
+    (typeof product?.image === "string" ? product.image : null) ||
+    "/placeholder.png"
   );
 }
 
@@ -354,21 +377,35 @@ export function getProductVariants(product: ApiProduct): ProductVariant[] {
   }
 
   const variantDoc = product?.variantDocumentId || product?.variants || product?.variant || product?.variantId;
-  if (Array.isArray(variantDoc)) {
-    return variantDoc.map((v: any, idx: number) => {
+  let rawVariants: any[] = [];
+  if (Array.isArray(variantDoc?.variants)) {
+    rawVariants = variantDoc.variants;
+  } else if (Array.isArray(variantDoc)) {
+    rawVariants = variantDoc;
+  } else if (variantDoc && typeof variantDoc === "object") {
+    rawVariants = [variantDoc];
+  }
+
+  if (rawVariants.length > 0) {
+    return rawVariants.map((v: any, idx: number) => {
       const price = Number(v.price || v.selling_price || v.salePrice || 0);
       const mrp = Number(v.mrp || v.originalPrice || price);
+      const discount_value = Number(
+        v.discount_percentage ?? v.discount_value ?? v.discount_percent ?? (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0)
+      );
       return {
         ...v,
         _id: v._id || v.id || `var-${idx}`,
         price,
         mrp,
+        weight: v.weight,
+        unit: v.unit || "g",
+        discount_value,
         you_save: Number(v.you_save || (mrp > price ? mrp - price : 0)),
       };
     });
   }
-  if (Array.isArray(variantDoc?.variants)) return variantDoc.variants;
-  if (variantDoc && typeof variantDoc === "object") return [variantDoc];
+
   return [];
 }
 

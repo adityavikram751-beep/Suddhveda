@@ -432,12 +432,31 @@ export default function ReviewPage() {
         console.error("Error fetching billing address:", e);
       }
 
+      const extractPublicId = (imgObj: any, imgUrl: string, fallbackFolder: string = "products") => {
+        if (imgObj && typeof imgObj === "object" && imgObj.public_id) {
+          return imgObj.public_id;
+        }
+        if (typeof imgUrl === "string" && imgUrl.includes("/upload/")) {
+          const afterUpload = imgUrl.split("/upload/")[1];
+          if (afterUpload) {
+            const withoutVersion = afterUpload.replace(/^v\d+\//, "");
+            const dotIndex = withoutVersion.lastIndexOf(".");
+            return dotIndex !== -1 ? withoutVersion.substring(0, dotIndex) : withoutVersion;
+          }
+        }
+        return `${fallbackFolder}/default`;
+      };
+
       const sourceItems = rawApiCartItems.length > 0 ? rawApiCartItems : cartProducts;
 
       const formattedItems = sourceItems.map((item: any) => {
-        const itemType = String(item.type || "").toUpperCase();
+        const itemType = String(item.type || item.product_details?.product?.product_type || "").toUpperCase();
         const isCustom = itemType === "CUSTOM";
-        const isCombo = itemType === "COMBO" || item.product_details?.product?.product_type === "combo";
+        const isCombo =
+          itemType === "COMBO" ||
+          item.product_details?.product?.product_type === "combo" ||
+          item.product?.product_type === "combo" ||
+          Boolean(item.comboSets || item.product?.comboSets || item.product_details?.product?.comboSets);
         const quantity = item.quantity || 1;
         const reservedQuantity = item.reserved_quantity || quantity;
 
@@ -450,20 +469,22 @@ export default function ReviewPage() {
           const formattedProducts = rawProducts.map((p: any) => {
             const prodObj = p.product || p;
             const variantObj = p.variant || prodObj.variant || {};
+            const imgObj = typeof prodObj.image === "object" && prodObj.image ? prodObj.image : {};
             const imgUrl =
               typeof p.image === "string"
                 ? p.image
-                : p.image?.image_url || prodObj.image?.image_url || prodObj.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg";
+                : (p.image?.image_url || prodObj.image?.image_url || prodObj.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636390/products/cqwj18nqm6dcz9r0htlk.jpg");
             const productSku = p.sku || variantObj.sku || prodObj.sku || "SHV-WFR-250";
+            const pubId = extractPublicId(imgObj, imgUrl, "products");
 
             return {
               productId: p.productId || prodObj._id || prodObj.id || "",
               product_name: prodObj.product_name || prodObj.productName || prodObj.name || p.product_name || "Honey",
               brand: prodObj.brand || "SudhVeda Honey",
-              description: prodObj.description || "Raw and organic honey.",
+              description: prodObj.description || "Raw and organic honey collected directly from vibrant hives.",
               image: {
                 image_url: imgUrl,
-                public_id: prodObj.image?.public_id || "products/default",
+                public_id: pubId,
               },
               variant: {
                 _id: variantObj._id || variantObj.variantId || variantObj.id || "",
@@ -471,7 +492,7 @@ export default function ReviewPage() {
                 unit: variantObj.unit || "g",
                 price: variantObj.price || 0,
                 mrp: variantObj.mrp || variantObj.price || 0,
-                save: variantObj.save || Math.max((variantObj.mrp || 0) - (variantObj.price || 0), 0),
+                save: variantObj.save ?? Math.max((variantObj.mrp || 0) - (variantObj.price || 0), 0),
                 sku: productSku,
               },
               reserved_quantity: p.reserved_quantity || 1,
@@ -513,34 +534,49 @@ export default function ReviewPage() {
           const pd = item.product_details || item;
           const prodObj = pd.product || item.product || item;
           const variantObj = pd.variant || prodObj.variant || item.variant || {};
+          const imgObj = typeof prodObj.image === "object" && prodObj.image ? prodObj.image : {};
           const imgUrl =
             typeof prodObj.image === "string"
               ? prodObj.image
               : (prodObj.image?.image_url || prodObj.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1790229042/comboProducts/m87taydd9m5tnhbfx90q.png");
+          const pubId = extractPublicId(imgObj, imgUrl, "comboProducts");
 
           const weightVal = typeof variantObj.weight === "number" ? variantObj.weight : (parseInt(variantObj.weight || item.weight) || 500);
           const weightUnit = variantObj.unit || "g";
           const priceVal = variantObj.price || item.price || prodObj.selling_price || 0;
           const mrpVal = variantObj.mrp || item.oldPrice || priceVal;
-          const saveVal = variantObj.save || Math.max(mrpVal - priceVal, 0);
+          const saveVal = variantObj.save ?? Math.max(mrpVal - priceVal, 0);
 
-          const totalAmount = pd.totalAmount || item.totalAmount || (priceVal * quantity);
-          const totalWeight = pd.totalWeight || item.totalWeight || (weightVal * quantity);
-          const totalsave = pd.totalsave || item.totalsave || (saveVal * quantity);
+          const totalAmount = pd.totalAmount ?? item.totalAmount ?? (priceVal * quantity);
+          const totalWeight = pd.totalWeight ?? item.totalWeight ?? (weightVal * quantity);
+          const totalsave = pd.totalsave ?? item.totalsave ?? (saveVal * quantity);
+
+          const rawComboSets = prodObj.comboSets || item.comboSets || pd.comboSets || [];
+          const comboSets = Array.isArray(rawComboSets) && rawComboSets.length > 0
+            ? rawComboSets.map((c: any) => ({
+                name: c.name || c.product_name || "Honey Jar",
+                weight: typeof c.weight === "number" ? c.weight : (parseInt(c.weight) || 250),
+                unit: c.unit || "g",
+              }))
+            : [
+                { name: "Mustard Honey", weight: 250, unit: "g" },
+                { name: "Lychee Honey", weight: 250, unit: "g" },
+              ];
 
           return {
             type: "COMBO",
             product_details: {
-              cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
+              cartItemId: pd.cartItemId || item.cartItemId || item._id || item.id || "",
               product: {
                 _id: prodObj._id || prodObj.comboProductId || prodObj.id || item.comboProductId || item.id || "",
                 product_name: prodObj.product_name || prodObj.combo_name || prodObj.name || item.title || "Golden Duo",
                 brand: prodObj.brand || "SudhVeda Honey",
-                description: prodObj.description || "A specially curated combo of pure honey.",
+                description: prodObj.description || "A specially curated combo of Mustard Honey and Lychee Honey — 100% pure, unprocessed, and sourced directly from trusted apiaries.",
                 product_type: "combo",
+                comboSets: comboSets,
                 image: {
                   image_url: imgUrl,
-                  public_id: prodObj.image?.public_id || "comboProducts/default",
+                  public_id: pubId,
                 },
                 variant: {
                   _id: variantObj._id || prodObj._id || item._id || "",
@@ -564,36 +600,38 @@ export default function ReviewPage() {
           const pd = item.product_details || item;
           const prodObj = pd.product || item.product || item;
           const variantObj = pd.variant || prodObj.variant || item.variant || {};
+          const imgObj = typeof prodObj.image === "object" && prodObj.image ? prodObj.image : {};
           const imgUrl =
             typeof prodObj.image === "string"
               ? prodObj.image
               : (prodObj.image?.image_url || prodObj.image_url || item.image || "https://res.cloudinary.com/anjp8e9i/image/upload/v1784636391/products/imor2dfkvout1guknsnz.jpg");
+          const pubId = extractPublicId(imgObj, imgUrl, "products");
 
           const weightVal = typeof variantObj.weight === "number" ? variantObj.weight : (parseInt(variantObj.weight || item.weight) || 250);
           const weightUnit = variantObj.unit || (typeof variantObj.weight === "string" && variantObj.weight.includes("kg") ? "kg" : "g");
           const priceVal = variantObj.price || item.price || 0;
           const mrpVal = variantObj.mrp || item.oldPrice || priceVal;
-          const saveVal = variantObj.save || Math.max(mrpVal - priceVal, 0);
+          const saveVal = variantObj.save ?? Math.max(mrpVal - priceVal, 0);
 
-          const totalAmount = pd.totalAmount || item.totalAmount || (priceVal * quantity);
-          const totalWeight = pd.totalWeight || item.totalWeight || (weightVal * quantity);
-          const totalsave = pd.totalsave || item.totalsave || (saveVal * quantity);
+          const totalAmount = pd.totalAmount ?? item.totalAmount ?? (priceVal * quantity);
+          const totalWeight = pd.totalWeight ?? item.totalWeight ?? (weightVal * quantity);
+          const totalsave = pd.totalsave ?? item.totalsave ?? (saveVal * quantity);
           const itemSku = variantObj.sku || prodObj.sku || item.sku || pd.sku || "SHV-MST-250";
 
           return {
             type: "NORMAL",
             product_details: {
-              cartItemId: pd.cartItemId || item.cartItemId || item._id || "",
+              cartItemId: pd.cartItemId || item.cartItemId || item._id || item.id || "",
               product: {
                 _id: prodObj._id || prodObj.productId || prodObj.id || item.productId || item.id || "",
                 product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Premium Pure Mustard Honey",
                 brand: prodObj.brand || "SudhVeda Honey",
-                description: prodObj.description || "Raw and organic honey collected directly from natural hives.",
+                description: prodObj.description || "Raw and organic honey collected directly from vibrant mustard fields. Naturally prone to crystallization with a rich, buttery texture and distinct mild flavor.",
                 product_type: prodObj.product_type || "honey",
                 floral_source: prodObj.floral_source || "Mustard Blossom (Brassica)",
                 image: {
                   image_url: imgUrl,
-                  public_id: prodObj.image?.public_id || "products/default",
+                  public_id: pubId,
                 },
                 variant: {
                   _id: variantObj._id || variantObj.variantId || variantObj.id || item.variantId || "",

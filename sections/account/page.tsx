@@ -42,12 +42,20 @@ const sidebarLinks = [
 
 type OrderStatus = "Confirmed" | "Processing" | "Delivered" | "Shipped" | "Cancelled" | "Pending";
 
+interface ComboSetItem {
+    name: string;
+    weight?: number | string;
+    unit?: string;
+}
+
 interface OrderItem {
     title: string;
     sub: string;
     qty: number;
     price: string;
     image: string;
+    type?: string;
+    comboSets?: ComboSetItem[];
 }
 
 interface ShippingAddress {
@@ -816,12 +824,25 @@ export default function MyOrdersPage() {
                             );
                             groupTotalSum += itemPrice;
 
+                            const rawComboSets = item.comboSets || pd.comboSets || prod.comboSets || item.product?.comboSets || pd.product?.comboSets;
+                            let comboSets: ComboSetItem[] | undefined = undefined;
+
+                            if (Array.isArray(rawComboSets) && rawComboSets.length > 0) {
+                                comboSets = rawComboSets.map((cs: any) => ({
+                                    name: cs.name || cs.product_name || cs.title || "Honey Jar",
+                                    weight: cs.weight,
+                                    unit: cs.unit || "g",
+                                }));
+                            }
+
                             itemsList.push({
                                 title,
                                 sub,
                                 qty: itemQty,
                                 price: itemPrice > 0 ? `₹${itemPrice.toLocaleString("en-IN")}` : "",
                                 image: img,
+                                type: item.type,
+                                comboSets,
                             });
                         });
                     }
@@ -1316,26 +1337,48 @@ export default function MyOrdersPage() {
                                             {/* Products List */}
                                             <div className="space-y-2.5 pt-1">
                                                 {order.items.map((item, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between gap-4 p-3 rounded-2xl bg-[#FAF5EC]/50 border border-[#EADCC9]/40">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl bg-white border border-[#EADCC9]/80 shadow-xs">
-                                                                <Image
-                                                                    src={item.image}
-                                                                    alt={item.title}
-                                                                    fill
-                                                                    unoptimized
-                                                                    sizes="80px"
-                                                                    className="object-contain p-1"
-                                                                />
+                                                    <div key={idx} className="flex flex-col gap-2.5 p-3 rounded-2xl bg-[#FAF5EC]/50 border border-[#EADCC9]/40">
+                                                        <div className="flex items-center justify-between gap-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl bg-white border border-[#EADCC9]/80 shadow-xs">
+                                                                    <Image
+                                                                        src={item.image}
+                                                                        alt={item.title}
+                                                                        fill
+                                                                        unoptimized
+                                                                        sizes="80px"
+                                                                        className="object-cover p-0"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-serif text-sm font-bold text-[#593102]">{item.title}</p>
+                                                                    <p className="text-xs text-[#6E5D4F] font-medium">{item.sub}</p>
+                                                                    <span className="inline-block mt-0.5 text-[11px] font-bold text-[#8D7F73]">Qty: {item.qty}</span>
+                                                                </div>
                                                             </div>
-                                                            <div>
-                                                                <p className="font-serif text-sm font-bold text-[#593102]">{item.title}</p>
-                                                                <p className="text-xs text-[#6E5D4F] font-medium">{item.sub}</p>
-                                                                <span className="inline-block mt-0.5 text-[11px] font-bold text-[#8D7F73]">Qty: {item.qty}</span>
-                                                            </div>
+                                                            {item.price && (
+                                                                <p className="text-sm font-extrabold text-[#593102] shrink-0">{item.price}</p>
+                                                            )}
                                                         </div>
-                                                        {item.price && (
-                                                            <p className="text-sm font-extrabold text-[#593102] shrink-0">{item.price}</p>
+
+                                                        {/* Render Combo Pack Included Products */}
+                                                        {item.comboSets && item.comboSets.length > 0 && (
+                                                            <div className="mt-0.5 pt-2 border-t border-[#EADCC9]/50 bg-white/70 rounded-xl p-2.5 space-y-1.5">
+                                                                <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73]">
+                                                                    Combo Pack Contains ({item.comboSets.length} Items):
+                                                                </p>
+                                                                <div className="flex flex-wrap gap-1.5">
+                                                                    {item.comboSets.map((cSet, cIdx) => (
+                                                                        <span
+                                                                            key={cIdx}
+                                                                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF5EC] border border-[#EADCC9]/80 text-xs font-bold text-[#593102] shadow-2xs"
+                                                                        >
+                                                                            <span className="h-1.5 w-1.5 rounded-full bg-[#D49313]"></span>
+                                                                            {cSet.name} {cSet.weight ? `(${cSet.weight}${cSet.unit || "g"})` : ""}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 ))}

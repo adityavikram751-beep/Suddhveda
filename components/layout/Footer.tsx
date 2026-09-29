@@ -256,11 +256,7 @@ export default function Footer() {
                   My Account
                 </Link>
               </li>
-              <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  Policies &amp; Information
-                </Link>
-              </li>
+
               <li>
                 <Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Products
@@ -306,11 +302,7 @@ export default function Footer() {
                   Shipping &amp; Delivery Policy
                 </Link>
               </li>
-              <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  Cancellation/Refund Policy
-                </Link>
-              </li>
+
             </ul>
           </div>
 

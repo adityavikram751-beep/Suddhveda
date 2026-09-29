@@ -23,6 +23,8 @@ import {
   FileText,
   Leaf,
   Award,
+  Mail,
+  Phone,
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
@@ -614,6 +616,7 @@ export default function ProductDetailPage({
           <p>
             Due to the nature of honey as a food product, we do not accept returns or exchanges for products that have been opened, used, tasted, or where the product seal has been broken.
           </p>
+
           <div>
             <p className="font-bold text-[#3D260F] mb-1.5">However, you may request a replacement or refund if:</p>
             <ul className="space-y-1.5 pl-1">
@@ -659,6 +662,30 @@ export default function ProductDetailPage({
           <p>
             Once the claim is reviewed and verified, ShuddhVeda Honey will arrange an appropriate replacement or refund, as applicable.
           </p>
+
+          <div className="pt-2.5 border-t border-[#EADCC9] space-y-1 text-[14px]">
+            <p>
+              <strong className="text-[#3D260F]">WhatsApp:</strong>{" "}
+              <a
+                href="https://wa.me/918866044554"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#D49313] hover:underline font-bold"
+              >
+                +91 88660 44554
+              </a>
+            </p>
+            <p>
+              <strong className="text-[#3D260F]">Email:</strong>{" "}
+              <a
+                href="mailto:support@shuddhvedahoney.in"
+                className="text-[#D49313] hover:underline font-bold"
+              >
+                support@shuddhvedahoney.in
+              </a>
+            </p>
+          </div>
+
           <p className="text-[13px] text-[#7A6A5C] italic pt-1 border-t border-[#EADCC9]">
             Natural variations in the colour, taste, aroma, consistency or crystallisation of honey are not considered product defects and therefore do not qualify for return or replacement.
           </p>

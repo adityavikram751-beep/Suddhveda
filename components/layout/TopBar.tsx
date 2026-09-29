@@ -12,11 +12,11 @@ function OfferItems() {
       {offers.map((offer, index) => (
         <div key={index} className="offer">
           <Image
-            src="/topbaricon.png"
+            src="/headerbee.svg"
             alt="Offer"
             width={20}
             height={20}
-            className="object-contain flex-shrink-0 w-4 h-4 sm:w-[20px] sm:h-[20px]"
+            className="object-contain flex-shrink-0 w-4 h-4 sm:w-[26px] sm:h-[26px]"
           />
           <span>{offer}</span>
         </div>

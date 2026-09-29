@@ -13,16 +13,16 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
 
   return (
     <section className="relative overflow-hidden w-full bg-[#FAF4E8] border-b border-[#EADCC9]/60 min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center">
-      
+
       {/* ==================== DESKTOP MODE (lg and up) ==================== */}
-      {/* Background Hero Image - Positioned on Right Side for Desktop */}
-      <div className="hidden lg:flex absolute inset-y-0 right-0 w-[48%] z-0 items-center justify-end pointer-events-none opacity-100 transition-opacity">
+      {/* Background Hero Image - Full Screen Background for Desktop */}
+      <div className="hidden lg:block absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/backfoung.png"
+          src="/backk.png"
           alt="Shuddhveda Honey Subscription"
           fill
           priority
-          className="object-contain object-right pointer-events-none"
+          className="object-cover object-right pointer-events-none"
         />
       </div>
 

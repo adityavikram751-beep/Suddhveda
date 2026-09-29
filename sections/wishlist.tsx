@@ -34,7 +34,8 @@ interface ApiProduct {
 
 interface ApiWishlistItem {
   _id?: string;
-  productId?: ApiProduct;
+  productId?: ApiProduct | any;
+  product?: ApiProduct | any;
   addedAt?: string;
 }
 
@@ -93,10 +94,10 @@ export default function WishlistPage() {
           }
 
           const formattedItems = products.reduce<WishlistItem[]>((acc, item) => {
-            const product = item.productId;
+            const product = item.productId || item.product || item;
             if (!product || typeof product !== 'object') return acc;
 
-            const title = product?.product_name || product?.name || product?.title || '';
+            const title = product?.product_name || product?.combo_name || product?.name || product?.title || '';
             if (!title.trim()) return acc;
 
             const variants = getProductVariants(product);
@@ -107,19 +108,22 @@ export default function WishlistPage() {
               weightStr = `${firstVariant.weight}${firstVariant.unit}`;
             } else if (firstVariant.weight) {
               weightStr = `${firstVariant.weight}`;
+            } else if (product.combo_size) {
+              weightStr = `${product.combo_size} Jars Set`;
             }
 
-            const brand = product?.brand || '';
+            const brand = product?.brand || 'ShuddhVeda Honey';
             const floral = product?.floral_source || '';
-            const image = getPrimaryImage(product) || '';
-            const price = firstVariant.price ?? 0;
-            const mrp = firstVariant.mrp ?? 0;
-            const discount = firstVariant.discount_value ?? 0;
+            const rawImg = getPrimaryImage(product);
+            const image = rawImg && rawImg !== '/honneycart.png' ? rawImg : '/placeholder.png';
+            const price = Number(firstVariant.price || product.selling_price || product.price || 0);
+            const mrp = Number(firstVariant.mrp || product.mrp || (price ? Math.round(price * 1.25) : 0));
+            const discount = Number(firstVariant.discount_value || product.discount_percent || (mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0));
 
             acc.push({
-              id: item._id || product?._id || '',
-              productId: product?._id || '',
-              variantId: firstVariant._id || variants[0]?._id || '',
+              id: String(item._id || product?._id || product?.id || ''),
+              productId: String(product?._id || product?.id || item.productId || ''),
+              variantId: String(firstVariant._id || variants[0]?._id || ''),
               title: title.trim(),
               brand,
               floral_source: floral,
@@ -360,7 +364,6 @@ export default function WishlistPage() {
               Save your favorite artisanal honey &amp; gift sets to purchase anytime.
             </p>
           </div>
-          <Image src="/wishlist.png" alt="Wishlist jar" width={130} height={130} className="hidden sm:block object-contain" />
         </div>
 
         {/* Main Content Box */}
@@ -419,7 +422,7 @@ export default function WishlistPage() {
                           className="relative w-20 h-20 rounded-xl bg-[#FAF5EC] shrink-0 overflow-hidden cursor-pointer border border-[#EADCC9]/50"
                           onClick={() => navigateToProduct(item.productId)}
                         >
-                          <Image src={item.image} alt={item.title || "Product"} fill className="object-contain p-2" />
+                          <Image src={item.image} alt={item.title || "Product"} fill unoptimized className="object-contain p-2" />
                         </div>
                       )}
 
@@ -471,7 +474,7 @@ export default function WishlistPage() {
                     <div className="flex items-center gap-6 flex-1 cursor-pointer" onClick={() => navigateToProduct(item.productId)}>
                       {item.image && (
                         <div className="relative w-20 h-20 rounded-xl bg-[#FAF5EC] shrink-0 overflow-hidden border border-[#EADCC9]/50">
-                          <Image src={item.image} alt={item.title} fill className="object-contain p-2" />
+                          <Image src={item.image} alt={item.title} fill unoptimized className="object-contain p-2" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

@@ -477,8 +477,8 @@ export default function Header() {
                       href={item.href}
                       onClick={() => setShopMenuOpen((prev) => !prev)}
                       className={`relative flex items-center gap-1 text-[16px] font-medium transition-all duration-300 ${isActive
-                          ? "text-[#D89B00]"
-                          : "text-[#7A3F10] hover:text-[#D89B00]"
+                        ? "text-[#D89B00]"
+                        : "text-[#7A3F10] hover:text-[#D89B00]"
                         }`}
                     >
                       {item.title}
@@ -516,9 +516,7 @@ export default function Header() {
                           <div className="grid grid-cols-12 gap-8 items-stretch">
                             {/* Multi-Flora Column */}
                             <div className="col-span-3">
-                              <span className="mb-4 inline-block rounded-full bg-[#F5ECDF] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#8C6239]">
-                                Multi-Flora
-                              </span>
+
                               <div className="flex flex-col gap-3">
                                 {multiFloraProducts.length > 0 ? (
                                   multiFloraProducts.map((p) => {
@@ -545,7 +543,6 @@ export default function Header() {
                                     className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
                                   >
                                     <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00]" />
-                                    <span>Himalayan Forest Honey</span>
                                   </Link>
                                 )}
                               </div>
@@ -553,9 +550,7 @@ export default function Header() {
 
                             {/* Mono-Flora Column */}
                             <div className="col-span-5 border-l border-[#F0E4D0] pl-6">
-                              <span className="mb-4 inline-block rounded-full bg-[#F5ECDF] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#8C6239]">
-                                Mono-Flora
-                              </span>
+
                               <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                                 {monoFloraProducts.length > 0 ? (
                                   monoFloraProducts.map((p) => {
@@ -611,8 +606,8 @@ export default function Header() {
                   key={item.title}
                   href={item.href}
                   className={`relative flex items-center gap-1 py-1 text-[16px] font-medium transition-all duration-300 ${isActive
-                      ? "text-[#D89B00]"
-                      : "text-[#7A3F10] hover:text-[#D89B00]"
+                    ? "text-[#D89B00]"
+                    : "text-[#7A3F10] hover:text-[#D89B00]"
                     }`}
                 >
                   {item.title}
@@ -913,8 +908,8 @@ export default function Header() {
                           href={item.href}
                           onClick={() => setOpen(false)}
                           className={`flex items-center justify-between rounded-2xl px-4 py-3 text-[15px] font-extrabold transition-all duration-300 ${isActive
-                              ? "bg-[#FAF0DC] text-[#593102] border-l-4 border-[#D49313] shadow-2xs"
-                              : "text-[#593102] bg-white/90 hover:bg-[#FAF5EC] border border-[#EADCC9]/80 hover:border-[#D49313]/50"
+                            ? "bg-[#FAF0DC] text-[#593102] border-l-4 border-[#D49313] shadow-2xs"
+                            : "text-[#593102] bg-white/90 hover:bg-[#FAF5EC] border border-[#EADCC9]/80 hover:border-[#D49313]/50"
                             }`}
                         >
                           <span>{item.title}</span>
