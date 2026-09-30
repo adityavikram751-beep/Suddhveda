@@ -570,7 +570,6 @@ export default function ProductDetailPage({
                       <th className="py-2.5 px-2 w-[40%]"></th>
                       <th className="py-2.5 px-2 text-right">Value Per<br />100g</th>
                       <th className="py-2.5 px-2 text-right">Value Per<br />Serving</th>
-                      <th className="py-2.5 px-2 text-right">%RDA</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#EADCC9]/40 text-[#201812] border-b-2 border-[#C8B28F]">
@@ -594,8 +593,7 @@ export default function ProductDetailPage({
             {/* Footnotes */}
             {(tableRows.length > 0 || plainTextFallback) && (
               <div className="text-[11.5px] text-[#7A6A5C] space-y-0.5 pt-1 font-medium">
-                <p>*RDA stands for recommended Dietary Allowance per Serving</p>
-                <p>*Average Values</p>
+
               </div>
             )}
           </div>

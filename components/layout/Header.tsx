@@ -515,41 +515,10 @@ export default function Header() {
 
                           <div className="grid grid-cols-12 gap-8 items-stretch">
                             {/* Multi-Flora Column */}
-                            <div className="col-span-3">
 
-                              <div className="flex flex-col gap-3">
-                                {multiFloraProducts.length > 0 ? (
-                                  multiFloraProducts.map((p) => {
-                                    const id = getProductId(p);
-                                    const name = getProductName(p);
-                                    return (
-                                      <Link
-                                        key={id || name}
-                                        href={`/shop/products/${id}`}
-                                        onClick={() => setShopMenuOpen(false)}
-                                        className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
-                                      >
-                                        <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00] group-hover/item:scale-150 transition-transform" />
-                                        <span className="group-hover/item:translate-x-1 transition-transform">
-                                          {name}
-                                        </span>
-                                      </Link>
-                                    );
-                                  })
-                                ) : (
-                                  <Link
-                                    href="/shop"
-                                    onClick={() => setShopMenuOpen(false)}
-                                    className="group/item flex items-center gap-2 text-[14px] font-semibold text-[#2C221E] hover:text-[#593102] transition-all"
-                                  >
-                                    <span className="h-1.5 w-1.5 rounded-full bg-[#D89B00]" />
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
 
                             {/* Mono-Flora Column */}
-                            <div className="col-span-5 border-l border-[#F0E4D0] pl-6">
+                            <div className="col-span-5 border-[#F0E4D0] pl-6">
 
                               <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                                 {monoFloraProducts.length > 0 ? (
