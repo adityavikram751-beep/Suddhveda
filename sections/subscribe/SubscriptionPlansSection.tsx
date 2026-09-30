@@ -79,15 +79,15 @@ export default function SubscriptionPlansSection() {
             } catch (err) {
                 console.error("Error fetching subscription plans:", err);
                 const defaultPlan: PlanItem = {
-                    id: "default-annual-plan",
-                    name: "Good Plan",
-                    description: "Our most popular plan",
-                    tagline: "Discover Six distinctive Shuddhveda Honey Varieties",
-                    detail: "500g × 6 Jars",
-                    totalWeight: "Total: 3 KG Honey",
-                    price: 2099,
-                    mrp: 2394,
-                    image: "/subscribe2.0.png",
+                    id: "",
+                    name: "",
+                    description: "",
+                    tagline: "",
+                    detail: "",
+                    totalWeight: "",
+                    price: 0,
+                    mrp: 0,
+                    image: "",
                 };
                 setPlans([defaultPlan]);
             }
@@ -133,9 +133,9 @@ export default function SubscriptionPlansSection() {
         id: "",
         name: "",
         description: "",
-        price: 2099,
-        mrp: 2394,
-        image: "/subscribe2.0.png",
+        price: 0,
+        mrp: 0,
+        image: "",
     };
 
     return (
@@ -350,7 +350,7 @@ export default function SubscriptionPlansSection() {
                         onClick={() => setIsCheckoutModalOpen(false)}
                     />
 
-                    <div className="relative w-full max-w-[1150px] max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#FAF4E8] rounded-[24px] sm:rounded-[32px] shadow-2xl p-4 sm:p-8 my-auto border border-[#EADBCA] z-10">
+                    <div className="relative w-full max-w-[850px] max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#FAF4E8] rounded-[24px] sm:rounded-[32px] shadow-2xl p-4 sm:p-7 my-auto border border-[#EADBCA] z-10">
                         <button
                             type="button"
                             onClick={() => setIsCheckoutModalOpen(false)}

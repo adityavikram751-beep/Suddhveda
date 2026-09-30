@@ -19,6 +19,15 @@ const DEFAULT_DELIVERIES: DeliveryCard[] = [
 
 export default function ThreeDeliveriesSection() {
     const [deliveries, setDeliveries] = useState<DeliveryCard[]>(DEFAULT_DELIVERIES);
+    const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+
+    const toggleExpand = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
+        setExpandedCards((prev) => ({
+            ...prev,
+            [index]: !prev[index],
+        }));
+    };
 
     useEffect(() => {
         const fetchDeliveries = async () => {
@@ -113,7 +122,7 @@ export default function ThreeDeliveriesSection() {
                 </p>
 
                 {/* ==================== DESKTOP MODE (3 Columns Grid - md and up) ==================== */}
-                <div className="hidden md:grid mt-8 sm:mt-12 grid-cols-3 gap-6 sm:gap-8 max-w-[1400px] mx-auto text-left items-stretch">
+                <div className="hidden md:grid mt-8 sm:mt-12 grid-cols-3 gap-6 sm:gap-8 max-w-[1400px] mx-auto text-left items-start">
                     {deliveries.map((item, idx) => (
                         <div
                             key={idx}
@@ -146,9 +155,15 @@ export default function ThreeDeliveriesSection() {
                                         {item.season}
                                     </p>
 
-                                    <p className="font-cormorant italic font-normal text-[13px] sm:text-[14px] text-[#705E4F] text-center mt-1.5 leading-[18px] sm:leading-[20px] max-w-[280px] mx-auto opacity-95">
-                                        {item.description}
-                                    </p>
+                                    {/* Description box with hidden scrollbar and toggleable expansion */}
+                                    <div
+                                        className={`font-cormorant italic font-normal text-[13px] sm:text-[14px] text-[#705E4F] text-center mt-2 leading-[18px] sm:leading-[20px] max-w-[290px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
+                                                ? "max-h-[160px] sm:max-h-[180px] pr-1"
+                                                : "max-h-[60px] sm:max-h-[66px]"
+                                            }`}
+                                    >
+                                        <p>{item.description}</p>
+                                    </div>
                                 </div>
 
                                 <div className="pt-2.5 mt-3 border-t border-[#EAE0D0] flex items-center justify-between">
@@ -156,8 +171,12 @@ export default function ThreeDeliveriesSection() {
                                         {item.deliveryLabel}
                                     </span>
 
-                                    <div className="font-cormorant text-[12.5px] sm:text-[13.5px] text-[#8C7561] flex items-center gap-1.5 hover:text-[#C6900E] transition cursor-pointer group/link whitespace-nowrap">
-                                        <span>Know more</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => toggleExpand(e, idx)}
+                                        className="font-cormorant text-[12.5px] sm:text-[13.5px] text-[#8C7561] flex items-center gap-1.5 hover:text-[#C6900E] transition cursor-pointer group/link whitespace-nowrap bg-transparent border-none p-0 outline-none"
+                                    >
+                                        <span>{expandedCards[idx] ? "Read less" : "Know more"}</span>
                                         <Image
                                             src="/leaf.svg"
                                             alt="Leaf Icon"
@@ -165,8 +184,10 @@ export default function ThreeDeliveriesSection() {
                                             height={13}
                                             className="object-contain opacity-80"
                                         />
-                                        <span className="text-[11px] transition-transform duration-200 group-hover/link:translate-x-1">─────➔</span>
-                                    </div>
+                                        <span className={`text-[11px] transition-transform duration-200 ${expandedCards[idx] ? "rotate-180" : "group-hover/link:translate-x-1"}`}>
+                                            ─────➔
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -208,9 +229,15 @@ export default function ThreeDeliveriesSection() {
                                         {item.season}
                                     </p>
 
-                                    <p className="font-cormorant italic font-normal text-[13.5px] xs:text-[14px] text-[#705E4F] text-center mt-2 leading-[19px] xs:leading-[20px] max-w-[285px] mx-auto opacity-95">
-                                        {item.description}
-                                    </p>
+                                    {/* Description box with hidden scrollbar and toggleable expansion */}
+                                    <div
+                                        className={`font-cormorant italic font-normal text-[13.5px] xs:text-[14px] text-[#705E4F] text-center mt-2 leading-[19px] xs:leading-[20px] max-w-[285px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
+                                                ? "max-h-[160px] pr-1"
+                                                : "max-h-[60px]"
+                                            }`}
+                                    >
+                                        <p>{item.description}</p>
+                                    </div>
                                 </div>
 
                                 <div className="pt-2.5 mt-3.5 border-t border-[#EAE0D0] flex items-center justify-between">
@@ -218,8 +245,12 @@ export default function ThreeDeliveriesSection() {
                                         {item.deliveryLabel}
                                     </span>
 
-                                    <div className="font-cormorant text-[12px] xs:text-[13px] text-[#8C7561] flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                                        <span>Know more</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => toggleExpand(e, idx)}
+                                        className="font-cormorant text-[12px] xs:text-[13px] text-[#8C7561] flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 outline-none"
+                                    >
+                                        <span>{expandedCards[idx] ? "Read less" : "Know more"}</span>
                                         <Image
                                             src="/leaf.svg"
                                             alt="Leaf Icon"
@@ -227,8 +258,10 @@ export default function ThreeDeliveriesSection() {
                                             height={12}
                                             className="object-contain opacity-80"
                                         />
-                                        <span className="text-[10px]">─────➔</span>
-                                    </div>
+                                        <span className={`text-[10px] transition-transform duration-200 ${expandedCards[idx] ? "rotate-180" : ""}`}>
+                                            ─────➔
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -240,3 +273,4 @@ export default function ThreeDeliveriesSection() {
         </section>
     );
 }
+

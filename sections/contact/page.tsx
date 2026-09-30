@@ -100,7 +100,7 @@ export default function Hero() {
                 bg-[radial-gradient(circle,rgba(212,147,19,0.18)_0%,rgba(255,255,255,0)_70%)]"
               />
               <Image
-                src="/hero.png"
+                src="/contact1.webp"
                 alt="ShuddhaVeda Natural Honey Jar"
                 width={1800}
                 height={1800}
@@ -150,7 +150,7 @@ export default function Hero() {
             />
 
             <Image
-              src="/hero.png"
+              src="/contact1.webp"
               alt="ShuddhaVeda Natural Honey Jar"
               width={1800}
               height={1800}

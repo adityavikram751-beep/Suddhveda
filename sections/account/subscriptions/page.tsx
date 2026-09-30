@@ -26,6 +26,8 @@ import {
     X,
     ChevronLeft,
     ChevronRight,
+    ChevronDown,
+    ChevronUp,
     Crown,
     CheckCircle2,
     Calendar,
@@ -58,11 +60,16 @@ function getTokenFromCookie(): string | null {
 
 interface DeliveryStep {
     jarNumber: number;
+    deliveryNumber: number;
+    monthName: string;
     title: string;
-    jarName: string;
-    status: "Delivered" | "In Transit" | "Upcoming";
+    season: string;
+    description: string;
+    image: string;
+    scheduledDate?: string;
+    orderStatus?: string;
+    status: "Delivered" | "In Transit" | "Upcoming" | "Cancelled";
     date?: string;
-    time?: string;
 }
 
 interface SubscriptionPurchase {
@@ -186,6 +193,14 @@ export default function MySubscriptionsPage() {
 
     const [purchasesList, setPurchasesList] = useState<SubscriptionPurchase[]>([]);
     const [loadingPurchases, setLoadingPurchases] = useState<boolean>(true);
+    const [expandedSchedules, setExpandedSchedules] = useState<Record<string, boolean>>({});
+
+    const toggleSchedule = (id: string) => {
+        setExpandedSchedules((prev) => ({
+            ...prev,
+            [id]: !prev[id],
+        }));
+    };
 
     const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -292,25 +307,16 @@ export default function MySubscriptionsPage() {
                         pId = `PP-${dateCode}-${itemHex}`;
                     }
 
-                    const numJars = Number(
-                        planObj.numberOfJars ||
-                        item.numberOfJars ||
-                        item.totalJars ||
-                        item.jarsCount ||
-                        item.jars_count ||
-                        (name.toLowerCase().includes("6") ? 6 : name.toLowerCase().includes("3") ? 3 : 6)
-                    );
+                    const numDeliveries = 3;
 
                     let deliveredCount = Number(
-                        item.deliveredJars !== undefined
-                            ? item.deliveredJars
-                            : item.deliveredCount !== undefined
-                                ? item.deliveredCount
-                                : item.completedDeliveries !== undefined
-                                    ? item.completedDeliveries
-                                    : item.delivered_jars !== undefined
-                                        ? item.delivered_jars
-                                        : (status === "Completed" ? numJars : 0)
+                        item.completedDeliveries !== undefined
+                            ? item.completedDeliveries
+                            : item.deliveredJars !== undefined
+                                ? item.deliveredJars
+                                : item.deliveredCount !== undefined
+                                    ? item.deliveredCount
+                                    : (status === "Completed" ? 3 : 0)
                     );
 
                     if (status === "Cancelled") {
@@ -322,78 +328,73 @@ export default function MySubscriptionsPage() {
                         : Array.isArray(item.shipments)
                             ? item.shipments
                             : Array.isArray(item.deliveryOrders)
+                                ? item.deliveryOrders
+                                : Array.isArray(item.planDeliveries)
                                     ? item.planDeliveries
                                     : [];
 
                     const deliveriesList: DeliveryStep[] = [];
 
-                    for (let i = 1; i <= numJars; i++) {
-                        const customDev = apiDeliveries.find(
-                            (d: any) =>
-                                d.deliveryNumber === i ||
-                                d.delivery_number === i ||
-                                d.jarNumber === i ||
-                                d.step === i ||
-                                d.deliveryNo === i
-                        );
+                    if (apiDeliveries.length > 0) {
+                        apiDeliveries.forEach((customDev: any, idx: number) => {
+                            const dNum = customDev.deliveryNumber || customDev.delivery_number || customDev.step || (idx + 1);
+                            const monthName = customDev.monthName || customDev.month || `Delivery ${dNum}`;
+                            const title = customDev.title || customDev.harvestTitle || customDev.name || customDev.productName || `Delivery ${dNum}`;
+                            const season = customDev.season || customDev.harvestTitle || "";
+                            const description = customDev.description || customDev.readMore || "";
+                            const devImg = customDev.image || customDev.image_url || customDev.url || planImg || "";
 
-                        const firstProduct = Array.isArray(customDev?.products) && customDev.products.length > 0 ? customDev.products[0] : null;
+                            const rawDevOrderStatus = customDev.orderId?.order_status || customDev.order_status || customDev.status || "";
+                            const isCancelled = String(rawDevOrderStatus).toLowerCase().includes("cancel") || String(item.status || "").toLowerCase().includes("cancel");
 
-                        const flavorName =
-                            firstProduct?.productName ||
-                            firstProduct?.name ||
-                            customDev?.productName ||
-                            customDev?.product_name ||
-                            customDev?.jarName ||
-                            customDev?.name ||
-                            customDev?.title ||
-                            customDev?.flavor ||
-                            customDev?.product ||
-                            "";
+                            let stepStatus: "Delivered" | "In Transit" | "Upcoming" | "Cancelled" = "Upcoming";
 
-                        let stepStatus: "Delivered" | "In Transit" | "Upcoming" = "Upcoming";
-                        let dateLabel = "";
-                        let timeLabel = "";
-
-                        const rawDevStatus = String(customDev?.status || "").toLowerCase();
-
-                        if (customDev) {
-                            if (rawDevStatus.includes("deliver") || rawDevStatus.includes("complet")) {
-                                stepStatus = "Delivered";
-                            } else if (rawDevStatus.includes("transit") || rawDevStatus.includes("process") || rawDevStatus.includes("dispatch")) {
-                                stepStatus = "In Transit";
+                            if (isCancelled) {
+                                stepStatus = "Cancelled";
                             } else {
-                                stepStatus = (i <= deliveredCount && deliveredCount > 0) ? "Delivered" : i === deliveredCount + 1 ? "In Transit" : "Upcoming";
+                                const devStatusLower = String(rawDevOrderStatus).toLowerCase();
+                                if (devStatusLower.includes("deliver") || devStatusLower.includes("complet")) {
+                                    stepStatus = "Delivered";
+                                } else if (devStatusLower.includes("transit") || devStatusLower.includes("process") || devStatusLower.includes("active") || dNum <= (item.currentDeliveryNumber || 1)) {
+                                    stepStatus = (dNum <= deliveredCount && deliveredCount > 0) ? "Delivered" : "In Transit";
+                                } else {
+                                    stepStatus = (dNum <= deliveredCount && deliveredCount > 0) ? "Delivered" : dNum === (item.currentDeliveryNumber || 1) ? "In Transit" : "Upcoming";
+                                }
                             }
-                            const devDateStr = customDev.deliveredAt || customDev.deliveryDate || customDev.date || (stepStatus === "Delivered" ? formattedDateShort : "");
-                            dateLabel = devDateStr ? (devDateStr.includes("T") ? new Date(devDateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : devDateStr) : "";
-                        } else {
-                            if (i <= deliveredCount && deliveredCount > 0) {
-                                stepStatus = "Delivered";
-                                dateLabel = formattedDateShort;
-                            } else if (i === deliveredCount + 1 && status !== "Completed") {
-                                stepStatus = "In Transit";
-                                dateLabel = "";
-                            } else if (status === "Completed") {
-                                stepStatus = "Delivered";
-                                dateLabel = formattedDateShort;
-                            } else {
-                                stepStatus = "Upcoming";
-                                dateLabel = "";
-                            }
-                        }
 
-                        deliveriesList.push({
-                            jarNumber: i,
-                            title: `Jar ${i}`,
-                            jarName: flavorName,
-                            status: stepStatus,
-                            date: dateLabel,
-                            time: timeLabel,
+                            const scheduledDateRaw = customDev.scheduledDate || customDev.deliveredAt || customDev.deliveryDate || customDev.createdAt;
+                            let formattedSchedDate = "";
+                            if (scheduledDateRaw) {
+                                try {
+                                    const dt = new Date(scheduledDateRaw);
+                                    formattedSchedDate = dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+                                } catch (e) {
+                                    formattedSchedDate = String(scheduledDateRaw);
+                                }
+                            }
+
+                            deliveriesList.push({
+                                jarNumber: dNum,
+                                deliveryNumber: dNum,
+                                monthName,
+                                title,
+                                season,
+                                description,
+                                image: devImg,
+                                scheduledDate: formattedSchedDate,
+                                orderStatus: rawDevOrderStatus || undefined,
+                                status: stepStatus,
+                                date: formattedSchedDate || formattedDateShort,
+                            });
                         });
                     }
 
                     const custName = item.customerName || item.customer?.name || item.name || addrName || "Subscriber";
+                    const totalDevCount = deliveriesList.length;
+
+                    const weightText = planObj.totalQuantity ? `Total ${planObj.totalQuantity}${planObj.totalQuantityUnit || 'kg'}` : (item.totalWeight || "");
+                    const totalDevs = item.totalDeliveries || item.totalDeliveriesCount || totalDevCount;
+                    const jarsText = totalDevs > 0 ? `${totalDevs} ${totalDevs === 1 ? 'Delivery' : 'Deliveries'} Pack` : "";
 
                     return {
                         id: String(item._id || item.id || `SUB-${idx + 1}`),
@@ -401,18 +402,18 @@ export default function MySubscriptionsPage() {
                         planName: name,
                         customerName: custName,
                         planImage: planImg,
-                        tagline: tagline,
+                        tagline: planObj.description || item.tagline || "",
                         purchasedOn: formattedDate,
                         purchasedDateShort: formattedDateShort,
                         purchasedTime: formattedTime,
                         paymentMethod: payMethodFormatted,
                         paymentStatus: rawPayStatus,
                         transactionId: item.transactionId || item.razorpay_payment_id || item.paymentId || undefined,
-                        totalAmount: amountVal > 0 ? `₹${amountVal.toLocaleString("en-IN")}` : "₹4,299",
+                        totalAmount: amountVal > 0 ? `₹${amountVal.toLocaleString("en-IN")}` : "₹0",
                         status: status,
-                        totalWeight: planObj.totalQuantity ? `Total ${planObj.totalQuantity}${planObj.totalQuantityUnit || 'kg'}` : (item.totalWeight || "Total 1.5kg"),
-                        jarsCount: `${numJars} Jars Pack`,
-                        totalJarsCount: numJars,
+                        totalWeight: weightText,
+                        jarsCount: jarsText,
+                        totalJarsCount: totalDevCount,
                         deliveredJarsCount: deliveredCount,
                         deliveries: deliveriesList,
                         shippingAddress: (addrName || addrLines) ? {
@@ -709,14 +710,12 @@ export default function MySubscriptionsPage() {
 
                                                             <div className="flex flex-wrap items-center gap-2 pt-1">
                                                                 {purchase.totalWeight && (
-                                                                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#593102] bg-[#FAF0DC] px-3 py-1 rounded-xl border border-[#D49313]/20">
-                                                                        <Package size={13} className="text-[#D49313]" />
+                                                                    <span className="inline-flex items-center text-xs font-bold text-[#593102] bg-[#FAF0DC] px-3 py-1 rounded-xl border border-[#D49313]/20">
                                                                         {purchase.totalWeight}
                                                                     </span>
                                                                 )}
                                                                 {purchase.jarsCount && (
-                                                                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#593102] bg-[#FAF0DC] px-3 py-1 rounded-xl border border-[#D49313]/20">
-                                                                        <Calendar size={13} className="text-[#D49313]" />
+                                                                    <span className="inline-flex items-center text-xs font-bold text-[#593102] bg-[#FAF0DC] px-3 py-1 rounded-xl border border-[#D49313]/20">
                                                                         {purchase.jarsCount}
                                                                     </span>
                                                                 )}
@@ -751,78 +750,169 @@ export default function MySubscriptionsPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Jar-by-Jar Subscription Delivery Progress Bar */}
-                                                <div className="pt-6 border-t border-[#F0E4D0]">
-                                                    <div className="flex items-center gap-2 mb-4 px-1">
-                                                        <Package size={16} className="text-[#D49313]" />
-                                                        <span className="font-serif text-sm font-extrabold text-[#593102]">
-                                                            Jar Delivery Schedule
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="overflow-x-auto pb-4 pt-2">
-                                                        <div className="relative flex items-start justify-between min-w-[600px] sm:min-w-0 px-3 sm:px-6">
-                                                            {purchase.deliveries.map((step, idx) => {
-                                                                const isLast = idx === purchase.deliveries.length - 1;
-                                                                const statusLower = String(step.status || "").toLowerCase();
-                                                                const isDelivered = statusLower === "delivered" || statusLower === "completed" || statusLower.includes("deliver");
-                                                                const isInTransit = !isDelivered && (statusLower === "in transit" || statusLower.includes("transit") || statusLower.includes("process"));
-
-                                                                return (
-                                                                    <div key={step.jarNumber} className="flex-1 flex flex-col items-center relative group">
-                                                                        {/* Connector Line anchored at top icon row center */}
-                                                                        {!isLast && (
-                                                                            <div
-                                                                                className={`absolute top-5 left-[50%] right-[-50%] h-[2px] z-0 ${
-                                                                                    isDelivered ? "bg-[#00875A]" : "border-t-2 border-dashed border-[#E5D9C8]"
-                                                                                }`}
-                                                                            />
+                                                {/* Deliveries Schedule Section */}
+                                                {(() => {
+                                                    const isScheduleOpen = Boolean(expandedSchedules[purchase.id]);
+                                                    return (
+                                                        <div className="pt-6 border-t border-[#F0E4D0]">
+                                                            <div
+                                                                onClick={() => toggleSchedule(purchase.id)}
+                                                                className="flex items-center justify-between gap-2 mb-4 p-2 -mx-2 rounded-2xl cursor-pointer hover:bg-[#FAF0DC]/50 transition-all select-none group"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <Package size={18} className="text-[#D49313] group-hover:scale-110 transition-transform shrink-0" />
+                                                                    <span className="font-serif text-base sm:text-lg font-extrabold text-[#593102]">
+                                                                        Delivery Schedule ({purchase.deliveries.length} {purchase.deliveries.length === 1 ? 'Delivery' : 'Deliveries'})
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <span className="text-xs font-bold text-[#8D7F73]">
+                                                                        {purchase.deliveredJarsCount} of {purchase.deliveries.length} Delivered
+                                                                    </span>
+                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAF0DC] text-[#593102] group-hover:bg-[#D49313] group-hover:text-white transition-all shadow-2xs">
+                                                                        {isScheduleOpen ? (
+                                                                            <ChevronUp size={16} strokeWidth={2.5} />
+                                                                        ) : (
+                                                                            <ChevronDown size={16} strokeWidth={2.5} />
                                                                         )}
-
-                                                                        {/* Step Icon Node */}
-                                                                        <div className="relative z-10 flex items-center justify-center">
-                                                                            {isDelivered ? (
-                                                                                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#00875A] text-white shadow-xs">
-                                                                                    <Check className="h-5 w-5 stroke-[3]" />
-                                                                                </div>
-                                                                            ) : isInTransit ? (
-                                                                                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#2B9B76] text-white ring-4 ring-[#C2F3E1] shadow-xs">
-                                                                                    <Truck className="h-5 w-5" />
-                                                                                </div>
-                                                                            ) : (
-                                                                                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#FAF4EB] border-2 border-[#E8DEC9] text-[#8C7765]">
-                                                                                    <Package className="h-4.5 w-4.5" />
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-
-                                                                        {/* Details Column below Icon */}
-                                                                        <div className="mt-2.5 flex flex-col items-center text-center space-y-0.5 max-w-[100px]">
-                                                                            <p className="font-serif text-xs sm:text-sm font-black text-[#593102]">
-                                                                                {step.title}
-                                                                            </p>
-                                                                            {isDelivered && Boolean(step.jarName) && (
-                                                                                <p className="text-[11px] font-extrabold text-[#7A5C3E] truncate max-w-[95px]" title={step.jarName}>
-                                                                                    {step.jarName}
-                                                                                </p>
-                                                                            )}
-                                                                            <span className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
-                                                                                isDelivered ? "text-[#00875A]" : isInTransit ? "text-[#2B9B76]" : "text-[#8C7765]"
-                                                                            }`}>
-                                                                                {step.status}
-                                                                            </span>
-                                                                            {isDelivered && Boolean(step.date) && (
-                                                                                <p className="text-[10px] font-medium text-[#A08E7E] truncate max-w-[90px]">
-                                                                                    {step.date}
-                                                                                </p>
-                                                                            )}
-                                                                        </div>
                                                                     </div>
-                                                                );
-                                                            })}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Dynamic Grid Layout based on number of deliveries */}
+                                                            {isScheduleOpen && (
+                                                                <div className={`grid gap-4 sm:gap-5 w-full transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${
+                                                                    purchase.deliveries.length === 1
+                                                                        ? "grid-cols-1 max-w-xl"
+                                                                        : purchase.deliveries.length === 2
+                                                                        ? "grid-cols-1 md:grid-cols-2"
+                                                                        : "grid-cols-1 md:grid-cols-3"
+                                                                }`}>
+                                                                    {purchase.deliveries.map((step) => {
+                                                                        const isDelivered = step.status === "Delivered";
+                                                                        const isInTransit = step.status === "In Transit";
+                                                                        const isCancelled = step.status === "Cancelled";
+
+                                                                        return (
+                                                                            <div
+                                                                                key={step.deliveryNumber}
+                                                                                className={`relative rounded-2xl border p-4 transition-all flex flex-col justify-between w-full ${
+                                                                                    isDelivered
+                                                                                        ? "bg-[#F2FBF7] border-[#A3EAD2]"
+                                                                                        : isInTransit
+                                                                                        ? "bg-[#F2FBF7] border-[#A3EAD2] shadow-xs"
+                                                                                        : isCancelled
+                                                                                        ? "bg-[#FFF5F5] border-[#F8B4B4]"
+                                                                                        : "bg-[#FFFDF9] border-[#EADCC9]"
+                                                                                }`}
+                                                                            >
+                                                                                {/* Header Info */}
+                                                                                <div>
+                                                                                    <div className="flex items-center justify-between pb-3 border-b border-[#EADCC9]/60 gap-2">
+                                                                                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                                                            <span className="font-serif font-black text-sm text-[#593102] shrink-0">
+                                                                                                Delivery {step.deliveryNumber}
+                                                                                            </span>
+                                                                                            {step.monthName && (
+                                                                                                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FAF0DC] text-[#593102] uppercase tracking-wider truncate">
+                                                                                                    {step.monthName}
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </div>
+
+                                                                                        <span
+                                                                                            className={`inline-flex items-center text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full shrink-0 ${
+                                                                                                isDelivered || isInTransit
+                                                                                                    ? "bg-[#E6F9F3] text-[#00A86B] border border-[#A3EAD2]"
+                                                                                                    : isCancelled
+                                                                                                    ? "bg-[#FEE2E2] text-[#DC2626] border border-[#FCA5A5]"
+                                                                                                    : "bg-[#FAF4EB] text-[#8C7765] border border-[#E8DEC9]"
+                                                                                            }`}
+                                                                                        >
+                                                                                            {step.status}
+                                                                                        </span>
+                                                                                    </div>
+
+                                                                                    {/* Image + Title + Season Details */}
+                                                                                    <div className="flex items-start gap-3.5 mt-3.5">
+                                                                                        {step.image && (
+                                                                                            <div className="relative h-18 w-18 sm:h-20 sm:w-20 shrink-0 rounded-xl overflow-hidden border border-[#EADCC9] bg-white shadow-2xs">
+                                                                                                <Image
+                                                                                                    src={step.image}
+                                                                                                    alt={step.title}
+                                                                                                    fill
+                                                                                                    className="object-cover object-center"
+                                                                                                    unoptimized={Boolean(step.image.startsWith("http"))}
+                                                                                                />
+                                                                                            </div>
+                                                                                        )}
+
+                                                                                        <div className="min-w-0 flex-1">
+                                                                                            {step.season && (
+                                                                                                <p className="text-xs font-bold text-[#D49313] uppercase tracking-wider">
+                                                                                                    {step.season}
+                                                                                                </p>
+                                                                                            )}
+                                                                                            <h5 className="font-serif text-sm sm:text-base font-extrabold text-[#593102] leading-snug line-clamp-2 mt-0.5" title={step.title}>
+                                                                                                {step.title}
+                                                                                            </h5>
+                                                                                            {step.description && (
+                                                                                                <p className="text-[11px] sm:text-xs text-[#7A5C3E] line-clamp-2 mt-1 font-medium leading-relaxed">
+                                                                                                    {step.description}
+                                                                                                </p>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                {/* Footer Info Row */}
+                                                                                <div className="mt-3.5 pt-2.5 border-t border-[#EADCC9]/50 flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold text-[#8D7F73]">
+                                                                                    {step.scheduledDate ? (
+                                                                                        <span>Scheduled: <strong className="text-[#593102]">{step.scheduledDate}</strong></span>
+                                                                                    ) : (
+                                                                                        <span>Seasonal Delivery</span>
+                                                                                    )}
+
+                                                                                    {step.orderStatus && (() => {
+                                                                                        const rawOrd = String(step.orderStatus || "").replace(/_/g, " ");
+                                                                                        const formattedOrd = rawOrd.replace(/\b\w/g, (c) => c.toUpperCase());
+                                                                                        const ordLower = rawOrd.toLowerCase();
+
+                                                                                        let ordBadgeStyle = "bg-[#FAF0DC] text-[#593102] border-[#EADCC9]";
+                                                                                        if (
+                                                                                            ordLower.includes("ready") ||
+                                                                                            ordLower.includes("pickup") ||
+                                                                                            ordLower.includes("deliver") ||
+                                                                                            ordLower.includes("complet") ||
+                                                                                            ordLower.includes("active")
+                                                                                        ) {
+                                                                                            ordBadgeStyle = "bg-[#E6F9F3] text-[#00A86B] border-[#A3EAD2]";
+                                                                                        } else if (
+                                                                                            ordLower.includes("transit") ||
+                                                                                            ordLower.includes("ship") ||
+                                                                                            ordLower.includes("dispatch") ||
+                                                                                            ordLower.includes("process")
+                                                                                        ) {
+                                                                                            ordBadgeStyle = "bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]";
+                                                                                        } else if (ordLower.includes("cancel") || ordLower.includes("fail")) {
+                                                                                            ordBadgeStyle = "bg-[#FEE2E2] text-[#DC2626] border-[#FCA5A5]";
+                                                                                        }
+
+                                                                                        return (
+                                                                                            <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border ${ordBadgeStyle}`}>
+                                                                                                Order: {formattedOrd}
+                                                                                            </span>
+                                                                                        );
+                                                                                    })()}
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    );
+                                                })()}
 
                                                 {/* Shipping Address Footer if available */}
                                                 {purchase.shippingAddress && (

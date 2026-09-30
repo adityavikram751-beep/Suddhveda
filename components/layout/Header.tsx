@@ -586,7 +586,7 @@ export default function Header() {
                             {/* Featured Honey Jars Spotlight Box */}
                             <div className="col-span-4 relative rounded-2xl overflow-hidden border border-[#D49313]/40 shadow-md group/card min-h-[190px] h-full flex items-center justify-center bg-white">
                               <Image
-                                src="/shop 2.png"
+                                src="/header1.webp"
                                 alt="ShuddhVeda Pure Honey"
                                 fill
                                 priority

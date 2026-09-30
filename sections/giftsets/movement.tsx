@@ -39,7 +39,7 @@ export default function MomentsMadeSweeter() {
           {/* Left - Big Tall Featured Image (6 cols on lg) */}
           <div className="w-full lg:col-span-6 relative rounded-[28px] overflow-hidden h-[340px] sm:h-[450px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-xl group cursor-pointer">
             <Image
-              src="/move1.png"
+              src="/family2.webp"
               alt="Wedding table setting with honey jar"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
