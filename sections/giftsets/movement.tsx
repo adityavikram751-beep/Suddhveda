@@ -11,7 +11,7 @@ export default function MomentsMadeSweeter() {
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#593102]/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-[1350px] mx-auto px-5 sm:px-8 relative z-10">
-        
+
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-wider mb-3 shadow-2xs">
@@ -34,54 +34,63 @@ export default function MomentsMadeSweeter() {
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 h-auto lg:h-[560px]">
-          
+        <div className="flex flex-col gap-5 lg:grid lg:grid-cols-12 lg:gap-6 lg:h-[580px]">
+
           {/* Left - Big Tall Featured Image (6 cols on lg) */}
-          <div className="lg:col-span-6 relative rounded-[28px] overflow-hidden h-[360px] sm:h-[450px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-xl group cursor-pointer">
+          <div className="w-full lg:col-span-6 relative rounded-[28px] overflow-hidden h-[340px] sm:h-[450px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-xl group cursor-pointer">
             <Image
               src="/move1.png"
               alt="Wedding table setting with honey jar"
               fill
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+              className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           </div>
 
           {/* Right Column - 3 Images Split (6 cols on lg) */}
-          <div className="lg:col-span-6 grid grid-rows-12 gap-5 lg:gap-6 h-auto lg:h-full">
-            
+          <div className="w-full lg:col-span-6 flex flex-col gap-5 lg:grid lg:grid-rows-12 lg:gap-6 lg:h-full">
+
             {/* Top Row: 2 Images Side-by-Side (7 rows height on lg) */}
-            <div className="row-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6 h-[260px] sm:h-[280px] lg:h-full">
-              
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-5 lg:row-span-7 lg:gap-6 lg:h-full">
+
               {/* Card 1 */}
-              <div className="relative rounded-[24px] overflow-hidden h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
+              <div className="relative rounded-[24px] overflow-hidden h-[240px] sm:h-[280px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
                 <Image
                   src="/image1.png"
                   alt="Elderly couple unboxing a gift"
                   fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </div>
 
               {/* Card 2 */}
-              <div className="relative rounded-[24px] overflow-hidden h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
+              <div className="relative rounded-[24px] overflow-hidden h-[240px] sm:h-[280px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
                 <Image
-                  src="/move3.png"
-                  alt="Gift box on an office desk"
+                  src="/family2.png"
+                  alt="Family celebrating with gift box"
                   fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover object-[center_20%] sm:object-[center_15%] transition-transform duration-700 ease-out group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </div>
 
             </div>
 
             {/* Bottom Row: Wide Image (5 rows height on lg) */}
-            <div className="row-span-5 relative rounded-[24px] overflow-hidden h-[200px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
+            <div className="w-full lg:row-span-5 relative rounded-[24px] overflow-hidden h-[220px] sm:h-[260px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
               <Image
-                src="/move2.png"
-                alt="Flatlay of honey jars and ingredients"
+                src="/family.png"
+                alt="Family sweet moments with pure honey gift"
                 fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-[center_30%] sm:object-[center_35%] transition-transform duration-700 ease-out group-hover:scale-105"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
 
           </div>

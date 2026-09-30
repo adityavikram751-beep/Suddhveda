@@ -130,9 +130,9 @@ export default function SubscriptionPlansSection() {
     };
 
     const activePlan = plans.find((p) => p.id === selectedPlanId) || plans[0] || {
-        id: "default-annual-plan",
-        name: "Good Plan",
-        description: "Our most popular plan",
+        id: "",
+        name: "",
+        description: "",
         price: 2099,
         mrp: 2394,
         image: "/subscribe2.0.png",
