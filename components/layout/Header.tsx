@@ -492,19 +492,19 @@ export default function Header() {
                     {/* Premium Shop Mega Menu Popup UI */}
                     {shopMenuOpen && (
                       <div
-                        className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[960px] max-w-[95vw] z-50 transition-all duration-300 animate-in fade-in slide-in-from-top-2"
+                        className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[710px] max-w-[92vw] z-50 transition-all duration-300 animate-in fade-in slide-in-from-top-2"
                         onMouseEnter={() => setShopMenuOpen(true)}
                       >
-                        <div className="relative overflow-hidden rounded-3xl border border-[#E8DED1] bg-[#FFFDF9] p-8 sm:p-10 shadow-[0_30px_70px_-15px_rgba(89,49,2,0.18)]">
+                        <div className="relative overflow-hidden rounded-3xl border border-[#E8DED1] bg-[#FFFDF9] p-6 sm:p-7 shadow-[0_30px_70px_-15px_rgba(89,49,2,0.18)]">
                           <div className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-[#D89B00] via-[#593102] to-[#D89B00]" />
 
-                          <div className="mb-6 flex items-center justify-between border-b border-[#F0E4D0] pb-4">
+                          <div className="mb-5 flex items-center justify-between border-b border-[#F0E4D0] pb-3.5">
                             <Link
                               href="/shop"
                               onClick={() => setShopMenuOpen(false)}
                               className="group flex items-center gap-3"
                             >
-                              <span className="font-serif text-[26px] font-bold text-[#593102] group-hover:text-[#C98715] transition-colors">
+                              <span className="font-serif text-[22px] sm:text-[24px] font-bold text-[#593102] group-hover:text-[#C98715] transition-colors">
                                 Shop All Honey
                               </span>
                               <span className="text-[13px] font-semibold text-[#8C6239] group-hover:text-[#593102] group-hover:translate-x-1 transition-all flex items-center gap-1">
@@ -513,13 +513,9 @@ export default function Header() {
                             </Link>
                           </div>
 
-                          <div className="grid grid-cols-12 gap-8 items-stretch">
-                            {/* Multi-Flora Column */}
-
-
+                          <div className="grid grid-cols-12 gap-6 items-center">
                             {/* Mono-Flora Column */}
-                            <div className="col-span-5 border-[#F0E4D0] pl-6">
-
+                            <div className="col-span-7">
                               <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                                 {monoFloraProducts.length > 0 ? (
                                   monoFloraProducts.map((p) => {
@@ -540,20 +536,13 @@ export default function Header() {
                                     );
                                   })
                                 ) : (
-                                  <>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Ajwain Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Lychee Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Fennel Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Jamun Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Mustard Honey</Link>
-                                    <Link href="/shop" onClick={() => setShopMenuOpen(false)} className="text-[14px] font-semibold text-[#2C221E] hover:text-[#593102]">Eucalyptus Honey</Link>
-                                  </>
+                                  <></>
                                 )}
                               </div>
                             </div>
 
                             {/* Featured Honey Jars Spotlight Box */}
-                            <div className="col-span-4 relative rounded-2xl overflow-hidden border border-[#D49313]/40 shadow-md group/card min-h-[190px] h-full flex items-center justify-center bg-white">
+                            <div className="col-span-5 relative rounded-2xl overflow-hidden border border-[#D49313]/40 shadow-md group/card h-[170px] w-full flex items-center justify-center bg-white">
                               <Image
                                 src="/header1.webp"
                                 alt="ShuddhVeda Pure Honey"
@@ -796,47 +785,12 @@ export default function Header() {
                                 </Link>
 
                                 <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
-                                    Multi-Flora Honey
-                                  </span>
-                                  <div className="space-y-1.5 pl-1">
-                                    {multiFloraProducts.length > 0 ? (
-                                      multiFloraProducts.map((p) => {
-                                        const id = getProductId(p);
-                                        const name = getProductName(p);
-                                        return (
-                                          <Link
-                                            key={id || name}
-                                            href={`/shop/products/${id}`}
-                                            onClick={() => {
-                                              setOpen(false);
-                                              setMobileShopOpen(false);
-                                            }}
-                                            className="block text-[13px] font-semibold text-[#593102] hover:text-[#D49313] transition-colors"
-                                          >
-                                            • {name}
-                                          </Link>
-                                        );
-                                      })
-                                    ) : (
-                                      <Link
-                                        href="/shop"
-                                        onClick={() => {
-                                          setOpen(false);
-                                          setMobileShopOpen(false);
-                                        }}
-                                        className="block text-[13px] font-semibold text-[#593102]"
-                                      >
-                                        • Himalayan Forest Honey
-                                      </Link>
-                                    )}
-                                  </div>
+
+
                                 </div>
 
                                 <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#8D7F73] block mb-1">
-                                    Mono-Flora Honey
-                                  </span>
+
                                   <div className="grid grid-cols-1 gap-1.5 pl-1">
                                     {monoFloraProducts.length > 0 ? (
                                       monoFloraProducts.map((p) => {
