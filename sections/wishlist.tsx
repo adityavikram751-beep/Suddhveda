@@ -322,13 +322,35 @@ export default function WishlistPage() {
   };
 
   const shareWishlist = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
+    if (wishlistItems.length === 0) {
+      showToast("Wishlist is empty!");
+      return;
+    }
+
+    const itemsSummary = wishlistItems
+      .map(
+        (item, idx) =>
+          `${idx + 1}. ${item.title}${item.weight ? ` (${item.weight})` : ""} - ₹${item.price}`
+      )
+      .join("\n");
+
+    const totalPrice = wishlistItems.reduce((acc, i) => acc + (i.price || 0), 0);
+    const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+
+    const shareText = `🍯 *My ShuddhVeda Wishlist* (${wishlistItems.length} ${
+      wishlistItems.length === 1 ? "Item" : "Items"
+    })\n\n${itemsSummary}\n\n*Total Value:* ₹${totalPrice.toLocaleString("en-IN")}\n\nView Wishlist: ${pageUrl}`;
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: "My Wishlist", url });
+        await navigator.share({
+          title: "My ShuddhVeda Wishlist",
+          text: shareText,
+          url: pageUrl,
+        });
       } else {
-        await navigator.clipboard.writeText(url);
-        showToast("Wishlist link copied!");
+        await navigator.clipboard.writeText(shareText);
+        showToast("Wishlist items & prices copied to clipboard!");
       }
     } catch {
       // user cancelled
@@ -348,7 +370,7 @@ export default function WishlistPage() {
 
   return (
     <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] min-h-screen py-8 sm:py-12 border-b border-[#EADCC9]/50">
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-10">
+      <div className="max-w-[920px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mt-2">
@@ -453,19 +475,6 @@ export default function WishlistPage() {
                           <span className="text-[12px] text-[#8D7F73] line-through ml-2">₹{item.mrp}</span>
                         )}
                       </div>
-
-                      <button
-                        onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
-                        disabled={actionLoading === item.productId}
-                        className="flex items-center justify-center gap-1.5 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[12px] font-extrabold px-4 h-[38px] rounded-xl transition-colors shadow-xs disabled:opacity-50 cursor-pointer uppercase tracking-wide"
-                      >
-                        {actionLoading === item.productId ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <ShoppingCart size={14} />
-                        )}
-                        {actionLoading === item.productId ? "Moving..." : "Move to Cart"}
-                      </button>
                     </div>
                   </div>
 
@@ -503,20 +512,7 @@ export default function WishlistPage() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => moveToCart(item.productId, item.variantId || '', item.title)}
-                          disabled={actionLoading === item.productId}
-                          className="shrink-0 flex items-center justify-center gap-1.5 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[12px] font-extrabold px-5 h-[38px] rounded-xl transition-colors shadow-xs cursor-pointer uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {actionLoading === item.productId ? (
-                            <Loader2 size={14} className="animate-spin" />
-                          ) : (
-                            <ShoppingCart size={14} />
-                          )}
-                          {actionLoading === item.productId ? "Moving..." : "Move to Cart"}
-                        </button>
-
-                        <button onClick={() => removeItem(item.productId)} className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-[#EADCC9] text-[#8D7F73] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer bg-white">
+                        <button onClick={() => removeItem(item.productId)} className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-[#EADCC9] text-[#8D7F73] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer bg-white" title="Remove item">
                           <X size={18} />
                         </button>
                       </div>

@@ -304,7 +304,7 @@ export default function MySubscriptionsPage() {
                     let status: "Active" | "Completed" | "Processing" | "Cancelled" = "Active";
                     if (statusRaw.includes("complet") || statusRaw.includes("deliver")) status = "Completed";
                     else if (statusRaw.includes("cancel")) status = "Cancelled";
-                    else if (statusRaw.includes("pend") || statusRaw.includes("process")) status = "Processing";
+                    else if (statusRaw.includes("pend") || statusRaw.includes("process") || statusRaw.includes("fail") || rawPayStatus.includes("fail") || rawPayStatus.includes("pend")) status = "Processing";
 
                     const addrObj = item.shippingAddress || item.shipping_address || item.address || {};
                     const addrName = addrObj.full_name || addrObj.name || item.name || "";
@@ -451,7 +451,7 @@ export default function MySubscriptionsPage() {
     };
 
     const handleRetryPlanPayment = async (purchase: SubscriptionPurchase) => {
-        const targetId = purchase.rawItem?._id || purchase.rawItem?.id || purchase.rawItem?.purchase_id || purchase.purchaseId || purchase.id;
+        const targetId = purchase.rawItem?.plan_purchase_id || purchase.rawItem?._id || purchase.rawItem?.id || purchase.rawItem?.purchase_id || purchase.purchaseId || purchase.id;
         if (!targetId) {
             setToastMessage({ type: "error", text: "Subscription ID not found." });
             setTimeout(() => setToastMessage(null), 4000);
@@ -471,10 +471,11 @@ export default function MySubscriptionsPage() {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
                 body: JSON.stringify({
+                    plan_purchase_id: targetId,
+                    purchase_id: targetId,
                     id: targetId,
                     purchaseId: targetId,
-                    purchase_id: targetId,
-                    purchasePlanId: targetId,
+                    planPurchaseId: targetId,
                 }),
             });
 
@@ -486,18 +487,22 @@ export default function MySubscriptionsPage() {
                 return;
             }
 
+            const resData = data?.data || data?.razorpay || data || {};
+
             // 1. Check if redirect/checkout URL is returned
-            const payUrl = data?.payment_url || data?.url || data?.checkout_url || data?.redirectUrl || data?.data?.payment_url || data?.data?.url;
+            const payUrl = resData?.payment_url || resData?.url || resData?.checkout_url || resData?.redirectUrl || data?.payment_url || data?.url;
             if (payUrl) {
                 window.location.href = payUrl;
                 return;
             }
 
             // 2. Check if Razorpay details are returned
-            const rzpObj = data?.razorpay || data?.data?.razorpay || data || {};
-            const key = rzpObj.key_id || rzpObj.key || data?.key_id || data?.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-            const rzpOrderId = rzpObj.order_id || rzpObj.id || data?.order_id || data?.razorpay_order_id;
-            const amount = rzpObj.amount || data?.amount;
+            const key = resData.key_id || resData.key || data?.key_id || data?.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            const rzpOrderId = resData.razorpay_order_id || resData.order_id || resData.id || data?.order_id || data?.razorpay_order_id;
+            const amount = resData.amount || data?.amount;
+            const currency = resData.currency || data?.currency || "INR";
+            const customerObj = resData.customer || data?.customer || {};
+            const planObj = resData.plan || data?.plan || {};
 
             if (key && rzpOrderId && typeof window !== "undefined") {
                 await loadRazorpayScript();
@@ -505,17 +510,18 @@ export default function MySubscriptionsPage() {
                     const options = {
                         key: key,
                         amount: amount,
-                        currency: rzpObj.currency || "INR",
+                        currency: currency,
                         name: "ShuddhVeda Honey",
-                        description: `${purchase.planName} Payment Retry`,
+                        description: `${planObj.name || purchase.planName} Payment Retry`,
                         order_id: rzpOrderId,
                         handler: function (res: any) {
                             setToastMessage({ type: "success", text: "Subscription payment completed successfully!" });
                             setTimeout(() => window.location.reload(), 1500);
                         },
                         prefill: {
-                            name: purchase.customerName || purchase.shippingAddress?.name || "",
-                            contact: purchase.shippingAddress?.phone || "",
+                            name: customerObj.name || purchase.customerName || purchase.shippingAddress?.name || "",
+                            email: customerObj.email || "",
+                            contact: customerObj.mobile || customerObj.phone || purchase.shippingAddress?.phone || "",
                         },
                         theme: { color: "#FA4B1B" },
                     };
@@ -799,23 +805,7 @@ export default function MySubscriptionsPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                                                    {isProcessing && (
-                                                        <button
-                                                            onClick={() => handleRetryPlanPayment(purchase)}
-                                                            disabled={retryingPurchaseId === purchase.id}
-                                                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
-                                                        >
-                                                            {retryingPurchaseId === purchase.id ? (
-                                                                <>
-                                                                    <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
-                                                                    <span>Processing...</span>
-                                                                </>
-                                                            ) : (
-                                                                <span>Pay Again</span>
-                                                            )}
-                                                        </button>
-                                                    )}
+                                                <div className="flex items-center shrink-0">
                                                     <span className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider border shadow-2xs ${
                                                         isCancelled
                                                             ? "bg-[#FEE2E2] text-[#DC2626] border-[#FCA5A5]"
@@ -891,16 +881,16 @@ export default function MySubscriptionsPage() {
                                                         )}
 
                                                         {isProcessing && (
-                                                            <div className="pt-2">
+                                                            <div className="pt-3">
                                                                 <button
                                                                     onClick={() => handleRetryPlanPayment(purchase)}
                                                                     disabled={retryingPurchaseId === purchase.id}
-                                                                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-50"
+                                                                    className="inline-flex items-center justify-center gap-2 px-8 py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:scale-105 transition-all cursor-pointer disabled:opacity-50"
                                                                 >
                                                                     {retryingPurchaseId === purchase.id ? (
                                                                         <>
-                                                                            <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
-                                                                            <span>Retrying Payment...</span>
+                                                                            <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                                                                            <span>Processing...</span>
                                                                         </>
                                                                     ) : (
                                                                         <span>PAY AGAIN</span>

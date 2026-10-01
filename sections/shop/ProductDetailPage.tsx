@@ -1171,20 +1171,20 @@ export default function ProductDetailPage({
           </div>
 
           {/* RIGHT PRODUCT DETAILS COLUMN */}
-          <div className="lg:col-span-6 space-y-6 relative pt-3 lg:pt-5">
+          <div className="lg:col-span-6 space-y-4 relative pt-1 lg:pt-2">
             {/* Product Category Tag & Title */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-3.5 py-1.5 rounded-full shadow-2xs">
                 <span className="text-[12px] font-black text-[#593102] uppercase tracking-wider">
                   {getCategoryName(product) || "Pure Honey"}
                 </span>
               </div>
 
-              <div className="flex justify-between items-start w-full gap-4 pt-1">
-                <h1 className="font-serif text-[32px] sm:text-[38px] md:text-[44px] font-extrabold text-[#593102] leading-tight tracking-tight">
+              <div className="flex justify-between items-start w-full gap-4 pt-0.5">
+                <h1 className="font-serif text-[30px] sm:text-[36px] md:text-[40px] font-extrabold text-[#593102] leading-tight tracking-tight">
                   {product.product_name}
                 </h1>
-                <div className="flex items-center gap-3 mt-2 shrink-0">
+                <div className="flex items-center gap-3 mt-1 shrink-0">
                   {!isComboProduct && (
                     <button
                       type="button"
@@ -1213,16 +1213,16 @@ export default function ProductDetailPage({
             </div>
 
             {/* Price Block */}
-            <div className="space-y-1 pt-0.5">
+            <div className="space-y-0.5 pt-0">
               <div className="flex items-center justify-between w-full max-w-xl">
                 {/* Real Price + Cut MRP Price side by side */}
-                <div className="flex items-baseline gap-3 flex-wrap">
-                  <span className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <span className="text-[34px] sm:text-[40px] font-serif font-extrabold text-[#593102] leading-none tracking-tight">
                     ₹{currentPrice}
                   </span>
 
                   {currentMrp > currentPrice && (
-                    <span className="text-[17px] sm:text-[19px] text-[#8D7F73] font-semibold line-through decoration-[#8D7F73]">
+                    <span className="text-[12.5px] sm:text-[13.5px] text-[#8D7F73] font-semibold line-through decoration-[#8D7F73] leading-none">
                       M.R.P ₹{currentMrp}
                     </span>
                   )}
@@ -1230,28 +1230,28 @@ export default function ProductDetailPage({
 
                 {/* TICKET / COUPON STAMP DISCOUNT BADGE */}
                 {discountPercent > 0 && (
-                  <div className="ml-auto bg-[#FA4B1B] text-white rounded-2xl border-2 border-dashed border-white w-[56px] h-[64px] sm:w-[60px] sm:h-[68px] shadow-2xs flex flex-col items-center justify-center text-center leading-none select-none shrink-0">
-                    <span className="text-[16px] sm:text-[17px] font-black tracking-tight">{discountPercent}%</span>
-                    <span className="text-[11.5px] sm:text-[12.5px] font-bold uppercase tracking-wider mt-1">OFF</span>
+                  <div className="ml-auto bg-[#FA4B1B] text-white rounded-2xl border-2 border-dashed border-white w-[54px] h-[60px] sm:w-[58px] sm:h-[64px] shadow-2xs flex flex-col items-center justify-center text-center leading-none select-none shrink-0">
+                    <span className="text-[15px] sm:text-[16px] font-black tracking-tight">{discountPercent}%</span>
+                    <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wider mt-0.5">OFF</span>
                   </div>
                 )}
               </div>
 
               {/* You Save Amount (Matching exact user screenshot) */}
               {currentSave > 0 && (
-                <div className="text-[15px] sm:text-[16px] text-[#4A4A4A] font-medium pt-0.5">
+                <div className="text-[14px] sm:text-[15px] text-[#4A4A4A] font-medium pt-0.5">
                   You Save ₹{currentSave}
                 </div>
               )}
 
-              <p className="text-[12.5px] text-[#7A6A5C] font-medium pt-0.5">
+              <p className="text-[12px] text-[#7A6A5C] font-medium pt-0.5">
                 Inclusive of all taxes.
               </p>
             </div>
 
             {/* Delivery Details */}
-            <div className="space-y-2.5 max-w-xl">
-              <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+            <div className="space-y-1.5 max-w-xl">
+              <h3 className="text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
                 Check Delivery Availability
               </h3>
 
@@ -1273,13 +1273,13 @@ export default function ProductDetailPage({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleCheckPincode();
                   }}
-                  className="flex-1 px-4 py-3 text-[15px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
+                  className="flex-1 px-4 py-2.5 text-[14.5px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
                 />
                 <button
                   type="button"
                   onClick={handleCheckPincode}
                   disabled={isCheckingPincode}
-                  className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] disabled:opacity-50 text-white px-7 py-3 text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
+                  className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] disabled:opacity-50 text-white px-7 py-2.5 text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
                 >
                   {isCheckingPincode ? "CHECKING..." : "CHECK"}
                 </button>
@@ -1287,8 +1287,8 @@ export default function ProductDetailPage({
 
               {/* ESTIMATED DELIVERY DATE OR ERROR MESSAGE (MATCHING EXACT USER SCREENSHOT) */}
               {pincodeStatus.type === "success" && pincodeStatus.deliveryInfo ? (
-                <div className="mt-2.5 flex items-center gap-2.5 text-[14.5px] sm:text-[15.5px] text-[#2F241C] font-medium leading-tight animate-in fade-in slide-in-from-top-1 duration-300">
-                  <Truck className="w-5 sm:w-6 h-5 sm:h-6 text-[#2F241C] shrink-0 stroke-[1.8]" />
+                <div className="mt-2 flex items-center gap-2.5 text-[14px] sm:text-[15px] text-[#2F241C] font-medium leading-tight animate-in fade-in slide-in-from-top-1 duration-300">
+                  <Truck className="w-5 sm:w-5 h-5 sm:h-5 text-[#2F241C] shrink-0 stroke-[1.8]" />
                   <span>
                     Delivery between{" "}
                     <span className="text-[#16A34A] font-extrabold font-sans">
@@ -1317,7 +1317,7 @@ export default function ProductDetailPage({
                   </span>
                 </div>
               ) : pincodeStatus.type === "error" ? (
-                <div className="mt-2.5 flex items-center gap-2 text-[15px] sm:text-[16px] text-red-600 font-medium leading-tight animate-in fade-in duration-300">
+                <div className="mt-2 flex items-center gap-2 text-[14.5px] text-red-600 font-medium leading-tight animate-in fade-in duration-300">
                   <span>{pincodeStatus.message || "Pincode not serviceable"}</span>
                 </div>
               ) : null}
@@ -1325,8 +1325,8 @@ export default function ProductDetailPage({
 
             {/* Weight Selection - Only for standard products */}
             {!isComboProduct && variants.length > 0 && (
-              <div className="space-y-3 pt-1">
-                <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">
+              <div className="space-y-2 pt-0.5">
+                <h3 className="text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
                   Select Pack Size
                 </h3>
                 <div className="flex gap-3 sm:gap-4 flex-wrap">
