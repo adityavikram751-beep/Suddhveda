@@ -322,35 +322,13 @@ export default function WishlistPage() {
   };
 
   const shareWishlist = async () => {
-    if (wishlistItems.length === 0) {
-      showToast("Wishlist is empty!");
-      return;
-    }
-
-    const itemsSummary = wishlistItems
-      .map(
-        (item, idx) =>
-          `${idx + 1}. ${item.title}${item.weight ? ` (${item.weight})` : ""} - ₹${item.price}`
-      )
-      .join("\n");
-
-    const totalPrice = wishlistItems.reduce((acc, i) => acc + (i.price || 0), 0);
-    const pageUrl = typeof window !== "undefined" ? window.location.href : "";
-
-    const shareText = `🍯 *My ShuddhVeda Wishlist* (${wishlistItems.length} ${
-      wishlistItems.length === 1 ? "Item" : "Items"
-    })\n\n${itemsSummary}\n\n*Total Value:* ₹${totalPrice.toLocaleString("en-IN")}\n\nView Wishlist: ${pageUrl}`;
-
+    const url = typeof window !== "undefined" ? window.location.href : "";
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: "My ShuddhVeda Wishlist",
-          text: shareText,
-          url: pageUrl,
-        });
+        await navigator.share({ title: "My Wishlist", url });
       } else {
-        await navigator.clipboard.writeText(shareText);
-        showToast("Wishlist items & prices copied to clipboard!");
+        await navigator.clipboard.writeText(url);
+        showToast("Wishlist link copied!");
       }
     } catch {
       // user cancelled
@@ -370,7 +348,7 @@ export default function WishlistPage() {
 
   return (
     <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] min-h-screen py-8 sm:py-12 border-b border-[#EADCC9]/50">
-      <div className="max-w-[920px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-10">
 
         {/* Header */}
         <div className="flex items-center justify-between mt-2">
@@ -518,7 +496,6 @@ export default function WishlistPage() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               ))}
             </div>
