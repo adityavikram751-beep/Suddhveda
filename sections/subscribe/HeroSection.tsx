@@ -26,11 +26,11 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
         />
       </div>
 
-      <div className="hidden lg:block mx-auto max-w-[1440px] px-10 lg:px-16 relative z-10 w-full py-14 lg:py-16">
-        <div className="max-w-[680px]">
+      <div className="hidden lg:block mx-auto max-w-[1440px] px-6 lg:px-8 xl:px-16 relative z-10 w-full py-10 lg:py-12 xl:py-16">
+        <div className="max-w-[500px] lg:max-w-[540px] xl:max-w-[680px]">
 
           {/* Top Pill Badge with Calendar Icon */}
-          <div className="inline-flex items-center gap-2 bg-[#FAF4E8]/80 backdrop-blur-xs border border-[#F3DAB6] px-6 py-1.5 rounded-[14px] text-[13.5px] font-medium text-[#F29D00] shadow-none mb-4">
+          <div className="inline-flex items-center gap-2 bg-[#FAF4E8]/80 backdrop-blur-xs border border-[#F3DAB6] px-5 xl:px-6 py-1.5 rounded-[14px] text-[13px] xl:text-[13.5px] font-medium text-[#F29D00] shadow-none mb-4">
             <div className="relative w-4 h-4 flex-shrink-0">
               <Image
                 src="/fluent_calendar-date-20-regular.svg"
@@ -43,21 +43,21 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
           </div>
 
           {/* Main Title */}
-          <h1 className="font-libre-caslon text-[48px] lg:text-[64px] text-[#1A1410] leading-[1.12] tracking-normal">
+          <h1 className="font-libre-caslon text-[42px] lg:text-[48px] xl:text-[64px] text-[#1A1410] leading-[1.12] tracking-normal">
             A Year of Honey.<br />
             A Journey of <span className="text-[#E08A00]">Flavours.</span>
           </h1>
 
           {/* Subtitle Paragraph */}
-          <p className="font-cormorant italic text-[18px] lg:text-[19.5px] text-[#593102] leading-relaxed max-w-[560px] mt-6 mb-8">
+          <p className="font-cormorant italic text-[17px] lg:text-[18px] xl:text-[19.5px] text-[#593102] leading-relaxed max-w-[520px] xl:max-w-[560px] mt-4 lg:mt-6 mb-6 lg:mb-8">
             Discover six distinctive honey varieties, thoughtfully delivered to your doorstep throughout the year.
           </p>
 
           {/* Feature Cards Row */}
-          <div className="flex items-center justify-start gap-3 my-6 w-full max-w-[540px]">
+          <div className="flex items-center justify-start gap-2.5 xl:gap-3 my-5 xl:my-6 w-full max-w-[540px]">
             {/* Card 1: 6 Honey variety */}
-            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[22px] px-4 py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[145px] h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
-              <div className="relative w-7 h-7 mb-1.5">
+            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[18px] xl:rounded-[22px] px-3.5 xl:px-4 py-3 xl:py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[125px] lg:w-[132px] xl:w-[145px] h-[100px] lg:h-[106px] xl:h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
+              <div className="relative w-6 h-6 xl:w-7 xl:h-7 mb-1 xl:mb-1.5">
                 <Image
                   src="/boxicons_honey.svg"
                   alt="Honey variety"
@@ -65,7 +65,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
                   className="object-contain"
                 />
               </div>
-              <span className="font-poly text-[15px] text-[#593102] text-center leading-[100%] font-normal">
+              <span className="font-poly text-[13.5px] xl:text-[15px] text-[#593102] text-center leading-[100%] font-normal">
                 6 Honey<br />variety
               </span>
             </div>
@@ -76,12 +76,12 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
               alt="divider"
               width={2}
               height={54}
-              className="block h-12 w-auto object-contain mx-1.5 flex-shrink-0"
+              className="block h-10 xl:h-12 w-auto object-contain mx-1 xl:mx-1.5 flex-shrink-0"
             />
 
             {/* Card 2: 3 Deliveries */}
-            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[22px] px-4 py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[145px] h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
-              <div className="relative w-7 h-7 mb-1.5">
+            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[18px] xl:rounded-[22px] px-3.5 xl:px-4 py-3 xl:py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[125px] lg:w-[132px] xl:w-[145px] h-[100px] lg:h-[106px] xl:h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
+              <div className="relative w-6 h-6 xl:w-7 xl:h-7 mb-1 xl:mb-1.5">
                 <Image
                   src="/carbon_delivery-parcel.svg"
                   alt="Deliveries"
@@ -89,7 +89,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
                   className="object-contain"
                 />
               </div>
-              <span className="font-poly text-[15px] text-[#593102] text-center leading-[100%] font-normal">
+              <span className="font-poly text-[13.5px] xl:text-[15px] text-[#593102] text-center leading-[100%] font-normal">
                 3<br />Deliveries
               </span>
             </div>
@@ -100,12 +100,12 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
               alt="divider"
               width={2}
               height={54}
-              className="block h-12 w-auto object-contain mx-1.5 flex-shrink-0"
+              className="block h-10 xl:h-12 w-auto object-contain mx-1 xl:mx-1.5 flex-shrink-0"
             />
 
             {/* Card 3: 500g Jars */}
-            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[22px] px-4 py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[145px] h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
-              <div className="relative w-7 h-7 mb-1.5">
+            <div className="bg-[#FAF4E8] backdrop-blur-md border border-[#E9DAC3]/70 rounded-[18px] xl:rounded-[22px] px-3.5 xl:px-4 py-3 xl:py-3.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] w-[125px] lg:w-[132px] xl:w-[145px] h-[100px] lg:h-[106px] xl:h-[114px] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md cursor-pointer">
+              <div className="relative w-6 h-6 xl:w-7 xl:h-7 mb-1 xl:mb-1.5">
                 <Image
                   src="/game-icons_honey-jar.svg"
                   alt="500g Jars"
@@ -113,7 +113,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
                   className="object-contain"
                 />
               </div>
-              <span className="font-poly text-[15px] text-[#593102] text-center leading-[100%] font-normal">
+              <span className="font-poly text-[13.5px] xl:text-[15px] text-[#593102] text-center leading-[100%] font-normal">
                 500g<br />Jars
               </span>
             </div>
@@ -124,7 +124,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
             <button
               type="button"
               onClick={handleScroll}
-              className="bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-semibold text-[16px] py-3 px-7 rounded-[16px] inline-flex items-center gap-2.5 shadow-sm hover:shadow-md transition-all duration-300 active:scale-98 cursor-pointer w-auto mt-6"
+              className="bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-semibold text-[15px] xl:text-[16px] py-2.5 xl:py-3 px-6 xl:px-7 rounded-[16px] inline-flex items-center gap-2.5 shadow-sm hover:shadow-md transition-all duration-300 active:scale-98 cursor-pointer w-auto mt-4 xl:mt-6"
             >
               <span>Explore the Annual Plan</span>
               <span className="text-[17px] leading-none">↗</span>

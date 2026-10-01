@@ -171,7 +171,7 @@ export default function WhatsInsideSection() {
                                     </div>
 
                                     {/* Title Label */}
-                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
+                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] lg:text-[10px] xl:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
                                         {item.label}
                                     </h4>
 
@@ -187,7 +187,7 @@ export default function WhatsInsideSection() {
                                     </div>
 
                                     {/* Description Text (Formatted with exact line breaks from screenshot) */}
-                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[145px]">
+                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] lg:text-[11px] xl:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[145px] lg:max-w-[100px] xl:max-w-[145px]">
                                         {item.descLines.map((line, lIdx) => (
                                             <span key={lIdx} className="block">
                                                 {line}
@@ -227,7 +227,7 @@ export default function WhatsInsideSection() {
                     </div>
 
                     {/* Right 4 Columns: Honey Jar Image (Nudged slightly right) */}
-                    <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0 lg:-mr-12 xl:-mr-18">
+                    <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0 lg:mr-0 xl:-mr-18">
                         <div className="relative w-full max-w-[360px] sm:max-w-[440px] lg:max-w-[500px] xl:max-w-[550px] h-[330px] sm:h-[390px] lg:h-[430px] xl:h-[470px] flex items-center justify-end">
                             <Image
                                 src="/image 1861 (3).png"

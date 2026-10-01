@@ -285,9 +285,9 @@ export default function ContactSection() {
       <div className="max-w-[1500px] mx-auto w-full px-4 sm:px-6 lg:px-16 relative">
 
         {/* TOP ROW - Form + Photo */}
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-stretch">
+        <div className="grid lg:grid-cols-2 gap-6 xl:gap-10 items-stretch">
           {/* LEFT - Form Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-5 sm:p-7 lg:p-9 flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-5 sm:p-7 lg:p-7 xl:p-9 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 bg-[#FAF0DC] border border-[#D49313]/40 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase text-[#593102] tracking-[0.16em] mb-2">
                 <span>WE&apos;D LOVE TO</span>
@@ -447,7 +447,7 @@ export default function ContactSection() {
           </div>
 
           {/* RIGHT - Photo Card */}
-          <div className="relative rounded-3xl overflow-hidden min-h-[340px] sm:min-h-[400px] lg:min-h-[520px] border-4 border-white ring-1 ring-[#D49313]/30 shadow-xl">
+          <div className="relative rounded-3xl overflow-hidden min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] xl:min-h-[520px] border-4 border-white ring-1 ring-[#D49313]/30 shadow-xl">
             <Image
               src="/move1.png"
               alt="Honey being drizzled into a bowl"
@@ -459,22 +459,22 @@ export default function ContactSection() {
         </div>
 
         {/* CONTACT CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-10 lg:mt-14">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 mt-10 lg:mt-14">
           
           {/* Call Us */}
           <a 
             href={`tel:${phoneNumber.replace(/\s+/g, '')}`}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
+            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
               <FiPhone size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-serif font-bold text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Call Us</span>
-              <span className="text-[13px] sm:text-[14px] text-[#593102] font-semibold truncate mt-0.5">
+              <span className="font-serif font-bold text-[15px] xl:text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Call Us</span>
+              <span className="text-[12.5px] lg:text-[13px] xl:text-[14px] text-[#593102] font-semibold truncate mt-0.5">
                 {loading ? "Loading..." : phoneNumber}
               </span>
-              <span className="text-[11px] sm:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
+              <span className="text-[10.5px] lg:text-[11px] xl:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
                 {loading ? "..." : locationData?.phone_timing || "Mon – Sat: 9AM – 6PM"}
               </span>
             </div>
@@ -483,17 +483,17 @@ export default function ContactSection() {
           {/* Email Us */}
           <a 
             href={`mailto:${emailAddress}`}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
+            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
               <FiMail size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-serif font-bold text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Email Us</span>
-              <span className="text-[12px] sm:text-[13px] text-[#593102] font-semibold break-all line-clamp-1 mt-0.5">
+              <span className="font-serif font-bold text-[15px] xl:text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Email Us</span>
+              <span className="text-[11.5px] lg:text-[12px] xl:text-[13px] text-[#593102] font-semibold break-all line-clamp-1 mt-0.5">
                 {loading ? "Loading..." : emailAddress}
               </span>
-              <span className="text-[11px] sm:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
+              <span className="text-[10.5px] lg:text-[11px] xl:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
                 {loading ? "..." : locationData?.email_reply_time || "We reply within 24 hrs"}
               </span>
             </div>
@@ -504,37 +504,37 @@ export default function ContactSection() {
             href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center text-[#25D366] flex-shrink-0 group-hover:bg-[#25D366] group-hover:text-white transition-all">
+            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center text-[#25D366] flex-shrink-0 group-hover:bg-[#25D366] group-hover:text-white transition-all">
               <FaWhatsapp size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-serif font-bold text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">WhatsApp Us</span>
-              <span className="text-[13px] sm:text-[14px] text-[#593102] font-semibold truncate mt-0.5">
+              <span className="font-serif font-bold text-[15px] xl:text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">WhatsApp Us</span>
+              <span className="text-[12.5px] lg:text-[13px] xl:text-[14px] text-[#593102] font-semibold truncate mt-0.5">
                 {loading ? "Loading..." : whatsappNumber}
               </span>
-              <span className="text-[11px] sm:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
+              <span className="text-[10.5px] lg:text-[11px] xl:text-[12px] text-[#6E5D4F] font-medium truncate mt-0.5">
                 {loading ? "..." : locationData?.whatsapp_timing || "Mon – Sat: 9AM – 6PM"}
               </span>
             </div>
           </a>
 
           {/* Visit Our Studio */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 sm:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden group">
-            <div className="w-11 h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden group">
+            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] flex-shrink-0 group-hover:bg-[#D49313] group-hover:text-white transition-all">
               <FiMapPin size={18} />
             </div>
             <div className="flex flex-col w-full overflow-hidden">
-              <span className="font-serif font-bold text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Visit Our Studio</span>
-              <span className="text-[11px] sm:text-[12px] text-[#593102] font-medium leading-snug line-clamp-2 mt-0.5">
+              <span className="font-serif font-bold text-[15px] xl:text-[16px] text-[#593102] group-hover:text-[#D49313] transition-colors">Visit Our Studio</span>
+              <span className="text-[10.5px] lg:text-[11px] xl:text-[12px] text-[#593102] font-medium leading-snug line-clamp-2 mt-0.5">
                 {loading ? "Loading..." : getShortAddress() || "123, Green Hive Road, Whitefield, Bengaluru, KA – 560066"}
               </span>
               <a
                 href={getDirectionsLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[12px] text-[#D49313] font-bold tracking-wide mt-1 relative z-10 inline-block truncate hover:underline"
+                className="text-[11px] lg:text-[11.5px] xl:text-[12px] text-[#D49313] font-bold tracking-wide mt-1 relative z-10 inline-block truncate hover:underline"
               >
                 GET DIRECTIONS →
               </a>

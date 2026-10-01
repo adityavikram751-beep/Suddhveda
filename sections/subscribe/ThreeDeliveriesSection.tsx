@@ -104,7 +104,7 @@ export default function ThreeDeliveriesSection() {
                 {/* Main Section Heading - Single Line on Desktop */}
                 <div className="w-full max-w-5xl mx-auto py-1">
                     <h2
-                        className="font-playfair font-normal not-italic text-[24px] xs:text-[27px] sm:text-[36px] md:text-[40px] lg:text-[44px] leading-[1.15] tracking-[0px] text-[#A86C06] text-center sm:whitespace-nowrap"
+                        className="font-playfair font-normal not-italic text-[24px] xs:text-[27px] sm:text-[36px] md:text-[38px] lg:text-[40px] xl:text-[44px] leading-[1.15] tracking-[0px] text-[#A86C06] text-center xl:whitespace-nowrap"
                         style={{
                             fontFamily: "'Playfair Display', serif",
                             fontWeight: 400,
@@ -117,12 +117,12 @@ export default function ThreeDeliveriesSection() {
                 </div>
 
                 {/* Subtitle Line */}
-                <p className="font-cormorant font-normal not-italic text-[16px] sm:text-[20px] lg:text-[22px] text-[#593102] max-w-4xl mx-auto mt-2 sm:mt-3 opacity-90 text-center px-2">
+                <p className="font-cormorant font-normal not-italic text-[16px] sm:text-[20px] lg:text-[21px] xl:text-[22px] text-[#593102] max-w-4xl mx-auto mt-2 sm:mt-3 opacity-90 text-center px-2">
                     A carefully curated selection of ShuddhVeda honeys, arriving with the changing seasons.
                 </p>
 
                 {/* ==================== DESKTOP MODE (3 Columns Grid - md and up) ==================== */}
-                <div className="hidden md:grid mt-8 sm:mt-12 grid-cols-3 gap-6 sm:gap-8 max-w-[1400px] mx-auto text-left items-start">
+                <div className="hidden md:grid mt-8 sm:mt-12 grid-cols-3 gap-4 lg:gap-5 xl:gap-8 max-w-[1400px] mx-auto text-left items-start">
                     {deliveries.map((item, idx) => (
                         <div
                             key={idx}
@@ -130,8 +130,8 @@ export default function ThreeDeliveriesSection() {
                             className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[20px] sm:rounded-[24px] shadow-[0_6px_25px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_35px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col overflow-hidden group cursor-pointer"
                         >
                             {/* Card Top Image Container */}
-                            <div className="relative w-full h-[285px] sm:h-[330px] bg-[#F4EADA]/40 overflow-hidden">
-                                <span className="absolute top-4 left-5 z-20 font-playfair font-normal text-[22px] sm:text-[26px] tracking-[0.04em] text-[#4A2D0E] uppercase select-none pointer-events-none drop-shadow-xs">
+                            <div className="relative w-full h-[285px] sm:h-[310px] xl:h-[330px] bg-[#F4EADA]/40 overflow-hidden">
+                                <span className="absolute top-4 left-5 z-20 font-playfair font-normal text-[22px] sm:text-[24px] xl:text-[26px] tracking-[0.04em] text-[#4A2D0E] uppercase select-none pointer-events-none drop-shadow-xs">
                                     {item.month}
                                 </span>
 
@@ -147,17 +147,17 @@ export default function ThreeDeliveriesSection() {
                             {/* Card Content Area */}
                             <div className="p-3.5 sm:p-4 flex flex-col flex-grow justify-between bg-[#FDF5E6]">
                                 <div className="text-center pt-0">
-                                    <h3 className="font-cormorant font-normal text-[18px] sm:text-[21px] text-[#593102] text-center leading-tight">
+                                    <h3 className="font-cormorant font-normal text-[17px] lg:text-[18px] xl:text-[21px] text-[#593102] text-center leading-tight">
                                         {item.title}
                                     </h3>
 
-                                    <p className="font-cormorant italic tracking-[0.22em] text-[12px] sm:text-[13px] text-[#8C7561] text-center mt-0.5 uppercase font-light">
+                                    <p className="font-cormorant italic tracking-[0.22em] text-[11.5px] lg:text-[12px] xl:text-[13px] text-[#8C7561] text-center mt-0.5 uppercase font-light">
                                         {item.season}
                                     </p>
 
                                     {/* Description box with hidden scrollbar and toggleable expansion */}
                                     <div
-                                        className={`font-cormorant italic font-normal text-[13px] sm:text-[14px] text-[#705E4F] text-center mt-2 leading-[18px] sm:leading-[20px] max-w-[290px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
+                                        className={`font-cormorant italic font-normal text-[12.5px] lg:text-[13px] xl:text-[14px] text-[#705E4F] text-center mt-2 leading-[18px] sm:leading-[20px] max-w-[290px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
                                                 ? "max-h-[160px] sm:max-h-[180px] pr-1"
                                                 : "max-h-[60px] sm:max-h-[66px]"
                                             }`}
@@ -166,26 +166,26 @@ export default function ThreeDeliveriesSection() {
                                     </div>
                                 </div>
 
-                                <div className="pt-2.5 mt-3 border-t border-[#EAE0D0] flex items-center justify-between">
-                                    <span className="font-cormorant font-bold text-[14px] sm:text-[15.5px] text-[#331B02] whitespace-nowrap">
+                                <div className="pt-2.5 mt-3 border-t border-[#EAE0D0] flex items-center justify-between gap-1 sm:gap-1.5">
+                                    <span className="font-cormorant font-bold text-[13px] lg:text-[13.5px] xl:text-[15.5px] text-[#331B02] whitespace-nowrap shrink-0">
                                         {item.deliveryLabel}
                                     </span>
 
                                     <button
                                         type="button"
                                         onClick={(e) => toggleExpand(e, idx)}
-                                        className="font-cormorant text-[12.5px] sm:text-[13.5px] text-[#8C7561] flex items-center gap-1.5 hover:text-[#C6900E] transition cursor-pointer group/link whitespace-nowrap bg-transparent border-none p-0 outline-none"
+                                        className="font-cormorant text-[11.5px] lg:text-[12px] xl:text-[13.5px] text-[#8C7561] flex items-center gap-1 lg:gap-1.5 hover:text-[#C6900E] transition cursor-pointer group/link whitespace-nowrap bg-transparent border-none p-0 outline-none shrink-0"
                                     >
                                         <span>{expandedCards[idx] ? "Read less" : "Know more"}</span>
                                         <Image
                                             src="/leaf.svg"
                                             alt="Leaf Icon"
-                                            width={13}
-                                            height={13}
-                                            className="object-contain opacity-80"
+                                            width={12}
+                                            height={12}
+                                            className="object-contain opacity-80 shrink-0"
                                         />
-                                        <span className={`text-[11px] transition-transform duration-200 ${expandedCards[idx] ? "rotate-180" : "group-hover/link:translate-x-1"}`}>
-                                            ─────➔
+                                        <span className={`text-[10px] xl:text-[11px] transition-transform duration-200 shrink-0 ${expandedCards[idx] ? "rotate-180" : "group-hover/link:translate-x-1"}`}>
+                                            ──➔
                                         </span>
                                     </button>
                                 </div>

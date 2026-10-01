@@ -39,13 +39,13 @@ export default function HoneyJourneySection() {
         </p>
 
         {/* ==================== DESKTOP MODE (5 Columns Row - lg and up) ==================== */}
-        <div className="hidden lg:grid mt-12 grid-cols-5 gap-4 max-w-[1240px] mx-auto text-left items-start">
+        <div className="hidden lg:grid mt-10 xl:mt-12 grid-cols-5 gap-2.5 xl:gap-4 max-w-[1240px] mx-auto text-left items-stretch">
 
           {/* Card 1: 6 Jars Of Seasonal Honey */}
-          <div className="bg-[#FFEDD0] rounded-[24px] p-4 flex flex-col justify-between h-[172px]">
+          <div className="bg-[#FFEDD0] rounded-[20px] xl:rounded-[24px] p-3 xl:p-4 flex flex-col justify-between h-[160px] xl:h-[172px]">
             <div className="flex items-start justify-between">
-              <div className="flex flex-col items-center ml-3">
-                <div className="relative w-18 h-18">
+              <div className="flex flex-col items-center ml-1.5 xl:ml-3">
+                <div className="relative w-14 h-14 xl:w-18 xl:h-18">
                   <Image
                     src="/Group 33950 (1).svg"
                     alt="Honey Jar Icon"
@@ -53,32 +53,32 @@ export default function HoneyJourneySection() {
                     className="object-contain"
                   />
                 </div>
-                <span className="font-cormorant text-[14px] text-[#000000] font-normal tracking-wide -mt-1">
+                <span className="font-cormorant text-[12px] xl:text-[14px] text-[#000000] font-normal tracking-wide -mt-1">
                   honey
                 </span>
               </div>
 
-              <div className="flex items-baseline gap-1 self-start pt-0.5 mr-3">
-                <span className="font-cormorant italic text-[80px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
                   6
                 </span>
-                <span className="font-cormorant text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
                   Jars
                 </span>
               </div>
             </div>
 
-            <div className="ml-3">
-              <span className="font-cormorant text-[20px] font-normal text-[#000000] leading-tight block">
+            <div className="ml-1.5 xl:ml-3">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
                 Of Seasonal Honey
               </span>
             </div>
           </div>
 
           {/* Card 2: 4 Months Between Deliveries */}
-          <div className="bg-[#FFEDD0] rounded-[24px] p-4 flex flex-col justify-between h-[172px]">
+          <div className="bg-[#FFEDD0] rounded-[20px] xl:rounded-[24px] p-3 xl:p-4 flex flex-col justify-between h-[160px] xl:h-[172px]">
             <div className="flex items-start justify-between">
-              <div className="relative w-18 h-18 mt-0.5 ml-3">
+              <div className="relative w-14 h-14 xl:w-18 xl:h-18 mt-0.5 ml-1.5 xl:ml-3">
                 <Image
                   src="/Vector (4).svg"
                   alt="Calendar Icon"
@@ -87,27 +87,27 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-1 self-start pt-0.5 mr-3">
-                <span className="font-cormorant italic text-[80px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
                   4
                 </span>
-                <span className="font-cormorant text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
                   Months
                 </span>
               </div>
             </div>
 
-            <div className="ml-3">
-              <span className="font-cormorant text-[20px] font-normal text-[#000000] leading-tight block">
+            <div className="ml-1.5 xl:ml-3">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
                 Between Deliveries
               </span>
             </div>
           </div>
 
           {/* Card 3: 3 Delivery Seasonal Harvest */}
-          <div className="bg-[#FFEDD0] rounded-[24px] p-4 flex flex-col justify-between h-[172px]">
+          <div className="bg-[#FFEDD0] rounded-[20px] xl:rounded-[24px] p-3 xl:p-4 flex flex-col justify-between h-[160px] xl:h-[172px]">
             <div className="flex items-start justify-between">
-              <div className="relative w-18 h-18 mt-0.5 ml-3">
+              <div className="relative w-14 h-14 xl:w-18 xl:h-18 mt-0.5 ml-1.5 xl:ml-3">
                 <Image
                   src="/griddy-icons_package-delivery-fast (1).svg"
                   alt="Delivery Icon"
@@ -116,27 +116,27 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-1 self-start pt-0.5 mr-3">
-                <span className="font-cormorant italic text-[80px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
                   3
                 </span>
-                <span className="font-cormorant text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[14px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
                   Delivery
                 </span>
               </div>
             </div>
 
-            <div className="ml-3">
-              <span className="font-cormorant text-[20px] font-normal text-[#000000] leading-tight block">
+            <div className="ml-1.5 xl:ml-3">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
                 Seasonal Harvest
               </span>
             </div>
           </div>
 
           {/* Card 4: 1 pay Annual Payment */}
-          <div className="bg-[#FFEDD0] rounded-[24px] p-4 flex flex-col justify-between h-[172px]">
+          <div className="bg-[#FFEDD0] rounded-[20px] xl:rounded-[24px] p-3 xl:p-4 flex flex-col justify-between h-[160px] xl:h-[172px]">
             <div className="flex items-start justify-between">
-              <div className="relative w-18 h-18 mt-0.5 ml-3">
+              <div className="relative w-14 h-14 xl:w-18 xl:h-18 mt-0.5 ml-1.5 xl:ml-3">
                 <Image
                   src="/Vector (5).svg"
                   alt="Payment Card Icon"
@@ -145,27 +145,27 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-0.5 self-start pt-0.5 mr-3">
-                <span className="font-cormorant italic text-[80px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-0.5 self-start pt-0.5 mr-1.5 xl:mr-3">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
                   1
                 </span>
-                <span className="font-cormorant text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
                   pay
                 </span>
               </div>
             </div>
 
-            <div className="ml-3">
-              <span className="font-cormorant text-[20px] font-normal text-[#000000] leading-tight block">
+            <div className="ml-1.5 xl:ml-3">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
                 Annual Payment
               </span>
             </div>
           </div>
 
           {/* Card 5: THE HONEY CLUB INCLUDES */}
-          <div className="bg-[#F6DFBE] rounded-[24px] p-4 flex flex-col justify-start min-h-[172px] text-left">
-            <div className="flex items-start gap-2.5 mb-2">
-              <div className="relative w-7 h-7 flex-shrink-0 mt-0.5">
+          <div className="bg-[#F6DFBE] rounded-[20px] xl:rounded-[24px] p-3 xl:p-4 flex flex-col justify-start min-h-[160px] xl:min-h-[172px] text-left">
+            <div className="flex items-start gap-2 xl:gap-2.5 mb-2">
+              <div className="relative w-5 h-5 xl:w-7 xl:h-7 flex-shrink-0 mt-0.5">
                 <Image
                   src="/Vector (6).svg"
                   alt="Honey Club Motif Icon"
@@ -173,46 +173,46 @@ export default function HoneyJourneySection() {
                   className="object-contain"
                 />
               </div>
-              <h3 className="font-cormorant text-[19px] font-medium uppercase tracking-[0.04em] text-[#8C4A1B] leading-[1.15]">
+              <h3 className="font-cormorant text-[15px] xl:text-[19px] font-medium uppercase tracking-[0.03em] xl:tracking-[0.04em] text-[#8C4A1B] leading-[1.15]">
                 THE HONEY<br />CLUB INCLUDES
               </h3>
             </div>
 
             <ul className="space-y-1">
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000] whitespace-nowrap">
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000] xl:whitespace-nowrap">
                   6 distinctive honey varieties
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000] whitespace-nowrap">
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000] xl:whitespace-nowrap">
                   3 seasonal deliveries
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000] whitespace-nowrap">
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000] xl:whitespace-nowrap">
                   2 × 500 g jars per delivery
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000] whitespace-nowrap">
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000] xl:whitespace-nowrap">
                   3 kg of honey per year
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000] whitespace-nowrap">
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000] xl:whitespace-nowrap">
                   1 simple annual payment
                 </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#000000] mt-[7px] shrink-0"></span>
-                <span className="font-cormorant font-normal not-italic text-[17.5px] leading-[23px] tracking-normal text-[#000000]">
-                  A new flavour every few<br />months
+              <li className="flex items-start gap-1.5 xl:gap-2">
+                <span className="inline-block w-1.5 h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#000000] mt-[5px] xl:mt-[7px] shrink-0"></span>
+                <span className="font-cormorant font-normal not-italic text-[13px] xl:text-[17.5px] leading-tight xl:leading-[23px] tracking-normal text-[#000000]">
+                  A new flavour every few<br className="hidden xl:block" />months
                 </span>
               </li>
             </ul>

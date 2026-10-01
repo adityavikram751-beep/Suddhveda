@@ -143,15 +143,15 @@ export default function SubscriptionPlansSection() {
             <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12 relative z-10">
 
                 {/* ==================== DESKTOP MODE (lg and up) ==================== */}
-                <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
+                <div className="hidden lg:grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8 items-center">
 
                     {/* Left Column: Heading, Price, CTA Button */}
-                    <div className="col-span-5 xl:col-span-5 flex flex-col items-start text-left z-10">
+                    <div className="col-span-6 xl:col-span-5 flex flex-col items-start text-left z-10">
 
                         {/* Top Pill Badge */}
-                        <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#E6D5C3] px-5 sm:px-6 py-2 rounded-full mb-6 text-[#593102] shadow-2xs">
+                        <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#E6D5C3] px-4 lg:px-5 xl:px-6 py-1.5 lg:py-2 rounded-full mb-4 xl:mb-6 text-[#593102] shadow-2xs">
                             <span className="text-[13px] text-[#593102] select-none font-medium">←</span>
-                            <div className="relative w-4 h-4 flex-shrink-0">
+                            <div className="relative w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0">
                                 <Image
                                     src="/leaf.svg"
                                     alt="Leaf Icon"
@@ -159,10 +159,10 @@ export default function SubscriptionPlansSection() {
                                     className="object-contain"
                                 />
                             </div>
-                            <span className="font-cormorant text-[15px] sm:text-[17px] font-normal tracking-wide text-[#593102]">
+                            <span className="font-cormorant text-[14px] lg:text-[15px] xl:text-[17px] font-normal tracking-wide text-[#593102]">
                                 {'Let the season choose your Honey'}
                             </span>
-                            <div className="relative w-4 h-4 flex-shrink-0">
+                            <div className="relative w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0">
                                 <Image
                                     src="/leaf.svg"
                                     alt="Leaf Icon"
@@ -174,14 +174,14 @@ export default function SubscriptionPlansSection() {
                         </div>
 
                         {/* Main Title */}
-                        <h2 className="-mt-2 font-playfair font-medium not-italic text-[32px] sm:text-[42px] lg:text-[50px] leading-[44px] sm:leading-[56px] lg:leading-[64px] tracking-normal max-w-xl">
+                        <h2 className="font-playfair font-medium not-italic text-[32px] lg:text-[38px] xl:text-[50px] leading-[40px] lg:leading-[48px] xl:leading-[64px] tracking-normal max-w-xl">
                             <span className="bg-gradient-to-r from-[#C6900E] to-[#4A2E0A] bg-clip-text text-transparent">
                                 {activePlan.name || "A Year of Honey, Delivered to Your Door."}
                             </span>
                         </h2>
 
                         {/* Subtitle */}
-                        <p className="-mt-2 font-cormorant font-semibold not-italic text-[19px] sm:text-[23px] lg:text-[25px] leading-[26px] sm:leading-[32px] lg:leading-[34px] text-[#593102] max-w-xl mt-4 sm:mt-5">
+                        <p className="font-cormorant font-semibold not-italic text-[19px] lg:text-[21px] xl:text-[25px] leading-[26px] lg:leading-[29px] xl:leading-[34px] text-[#593102] max-w-xl mt-3 xl:mt-4">
                             {activePlan.description || "Discover Six distinctive Shuddhveda Honey Varieties delivered throughout the Year"}
                         </p>
 
@@ -193,7 +193,7 @@ export default function SubscriptionPlansSection() {
                                         key={p.id}
                                         type="button"
                                         onClick={() => setSelectedPlanId(p.id)}
-                                        className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${activePlan.id === p.id
+                                        className={`px-3.5 xl:px-4 py-1.5 rounded-full text-xs xl:text-sm font-medium transition-all cursor-pointer ${activePlan.id === p.id
                                             ? "bg-[#D97706] text-white shadow-sm"
                                             : "bg-[#FAF4E8] text-[#593102] border border-[#E6D5C3] hover:bg-[#EADBCA]"
                                             }`}
@@ -205,11 +205,11 @@ export default function SubscriptionPlansSection() {
                         )}
 
                         {/* Price Display */}
-                        <div className="flex items-center gap-5 sm:gap-6 my-5 sm:my-6">
-                            <span className="font-sans font-bold text-[38px] sm:text-[46px] text-[#331B02] tracking-tight">
+                        <div className="flex items-center gap-4 xl:gap-6 my-4 xl:my-6">
+                            <span className="font-sans font-bold text-[34px] lg:text-[38px] xl:text-[46px] text-[#331B02] tracking-tight">
                                 ₹{activePlan.price.toLocaleString("en-IN")}
                             </span>
-                            <span className="font-sans font-medium text-[22px] sm:text-[26px] text-[#88725A] line-through">
+                            <span className="font-sans font-medium text-[20px] lg:text-[22px] xl:text-[26px] text-[#88725A] line-through">
                                 ₹{activePlan.mrp.toLocaleString("en-IN")}
                             </span>
                         </div>
@@ -218,7 +218,7 @@ export default function SubscriptionPlansSection() {
                         <button
                             type="button"
                             onClick={() => handleOpenSubscribeModal(activePlan)}
-                            className="-mt-5 bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-medium text-[16px] sm:text-[18px] py-2.5 sm:py-3 px-10 sm:px-14 min-w-[240px] sm:min-w-[270px] justify-center rounded-[16px] inline-flex items-center gap-3 shadow-md hover:shadow-lg transition-all duration-300 active:scale-98 cursor-pointer"
+                            className="bg-[#D97706] hover:bg-[#B45309] text-white font-sans font-medium text-[16px] xl:text-[18px] py-2.5 xl:py-3 px-8 lg:px-10 xl:px-14 min-w-[220px] lg:min-w-[240px] xl:min-w-[270px] justify-center rounded-[16px] inline-flex items-center gap-3 shadow-md hover:shadow-lg transition-all duration-300 active:scale-98 cursor-pointer mt-1"
                         >
                             <span>Subscribe Now</span>
                             <ArrowRight size={19} />
@@ -227,8 +227,8 @@ export default function SubscriptionPlansSection() {
                     </div>
 
                     {/* Right Column: Hero Product Image */}
-                    <div className="col-span-7 xl:col-span-7 flex justify-end mt-8 lg:-mr-12 xl:-mr-17">
-                        <div className="relative w-full max-w-[690px] h-[550px] translate-x-10">
+                    <div className="col-span-6 xl:col-span-7 flex justify-end mt-4 xl:mt-8 overflow-hidden lg:overflow-visible">
+                        <div className="relative w-full max-w-[480px] lg:max-w-[540px] xl:max-w-[690px] h-[380px] lg:h-[440px] xl:h-[550px] translate-x-0 xl:translate-x-10">
                             <Image
                                 src={activePlan.image || "/subscribe2.0.png"}
                                 alt={activePlan.name || "Shuddhveda A Year of Honey Subscription"}

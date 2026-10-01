@@ -128,7 +128,7 @@ export default function HowItWorksSection() {
                                     </div>
 
                                     {/* Title Label */}
-                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
+                                    <h4 className="font-cormorant font-semibold text-[9.5px] sm:text-[11.5px] lg:text-[10px] xl:text-[11.5px] tracking-[0.05em] text-[#4A2D0E] uppercase leading-tight min-h-[26px] flex items-center justify-center">
                                         {item.label}
                                     </h4>
 
@@ -144,7 +144,7 @@ export default function HowItWorksSection() {
                                     </div>
 
                                     {/* Description Text (3 lines matching exact visual format) */}
-                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[150px]">
+                                    <p className="font-cormorant italic text-[10.5px] sm:text-[13px] lg:text-[11px] xl:text-[13px] text-[#6E5B4B] text-center leading-[1.25] sm:leading-[1.3] max-w-[110px] sm:max-w-[150px] lg:max-w-[100px] xl:max-w-[150px]">
                                         {item.descLines.map((line, lIdx) => (
                                             <span key={lIdx} className="block">
                                                 {line}
