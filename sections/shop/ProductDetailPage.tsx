@@ -1213,14 +1213,20 @@ export default function ProductDetailPage({
             </div>
 
             {/* Price Block */}
-            <div className="space-y-0.5 pt-0.5">
-              {/* MRP & Ticket Style Percentage Badge Row */}
+            <div className="space-y-1 pt-0.5">
               <div className="flex items-center justify-between w-full max-w-xl">
-                {currentMrp > currentPrice && (
-                  <div className="relative inline-flex items-center text-[17px] sm:text-[19px] text-[#FA4B1B] font-bold line-through decoration-[#FA4B1B]">
-                    <span>M.R.P ₹{currentMrp}</span>
-                  </div>
-                )}
+                {/* Real Price + Cut MRP Price side by side */}
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight">
+                    ₹{currentPrice}
+                  </span>
+
+                  {currentMrp > currentPrice && (
+                    <span className="text-[17px] sm:text-[19px] text-[#8D7F73] font-semibold line-through decoration-[#8D7F73]">
+                      M.R.P ₹{currentMrp}
+                    </span>
+                  )}
+                </div>
 
                 {/* TICKET / COUPON STAMP DISCOUNT BADGE */}
                 {discountPercent > 0 && (
@@ -1229,11 +1235,6 @@ export default function ProductDetailPage({
                     <span className="text-[11.5px] sm:text-[12.5px] font-bold uppercase tracking-wider mt-1">OFF</span>
                   </div>
                 )}
-              </div>
-
-              {/* Current Selling Price */}
-              <div className="text-[38px] sm:text-[44px] font-serif font-extrabold text-[#593102] leading-none tracking-tight pt-0">
-                ₹{currentPrice}
               </div>
 
               {/* You Save Amount (Matching exact user screenshot) */}

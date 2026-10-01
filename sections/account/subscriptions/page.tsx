@@ -100,6 +100,20 @@ interface SubscriptionPurchase {
     rawItem?: any;
 }
 
+function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+        if (typeof window !== "undefined" && (window as any).Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+}
+
 // ---------- Sidebar Content Component ----------
 function SidebarContent({ userData, onLogout, onLinkClick }: { userData?: any; onLogout?: () => void; onLinkClick?: () => void }) {
     const pathname = usePathname();
@@ -194,6 +208,8 @@ export default function MySubscriptionsPage() {
     const [purchasesList, setPurchasesList] = useState<SubscriptionPurchase[]>([]);
     const [loadingPurchases, setLoadingPurchases] = useState<boolean>(true);
     const [expandedSchedules, setExpandedSchedules] = useState<Record<string, boolean>>({});
+    const [retryingPurchaseId, setRetryingPurchaseId] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const toggleSchedule = (id: string) => {
         setExpandedSchedules((prev) => ({
@@ -434,6 +450,97 @@ export default function MySubscriptionsPage() {
         }
     };
 
+    const handleRetryPlanPayment = async (purchase: SubscriptionPurchase) => {
+        const targetId = purchase.rawItem?._id || purchase.rawItem?.id || purchase.rawItem?.purchase_id || purchase.purchaseId || purchase.id;
+        if (!targetId) {
+            setToastMessage({ type: "error", text: "Subscription ID not found." });
+            setTimeout(() => setToastMessage(null), 4000);
+            return;
+        }
+
+        try {
+            setRetryingPurchaseId(purchase.id);
+            const token = getTokenFromCookie();
+
+            const response = await fetch(`${API_BASE_URL}/api/purchase-plans/retry-plan-payment`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    id: targetId,
+                    purchaseId: targetId,
+                    purchase_id: targetId,
+                    purchasePlanId: targetId,
+                }),
+            });
+
+            const data = await response.json().catch(() => null);
+
+            if (!response.ok || (data && (data.success === false || data.status === "failed"))) {
+                const err = data?.message || data?.error || data?.msg || "Failed to initiate subscription payment retry.";
+                setToastMessage({ type: "error", text: typeof err === "string" ? err : JSON.stringify(err) });
+                return;
+            }
+
+            // 1. Check if redirect/checkout URL is returned
+            const payUrl = data?.payment_url || data?.url || data?.checkout_url || data?.redirectUrl || data?.data?.payment_url || data?.data?.url;
+            if (payUrl) {
+                window.location.href = payUrl;
+                return;
+            }
+
+            // 2. Check if Razorpay details are returned
+            const rzpObj = data?.razorpay || data?.data?.razorpay || data || {};
+            const key = rzpObj.key_id || rzpObj.key || data?.key_id || data?.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            const rzpOrderId = rzpObj.order_id || rzpObj.id || data?.order_id || data?.razorpay_order_id;
+            const amount = rzpObj.amount || data?.amount;
+
+            if (key && rzpOrderId && typeof window !== "undefined") {
+                await loadRazorpayScript();
+                if ((window as any).Razorpay) {
+                    const options = {
+                        key: key,
+                        amount: amount,
+                        currency: rzpObj.currency || "INR",
+                        name: "ShuddhVeda Honey",
+                        description: `${purchase.planName} Payment Retry`,
+                        order_id: rzpOrderId,
+                        handler: function (res: any) {
+                            setToastMessage({ type: "success", text: "Subscription payment completed successfully!" });
+                            setTimeout(() => window.location.reload(), 1500);
+                        },
+                        prefill: {
+                            name: purchase.customerName || purchase.shippingAddress?.name || "",
+                            contact: purchase.shippingAddress?.phone || "",
+                        },
+                        theme: { color: "#FA4B1B" },
+                    };
+                    const rzp = new (window as any).Razorpay(options);
+                    rzp.open();
+                    return;
+                }
+            }
+
+            // 3. Fallback message or reload
+            if (data?.message) {
+                setToastMessage({ type: "success", text: data.message });
+            } else {
+                setToastMessage({ type: "success", text: "Payment retry response received." });
+            }
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (err: any) {
+            console.error("Retry plan payment error:", err);
+            setToastMessage({ type: "error", text: err.message || "An error occurred while retrying payment." });
+        } finally {
+            setRetryingPurchaseId(null);
+            setTimeout(() => setToastMessage(null), 4000);
+        }
+    };
+
     useEffect(() => {
         function syncSession() {
             setSession(getStoredSession());
@@ -581,7 +688,21 @@ export default function MySubscriptionsPage() {
                     </aside>
 
                     {/* Main Content Area */}
-                    <main className="space-y-6 min-w-0">
+                    <main className="space-y-6 min-w-0 relative">
+                        {toastMessage && (
+                            <div
+                                className={`fixed top-5 right-5 z-50 flex items-center gap-3 rounded-2xl px-5 py-3.5 shadow-xl text-xs font-bold transition-all animate-in fade-in slide-in-from-top-4 ${
+                                    toastMessage.type === "success"
+                                        ? "bg-[#10B981] text-white"
+                                        : "bg-[#EF4444] text-white"
+                                }`}
+                            >
+                                <span>{toastMessage.text}</span>
+                                <button onClick={() => setToastMessage(null)} className="ml-2 hover:opacity-80 cursor-pointer">
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        )}
                         {/* Page Header Banner */}
                         <div className="rounded-3xl border border-[#EADCC9] bg-gradient-to-r from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] p-6 sm:p-8 shadow-xs relative overflow-hidden">
                             <div className="absolute -right-8 -top-8 w-40 h-40 bg-[#D49313]/10 rounded-full blur-2xl pointer-events-none" />
@@ -655,6 +776,7 @@ export default function MySubscriptionsPage() {
                                 {currentPurchases.map((purchase) => {
                                     const isCompleted = purchase.status === "Completed";
                                     const isCancelled = purchase.status === "Cancelled";
+                                    const isProcessing = purchase.status === "Processing";
 
                                     return (
                                         <div
@@ -677,9 +799,29 @@ export default function MySubscriptionsPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center shrink-0">
-                                                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#E6F9F3] text-[#00A86B] border border-[#A3EAD2] shadow-2xs">
-                                                        <CheckCircle2 size={14} className="text-[#00A86B]" />
+                                                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                                                    {isProcessing && (
+                                                        <button
+                                                            onClick={() => handleRetryPlanPayment(purchase)}
+                                                            disabled={retryingPurchaseId === purchase.id}
+                                                            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                                                        >
+                                                            {retryingPurchaseId === purchase.id ? (
+                                                                <>
+                                                                    <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
+                                                                    <span>Processing...</span>
+                                                                </>
+                                                            ) : (
+                                                                <span>Pay Again</span>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                    <span className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider border shadow-2xs ${
+                                                        isCancelled
+                                                            ? "bg-[#FEE2E2] text-[#DC2626] border-[#FCA5A5]"
+                                                            : "bg-[#E6F9F3] text-[#00A86B] border-[#A3EAD2]"
+                                                    }`}>
+                                                        <CheckCircle2 size={14} className={isCancelled ? "text-[#DC2626]" : "text-[#00A86B]"} />
                                                         {purchase.status}
                                                     </span>
                                                 </div>
@@ -745,6 +887,25 @@ export default function MySubscriptionsPage() {
                                                                 <span className="font-mono text-[11px] font-bold text-[#8D7F73]">
                                                                     {purchase.transactionId}
                                                                 </span>
+                                                            </div>
+                                                        )}
+
+                                                        {isProcessing && (
+                                                            <div className="pt-2">
+                                                                <button
+                                                                    onClick={() => handleRetryPlanPayment(purchase)}
+                                                                    disabled={retryingPurchaseId === purchase.id}
+                                                                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-50"
+                                                                >
+                                                                    {retryingPurchaseId === purchase.id ? (
+                                                                        <>
+                                                                            <span className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
+                                                                            <span>Retrying Payment...</span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <span>PAY AGAIN</span>
+                                                                    )}
+                                                                </button>
                                                             </div>
                                                         )}
                                                     </div>

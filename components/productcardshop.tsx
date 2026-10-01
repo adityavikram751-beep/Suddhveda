@@ -164,14 +164,14 @@ export default function ProductCardShop({
 
           {/* Dynamic Price Row */}
           <div className="mt-2.5 mb-1 flex items-center justify-center gap-2">
-            {currentOldPrice && currentOldPrice > currentPrice ? (
-              <span className="line-through text-[#FA4B1B] font-normal text-[13px] sm:text-[14px]">
-                ₹{currentOldPrice}
-              </span>
-            ) : null}
             <span className="font-extrabold text-[#593102] text-[17px] sm:text-[18px] tracking-tight">
               ₹{currentPrice}
             </span>
+            {currentOldPrice && currentOldPrice > currentPrice ? (
+              <span className="line-through text-[#8D7F73] font-normal text-[13px] sm:text-[14px]">
+                ₹{currentOldPrice}
+              </span>
+            ) : null}
           </div>
         </div>
 

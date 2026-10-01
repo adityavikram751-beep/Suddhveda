@@ -90,11 +90,15 @@ function formatOrderStatus(raw: string): string {
     return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function getStatusNote(displayStatus: string, statusRaw: string, formattedDate: string, apiNote?: string): string {
+function getStatusNote(displayStatus: string, statusRaw: string, formattedDate: string, apiNote?: string, paymentStatusRaw?: string): string {
+    const payLower = (paymentStatusRaw || "").toLowerCase();
+    const lower = (statusRaw || displayStatus || "").toLowerCase();
+    if (payLower.includes("fail") || lower.includes("fail")) {
+        return "Payment Failed";
+    }
     if (apiNote && typeof apiNote === "string" && apiNote.trim()) {
         return apiNote.trim();
     }
-    const lower = (statusRaw || displayStatus || "").toLowerCase();
     if (lower.includes("cancel")) {
         return "Order Cancelled";
     }
@@ -317,10 +321,46 @@ const statusStyles = {
     Cancelled: { bg: "bg-red-50 border border-red-300", text: "text-red-700", icon: X },
 };
 
-function OrderActions({ order, onCancelClick }: { order: Order; onCancelClick: (order: Order) => void }) {
+function loadRazorpayScript(): Promise<boolean> {
+    return new Promise((resolve) => {
+        if (typeof window !== "undefined" && (window as any).Razorpay) {
+            resolve(true);
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+    });
+}
+
+function OrderActions({
+    order,
+    onCancelClick,
+    onRetryPayment,
+    isRetrying,
+}: {
+    order: Order;
+    onCancelClick: (order: Order) => void;
+    onRetryPayment: (order: Order) => void;
+    isRetrying?: boolean;
+}) {
+    const payStatusLower = (order.paymentStatus || "").toLowerCase();
     const statusLower = (order.status || "").toLowerCase();
     const displayLower = (order.displayStatus || "").toLowerCase();
     const noteLower = (order.statusNote || "").toLowerCase();
+
+    // 0. Payment Failed -> Return null (no buttons)
+    const isFailed =
+        payStatusLower.includes("fail") ||
+        statusLower.includes("fail") ||
+        displayLower.includes("fail") ||
+        noteLower.includes("fail");
+
+    if (isFailed) {
+        return null;
+    }
 
     // 1. Cancelled -> Show Cancelled badge only
     const isCancelled =
@@ -664,6 +704,99 @@ export default function MyOrdersPage() {
         }
     };
 
+    const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
+
+    const handleRetryPayment = async (orderToRetry: Order) => {
+        const targetId = orderToRetry.orderGroupId || orderToRetry.rawId || orderToRetry.orderId || orderToRetry.id;
+        if (!targetId) {
+            setToastMessage({ type: "error", text: "Order ID not found." });
+            setTimeout(() => setToastMessage(null), 4000);
+            return;
+        }
+
+        try {
+            setRetryingOrderId(orderToRetry.id);
+            const token = getTokenFromCookie();
+
+            const response = await fetch(`${API_BASE_URL}/api/order/retry-payment`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    orderId: targetId,
+                    order_id: targetId,
+                    group_id: targetId,
+                    groupId: targetId,
+                }),
+            });
+
+            const data = await response.json().catch(() => null);
+
+            if (!response.ok || (data && (data.success === false || data.status === "failed"))) {
+                const err = data?.message || data?.error || data?.msg || "Failed to initiate payment retry.";
+                setToastMessage({ type: "error", text: typeof err === "string" ? err : JSON.stringify(err) });
+                return;
+            }
+
+            // 1. Check if redirect/checkout URL is returned
+            const payUrl = data?.payment_url || data?.url || data?.checkout_url || data?.redirectUrl || data?.data?.payment_url || data?.data?.url;
+            if (payUrl) {
+                window.location.href = payUrl;
+                return;
+            }
+
+            // 2. Check if Razorpay details are returned
+            const rzpObj = data?.razorpay || data?.data?.razorpay || data || {};
+            const key = rzpObj.key_id || rzpObj.key || data?.key_id || data?.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            const rzpOrderId = rzpObj.order_id || rzpObj.id || data?.order_id || data?.razorpay_order_id;
+            const amount = rzpObj.amount || data?.amount;
+
+            if (key && rzpOrderId && typeof window !== "undefined") {
+                await loadRazorpayScript();
+                if ((window as any).Razorpay) {
+                    const options = {
+                        key: key,
+                        amount: amount,
+                        currency: rzpObj.currency || "INR",
+                        name: "ShuddhVeda Honey",
+                        description: "Retry Order Payment",
+                        order_id: rzpOrderId,
+                        handler: function (res: any) {
+                            setToastMessage({ type: "success", text: "Payment completed successfully!" });
+                            setTimeout(() => window.location.reload(), 1500);
+                        },
+                        prefill: {
+                            name: orderToRetry.shippingAddress?.name || "",
+                            contact: orderToRetry.shippingAddress?.phone || "",
+                        },
+                        theme: { color: "#FA4B1B" },
+                    };
+                    const rzp = new (window as any).Razorpay(options);
+                    rzp.open();
+                    return;
+                }
+            }
+
+            // 3. Fallback message or reload
+            if (data?.message) {
+                setToastMessage({ type: "success", text: data.message });
+            } else {
+                setToastMessage({ type: "success", text: "Payment retry response received." });
+            }
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (err: any) {
+            console.error("Retry payment error:", err);
+            setToastMessage({ type: "error", text: err.message || "An error occurred while retrying payment." });
+        } finally {
+            setRetryingOrderId(null);
+            setTimeout(() => setToastMessage(null), 4000);
+        }
+    };
+
     const fetchMyOrders = async () => {
         try {
             setLoadingOrders(true);
@@ -888,7 +1021,8 @@ export default function MyOrdersPage() {
                         displayStatus,
                         statusRaw,
                         formattedDate,
-                        typeof apiNote === "string" ? apiNote : undefined
+                        typeof apiNote === "string" ? apiNote : undefined,
+                        paymentStatusRaw
                     );
 
                     mappedOrders.push({
@@ -1440,7 +1574,12 @@ export default function MyOrdersPage() {
                                             {/* Actions Bar */}
                                             <div className="flex flex-col gap-3 pt-3 border-t border-[#EADCC9]/60 sm:flex-row sm:items-center sm:justify-between">
                                                 <p className="text-xs sm:text-sm text-[#6E5D4F] font-medium leading-tight">{order.statusNote}</p>
-                                                <OrderActions order={order} onCancelClick={(orderToCancel) => setSelectedOrderForCancel(orderToCancel)} />
+                                                <OrderActions
+                                                    order={order}
+                                                    onCancelClick={(orderToCancel) => setSelectedOrderForCancel(orderToCancel)}
+                                                    onRetryPayment={(orderToRetry) => handleRetryPayment(orderToRetry)}
+                                                    isRetrying={retryingOrderId === order.id}
+                                                />
                                             </div>
                                         </div>
                                     );

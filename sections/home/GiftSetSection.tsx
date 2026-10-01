@@ -24,8 +24,7 @@ export default function GiftSetSection() {
 
             {/* Heading */}
             <h2 className="text-[36px] sm:text-[46px] md:text-[54px] font-serif font-bold leading-[1.12] text-[#593102] tracking-tight">
-              Create Your Personalized
-              <br />
+
               <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
                 Royal Honey Gift Box
               </span>
@@ -99,7 +98,7 @@ export default function GiftSetSection() {
                 href="/giftsets"
                 className="inline-flex items-center justify-center gap-2 bg-[#FA4B1B] hover:bg-[#E64216] text-white font-black text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 h-[42px] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer w-full sm:w-auto"
               >
-                <span>BUILD CUSTOM GIFT BOX</span>
+                <span>EXPLORE GIFT BOX</span>
                 <ChevronRight size={16} className="stroke-[2.5]" />
               </Link>
             </div>
