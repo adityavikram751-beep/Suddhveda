@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
-import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube } from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaXTwitter, FaYoutube, FaWhatsapp } from "react-icons/fa6";
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/auth";
 
@@ -145,13 +145,18 @@ export default function Footer() {
             <div className="mt-4 space-y-3 max-w-md w-full">
               <div className="flex items-center justify-center gap-3">
                 <Phone size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <a href={`tel:${loading ? "+919876543210" : (locationData?.phone || "+919876543210").replace(/[^0-9+]/g, "")}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
                 </a>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <FaWhatsapp size={16} className="text-[#E2D2C4] shrink-0" />
+                <a
+                  href={`https://wa.me/${loading ? "919876543210" : (locationData?.whatsapp || "+919876543210").replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
+                >
                   {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
                 </a>
               </div>
@@ -310,22 +315,24 @@ export default function Footer() {
             </h3>
 
             <div className="mt-5 space-y-3">
-              {/* Phone 1 */}
+              {/* Phone 1 (Calling) */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
+                <Phone size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
-                  href={`tel:${loading ? "+919876543210" : locationData?.phone || "+919876543210"}`}
+                  href={`tel:${loading ? "+919876543210" : (locationData?.phone || "+919876543210").replace(/[^0-9+]/g, "")}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
                 </a>
               </div>
 
-              {/* Phone 2 / WhatsApp */}
+              {/* Phone 2 (WhatsApp) */}
               <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#E2D2C4]" />
+                <FaWhatsapp size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
-                  href={`tel:${loading ? "+919876543210" : locationData?.whatsapp || "+919876543210"}`}
+                  href={`https://wa.me/${loading ? "919876543210" : (locationData?.whatsapp || "+919876543210").replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
