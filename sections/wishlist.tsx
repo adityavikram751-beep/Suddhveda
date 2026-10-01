@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2, Share2 } from "lucide-react";
-import { API_BASE_URL, getStoredSession } from "@/lib/auth";
+import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
 
 interface WishlistItem {
@@ -80,10 +80,16 @@ export default function WishlistPage() {
           await syncGuestWishlistOnLogin();
         }
 
+        const token = getStoredToken();
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
           method: "GET",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers,
         });
 
         if (res.ok) {
@@ -215,10 +221,16 @@ export default function WishlistPage() {
       setApiError(null);
       const session = getStoredSession();
       if (session) {
+        const token = getStoredToken();
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const res = await fetch(`${API_BASE_URL}/api/wishlist/remove/${productId}`, {
           method: "DELETE",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers,
         });
 
         if (res.ok) {
@@ -248,11 +260,17 @@ export default function WishlistPage() {
     try {
       setApiError(null);
       const session = getStoredSession();
-      if (session) {
+      const token = getStoredToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      if (session || token) {
         await fetch(`${API_BASE_URL}/api/wishlist/clear`, {
           method: "DELETE",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers,
         });
       }
 
@@ -505,7 +523,7 @@ export default function WishlistPage() {
                       <div className="flex items-center gap-2.5">
                         <button
                           onClick={() => shareSingleProduct(item)}
-                          className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[#D49313] hover:bg-[#593102] text-white border border-[#D49313] transition-all cursor-pointer shadow-xs active:scale-95"
+                          className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full  text-[#8D7F73] border border-[#EADCC9] hover:text-red-500 hover:border-red-200 transition-all cursor-pointer shadow-xs active:scale-95"
                           title="Share Product"
                         >
                           <Share2 size={16} />
