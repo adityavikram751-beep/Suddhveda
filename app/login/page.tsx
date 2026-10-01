@@ -156,7 +156,7 @@ function LoginForm() {
           {/* Image Column – hidden on mobile, visible on desktop */}
           <div className="hidden lg:block relative h-full w-full">
             <Image
-              src="/loginpage.png"
+              src="/loginpage1.png"
               alt="Shuddhveda honey jar with honeycomb and bees"
               fill
               priority

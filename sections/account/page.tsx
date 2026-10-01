@@ -128,7 +128,7 @@ function getStatusStyle(statusStr: string): { bg: string; text: string; icon: ty
         return { bg: "bg-red-50 border border-red-300", text: "text-red-700", icon: X };
     }
     if (lower.includes("refund")) {
-        return { bg: "bg-purple-50 border border-purple-300", text: "text-purple-800", icon: Clock };
+        return { bg: "bg-emerald-50 border border-emerald-300", text: "text-emerald-800", icon: CheckCircle2 };
     }
     if (lower.includes("deliver") || lower.includes("complet")) {
         return { bg: "bg-green-50 border border-green-300", text: "text-green-800", icon: CheckCircle2 };
@@ -1395,7 +1395,13 @@ export default function MyOrdersPage() {
                                                     </div>
                                                     <div className="flex justify-between items-center text-[#593102] font-semibold">
                                                         <span>Status:</span>
-                                                        <span className={`font-extrabold ${order.paymentStatus.toLowerCase().includes("paid") ? "text-emerald-700" : "text-amber-700"}`}>
+                                                        <span className={`font-extrabold ${
+                                                            order.paymentStatus.toLowerCase().includes("cancel")
+                                                                ? "text-red-600"
+                                                                : order.paymentStatus.toLowerCase().includes("refund") || order.paymentStatus.toLowerCase().includes("paid") || order.paymentStatus.toLowerCase().includes("success") || order.paymentStatus.toLowerCase().includes("complete")
+                                                                ? "text-emerald-700"
+                                                                : "text-amber-700"
+                                                        }`}>
                                                             {order.paymentStatus}
                                                         </span>
                                                     </div>
@@ -1403,6 +1409,13 @@ export default function MyOrdersPage() {
                                                         <div className="flex justify-between items-center text-[#8D7F73] pt-0.5">
                                                             <span>Txn ID:</span>
                                                             <span className="font-mono text-[11px] truncate max-w-[110px]">{order.transactionId}</span>
+                                                        </div>
+                                                    )}
+                                                    {((order.paymentStatus && order.paymentStatus.toLowerCase().includes("refund")) ||
+                                                      (order.displayStatus && order.displayStatus.toLowerCase().includes("refund")) ||
+                                                      (order.statusNote && order.statusNote.toLowerCase().includes("refund"))) && (
+                                                        <div className="mt-2.5 p-2.5 rounded-xl bg-[#FEF6EC] border border-[#F6E0C5] text-[#8F590A] text-[11.5px] leading-snug font-medium">
+                                                            Amount will be credited to customer&apos;s bank account within 5-7 working days after the refund has processed
                                                         </div>
                                                     )}
                                                 </div>
