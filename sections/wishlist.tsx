@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2 } from "lucide-react";
+import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2, Share2 } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
 
@@ -321,14 +321,21 @@ export default function WishlistPage() {
     }
   };
 
-  const shareWishlist = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
+  const shareSingleProduct = async (item: WishlistItem) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const productUrl = `${origin}/shop/products/${item.productId}`;
+    const shareText = `🍯 *${item.title}*${item.weight ? ` (${item.weight})` : ""}\nPrice: ₹${item.price}\n\nCheck it out here: ${productUrl}`;
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: "My Wishlist", url });
+        await navigator.share({
+          title: item.title,
+          text: shareText,
+          url: productUrl,
+        });
       } else {
-        await navigator.clipboard.writeText(url);
-        showToast("Wishlist link copied!");
+        await navigator.clipboard.writeText(shareText);
+        showToast("Product link & details copied!");
       }
     } catch {
       // user cancelled
@@ -368,12 +375,9 @@ export default function WishlistPage() {
 
         {/* Main Content Box */}
         <div className="bg-white/90 backdrop-blur-sm border-2 border-[#EADCC9]/80 rounded-3xl mt-6 sm:mt-8 p-5 sm:p-8 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[14px] text-[#6E5D4F] pb-4 border-b border-[#EADCC9]/60">
+          <div className="flex flex-row items-center justify-between gap-3 text-[14px] text-[#6E5D4F] pb-4 border-b border-[#EADCC9]/60">
             <span className="font-bold text-[#593102]">{wishlistItems.length} {wishlistItems.length === 1 ? 'Item' : 'Items'} Saved</span>
-            <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-auto">
-              <button onClick={shareWishlist} className="flex items-center gap-1.5 text-[#593102] font-bold hover:text-[#D49313] transition-colors cursor-pointer">
-                <ArrowUpRight size={15} /> Share Wishlist
-              </button>
+            <div className="flex items-center gap-4">
               <button onClick={clearAll} className="flex items-center gap-1.5 text-[#8D7F73] font-semibold hover:text-red-500 transition-colors cursor-pointer">
                 <Trash2 size={15} /> Clear All
               </button>
@@ -453,6 +457,15 @@ export default function WishlistPage() {
                           <span className="text-[12px] text-[#8D7F73] line-through ml-2">₹{item.mrp}</span>
                         )}
                       </div>
+
+                      <button
+                        onClick={() => shareSingleProduct(item)}
+                        className="flex items-center gap-1.5 bg-[#D49313] hover:bg-[#593102] text-white border border-[#D49313] text-[12px] font-extrabold px-3.5 h-[34px] rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
+                        title="Share Product"
+                      >
+                        <Share2 size={14} />
+                        <span>Share</span>
+                      </button>
                     </div>
                   </div>
 
@@ -489,7 +502,15 @@ export default function WishlistPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => shareSingleProduct(item)}
+                          className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[#D49313] hover:bg-[#593102] text-white border border-[#D49313] transition-all cursor-pointer shadow-xs active:scale-95"
+                          title="Share Product"
+                        >
+                          <Share2 size={16} />
+                        </button>
+
                         <button onClick={() => removeItem(item.productId)} className="shrink-0 w-10 h-10 flex items-center justify-center rounded-full border border-[#EADCC9] text-[#8D7F73] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer bg-white" title="Remove item">
                           <X size={18} />
                         </button>
