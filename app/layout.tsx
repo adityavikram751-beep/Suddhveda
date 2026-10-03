@@ -18,21 +18,23 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhveda.com"),
   title: {
-    default: "ShuddhVeda | 100% Pure, Raw & Artisanal Honey",
+    default: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
     template: "%s | ShuddhVeda Honey",
   },
   description:
-    "Ethically harvested 100% pure, raw, unpasteurized & unprocessed natural honey straight from hives.",
+    "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
   keywords: [
     "ShuddhVeda",
-
     "Mustard Honey",
     "Litchi Honey",
-    "Fannel Honey",
+    "Fennel Honey",
     "Natural Honey",
     "Ajwain Honey",
     "Multi-flora Honey",
+    "Raw Honey",
+    "Pure Honey",
   ],
   authors: [{ name: "ShuddhVeda Honey" }],
   creator: "ShuddhVeda Honey",
@@ -43,17 +45,17 @@ export const metadata: Metadata = {
     apple: "/yellow logo.png",
   },
   openGraph: {
-    title: "ShuddhVeda | 100% Pure, Raw & Artisanal Honey",
+    title: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
     description:
-      "Ethically harvested 100% pure, raw, unpasteurized & unprocessed natural honey straight from hives.",
+      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
     url: "https://shuddhveda.com",
     siteName: "ShuddhVeda Honey",
     images: [
       {
-        url: "/yellow logo.png",
+        url: "/subscribe2.0.png",
         width: 1200,
         height: 630,
-        alt: "ShuddhVeda Pure & Artisanal Honey",
+        alt: "ShuddhVeda Pure & Natural Honey",
       },
     ],
     locale: "en_IN",
@@ -61,10 +63,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ShuddhVeda | 100% Pure, Raw & Artisanal Honey",
+    title: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
     description:
-      "Ethically harvested 100% pure, raw, unpasteurized & unprocessed natural honey straight from hives.",
-    images: ["/yellow logo.png"],
+      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+    images: ["/subscribe2.0.png"],
   },
 };
 
@@ -80,14 +82,15 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/yellow logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/yellow logo.png" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="ShuddhVeda | 100% Pure, Raw & Artisanal Honey" />
-        <meta property="og:description" content="Ethically harvested 100% pure, raw, unpasteurized & unprocessed natural honey straight from hives." />
-        <meta property="og:image" content="/yellow logo.png" />
+        <meta property="og:title" content="ShuddhVeda Honey | 100% Pure Raw & Natural Honey" />
+        <meta property="og:description" content="Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
+        <meta property="og:image" content="/subscribe2.0.png" />
+        <meta property="og:image:secure_url" content="/subscribe2.0.png" />
         <meta property="og:site_name" content="ShuddhVeda Honey" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ShuddhVeda | 100% Pure, Raw & Artisanal Honey" />
-        <meta name="twitter:description" content="Ethically harvested 100% pure, raw, unpasteurized & unprocessed natural honey straight from hives." />
-        <meta name="twitter:image" content="/yellow logo.png" />
+        <meta name="twitter:title" content="ShuddhVeda Honey | 100% Pure Raw & Natural Honey" />
+        <meta name="twitter:description" content="Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
+        <meta name="twitter:image" content="/subscribe2.0.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

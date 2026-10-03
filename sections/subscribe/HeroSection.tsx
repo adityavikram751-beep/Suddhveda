@@ -18,7 +18,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
       {/* Background Hero Image - Full Screen Background for Desktop */}
       <div className="hidden lg:block absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/backk.png"
+          src="/lycheebak.png"
           alt="Shuddhveda Honey Subscription"
           fill
           priority
@@ -213,7 +213,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
           {/* Honey Jars Showcase Image (Shown after feature cards & before CTA on Mobile) */}
           <div className="relative w-full max-w-[360px] aspect-[4/3] mx-auto my-4">
             <Image
-              src="/backfoung.png"
+              src="/newlychee.png"
               alt="Shuddhveda Honey Subscription Jars"
               fill
               priority
