@@ -110,20 +110,8 @@ export default function UpcomingProduct() {
     ));
   };
 
-  if (loading) {
-    return (
-      <section className="bg-[#FBF7F1] py-12 flex justify-center items-center">
-        <div className="text-[#D49313] text-lg">Loading...</div>
-      </section>
-    );
-  }
-
-  if (!banner) {
-    return (
-      <section className="bg-[#FBF7F1] py-12 flex justify-center items-center">
-        <div className="text-gray-600">No upcoming product available.</div>
-      </section>
-    );
+  if (loading || !banner) {
+    return null;
   }
 
   return (
