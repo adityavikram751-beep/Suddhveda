@@ -348,7 +348,7 @@ export default function Header() {
     }
   }, [ctxItemCount]);
 
-  const displayCartCount = session ? Math.max(cartCount, ctxItemCount) : ctxItemCount;
+  const displayCartCount = ctxItemCount === 0 ? 0 : (session ? Math.max(cartCount, ctxItemCount) : ctxItemCount);
 
   useEffect(() => {
     if (open) {

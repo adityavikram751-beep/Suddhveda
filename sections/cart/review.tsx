@@ -506,10 +506,14 @@ export default function ReviewPage() {
           const finalAmount = pd.finalAmount || Math.max(totalAmount - itemCouponDiscount, 0);
           const totalsave = pd.totalsave || item.totalsave || 0;
 
+          const itemMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+
           return {
             type: "CUSTOM",
+            message: itemMessage,
             product_details: {
               giftCartItemId: pd.giftCartItemId || item.giftCartItemId || item.cartItemId || item._id || "",
+              message: itemMessage,
               giftBox: {
                 _id: giftBox._id || giftBox.id || "",
                 name: giftBox.name || "Gift Box",
@@ -563,10 +567,14 @@ export default function ReviewPage() {
                 { name: "Lychee Honey", weight: 250, unit: "g" },
               ];
 
+          const comboMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+
           return {
             type: "COMBO",
+            message: comboMessage,
             product_details: {
               cartItemId: pd.cartItemId || item.cartItemId || item._id || item.id || "",
+              message: comboMessage,
               product: {
                 _id: prodObj._id || prodObj.comboProductId || prodObj.id || item.comboProductId || item.id || "",
                 product_name: prodObj.product_name || prodObj.combo_name || prodObj.name || item.title || "Golden Duo",
@@ -618,10 +626,14 @@ export default function ReviewPage() {
           const totalsave = pd.totalsave ?? item.totalsave ?? (saveVal * quantity);
           const itemSku = variantObj.sku || prodObj.sku || item.sku || pd.sku || "SHV-MST-250";
 
+          const normalMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+
           return {
             type: "NORMAL",
+            message: normalMessage,
             product_details: {
               cartItemId: pd.cartItemId || item.cartItemId || item._id || item.id || "",
+              message: normalMessage,
               product: {
                 _id: prodObj._id || prodObj.productId || prodObj.id || item.productId || item.id || "",
                 product_name: prodObj.product_name || prodObj.productName || prodObj.name || item.title || "Premium Pure Mustard Honey",

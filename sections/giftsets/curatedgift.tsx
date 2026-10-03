@@ -208,6 +208,7 @@ export default function CuratedGift() {
       if (token) {
         try {
           const comboProdId = (selectedCombo as any).comboProductId || (selectedCombo as any).comboId || selectedCombo._id;
+          const comboMsg = (selectedCombo as any).message || (selectedCombo as any).giftMessage || (selectedCombo as any).customMessage || "";
           const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
             method: "POST",
             credentials: "include",
@@ -218,6 +219,7 @@ export default function CuratedGift() {
             body: JSON.stringify({
               comboProductId: comboProdId,
               quantity,
+              message: comboMsg,
             }),
           });
           if (res.ok) success = true;
@@ -240,6 +242,7 @@ export default function CuratedGift() {
           price: selectedCombo.selling_price || 999,
           quantity,
           comboProduct: selectedCombo,
+          message: (selectedCombo as any).message || (selectedCombo as any).giftMessage || (selectedCombo as any).customMessage || "",
         };
 
         localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));

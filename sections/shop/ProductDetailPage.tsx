@@ -758,6 +758,7 @@ export default function ProductDetailPage({
               body: JSON.stringify({
                 comboProductId: comboProdId,
                 quantity: selectedQty,
+                message: giftMessage.trim() || "",
               }),
             });
             if (res.ok) success = true;
@@ -781,7 +782,8 @@ export default function ProductDetailPage({
             price: currentPrice || product.selling_price || 999,
             quantity: selectedQty,
             comboProduct: product,
-            customMessage: giftMessage.trim() || undefined,
+            customMessage: giftMessage.trim() || "",
+            message: giftMessage.trim() || "",
           };
 
           localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));

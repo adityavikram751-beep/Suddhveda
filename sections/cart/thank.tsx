@@ -73,9 +73,23 @@ interface LocationData {
 
 export default function OrderConfirmation() {
   const router = useRouter();
-  const { cartItems } = useCart();
+  const { cartItems, fetchCart } = useCart();
   const [order, setOrder] = useState<any>(null);
   const [location, setLocation] = useState<LocationData | null>(null);
+
+  // Refresh cart and clear guest cart storage on thank page load
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("sudhveda_guest_cart");
+      localStorage.removeItem("applied_coupon");
+    }
+    if (fetchCart) {
+      fetchCart().catch(() => {});
+    }
+    window.dispatchEvent(new CustomEvent("trigger-live-update"));
+    window.dispatchEvent(new Event("cart-updated"));
+    window.dispatchEvent(new CustomEvent("cart-count-update", { detail: { count: 0 } }));
+  }, [fetchCart]);
 
   useEffect(() => {
     const fetchLocation = async () => {

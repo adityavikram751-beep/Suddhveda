@@ -69,6 +69,8 @@ type CartItemDetail =
     oldPrice?: number;
     weight: string;
     quantity: number;
+    customMessage?: string;
+    message?: string;
   }
   | {
     type: "CUSTOM";
@@ -77,13 +79,20 @@ type CartItemDetail =
     image: string;
     price: number;
     customMessage?: string;
+    message?: string;
     quantity: number;
   };
 
 type CartContextValue = {
   cartItems: Record<string, CartItemDetail>;
   itemCount: number;
-  addToCart: (productId: string, variantId: string, productDetails?: Partial<CartItemDetail>, quantityToAdd?: number) => Promise<void>;
+  addToCart: (
+    productId: string,
+    variantId: string,
+    productDetails?: Partial<CartItemDetail> & { message?: string },
+    quantityToAdd?: number,
+    message?: string
+  ) => Promise<void>;
   updateQuantity: (productId: string, variantId: string, change: number) => Promise<void>;
   updateCustomQuantity: (cartItemId: string, change: number) => Promise<void>;
   removeItem: (cartItemId: string) => Promise<void>;
@@ -150,12 +159,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       const item = guestItems[key];
       if (item.type === "NORMAL" && item.productId && item.variantId) {
         try {
+          const itemMsg = (item as any).message || (item as any).customMessage;
           await authFetch(`${API_BASE_URL}/api/cart/add`, {
             method: "POST",
             body: JSON.stringify({
               productId: item.productId,
               selectedWeight: item.variantId,
               quantity: item.quantity || 1,
+              ...(itemMsg ? { message: itemMsg } : {}),
             }),
           });
           console.log(`✅ Successfully synced ${item.productName} (Qty: ${item.quantity}) to database!`);
@@ -168,11 +179,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         ((item as any).comboProductId || (item as any).productId)
       ) {
         try {
+          const comboMsg = (item as any).message || (item as any).customMessage;
           await authFetch(`${API_BASE_URL}/api/cart/add`, {
             method: "POST",
             body: JSON.stringify({
               comboProductId: (item as any).comboProductId || (item as any).productId,
               quantity: item.quantity || 1,
+              message: comboMsg || "",
             }),
           });
           console.log(`✅ Successfully synced guest combo ${(item as any).productName} to database!`);
@@ -439,10 +452,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = async (
     productId: string,
     variantId: string,
-    productDetails?: Partial<CartItemDetail>,
-    quantityToAdd?: number
+    productDetails?: Partial<CartItemDetail> & { message?: string },
+    quantityToAdd?: number,
+    message?: string
   ) => {
     const qtyToAdd = quantityToAdd || (productDetails as any)?.quantity || 1;
+    const msg = message || (productDetails as any)?.message || (productDetails as any)?.customMessage;
 
     try {
       await authFetch(`${API_BASE_URL}/api/cart/add`, {
@@ -451,6 +466,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           productId,
           selectedWeight: variantId,
           quantity: qtyToAdd,
+          ...(msg ? { message: msg } : {}),
         }),
       });
       const updatedCart = await fetchCart();
@@ -487,18 +503,19 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           productId,
           variantId,
           productName: productDetails?.productName || "Honey Product",
-          categoryName: productDetails?.type === "NORMAL" ? productDetails.categoryName : "Honey",
+          categoryName: (productDetails as any)?.categoryName || "Honey",
           image: productDetails?.image || "/placeholder.png",
           price: productDetails?.price || 0,
-          weight: (productDetails?.type === "NORMAL" ? productDetails.weight : "") || "",
+          weight: (productDetails as any)?.weight || "",
           quantity: qtyToAdd,
+          customMessage: msg,
         };
       }
 
       saveGuestCart(guestItems);
       setToastProduct({
         title: guestItems[cartItemId].productName,
-        weight: guestItems[cartItemId].type === "NORMAL" ? guestItems[cartItemId].weight : "",
+        weight: (guestItems[cartItemId] as any).weight || "",
       });
     }
   };
@@ -601,13 +618,15 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ---------- Remove item ----------
   const removeItem = async (cartItemId: string) => {
     const previousCartItems = cartItems;
 
     setCartItems((prev) => {
       const next = { ...prev };
       delete next[cartItemId];
+      if (Object.keys(next).length === 0) {
+        setApiCartCount(0);
+      }
       return next;
     });
 
@@ -616,7 +635,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         method: "POST",
         body: JSON.stringify({ itemId: cartItemId }),
       });
-      await fetchCart();
+      const updatedCart = await fetchCart();
+      if (Object.keys(updatedCart).length === 0) {
+        setCartItems({});
+        setApiCartCount(0);
+      }
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
     } catch (err) {
       const guestItems = getGuestCart();
@@ -644,7 +667,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems]);
 
   const localItemCount = cartProducts.reduce((sum, p) => sum + p.quantity, 0);
-  const itemCount = apiCartCount !== null && apiCartCount > 0 ? apiCartCount : localItemCount;
+  const itemCount = localItemCount === 0 ? 0 : (apiCartCount !== null && apiCartCount > 0 ? apiCartCount : localItemCount);
   const subtotal = cartProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
   const saved = cartProducts.reduce(
     (sum, p) =>
