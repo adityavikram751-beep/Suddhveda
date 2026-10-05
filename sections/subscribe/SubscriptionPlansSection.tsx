@@ -151,51 +151,25 @@ export default function SubscriptionPlansSection() {
                         {/* Top Pill Badge */}
                         <div className="inline-flex items-center gap-2.5 bg-[#F9F0DF] border border-[#E6D5C3] px-4 lg:px-5 xl:px-6 py-1.5 lg:py-2 rounded-full mb-4 xl:mb-6 text-[#593102] shadow-2xs">
                             <span className="text-[13px] text-[#593102] select-none font-medium">←</span>
-                            <svg
-                                viewBox="0 0 15 17"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0"
-                            >
-                                <path
-                                    d="M4.5 12.7435C13.4662 12.7435 14.1877 5.11595 14.2455 1.4912C14.246 1.3926 14.2268 1.2949 14.1889 1.20387C14.151 1.11284 14.0952 1.03034 14.0248 0.961251C13.9545 0.892161 13.871 0.837884 13.7793 0.801633C13.6876 0.765382 13.5896 0.747894 13.491 0.750202C0.75 0.984202 0.75 7.1612 0.75 12.7435V15.7435"
-                                    stroke="#6E2D00"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
+                            <div className="relative w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0">
+                                <Image
+                                    src="/leaf.svg"
+                                    alt="Leaf Icon"
+                                    fill
+                                    className="object-contain"
                                 />
-                                <path
-                                    d="M0.75 12.7422C0.75 12.7422 0.75 8.24219 6.75 7.49219"
-                                    stroke="#6E2D00"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                            </div>
                             <span className="font-cormorant text-[14px] lg:text-[15px] xl:text-[17px] font-normal tracking-wide text-[#593102]">
                                 {'Let the season choose your Honey'}
                             </span>
-                            <svg
-                                viewBox="0 0 15 17"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0"
-                            >
-                                <path
-                                    d="M4.5 12.7435C13.4662 12.7435 14.1877 5.11595 14.2455 1.4912C14.246 1.3926 14.2268 1.2949 14.1889 1.20387C14.151 1.11284 14.0952 1.03034 14.0248 0.961251C13.9545 0.892161 13.871 0.837884 13.7793 0.801633C13.6876 0.765382 13.5896 0.747894 13.491 0.750202C0.75 0.984202 0.75 7.1612 0.75 12.7435V15.7435"
-                                    stroke="#6E2D00"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
+                            <div className="relative w-3.5 h-3.5 xl:w-4 xl:h-4 flex-shrink-0">
+                                <Image
+                                    src="/leaf.svg"
+                                    alt="Leaf Icon"
+                                    fill
+                                    className="object-contain"
                                 />
-                                <path
-                                    d="M0.75 12.7422C0.75 12.7422 0.75 8.24219 6.75 7.49219"
-                                    stroke="#6E2D00"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
+                            </div>
                             <span className="text-[13px] text-[#593102] select-none font-medium">→</span>
                         </div>
 
@@ -276,7 +250,7 @@ export default function SubscriptionPlansSection() {
                         <span className="text-[12px] text-[#593102] select-none">←</span>
                         <div className="relative w-3.5 h-3.5 flex-shrink-0">
                             <Image
-                                src="/group.svg"
+                                src="/leaf.svg"
                                 alt="Leaf Icon"
                                 fill
                                 className="object-contain"
@@ -287,7 +261,7 @@ export default function SubscriptionPlansSection() {
                         </span>
                         <div className="relative w-3.5 h-3.5 flex-shrink-0">
                             <Image
-                                src="/group.svg"
+                                src="/leaf.svg"
                                 alt="Leaf Icon"
                                 fill
                                 className="object-contain"
