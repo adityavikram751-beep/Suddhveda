@@ -85,7 +85,7 @@ const slides = [
     aroma: "Light Fruity & lychee blossom",
     desktopBg: "/lychinewdes.webp",
     mobileBg: "/dashboard1.png",
-    bottleImg: "/lychee.png",
+    bottleImg: "/Lychee.png",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Lychee Honey Jar",
     link: "/shop?category=lychee",
