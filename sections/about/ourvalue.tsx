@@ -64,7 +64,7 @@ export default function OurValues() {
               </p>
               <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
                 <span className="text-[#FFD700] text-[12px] tracking-[0.18em] font-black uppercase">
-                  — TEAM SHUDHVEDA
+                  — TEAM SHUDDHVEDA HONEY
                 </span>
 
               </div>
