@@ -21,7 +21,7 @@ const steps = [
     step: "03",
     title: "Gentle Extraction",
     desc: "Honey is cold-extracted with utmost care to preserve raw enzymes.",
-    icon: "/extro.jfif",
+    icon: "/honey-extraction.webp",
   },
   {
     step: "04",
