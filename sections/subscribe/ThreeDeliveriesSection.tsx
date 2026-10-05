@@ -20,6 +20,9 @@ const DEFAULT_DELIVERIES: DeliveryCard[] = [
 export default function ThreeDeliveriesSection() {
     const [deliveries, setDeliveries] = useState<DeliveryCard[]>(DEFAULT_DELIVERIES);
     const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
+    const [mobileIndex, setMobileIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const mobileCarouselRef = React.useRef<HTMLDivElement>(null);
 
     const toggleExpand = (e: React.MouseEvent, index: number) => {
         e.stopPropagation();
@@ -27,6 +30,40 @@ export default function ThreeDeliveriesSection() {
             ...prev,
             [index]: !prev[index],
         }));
+    };
+
+    // Auto scroll logic for mobile mode
+    useEffect(() => {
+        if (isPaused || deliveries.length <= 1) return;
+
+        const timer = setInterval(() => {
+            setMobileIndex((prevIndex) => {
+                const nextIndex = (prevIndex + 1) % deliveries.length;
+                if (mobileCarouselRef.current) {
+                    const cardWidth = mobileCarouselRef.current.clientWidth;
+                    mobileCarouselRef.current.scrollTo({
+                        left: nextIndex * cardWidth,
+                        behavior: "smooth",
+                    });
+                }
+                return nextIndex;
+            });
+        }, 3500);
+
+        return () => clearInterval(timer);
+    }, [isPaused, deliveries.length]);
+
+    const handleMobileScroll = () => {
+        if (mobileCarouselRef.current) {
+            const scrollLeft = mobileCarouselRef.current.scrollLeft;
+            const cardWidth = mobileCarouselRef.current.clientWidth;
+            if (cardWidth > 0) {
+                const newIndex = Math.round(scrollLeft / cardWidth);
+                if (newIndex !== mobileIndex && newIndex >= 0 && newIndex < deliveries.length) {
+                    setMobileIndex(newIndex);
+                }
+            }
+        }
     };
 
     useEffect(() => {
@@ -195,78 +232,128 @@ export default function ThreeDeliveriesSection() {
                     ))}
                 </div>
 
-                {/* ==================== MOBILE MODE (1 Column Cards Stack - < md) ==================== */}
-                <div className="flex md:hidden flex-col items-center gap-6 sm:gap-7 mt-7 sm:mt-8 w-full max-w-[335px] xs:max-w-[365px] mx-auto text-left px-1">
-                    {deliveries.map((item, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => document.getElementById("subscription-plans")?.scrollIntoView({ behavior: "smooth" })}
-                            className="bg-[#FDF5E6] border border-[#EBE1D0] rounded-[22px] shadow-[0_4px_20px_rgba(89,49,2,0.05)] transition-all duration-300 flex flex-col overflow-hidden w-full cursor-pointer"
-                        >
-                            {/* Card Top Image Container */}
-                            <div className="relative w-full h-[275px] xs:h-[300px] bg-[#F4EADA]/40 overflow-hidden">
-                                <span className="absolute top-4 left-5 z-20 font-playfair font-normal text-[22px] xs:text-[24px] tracking-[0.04em] text-[#4A2D0E] uppercase select-none pointer-events-none drop-shadow-xs">
-                                    {item.month}
-                                </span>
+                {/* ==================== MOBILE MODE (Auto-scrolling Carousel - < md) ==================== */}
+                <div className="block md:hidden mt-7 sm:mt-8 w-full max-w-[335px] xs:max-w-[365px] mx-auto text-left px-1">
+                    <div
+                        ref={mobileCarouselRef}
+                        onScroll={handleMobileScroll}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                        onTouchStart={() => setIsPaused(true)}
+                        onTouchEnd={() => setIsPaused(false)}
+                        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full gap-4 pb-2"
+                    >
+                        {deliveries.map((item, idx) => (
+                            <div
+                                key={idx}
+                                onClick={() => document.getElementById("subscription-plans")?.scrollIntoView({ behavior: "smooth" })}
+                                className="snap-center shrink-0 w-full bg-[#FDF5E6] border border-[#EBE1D0] rounded-[22px] shadow-[0_4px_20px_rgba(89,49,2,0.05)] transition-all duration-300 flex flex-col overflow-hidden cursor-pointer"
+                            >
+                                {/* Card Top Image Container */}
+                                <div className="relative w-full h-[275px] xs:h-[300px] bg-[#F4EADA]/40 overflow-hidden">
+                                    <span className="absolute top-4 left-5 z-20 font-playfair font-normal text-[22px] xs:text-[24px] tracking-[0.04em] text-[#4A2D0E] uppercase select-none pointer-events-none drop-shadow-xs">
+                                        {item.month}
+                                    </span>
 
-                                <Image
-                                    src={item.image}
-                                    alt={item.title}
-                                    fill
-                                    priority={idx === 0}
-                                    className="object-cover object-center"
-                                />
-                            </div>
+                                    <Image
+                                        src={item.image}
+                                        alt={item.title}
+                                        fill
+                                        priority={idx === 0}
+                                        className="object-cover object-center"
+                                    />
+                                </div>
 
-                            {/* Card Content Area */}
-                            <div className="p-4 xs:p-5 flex flex-col flex-grow justify-between bg-[#FDF5E6]">
-                                <div className="text-center pt-0">
-                                    <h3 className="font-cormorant font-normal text-[18px] xs:text-[20px] text-[#593102] text-center leading-tight">
-                                        {item.title}
-                                    </h3>
+                                {/* Card Content Area */}
+                                <div className="p-4 xs:p-5 flex flex-col flex-grow justify-between bg-[#FDF5E6]">
+                                    <div className="text-center pt-0">
+                                        <h3 className="font-cormorant font-normal text-[18px] xs:text-[20px] text-[#593102] text-center leading-tight">
+                                            {item.title}
+                                        </h3>
 
-                                    <p className="font-cormorant italic tracking-[0.2em] text-[12px] xs:text-[13px] text-[#8C7561] text-center mt-1 uppercase font-light">
-                                        {item.season}
-                                    </p>
+                                        <p className="font-cormorant italic tracking-[0.2em] text-[12px] xs:text-[13px] text-[#8C7561] text-center mt-1 uppercase font-light">
+                                            {item.season}
+                                        </p>
 
-                                    {/* Description box with hidden scrollbar and toggleable expansion */}
-                                    <div
-                                        className={`font-cormorant italic font-normal text-[13.5px] xs:text-[14px] text-[#705E4F] text-center mt-2 leading-[19px] xs:leading-[20px] max-w-[285px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
-                                                ? "max-h-[160px] pr-1"
-                                                : "max-h-[60px]"
-                                            }`}
-                                    >
-                                        <p>{item.description}</p>
+                                        {/* Description box with hidden scrollbar and toggleable expansion */}
+                                        <div
+                                            className={`font-cormorant italic font-normal text-[13.5px] xs:text-[14px] text-[#705E4F] text-center mt-2 leading-[19px] xs:leading-[20px] max-w-[285px] mx-auto opacity-95 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ${expandedCards[idx]
+                                                    ? "max-h-[160px] pr-1"
+                                                    : "max-h-[60px]"
+                                                }`}
+                                        >
+                                            <p>{item.description}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-2.5 mt-3.5 border-t border-[#EAE0D0] flex items-center justify-between">
+                                        <span className="font-cormorant font-bold text-[14px] xs:text-[15px] text-[#331B02] whitespace-nowrap">
+                                            {item.deliveryLabel}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={(e) => toggleExpand(e, idx)}
+                                            className="font-cormorant text-[12px] xs:text-[13px] text-[#8C7561] flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 outline-none"
+                                        >
+                                            <span>{expandedCards[idx] ? "Read less" : "Know more"}</span>
+                                            <svg
+                                                viewBox="0 0 15 17"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="w-3 h-3 opacity-80 shrink-0"
+                                            >
+                                                <path
+                                                    d="M4.5 12.7435C13.4662 12.7435 14.1877 5.11595 14.2455 1.4912C14.246 1.3926 14.2268 1.2949 14.1889 1.20387C14.151 1.11284 14.0952 1.03034 14.0248 0.961251C13.9545 0.892161 13.871 0.837884 13.7793 0.801633C13.6876 0.765382 13.5896 0.747894 13.491 0.750202C0.75 0.984202 0.75 7.1612 0.75 12.7435V15.7435"
+                                                    stroke="#6E2D00"
+                                                    strokeWidth="1.5"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                                <path
+                                                    d="M0.75 12.7422C0.75 12.7422 0.75 8.24219 6.75 7.49219"
+                                                    stroke="#6E2D00"
+                                                    strokeWidth="1.5"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                            <span className={`text-[10px] transition-transform duration-200 ${expandedCards[idx] ? "rotate-180" : ""}`}>
+                                                ─────➔
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="pt-2.5 mt-3.5 border-t border-[#EAE0D0] flex items-center justify-between">
-                                    <span className="font-cormorant font-bold text-[14px] xs:text-[15px] text-[#331B02] whitespace-nowrap">
-                                        {item.deliveryLabel}
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        onClick={(e) => toggleExpand(e, idx)}
-                                        className="font-cormorant text-[12px] xs:text-[13px] text-[#8C7561] flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-transparent border-none p-0 outline-none"
-                                    >
-                                        <span>{expandedCards[idx] ? "Read less" : "Know more"}</span>
-                                        <Image
-                                            src="/leaf.svg"
-                                            alt="Leaf Icon"
-                                            width={12}
-                                            height={12}
-                                            className="object-contain opacity-80"
-                                        />
-                                        <span className={`text-[10px] transition-transform duration-200 ${expandedCards[idx] ? "rotate-180" : ""}`}>
-                                            ─────➔
-                                        </span>
-                                    </button>
-                                </div>
                             </div>
+                        ))}
+                    </div>
 
+                    {/* Navigation Dots Indicator */}
+                    {deliveries.length > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-4">
+                            {deliveries.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => {
+                                        setMobileIndex(idx);
+                                        if (mobileCarouselRef.current) {
+                                            const cardWidth = mobileCarouselRef.current.clientWidth;
+                                            mobileCarouselRef.current.scrollTo({
+                                                left: idx * cardWidth,
+                                                behavior: "smooth",
+                                            });
+                                        }
+                                    }}
+                                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                                        mobileIndex === idx ? "w-6 bg-[#D97706]" : "w-2 bg-[#E6D7C3]"
+                                    }`}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            ))}
                         </div>
-                    ))}
+                    )}
                 </div>
 
             </div>

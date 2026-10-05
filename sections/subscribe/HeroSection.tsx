@@ -26,6 +26,18 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
         />
       </div>
 
+      {/* ==================== MOBILE MODE (< lg) ==================== */}
+      {/* Background Hero Image - Full Screen Background for Mobile */}
+      <div className="block lg:hidden absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <Image
+          src="/mobilesub.png"
+          alt="Shuddhveda Honey Subscription Mobile Background"
+          fill
+          priority
+          className="object-cover object-center pointer-events-none"
+        />
+      </div>
+
       <div className="hidden lg:block mx-auto max-w-[1440px] px-6 lg:px-8 xl:px-16 relative z-10 w-full py-10 lg:py-12 xl:py-16">
         <div className="max-w-[500px] lg:max-w-[540px] xl:max-w-[680px]">
 
