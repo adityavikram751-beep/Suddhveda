@@ -83,8 +83,8 @@ export default function GiftSetSection() {
             {/* Mobile Image Showcase - Placed right above the CTA Button on Mobile */}
             <div className="mt-8 block lg:hidden w-full max-w-[560px] mx-auto rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-[#FFFDF9] shadow-xl group">
               <Image
-                src="/home 2.png"
-                alt="ShudhVeda Royal Gift Set"
+                src="/goodveda.png"
+                alt="ShuddhVeda Royal Gift Set"
                 width={800}
                 height={600}
                 className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 block"
@@ -110,7 +110,7 @@ export default function GiftSetSection() {
 
               {/* Product Image - Exact Image Dimensions (No Empty Space & No Cut) */}
               <Image
-                src="/home 2.png"
+                src="/goodveda.png"
                 alt="ShudhVeda Royal Gift Set"
                 width={800}
                 height={600}

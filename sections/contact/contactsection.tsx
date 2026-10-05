@@ -251,18 +251,18 @@ export default function ContactSection() {
       const query = getFullAddress();
       return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
     }
-    
+
     const url = locationData.map_embed_url;
 
     if (url.includes('<iframe')) {
       const match = url.match(/src="([^"]+)"/);
       if (match && match[1]) return match[1];
     }
-    
+
     if (url.includes('maps/embed') || url.includes('maps/dir')) {
       return url;
     }
-    
+
     if (url.includes('maps.app.goo.gl') || url.includes('google.com/maps')) {
       const { address } = locationData;
       if (address) {
@@ -270,7 +270,7 @@ export default function ContactSection() {
         return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(query)}`;
       }
     }
-    
+
     return url;
   };
 
@@ -321,11 +321,10 @@ export default function ContactSection() {
                     <button
                       type="button"
                       onClick={() => setIsSubjectDropdownOpen((prev) => !prev)}
-                      className={`w-full h-[48px] sm:h-[50px] px-4 rounded-xl border bg-[#FAF9F7] text-[14px] font-medium text-[#593102] flex items-center justify-between transition-all cursor-pointer text-left select-none active:scale-[0.995] ${
-                        isSubjectDropdownOpen
+                      className={`w-full h-[48px] sm:h-[50px] px-4 rounded-xl border bg-[#FAF9F7] text-[14px] font-medium text-[#593102] flex items-center justify-between transition-all cursor-pointer text-left select-none active:scale-[0.995] ${isSubjectDropdownOpen
                           ? "border-[#D49313] ring-2 ring-[#D49313]/20 shadow-xs bg-white"
                           : "border-[#EADCC9] hover:border-[#D49313]"
-                      }`}
+                        }`}
                       aria-haspopup="listbox"
                       aria-expanded={isSubjectDropdownOpen}
                     >
@@ -333,16 +332,15 @@ export default function ContactSection() {
                         {subjectOptions.find((opt) => opt.value === formData.subject)?.label || "Subject"}
                       </span>
                       <FiChevronDown
-                        className={`text-[#A69C8F] transition-transform duration-300 flex-shrink-0 ${
-                          isSubjectDropdownOpen ? "rotate-180 text-[#D49313]" : ""
-                        }`}
+                        className={`text-[#A69C8F] transition-transform duration-300 flex-shrink-0 ${isSubjectDropdownOpen ? "rotate-180 text-[#D49313]" : ""
+                          }`}
                         size={18}
                       />
                     </button>
 
                     {/* Custom Touch-Friendly Dropdown Popover */}
                     {isSubjectDropdownOpen && (
-                      <div 
+                      <div
                         className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-2xl border border-[#EADCC9] bg-[#FFFDF9] shadow-xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-150 overflow-hidden"
                         role="listbox"
                       >
@@ -356,11 +354,10 @@ export default function ContactSection() {
                                 setFormData((prev) => ({ ...prev, subject: option.value }));
                                 setIsSubjectDropdownOpen(false);
                               }}
-                              className={`w-full px-3.5 py-3 rounded-xl text-[14px] text-left transition-all flex items-center justify-between cursor-pointer select-none active:scale-[0.98] ${
-                                isSelected
+                              className={`w-full px-3.5 py-3 rounded-xl text-[14px] text-left transition-all flex items-center justify-between cursor-pointer select-none active:scale-[0.98] ${isSelected
                                   ? "bg-[#FAF0DC] text-[#593102] font-extrabold border border-[#D49313]/40 shadow-2xs"
                                   : "text-[#593102] hover:bg-[#FAF5EC] active:bg-[#FAF0DC]/60 font-medium"
-                              }`}
+                                }`}
                               role="option"
                               aria-selected={isSelected}
                             >
@@ -396,11 +393,10 @@ export default function ContactSection() {
                 {/* Submit Status Messages */}
                 {submitStatus.type && (
                   <div
-                    className={`p-3 rounded-xl text-sm font-medium ${
-                      submitStatus.type === "success"
+                    className={`p-3 rounded-xl text-sm font-medium ${submitStatus.type === "success"
                         ? "bg-green-50 text-green-700 border border-green-200"
                         : "bg-red-50 text-red-700 border border-red-200"
-                    }`}
+                      }`}
                   >
                     {submitStatus.message}
                   </div>
@@ -449,7 +445,7 @@ export default function ContactSection() {
           {/* RIGHT - Photo Card */}
           <div className="relative rounded-3xl overflow-hidden min-h-[340px] sm:min-h-[400px] lg:min-h-[460px] xl:min-h-[520px] border-4 border-white ring-1 ring-[#D49313]/30 shadow-xl">
             <Image
-              src="/move1.png"
+              src="/shuudhveda.png"
               alt="Honey being drizzled into a bowl"
               fill
               className="object-cover"
@@ -460,9 +456,9 @@ export default function ContactSection() {
 
         {/* CONTACT CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 mt-10 lg:mt-14">
-          
+
           {/* Call Us */}
-          <a 
+          <a
             href={`tel:${phoneNumber.replace(/\s+/g, '')}`}
             className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
           >
@@ -481,7 +477,7 @@ export default function ContactSection() {
           </a>
 
           {/* Email Us */}
-          <a 
+          <a
             href={`mailto:${emailAddress}`}
             className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-5 lg:p-4.5 xl:p-6 flex flex-col justify-between h-[180px] sm:h-[190px] border border-[#EADCC9] hover:border-[#D49313] shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group overflow-hidden"
           >
@@ -500,7 +496,7 @@ export default function ContactSection() {
           </a>
 
           {/* WhatsApp Us */}
-          <a 
+          <a
             href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -545,9 +541,9 @@ export default function ContactSection() {
 
         {/* FULL WIDTH EMBEDDED MAP */}
         <div className="relative mt-10 lg:mt-12 rounded-3xl overflow-hidden border border-[#EADCC9] bg-[#FAF5EC] w-full shadow-sm">
-          
+
           {!isMapActive && (
-            <div 
+            <div
               onClick={() => setIsMapActive(true)}
               className="absolute inset-0 z-30 bg-black/10 flex items-center justify-center cursor-pointer lg:hidden backdrop-blur-[1px]"
             >
