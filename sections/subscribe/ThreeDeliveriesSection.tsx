@@ -23,6 +23,14 @@ export default function ThreeDeliveriesSection() {
     const [mobileIndex, setMobileIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const mobileCarouselRef = React.useRef<HTMLDivElement>(null);
+    const isPausedRef = React.useRef(isPaused);
+
+    useEffect(() => {
+        isPausedRef.current = isPaused;
+    }, [isPaused]);
+
+    const handlePause = () => setIsPaused(true);
+    const handleResume = () => setIsPaused(false);
 
     const toggleExpand = (e: React.MouseEvent, index: number) => {
         e.stopPropagation();
@@ -34,12 +42,15 @@ export default function ThreeDeliveriesSection() {
 
     // Auto scroll logic for mobile mode
     useEffect(() => {
-        if (isPaused || deliveries.length <= 1) return;
+        if (deliveries.length <= 1) return;
 
         const timer = setInterval(() => {
+            if (isPausedRef.current) return;
+
             setMobileIndex((prevIndex) => {
+                if (isPausedRef.current) return prevIndex;
                 const nextIndex = (prevIndex + 1) % deliveries.length;
-                if (mobileCarouselRef.current) {
+                if (mobileCarouselRef.current && !isPausedRef.current) {
                     const cardWidth = mobileCarouselRef.current.clientWidth;
                     mobileCarouselRef.current.scrollTo({
                         left: nextIndex * cardWidth,
@@ -51,7 +62,7 @@ export default function ThreeDeliveriesSection() {
         }, 3500);
 
         return () => clearInterval(timer);
-    }, [isPaused, deliveries.length]);
+    }, [deliveries.length]);
 
     const handleMobileScroll = () => {
         if (mobileCarouselRef.current) {
@@ -233,19 +244,41 @@ export default function ThreeDeliveriesSection() {
                 </div>
 
                 {/* ==================== MOBILE MODE (Auto-scrolling Carousel - < md) ==================== */}
-                <div className="block md:hidden mt-7 sm:mt-8 w-full max-w-[335px] xs:max-w-[365px] mx-auto text-left px-1">
+                <div
+                    className="block md:hidden mt-7 sm:mt-8 w-full max-w-[335px] xs:max-w-[365px] mx-auto text-left px-1"
+                    onMouseEnter={handlePause}
+                    onMouseLeave={handleResume}
+                    onTouchStart={handlePause}
+                    onTouchMove={handlePause}
+                    onTouchEnd={handleResume}
+                    onTouchCancel={handleResume}
+                    onPointerEnter={handlePause}
+                    onPointerLeave={handleResume}
+                >
                     <div
                         ref={mobileCarouselRef}
                         onScroll={handleMobileScroll}
-                        onMouseEnter={() => setIsPaused(true)}
-                        onMouseLeave={() => setIsPaused(false)}
-                        onTouchStart={() => setIsPaused(true)}
-                        onTouchEnd={() => setIsPaused(false)}
+                        onMouseEnter={handlePause}
+                        onMouseLeave={handleResume}
+                        onTouchStart={handlePause}
+                        onTouchMove={handlePause}
+                        onTouchEnd={handleResume}
+                        onTouchCancel={handleResume}
+                        onPointerEnter={handlePause}
+                        onPointerLeave={handleResume}
                         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full gap-4 pb-2"
                     >
                         {deliveries.map((item, idx) => (
                             <div
                                 key={idx}
+                                onMouseEnter={handlePause}
+                                onMouseLeave={handleResume}
+                                onTouchStart={handlePause}
+                                onTouchMove={handlePause}
+                                onTouchEnd={handleResume}
+                                onTouchCancel={handleResume}
+                                onPointerEnter={handlePause}
+                                onPointerLeave={handleResume}
                                 onClick={() => document.getElementById("subscription-plans")?.scrollIntoView({ behavior: "smooth" })}
                                 className="snap-center shrink-0 w-full bg-[#FDF5E6] border border-[#EBE1D0] rounded-[22px] shadow-[0_4px_20px_rgba(89,49,2,0.05)] transition-all duration-300 flex flex-col overflow-hidden cursor-pointer"
                             >
