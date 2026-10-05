@@ -58,7 +58,7 @@ export default function MomentsMadeSweeter() {
               {/* Card 1 */}
               <div className="relative rounded-[24px] overflow-hidden h-[240px] sm:h-[280px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
                 <Image
-                  src="/image1.png"
+                  src="/PURE.png"
                   alt="Elderly couple unboxing a gift"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

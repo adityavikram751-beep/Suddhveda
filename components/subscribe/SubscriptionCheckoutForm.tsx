@@ -297,7 +297,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
             {/* Header Banner Image (Background.svg - Full width, exact aspect ratio, no side cuts) */}
             <div className="relative w-full aspect-[1040/205] rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#FAF4E8]">
                 <Image
-                    src="/Background.svg"
+                    src="/shuddpng.png"
                     alt="Subscribe Honey Subscription Banner"
                     fill
                     priority
