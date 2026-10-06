@@ -1671,7 +1671,7 @@ export default function ProductDetailPage({
         {/* HONEY PROCESS & TRUST POSTER */}
         <div className="mt-12 sm:mt-16 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-md bg-white">
           <Image
-            src="/Hive2.png"
+            src="/detailproduct.webp"
             alt="ShuddhVeda Honey Journey & Quality Process Poster"
             width={1400}
             height={2000}

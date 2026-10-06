@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle2, MapPin, Plus } from "lucide-react";
 import { API_BASE_URL, getStoredSession } from "@/lib/auth";
 
 function getTokenFromCookie(): string | null {
@@ -41,6 +41,38 @@ interface PlanItem {
     image?: string;
 }
 
+interface UserSavedAddress {
+    id: string;
+    full_name: string;
+    phone: string;
+    email?: string;
+    address_line1: string;
+    address_line2: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
+    label?: string;
+    is_default?: boolean;
+}
+
+function normalizeUserAddress(item: any): UserSavedAddress {
+    return {
+        id: item._id || item.id || String(Math.random()),
+        full_name: item.full_name || item.fullName || item.name || item.recipient_name || "",
+        phone: item.phone_number || item.phone || item.mobile || "",
+        email: item.email || "",
+        address_line1: item.address_line1 || item.addressLine1 || item.line1 || item.address || "",
+        address_line2: item.address_line2 || item.addressLine2 || item.line2 || item.locality || "",
+        city: item.city || "",
+        state: item.state || "",
+        pincode: item.pincode || item.zip || item.postal_code || "",
+        country: item.country || "India",
+        label: item.address_type === "home" ? "Home" : item.address_type === "work" ? "Office" : (item.address_type ? String(item.address_type).toUpperCase() : "Saved Address"),
+        is_default: item.is_default || item.isDefault || false,
+    };
+}
+
 interface SubscriptionCheckoutFormProps {
     planId?: string;
     onClose?: () => void;
@@ -64,6 +96,10 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
     const [submittingCheckout, setSubmittingCheckout] = useState(false);
     const [sameAsShipping, setSameAsShipping] = useState(true);
 
+    const [savedAddresses, setSavedAddresses] = useState<UserSavedAddress[]>([]);
+    const [loadingAddresses, setLoadingAddresses] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+
     const [checkoutForm, setCheckoutForm] = useState({
         name: "",
         mobile: "",
@@ -86,12 +122,28 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
         billing_country: "India",
     });
 
-    useEffect(() => {
-        // Always reset form fields to empty state so no fields are auto-filled
-        setCheckoutForm({
-            name: "",
-            mobile: "",
-            email: "",
+    const selectAddressAndFillForm = (addr: UserSavedAddress) => {
+        setSelectedAddressId(addr.id);
+        setCheckoutForm((prev) => ({
+            ...prev,
+            name: prev.name || addr.full_name,
+            mobile: prev.mobile || addr.phone,
+            email: prev.email || addr.email || "",
+            shipping_full_name: addr.full_name,
+            shipping_phone: addr.phone,
+            shipping_address_line1: addr.address_line1,
+            shipping_address_line2: addr.address_line2,
+            shipping_city: addr.city,
+            shipping_state: addr.state,
+            shipping_pincode: addr.pincode,
+            shipping_country: addr.country || "India",
+        }));
+    };
+
+    const clearAddressForm = () => {
+        setSelectedAddressId(null);
+        setCheckoutForm((prev) => ({
+            ...prev,
             shipping_full_name: "",
             shipping_phone: "",
             shipping_address_line1: "",
@@ -100,16 +152,82 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
             shipping_state: "",
             shipping_pincode: "",
             shipping_country: "India",
-            billing_full_name: "",
-            billing_phone: "",
-            billing_address_line1: "",
-            billing_address_line2: "",
-            billing_city: "",
-            billing_state: "",
-            billing_pincode: "",
-            billing_country: "India",
-        });
+        }));
+    };
 
+    useEffect(() => {
+        // Pre-fill customer details from session if available
+        const session = getStoredSession();
+        if (session && session.user) {
+            const userObj = session.user as any;
+            setCheckoutForm((prev) => ({
+                ...prev,
+                name: prev.name || userObj.name || userObj.fullName || "",
+                mobile: prev.mobile || userObj.mobile || userObj.phone || "",
+                email: prev.email || userObj.email || "",
+            }));
+        }
+
+        const fetchUserAddresses = async () => {
+            setLoadingAddresses(true);
+            try {
+                const token = getTokenFromCookie();
+                let res = await fetch(`${API_BASE_URL}/api/purchase-plans/user-address`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                });
+
+                if (!res.ok && res.status === 404) {
+                    res = await fetch(`${API_BASE_URL}/api/shipping/addresses/all`, {
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+                            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                        },
+                    });
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    let rawList: any[] = [];
+                    if (Array.isArray(data.data)) {
+                        rawList = data.data;
+                    } else if (Array.isArray(data.addresses)) {
+                        rawList = data.addresses;
+                    } else if (Array.isArray(data)) {
+                        rawList = data;
+                    } else if (data.data && typeof data.data === "object") {
+                        rawList = [data.data];
+                    } else if (data.address && typeof data.address === "object") {
+                        rawList = [data.address];
+                    }
+
+                    const parsed = rawList.map(normalizeUserAddress).filter((a) => a.address_line1 || a.city || a.pincode);
+                    setSavedAddresses(parsed);
+
+                    if (parsed.length > 0) {
+                        const defaultAddr = parsed.find((a) => a.is_default) || parsed[0];
+                        selectAddressAndFillForm(defaultAddr);
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching user address for purchase plans:", err);
+            } finally {
+                setLoadingAddresses(false);
+            }
+        };
+
+        fetchUserAddresses();
+    }, []);
+
+    useEffect(() => {
         const fetchPlanDetails = async () => {
             if (!targetPlanId) return;
             try {
@@ -371,6 +489,73 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                             Shipping Address
                         </h4>
                     </div>
+
+                    {/* Saved User Addresses Selection */}
+                    {loadingAddresses ? (
+                        <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-[#6B3A04]">
+                            <Loader2 size={14} className="animate-spin text-[#D97706]" />
+                            <span>Loading saved addresses...</span>
+                        </div>
+                    ) : savedAddresses.length > 0 ? (
+                        <div className="mt-4 mb-5 p-3.5 sm:p-4 rounded-xl bg-[#FAF5EC]/80 border border-[#EADBCA]">
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                                <label className="text-xs sm:text-sm font-bold text-[#593102] flex items-center gap-1.5">
+                                    <MapPin size={15} className="text-[#D97706]" />
+                                    <span>Select from your Saved Addresses:</span>
+                                </label>
+                                {selectedAddressId && (
+                                    <button
+                                        type="button"
+                                        onClick={clearAddressForm}
+                                        className="text-xs font-bold text-[#D97706] hover:underline flex items-center gap-1 cursor-pointer"
+                                    >
+                                        <Plus size={13} />
+                                        <span>Add New Address</span>
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {savedAddresses.map((addr) => {
+                                    const isSelected = selectedAddressId === addr.id;
+                                    return (
+                                        <div
+                                            key={addr.id}
+                                            onClick={() => selectAddressAndFillForm(addr)}
+                                            className={`p-3.5 rounded-2xl border-2 text-xs cursor-pointer transition-all flex flex-col justify-between ${
+                                                isSelected
+                                                    ? "border-[#D97706] bg-white ring-2 ring-[#D97706]/20 shadow-md"
+                                                    : "border-[#EADBCA] bg-white/90 hover:border-[#D97706]/60 hover:bg-white"
+                                            }`}
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-colors ${
+                                                        isSelected ? "border-[#D97706] bg-[#D97706] text-white" : "border-[#C8B28F] bg-white"
+                                                    }`}>
+                                                        {isSelected && <CheckCircle2 size={13} />}
+                                                    </span>
+                                                    <span className="font-bold text-[#593102] text-sm">{addr.full_name || "Saved Address"}</span>
+                                                </div>
+                                                {addr.label && (
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-[#FAF0DC] text-[#593102] border border-[#D49313]/30">
+                                                        {addr.label}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="mt-2.5 text-[#6E5D4F] leading-snug font-medium">
+                                                {addr.address_line1}{addr.address_line2 ? `, ${addr.address_line2}` : ""}, {addr.city}, {addr.state} - {addr.pincode}
+                                            </p>
+                                            <p className="mt-2 font-bold text-[#593102] text-xs">
+                                                Phone: {addr.phone}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : null}
+
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
