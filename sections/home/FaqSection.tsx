@@ -38,7 +38,7 @@ const rightFaqs: Faq[] = [
       "Raw honey should be stored at room temperature away from direct sunlight. Avoid refrigeration to prevent crystallization.",
   },
   {
-    question: "Is your honey 100% pure?",
+    question: "Is your pure honey?",
     answer:
       "Every drop of Shuddha Veda honey is raw, unheated, and unprocessed. We provide lab reports for every batch to guarantee its purity and natural goodness.",
   },
@@ -74,18 +74,16 @@ export default function FaqSection() {
           </h3>
           <FiChevronDown
             size={18}
-            className={`text-[#6E5D4F] flex-shrink-0 transition-transform duration-300 ${
-              isOpen ? "rotate-180 text-[#D49313]" : ""
-            }`}
+            className={`text-[#6E5D4F] flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#D49313]" : ""
+              }`}
           />
         </div>
 
         <div
-          className={`grid transition-all duration-300 ease-in-out ${
-            isOpen
+          className={`grid transition-all duration-300 ease-in-out ${isOpen
               ? "grid-rows-[1fr] opacity-100 mt-3 pt-3 border-t border-[#EADCC9]/50"
               : "grid-rows-[0fr] opacity-0"
-          }`}
+            }`}
         >
           <div className="overflow-hidden">
             <p className="text-[13.5px] sm:text-[14px] text-[#6E5D4F] font-medium leading-relaxed">
