@@ -63,21 +63,21 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9]">
       {/* Decorative Glow Blobs */}
-      <div className="absolute top-0 right-10 w-96 h-96 bg-[#D49313]/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-10 w-72 h-72 sm:w-96 sm:h-96 bg-[#D49313]/8 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-8 xl:px-10 relative z-10">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 xl:px-10 relative z-10">
         <div className="grid min-h-0 lg:min-h-[540px] xl:min-h-[660px] items-center lg:grid-cols-2 gap-6 lg:gap-6 xl:gap-0">
 
           {/* LEFT CONTENT */}
-          <div className="relative z-10 max-w-[460px] lg:max-w-[480px] xl:max-w-[610px] pt-8 pb-2 lg:py-0 lg:mt-1 flex flex-col">
+          <div className="relative z-10 w-full max-w-full md:max-w-[680px] lg:max-w-[480px] xl:max-w-[610px] mx-auto lg:mx-0 pt-6 pb-2 sm:pt-8 sm:pb-4 lg:py-0 lg:mt-1 flex flex-col items-center sm:items-center lg:items-start text-center sm:text-center lg:text-left">
 
             {/* Subtitle Pill Badge */}
-            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-4 py-1.5 rounded-full text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-4 self-start">
+            <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/40 px-3.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-[12px] font-extrabold uppercase text-[#593102] tracking-[0.18em] shadow-2xs mb-3 sm:mb-4 self-center sm:self-center lg:self-start">
               <span>GET IN TOUCH</span>
             </div>
 
             {/* Heading - Balanced & Responsive */}
-            <h1 className="mt-2 font-serif text-[#593102] leading-[1.15] text-[30px] sm:text-[44px] md:text-[48px] lg:text-[42px] xl:text-[62px] font-extrabold tracking-tight">
+            <h1 className="mt-1 sm:mt-2 font-serif text-[#593102] leading-[1.15] text-[28px] xs:text-[32px] sm:text-[44px] md:text-[48px] lg:text-[42px] xl:text-[62px] font-extrabold tracking-tight">
               Let&apos;s Start a{" "}
               <span className="bg-gradient-to-r from-[#D49313] via-[#B87D0E] to-[#593102] bg-clip-text text-transparent block sm:inline">
                 Sweet Conversation.
@@ -85,17 +85,17 @@ export default function Hero() {
             </h1>
 
             {/* Description */}
-            <p className="mt-4 lg:mt-5 xl:mt-7 max-w-[440px] xl:max-w-[520px] text-[15px] lg:text-[15.5px] xl:text-[18px] leading-[1.65] xl:leading-[1.75] text-[#6E5D4F] font-medium">
+            <p className="mt-3 sm:mt-4 lg:mt-5 xl:mt-7 max-w-[440px] sm:max-w-[540px] lg:max-w-[440px] xl:max-w-[520px] text-[14px] sm:text-[16px] lg:text-[15.5px] xl:text-[18px] leading-[1.65] xl:leading-[1.75] text-[#6E5D4F] font-medium">
               We&apos;re here to answer your questions, support your journey
               towards natural living, and help you experience the goodness of
               pure honey.
             </p>
 
-            {/* IMAGE ON MOBILE ONLY (Directly below description text) */}
-            <div className="block lg:hidden relative my-6">
+            {/* IMAGE ON MOBILE & TABLET ONLY (Directly below description text) */}
+            <div className="block lg:hidden relative my-6 sm:my-8 w-full max-w-[320px] sm:max-w-[440px] md:max-w-[480px]">
               <div
                 className="absolute right-1/2 translate-x-1/2 top-1/2 -translate-y-1/2
-                w-[280px] sm:w-[450px] h-[280px] sm:h-[450px]
+                w-[260px] sm:w-[400px] md:w-[450px] h-[260px] sm:h-[400px] md:h-[450px]
                 rounded-full
                 bg-[radial-gradient(circle,rgba(212,147,19,0.18)_0%,rgba(255,255,255,0)_70%)]"
               />
@@ -107,7 +107,7 @@ export default function Hero() {
                 priority
                 className="
                   relative
-                  w-full max-w-[320px] sm:max-w-[450px]
+                  w-full max-w-[280px] sm:max-w-[380px] md:max-w-[420px]
                   h-auto
                   object-contain
                   mx-auto
@@ -116,20 +116,20 @@ export default function Hero() {
             </div>
 
             {/* Feature Cards Grid */}
-            <div className="mt-2 lg:mt-6 xl:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-2.5 lg:gap-3 xl:gap-4 max-w-[640px]">
+            <div className="mt-2 lg:mt-6 xl:mt-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-2.5 sm:gap-3 lg:gap-3 xl:gap-4 w-full max-w-full lg:max-w-[640px]">
               {cards.map((item, index) => {
                 const Icon = item.icon;
 
                 return (
                   <div
                     key={index}
-                    className="flex flex-row lg:flex-col items-center lg:items-center justify-start lg:justify-center p-3.5 lg:p-3 xl:p-4 h-auto lg:h-[150px] xl:h-[160px] rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-sm gap-3.5 lg:gap-2.5 shadow-xs"
+                    className="flex flex-row sm:flex-col items-center sm:items-center justify-start sm:justify-center p-3.5 sm:p-3 xl:p-4 h-auto sm:h-[135px] md:h-[145px] lg:h-[150px] xl:h-[160px] rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-sm gap-3.5 sm:gap-2 lg:gap-2.5 shadow-xs"
                   >
-                    <div className="w-10 h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] shrink-0 shadow-2xs">
+                    <div className="w-10 h-10 sm:w-10 sm:h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12 rounded-xl bg-[#FAF0DC] border border-[#D49313]/30 flex items-center justify-center text-[#D49313] shrink-0 shadow-2xs">
                       <Icon size={22} strokeWidth={1.8} />
                     </div>
 
-                    <p className="text-left lg:text-center text-[12.5px] lg:text-[13px] xl:text-[14px] leading-[1.35] font-serif font-bold text-[#593102]">
+                    <p className="text-left sm:text-center text-[13px] sm:text-[12px] lg:text-[13px] xl:text-[14px] leading-[1.35] font-serif font-bold text-[#593102]">
                       {item.title}
                     </p>
                   </div>
