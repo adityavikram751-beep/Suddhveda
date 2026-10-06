@@ -155,6 +155,14 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
         }));
     };
 
+    const toggleAddressSelection = (addr: UserSavedAddress) => {
+        if (selectedAddressId === addr.id) {
+            clearAddressForm();
+        } else {
+            selectAddressAndFillForm(addr);
+        }
+    };
+
     useEffect(() => {
         // Pre-fill customer details from session if available
         const session = getStoredSession();
@@ -211,11 +219,6 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
 
                     const parsed = rawList.map(normalizeUserAddress).filter((a) => a.address_line1 || a.city || a.pincode);
                     setSavedAddresses(parsed);
-
-                    if (parsed.length > 0) {
-                        const defaultAddr = parsed.find((a) => a.is_default) || parsed[0];
-                        selectAddressAndFillForm(defaultAddr);
-                    }
                 }
             } catch (err) {
                 console.error("Error fetching user address for purchase plans:", err);
@@ -521,7 +524,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                                     return (
                                         <div
                                             key={addr.id}
-                                            onClick={() => selectAddressAndFillForm(addr)}
+                                            onClick={() => toggleAddressSelection(addr)}
                                             className={`p-3.5 rounded-2xl border-2 text-xs cursor-pointer transition-all flex flex-col justify-between ${
                                                 isSelected
                                                     ? "border-[#D97706] bg-white ring-2 ring-[#D97706]/20 shadow-md"
