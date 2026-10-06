@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { API_BASE_URL } from "@/lib/auth";
 import Image from "next/image";
 import { FiPhone, FiMail, FiMapPin, FiArrowUp, FiChevronDown, FiCheck } from "react-icons/fi";
@@ -322,8 +323,8 @@ export default function ContactSection() {
                       type="button"
                       onClick={() => setIsSubjectDropdownOpen((prev) => !prev)}
                       className={`w-full h-[46px] sm:h-[50px] px-4 rounded-xl border bg-[#FAF9F7] text-[14px] font-medium text-[#593102] flex items-center justify-between transition-all cursor-pointer text-left select-none active:scale-[0.995] ${isSubjectDropdownOpen
-                          ? "border-[#D49313] ring-2 ring-[#D49313]/20 shadow-xs bg-white"
-                          : "border-[#EADCC9] hover:border-[#D49313]"
+                        ? "border-[#D49313] ring-2 ring-[#D49313]/20 shadow-xs bg-white"
+                        : "border-[#EADCC9] hover:border-[#D49313]"
                         }`}
                       aria-haspopup="listbox"
                       aria-expanded={isSubjectDropdownOpen}
@@ -355,8 +356,8 @@ export default function ContactSection() {
                                 setIsSubjectDropdownOpen(false);
                               }}
                               className={`w-full px-3.5 py-3 rounded-xl text-[14px] text-left transition-all flex items-center justify-between cursor-pointer select-none active:scale-[0.98] ${isSelected
-                                  ? "bg-[#FAF0DC] text-[#593102] font-extrabold border border-[#D49313]/40 shadow-2xs"
-                                  : "text-[#593102] hover:bg-[#FAF5EC] active:bg-[#FAF0DC]/60 font-medium"
+                                ? "bg-[#FAF0DC] text-[#593102] font-extrabold border border-[#D49313]/40 shadow-2xs"
+                                : "text-[#593102] hover:bg-[#FAF5EC] active:bg-[#FAF0DC]/60 font-medium"
                                 }`}
                               role="option"
                               aria-selected={isSelected}
@@ -394,8 +395,8 @@ export default function ContactSection() {
                 {submitStatus.type && (
                   <div
                     className={`p-3 rounded-xl text-sm font-medium ${submitStatus.type === "success"
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-red-50 text-red-700 border border-red-200"
+                      ? "bg-green-50 text-green-700 border border-green-200"
+                      : "bg-red-50 text-red-700 border border-red-200"
                       }`}
                   >
                     {submitStatus.message}
@@ -410,9 +411,9 @@ export default function ContactSection() {
                   />
                   <span>
                     I agree to the{" "}
-                    <a href="#" className="text-[#D49313] font-bold underline">Privacy Policy</a>{" "}
+                    <Link href="/account/privacy/privacy" target="_blank" className="text-[#D49313] font-bold underline hover:text-[#B87D0E] transition-colors">Privacy Policy</Link>{" "}
                     and{" "}
-                    <a href="#" className="text-[#D49313] font-bold underline">Terms &amp; Conditions</a>
+                    <Link href="/account/privacy/term" target="_blank" className="text-[#D49313] font-bold underline hover:text-[#B87D0E] transition-colors">Terms &amp; Conditions</Link>
                   </span>
                 </label>
 
