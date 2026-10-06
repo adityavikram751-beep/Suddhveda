@@ -665,21 +665,21 @@ export default function ProductDetailPage({
             <p>
               <strong className="text-[#3D260F]">WhatsApp:</strong>{" "}
               <a
-                href="https://wa.me/918866044554"
+                href="https://wa.me/918796632478"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#D49313] hover:underline font-bold"
               >
-                +91 88660 44554
+                +918796632478
               </a>
             </p>
             <p>
               <strong className="text-[#3D260F]">Email:</strong>{" "}
               <a
-                href="mailto:support@shuddhvedahoney.in"
+                href="mailto:shuddhvedahoney@gmail.com"
                 className="text-[#D49313] hover:underline font-bold"
               >
-                support@shuddhvedahoney.in
+                shuddhvedahoney@gmail.com
               </a>
             </p>
           </div>
