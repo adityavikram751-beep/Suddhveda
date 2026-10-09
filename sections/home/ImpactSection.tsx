@@ -1,150 +1,85 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { FiUser, FiBox, FiDroplet } from "react-icons/fi";
-import { GiBee } from "react-icons/gi";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function ImpactSection() {
-  const router = useRouter();
-  const [hasStarted, setHasStarted] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-    }
-  }, []);
-
-  const handlePlayClick = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play();
-      setHasStarted(true);
-    }
-  };
-
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-14 sm:py-20 border-t border-b border-[#EADCC9]/60">
-      {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/6 rounded-full blur-[140px] pointer-events-none" />
+    <section className="relative w-full overflow-hidden bg-[#FAF4E8] py-8 lg:py-14 border-t border-b border-[#EADCC9]/50">
+      {/* Background Canvas Image - public.png */}
+      <div className="absolute inset-0 w-full h-full">
+        <Image
+          src="/public.png"
+          alt="Shuddh Veda Honey Background"
+          fill
+          priority
+          className="object-cover object-center w-full h-full"
+          sizes="100vw"
+        />
+      </div>
 
-      <div className="relative max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+      {/* Main Grid Content Container */}
+      <div className="relative z-10 w-full max-w-[1450px] mx-auto px-4 sm:px-8 lg:px-12 py-2 lg:py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
+          
+          {/* Left Column: impactimage.png Overlay Graphic */}
+          <div className="lg:col-span-6 flex justify-center lg:justify-start items-center">
+            <div className="relative w-full max-w-[340px] xs:max-w-[420px] sm:max-w-[500px] lg:max-w-[580px] xl:max-w-[640px] transform hover:scale-[1.02] transition-transform duration-500">
+              <Image
+                src="/impactimage.png"
+                alt="Six Distinct Honey Flavours - Shuddh Veda"
+                width={1471}
+                height={1069}
+                priority
+                className="w-full h-auto object-contain drop-shadow-sm"
+              />
+            </div>
+          </div>
 
-          {/* 1. HEADER (Top on Mobile, Top Right on Desktop) */}
-          <div className="order-1 lg:order-2 lg:col-span-6 text-center lg:text-left flex flex-col items-center lg:items-start">
-            <p className="text-[12px] sm:text-[13px] font-extrabold tracking-[0.18em] text-[#593102] uppercase bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs">
-              WHY CHOOSE SHUDDH VEDA HONEY?
-            </p>
+          {/* Right Column: Clean Transparent Text Overlay (No Card Box / No Border) */}
+          <div className="lg:col-span-6 lg:pl-6 xl:pl-14 flex flex-col items-center sm:items-start text-center sm:text-left bg-transparent p-0 border-none shadow-none">
+            
+            {/* Tag / Pill */}
+            <div className="inline-flex items-center px-5 py-1.5 rounded-full border border-[#C69658] bg-transparent text-[#A4753B] text-[11px] sm:text-[12px] font-bold tracking-[0.22em] uppercase">
+              ONE NATURE
+            </div>
 
-            <h2 className="mt-4 text-[32px] sm:text-[42px] lg:text-[50px] font-serif font-bold leading-[1.12] text-[#593102] tracking-tight">
-              Rooted in Tradition.
-              <br />
-              <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
-                Committed to Purity.
+            {/* Main Title - Playfair Display Serif */}
+            <h2 className="mt-4 sm:mt-5 text-[34px] sm:text-[48px] md:text-[56px] lg:text-[62px] xl:text-[68px] leading-[1.0] sm:leading-[0.98] tracking-tight font-bold">
+              <span
+                style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', Georgia, serif", color: "#2B1E17" }}
+                className="block"
+              >
+                Six Distinct
+              </span>
+              <span
+                style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', Georgia, serif", color: "#FA4B1B" }}
+                className="block"
+              >
+                Flavours.
               </span>
             </h2>
 
-            <div className="w-24 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-3.5 rounded-full" />
+            {/* Decorative Gold Accent Bar */}
+            <div className="w-[65px] sm:w-[75px] h-[3px] bg-gradient-to-r from-[#C69658] via-[#C84417] to-transparent my-4 sm:my-5 rounded-full" />
 
-            <p className="mt-2 text-[15px] sm:text-[17px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[540px] px-2 lg:px-0">
-              At Shuddh Veda Honey, we follow traditional beekeeping practices and modern purity standards to bring you honey that is{" "}
-              <span className="font-extrabold text-[#593102]">raw, natural, and filtered.</span>
+            {/* Description Paragraph */}
+            <p className="text-[#65564A] text-[14px] sm:text-[16px] md:text-[17px] lg:text-[18px] leading-[1.65] font-medium max-w-[460px]">
+              From the bold character of Mustard to the delicate floral sweetness of Lychee, every flower gives honey its own unique taste, aroma and personality.
             </p>
-          </div>
-
-          {/* 2. VIDEO SHOWCASE (Middle on Mobile, Left Column on Desktop) */}
-          <div className="order-2 lg:order-1 lg:col-span-6 lg:row-span-2 relative w-full max-w-[540px] mx-auto lg:mx-0">
-            <div className="relative aspect-[4/3.8] rounded-3xl overflow-hidden border-2 border-[#D49313]/40 shadow-2xl group bg-black">
-              <video
-                ref={videoRef}
-                src="https://res.cloudinary.com/anjp8e9i/video/upload/v1786972510/0817_1_ztof9t"
-                poster="/move1.png"
-                muted
-                controls
-                playsInline
-                preload="metadata"
-                onPlay={() => {
-                  if (videoRef.current) videoRef.current.muted = true;
-                  setHasStarted(true);
-                }}
-                onVolumeChange={(e) => {
-                  e.currentTarget.muted = true;
-                }}
-                className="w-full h-full object-cover"
-              />
-
-              {/* Glowing Play button overlay when not started */}
-              {!hasStarted && (
-                <button
-                  type="button"
-                  onClick={handlePlayClick}
-                  aria-label="Play video"
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 cursor-pointer border-2 border-[#FFD700]/70 z-10"
-                >
-                  <div className="w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-l-[18px] border-l-white ml-1.5" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* 3. STATS & BUTTON (Bottom on Mobile, Bottom Right on Desktop) */}
-          <div className="order-3 lg:order-3 lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
-            {/* 4 Stats Cards */}
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 max-w-[540px] w-full px-1 sm:px-0">
-              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiUser className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
-                </div>
-                <div className="text-left min-w-0 flex-1">
-                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">20,000+</h3>
-                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Happy Customers</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <GiBee className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
-                </div>
-                <div className="text-left min-w-0 flex-1">
-                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">7M+</h3>
-                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Bees Protected</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiBox className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
-                </div>
-                <div className="text-left min-w-0 flex-1">
-                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">1,250+</h3>
-                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Bee Colonies</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-3.5 p-2.5 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-w-0 overflow-hidden min-h-[62px] sm:min-h-[72px] h-full">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <FiDroplet className="w-[18px] h-[18px] sm:w-[22px] sm:h-[22px] text-[#D49313]" />
-                </div>
-                <div className="text-left min-w-0 flex-1">
-                  <h3 className="text-[15px] xs:text-[18px] sm:text-[22px] font-black text-[#593102] leading-tight truncate sm:whitespace-normal">99.9%</h3>
-                  <p className="mt-0.5 text-[9.5px] xs:text-[10.5px] sm:text-[11px] font-extrabold tracking-normal sm:tracking-wider text-[#7A6A5C] uppercase leading-tight break-words">Pure &amp; Natural</p>
-                </div>
-              </div>
-            </div>
 
             {/* CTA Button */}
-            <button
-              type="button"
-              onClick={() => router.push("/about")}
-              className="mt-7 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-xs sm:text-sm font-black tracking-wider uppercase px-6 sm:px-7 h-[42px] rounded-2xl cursor-pointer shadow-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
-            >
-              <span>KNOW MORE ABOUT US</span>
-              <ChevronRight size={16} />
-            </button>
+            <div className="mt-6 sm:mt-7 w-full sm:w-auto flex justify-center sm:justify-start">
+              <Link
+                href="/shop"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[11px] sm:text-[12px] md:text-[13px] font-bold tracking-[0.16em] uppercase px-8 sm:px-9 h-[46px] sm:h-[50px] rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+              >
+                <span>DISCOVER YOUR HONEY</span>
+                <ArrowRight size={17} className="stroke-[2.5]" />
+              </Link>
+            </div>
+
           </div>
 
         </div>
@@ -152,3 +87,8 @@ export default function ImpactSection() {
     </section>
   );
 }
+
+
+
+
+
