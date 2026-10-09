@@ -22,12 +22,12 @@ export default function ImpactSection() {
       {/* Main Grid Content Container */}
       <div className="relative z-10 w-full max-w-[1450px] mx-auto px-4 sm:px-8 lg:px-12 py-2 lg:py-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
-          
+
           {/* Left Column: impactimage.png Overlay Graphic */}
           <div className="lg:col-span-6 flex justify-center lg:justify-start items-center">
             <div className="relative w-full max-w-[340px] xs:max-w-[420px] sm:max-w-[500px] lg:max-w-[580px] xl:max-w-[640px] transform hover:scale-[1.02] transition-transform duration-500">
               <Image
-                src="/impactimage.png"
+                src="/impact6.png"
                 alt="Six Distinct Honey Flavours - Shuddh Veda"
                 width={1471}
                 height={1069}
@@ -39,7 +39,7 @@ export default function ImpactSection() {
 
           {/* Right Column: Clean Transparent Text Overlay (No Card Box / No Border) */}
           <div className="lg:col-span-6 lg:pl-6 xl:pl-14 flex flex-col items-center sm:items-start text-center sm:text-left bg-transparent p-0 border-none shadow-none">
-            
+
             {/* Tag / Pill */}
             <div className="inline-flex items-center px-5 py-1.5 rounded-full border border-[#C69658] bg-transparent text-[#A4753B] text-[11px] sm:text-[12px] font-bold tracking-[0.22em] uppercase">
               ONE NATURE
