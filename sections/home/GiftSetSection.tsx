@@ -6,82 +6,81 @@ import { Gift, ChevronRight, ShieldCheck, Heart, Truck, Award } from "lucide-rea
 
 export default function GiftSetSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-16 md:py-24 border-b border-[#EADCC9]/50">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#FDF9F3] via-[#FAF6F0] to-[#FDF9F3] py-12 sm:py-16 md:py-16 lg:py-24 border-b border-[#EADCC9]/50">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#D49313]/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#593102]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] md:w-[450px] lg:w-[500px] h-[350px] md:h-[450px] lg:h-[500px] bg-[#D49313]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[280px] md:w-[350px] lg:w-[400px] h-[280px] md:h-[350px] lg:h-[400px] bg-[#593102]/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative max-w-[1440px] mx-auto px-6 lg:px-16">
+      <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
 
           {/* LEFT COLUMN - Text & Highlights */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+          <div className="lg:col-span-7 flex flex-col items-start text-left w-full max-w-[700px] lg:max-w-none mx-auto lg:mx-0">
             {/* VIP Pill Badge */}
-            <span className="inline-flex items-center gap-2.5 text-[#593102] bg-gradient-to-r from-[#FAF0DC] via-[#FFE3AA] to-[#FAF0DC] border-2 border-[#D49313]/60 px-5 py-2 rounded-full text-[12px] sm:text-[13px] font-extrabold tracking-[0.2em] uppercase mb-5 shadow-md backdrop-blur-md">
-              <Gift size={16} className="text-[#D49313]" />
+            <span className="inline-flex items-center gap-2 sm:gap-2.5 text-[#593102] bg-gradient-to-r from-[#FAF0DC] via-[#FFE3AA] to-[#FAF0DC] border-2 border-[#D49313]/60 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-[13px] font-extrabold tracking-[0.18em] sm:tracking-[0.2em] uppercase mb-4 sm:mb-5 shadow-md backdrop-blur-md">
+              <Gift size={15} className="text-[#D49313]" />
               ROYAL GIFTING EXPERIENCE
             </span>
 
             {/* Heading */}
-            <h2 className="text-[36px] sm:text-[46px] md:text-[54px] font-serif font-bold leading-[1.12] text-[#593102] tracking-tight">
-
+            <h2 className="text-[32px] sm:text-[40px] md:text-[44px] lg:text-[54px] font-serif font-bold leading-[1.14] md:leading-[1.12] text-[#593102] tracking-tight">
               <span className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] bg-clip-text text-transparent font-serif italic pr-2">
                 Royal Honey Gift Box
               </span>
             </h2>
 
-            <div className="w-28 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-4 rounded-full" />
+            <div className="w-20 sm:w-28 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-3 sm:my-4 rounded-full" />
 
             {/* Sub-description */}
-            <p className="text-[16px] sm:text-[18px] leading-[1.7] text-[#6E5D4F] font-medium max-w-[620px] mt-2">
+            <p className="text-[14px] sm:text-[17px] md:text-[16px] lg:text-[18px] leading-[1.6] sm:leading-[1.7] text-[#6E5D4F] font-medium max-w-[640px] mt-1 sm:mt-2">
               Choose your signature gift box and handpick your favorite raw &amp; organic honey flavors to create a personalized royal gift for your loved ones.
             </p>
 
             {/* Feature Grid - 4 Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 w-full max-w-[640px]">
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[88px] sm:min-h-[82px] h-full">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <Gift size={20} className="text-[#D49313]" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 mt-6 sm:mt-8 w-full max-w-[700px]">
+              <div className="flex items-center gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[78px] sm:min-h-[82px] h-full">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <Gift size={18} className="text-[#D49313]" />
                 </div>
-                <div>
-                  <h4 className="font-extrabold text-[15px] text-[#593102]">Signature Gift Box</h4>
-                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Gold-embossed luxury box packaging</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[88px] sm:min-h-[82px] h-full">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <Heart size={20} className="text-[#D49313]" />
-                </div>
-                <div>
-                  <h4 className="font-extrabold text-[15px] text-[#593102]">Handpicked Flavors</h4>
-                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Handpick raw &amp; organic honey flavors</p>
+                <div className="min-w-0">
+                  <h4 className="font-extrabold text-[14px] sm:text-[15px] text-[#593102] leading-snug">Signature Gift Box</h4>
+                  <p className="text-[12px] sm:text-[13px] text-[#7A6A5C] font-medium leading-snug">Gold-embossed luxury box packaging</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[88px] sm:min-h-[82px] h-full">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <Award size={20} className="text-[#D49313]" />
+              <div className="flex items-center gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[78px] sm:min-h-[82px] h-full">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <Heart size={18} className="text-[#D49313]" />
                 </div>
-                <div>
-                  <h4 className="font-extrabold text-[15px] text-[#593102]">Personalized Note</h4>
-                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Add your custom greeting card message</p>
+                <div className="min-w-0">
+                  <h4 className="font-extrabold text-[14px] sm:text-[15px] text-[#593102] leading-snug">Handpicked Flavors</h4>
+                  <p className="text-[12px] sm:text-[13px] text-[#7A6A5C] font-medium leading-snug">Handpick raw &amp; organic honey flavors</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[88px] sm:min-h-[82px] h-full">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
-                  <Truck size={20} className="text-[#D49313]" />
+              <div className="flex items-center gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[78px] sm:min-h-[82px] h-full">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <Award size={18} className="text-[#D49313]" />
                 </div>
-                <div>
-                  <h4 className="font-extrabold text-[15px] text-[#593102]">Pan-India Express</h4>
-                  <p className="text-[13px] text-[#7A6A5C] font-medium leading-snug">Safely delivered to your doorstep</p>
+                <div className="min-w-0">
+                  <h4 className="font-extrabold text-[14px] sm:text-[15px] text-[#593102] leading-snug">Personalized Note</h4>
+                  <p className="text-[12px] sm:text-[13px] text-[#7A6A5C] font-medium leading-snug">Add your custom greeting card message</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-2xl bg-white/80 border border-[#EADCC9] shadow-xs hover:shadow-md transition-all min-h-[78px] sm:min-h-[82px] h-full">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF0DC] text-[#593102] flex items-center justify-center shrink-0 border border-[#D49313]/40">
+                  <Truck size={18} className="text-[#D49313]" />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="font-extrabold text-[14px] sm:text-[15px] text-[#593102] leading-snug">Pan-India Express</h4>
+                  <p className="text-[12px] sm:text-[13px] text-[#7A6A5C] font-medium leading-snug">Safely delivered to your doorstep</p>
                 </div>
               </div>
             </div>
 
-            {/* Mobile Image Showcase - Placed right above the CTA Button on Mobile */}
-            <div className="mt-8 block lg:hidden w-full max-w-[560px] mx-auto rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-[#FFFDF9] shadow-xl group">
+            {/* Mobile Image Showcase - Placed right above the CTA Button on Mobile & Tablet */}
+            <div className="mt-6 sm:mt-8 block lg:hidden w-full max-w-[700px] mx-auto rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#D49313]/40 bg-[#FFFDF9] shadow-xl group">
               <Image
                 src="/goodveda.png"
                 alt="ShuddhVeda Royal Gift Set"
@@ -93,10 +92,10 @@ export default function GiftSetSection() {
             </div>
 
             {/* Action CTA */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
+            <div className="mt-6 sm:mt-8 md:mt-8 lg:mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <Link
                 href="/giftsets"
-                className="inline-flex items-center justify-center gap-2 bg-[#FA4B1B] hover:bg-[#E64216] text-white font-black text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 h-[42px] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-[#FA4B1B] hover:bg-[#E64216] text-white font-black text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 h-[42px] sm:h-[44px] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer w-full sm:w-auto"
               >
                 <span>EXPLORE GIFT BOX</span>
                 <ChevronRight size={16} className="stroke-[2.5]" />

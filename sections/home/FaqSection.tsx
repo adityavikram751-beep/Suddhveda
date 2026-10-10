@@ -65,28 +65,28 @@ export default function FaqSection() {
     return (
       <div
         key={keyIndex}
-        className="bg-white rounded-2xl border border-[#EADCC9]/90 px-6 py-5 cursor-pointer transition-all duration-300 hover:border-[#D49313]/60 hover:shadow-md"
+        className="bg-white rounded-2xl border border-[#EADCC9]/90 px-4.5 sm:px-5 md:px-5 lg:px-6 py-4 md:py-4.5 lg:py-5 cursor-pointer transition-all duration-300 hover:border-[#D49313]/60 hover:shadow-md"
         onClick={onToggle}
       >
-        <div className="flex items-center justify-between gap-4">
-          <h3 className="font-serif text-[15px] sm:text-[17px] font-bold text-[#593102]">
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
+          <h3 className="font-serif text-[14.5px] sm:text-[16px] md:text-[15px] lg:text-[17px] font-bold text-[#593102] leading-snug">
             {faq.question}
           </h3>
           <FiChevronDown
             size={18}
-            className={`text-[#6E5D4F] flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#D49313]" : ""
+            className={`text-[#6E5D4F] shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#D49313]" : ""
               }`}
           />
         </div>
 
         <div
           className={`grid transition-all duration-300 ease-in-out ${isOpen
-              ? "grid-rows-[1fr] opacity-100 mt-3 pt-3 border-t border-[#EADCC9]/50"
+              ? "grid-rows-[1fr] opacity-100 mt-2.5 sm:mt-3 pt-2.5 sm:pt-3 border-t border-[#EADCC9]/50"
               : "grid-rows-[0fr] opacity-0"
             }`}
         >
           <div className="overflow-hidden">
-            <p className="text-[13.5px] sm:text-[14px] text-[#6E5D4F] font-medium leading-relaxed">
+            <p className="text-[13px] sm:text-[13.5px] md:text-[13px] lg:text-[14px] text-[#6E5D4F] font-medium leading-relaxed">
               {faq.answer}
             </p>
           </div>
@@ -96,35 +96,35 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="bg-[#FAF6F0]/60 pt-12 lg:pt-16 pb-16 lg:pb-24 w-full border-t border-[#EADCC9]/50">
-      <div className="max-w-[1240px] mx-auto w-full px-6">
+    <section className="bg-[#FAF6F0]/60 pt-10 sm:pt-12 md:pt-14 lg:pt-16 pb-12 sm:pb-16 md:pb-18 lg:pb-24 w-full border-t border-[#EADCC9]/50">
+      <div className="max-w-[1240px] mx-auto w-full px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="text-center mb-10 lg:mb-12">
-          <span className="text-[12px] font-extrabold uppercase text-[#D49313] tracking-[0.2em] block mb-2">
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <span className="text-[11px] sm:text-[12px] font-extrabold uppercase text-[#D49313] tracking-[0.2em] block mb-2">
             FAQS
           </span>
 
-          <h2 className="font-serif text-[32px] sm:text-[40px] font-bold text-[#3C2415] tracking-tight">
+          <h2 className="font-serif text-[28px] sm:text-[34px] md:text-[36px] lg:text-[40px] font-bold text-[#3C2415] tracking-tight">
             Quick Answers for You
           </h2>
 
-          <div className="w-14 h-1 bg-[#D49313]/60 mx-auto mt-3.5 rounded-full" />
+          <div className="w-14 h-1 bg-[#D49313]/60 mx-auto mt-3 sm:mt-3.5 rounded-full" />
         </div>
 
         {/* 2 Columns */}
-        <div className="flex flex-col md:flex-row gap-4 sm:gap-5">
-          <div className="flex flex-col gap-4 sm:gap-5 flex-1">
+        <div className="flex flex-col md:flex-row gap-3.5 sm:gap-4 md:gap-4 lg:gap-5">
+          <div className="flex flex-col gap-3.5 sm:gap-4 md:gap-4 lg:gap-5 flex-1">
             {leftFaqs.map((faq, index) =>
               renderCard(faq, openLeft === index, () => toggleLeft(index), index)
             )}
           </div>
-          <div className="flex flex-col gap-4 sm:gap-5 flex-1">
+          <div className="flex flex-col gap-3.5 sm:gap-4 md:gap-4 lg:gap-5 flex-1">
             {rightFaqs.map((faq, index) =>
               renderCard(
                 faq,
                 openRight === index,
                 () => toggleRight(index),
-                index
+                index + leftFaqs.length
               )
             )}
           </div>
