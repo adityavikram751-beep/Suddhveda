@@ -131,9 +131,9 @@ export default function Footer() {
               <h3 className="text-[16px] font-semibold text-center sm:text-left">Products Information</h3>
               <ul className="mt-4 space-y-2.5 text-center sm:text-left">
                 <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Policy Center</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Terms Conditions</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Shipping Policy</Link></li>
+                <li><Link href="/account/privacy/term" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Terms &amp; Conditions</Link></li>
+                <li><Link href="/account/privacy/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/account/privacy/shipping" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">Shipping Policy</Link></li>
               </ul>
             </div>
 
@@ -290,17 +290,17 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/term" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Terms &amp; Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/shipping" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Shipping Policy
                 </Link>
               </li>

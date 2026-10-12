@@ -348,11 +348,11 @@ export default function PrivacyPolicyPage() {
                                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8">
                                     <div className="flex items-center gap-2 text-sm text-[#6E5D4F] font-semibold">
                                         <Mail size={15} className="text-[#D49313]" />
-                                        privacy@shudhveda.com
+                                        shuddhvedahoney@gmail.com
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-[#6E5D4F] font-semibold">
                                         <Phone size={15} className="text-[#D49313]" />
-                                        +91 98765 43210
+                                        +91 8796632478
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-[#6E5D4F] font-semibold">
                                         <Clock size={15} className="text-[#D49313]" />
