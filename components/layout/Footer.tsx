@@ -162,8 +162,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center justify-center gap-3">
                 <Mail size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@shuddhveda.in"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  {loading ? "Loading..." : locationData?.email || "connect@shuddhveda.in"}
+                <a href={`mailto:${loading ? "connect@shuddhvedahoney.com" : locationData?.email || "connect@shuddhvedahoney.com"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  {loading ? "Loading..." : locationData?.email || "connect@shuddhvedahoney.com"}
                 </a>
               </div>
               <div className="flex items-start justify-center gap-3">
@@ -343,10 +343,10 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <Mail size={15} className="mt-1 text-[#E2D2C4]" />
                 <a
-                  href={`mailto:${loading ? "connect@Shuddhveda.in" : locationData?.email || "connect@shuddhveda.in"}`}
+                  href={`mailto:${loading ? "connect@shuddhvedahoney.com" : locationData?.email || "connect@shuddhvedahoney.com"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.email || "connect@shuddhveda.in"}
+                  {loading ? "Loading..." : locationData?.email || "connect@shuddhvedahoney.com"}
                 </a>
               </div>
 

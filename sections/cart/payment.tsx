@@ -478,7 +478,7 @@ export default function PaymentPage() {
                                     <Phone size={16} className="text-[#593102]" /> +91 98765 43210
                                 </p>
                                 <p className="flex items-center gap-2">
-                                    <Mail size={16} className="text-[#593102]" /> connect@honeyveda.in
+                                    <Mail size={16} className="text-[#593102]" /> connect@shuddhvedahoney.com
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <Clock size={16} className="text-[#593102]" /> Mon - Sat : 9AM - 7PM

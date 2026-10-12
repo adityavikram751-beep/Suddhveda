@@ -263,7 +263,7 @@ export default function Cart() {
                     setLocation({
                         phone: loc.phone || "+91 98765 43210",
                         phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
-                        email: loc.email || "connect@honeyveda.in",
+                        email: loc.email || "connect@shuddhvedahoney.com",
                         email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
                         whatsapp: loc.whatsapp || "",
                         whatsapp_timing: loc.whatsapp_timing || "",
@@ -273,7 +273,7 @@ export default function Cart() {
                     setLocation({
                         phone: "+91 98765 43210",
                         phone_timing: "Mon - Sat : 9AM - 6PM",
-                        email: "connect@honeyveda.in",
+                        email: "connect@shuddhvedahoney.com",
                         email_reply_time: "We reply within 24 hrs",
                         whatsapp: "",
                         whatsapp_timing: "",
@@ -285,7 +285,7 @@ export default function Cart() {
                 setLocation({
                     phone: "+91 98765 43210",
                     phone_timing: "Mon - Sat : 9AM - 6PM",
-                    email: "connect@honeyveda.in",
+                    email: "connect@shuddhvedahoney.com",
                     email_reply_time: "We reply within 24 hrs",
                     whatsapp: "",
                     whatsapp_timing: "",
@@ -1361,7 +1361,7 @@ function HelpPanel({
                     <p className="flex items-center gap-2.5 min-w-0">
                         <Mail size={15} className="text-[#D49313] shrink-0" />
                         <span className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[13px] truncate">
-                            {loading ? "Loading..." : location?.email || "connect@honeyveda.in"}
+                            {loading ? "Loading..." : location?.email || "connect@shuddhvedahoney.com"}
                         </span>
                     </p>
                     <p className="flex items-center gap-2.5">

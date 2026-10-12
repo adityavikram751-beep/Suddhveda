@@ -461,8 +461,8 @@ export default function ProductDetailPage({
         if (typeof sSize === "object") {
           const qty = sSize.quantity ?? 1;
           const unit = sSize.unit ?? "tbsp";
-          const weight = sSize.weight_g ?? sSize.weight ?? 21;
-          parsedServingSizeStr = `${qty} ${unit}(${weight}g)`;
+          const weight = sSize.weight_g ?? sSize.weight ?? 20;
+          parsedServingSizeStr = `${qty} ${unit} (${weight}g)`;
         } else if (typeof sSize === "string" || typeof sSize === "number") {
           parsedServingSizeStr = String(sSize);
         }
@@ -471,6 +471,47 @@ export default function ProductDetailPage({
       if (nObj.ingredients && typeof nObj.ingredients === "string") {
         parsedIngredientsStr = nObj.ingredients;
       }
+
+      // Format numeric value with its unit (e.g. 327.04 kcal, 80.63 g, 8.45 mg)
+      const formatValueWithUnit = (valNum: any, unitStr?: string) => {
+        if (valNum === undefined || valNum === null || String(valNum).trim() === "" || String(valNum) === "null") {
+          return "-";
+        }
+        const str = String(valNum).trim();
+        if (!unitStr) return str;
+        const cleanUnit = unitStr.trim();
+        if (!cleanUnit) return str;
+        if (str.toLowerCase().endsWith(cleanUnit.toLowerCase())) {
+          return str;
+        }
+        return `${str} ${cleanUnit}`;
+      };
+
+      const KEY_LABEL_MAP: Record<string, string> = {
+        energy: "Energy",
+        carbohydrates: "Carbohydrates",
+        total_sugar: "Total Sugar",
+        natural_sugar: "Natural Sugar",
+        added_sugar: "Added Sugar",
+        protein: "Protein",
+        total_fat: "Total Fat",
+        saturated_fat: "Saturated Fat",
+        trans_fat: "Trans Fat",
+        cholesterol: "Cholesterol",
+        sodium: "Sodium",
+      };
+
+      const buildNutrientLabel = (rawKey: string, unitStr?: string) => {
+        const normalizedKey = rawKey.toLowerCase().trim();
+        const base = KEY_LABEL_MAP[normalizedKey] || rawKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        const cleanUnit = unitStr?.trim();
+        if (cleanUnit) {
+          if (!base.toLowerCase().includes(`(${cleanUnit.toLowerCase()})`)) {
+            return `${base} (${cleanUnit})`;
+          }
+        }
+        return base;
+      };
 
       // Parse Nutrients Object or Array
       const nutrientsObj =
@@ -484,35 +525,19 @@ export default function ProductDetailPage({
         nObj.values ||
         nObj;
 
-      const KEY_LABEL_MAP: Record<string, string> = {
-        energy: "Energy(Kcal)",
-        total_fat: "Total Fat (g)",
-        saturated_fat: "Saturated Fat (g)",
-        trans_fat: "Trans Fat (g)",
-        cholesterol: "Cholesterol (mg)",
-        carbohydrates: "Carbohydrates (g)",
-        natural_sugar: "Natural Sugar (g)",
-        added_sugar: "Added Sugar",
-        protein: "Protein (g)",
-        sodium: "Sodium (mg)",
-      };
-
       if (nutrientsObj && typeof nutrientsObj === "object" && !Array.isArray(nutrientsObj)) {
         Object.entries(nutrientsObj).forEach(([key, val]: [string, any]) => {
           if (key === "serving_size" || key === "servingSize" || key === "serving" || key === "ingredients") return;
 
-          let label = KEY_LABEL_MAP[key] || key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-          let per100g = "";
-          let perServing = "";
+          let unit = "";
+          let val100g: any = "";
+          let valServing: any = "";
           let rda = "";
 
           if (typeof val === "object" && val !== null) {
-            if (!KEY_LABEL_MAP[key] && val.unit) {
-              label = `${label} (${val.unit})`;
-            }
-
-            per100g = val.per_100g !== undefined && val.per_100g !== null ? String(val.per_100g) : "";
-            perServing = val.per_serving !== undefined && val.per_serving !== null ? String(val.per_serving) : "";
+            unit = val.unit ? String(val.unit).trim() : "";
+            val100g = val.per_100g !== undefined && val.per_100g !== null ? val.per_100g : (val.value_100g ?? "");
+            valServing = val.per_serving !== undefined && val.per_serving !== null ? val.per_serving : (val.value_serving ?? "");
 
             if (
               val.rda_percent !== undefined &&
@@ -524,22 +549,31 @@ export default function ProductDetailPage({
               rda = !isNaN(numRda) ? `${numRda}%` : String(val.rda_percent);
             }
           } else {
-            per100g = String(val);
+            val100g = val;
           }
+
+          const label = buildNutrientLabel(key, unit);
+          const per100g = formatValueWithUnit(val100g, unit);
+          const perServing = formatValueWithUnit(valServing, unit);
 
           tableRows.push({ label, per100g, perServing, rda });
         });
       } else if (Array.isArray(nutrientsObj)) {
         tableRows = nutrientsObj
-          .map((item: any) => ({
-            label: String(item.name || item.nutrient || item.label || item.key || ""),
-            per100g: item.value_100g ?? item.per_100g ?? item.per100g ?? "",
-            perServing: item.value_serving ?? item.per_serving ?? item.perServing ?? "",
-            rda:
-              item.rda_percent !== null && item.rda_percent !== undefined && String(item.rda_percent) !== "null"
-                ? `${item.rda_percent}%`
-                : item.rda || "",
-          }))
+          .map((item: any) => {
+            const rawKey = String(item.name || item.nutrient || item.label || item.key || "");
+            const unit = item.unit ? String(item.unit).trim() : "";
+            const label = buildNutrientLabel(rawKey, unit);
+            return {
+              label,
+              per100g: formatValueWithUnit(item.value_100g ?? item.per_100g ?? item.per100g, unit),
+              perServing: formatValueWithUnit(item.value_serving ?? item.per_serving ?? item.perServing, unit),
+              rda:
+                item.rda_percent !== null && item.rda_percent !== undefined && String(item.rda_percent) !== "null"
+                  ? `${item.rda_percent}%`
+                  : item.rda || "",
+            };
+          })
           .filter((r) => r.label);
       }
     }
@@ -556,7 +590,7 @@ export default function ProductDetailPage({
               <h4 className="font-bold text-[#1F1813] text-[16px]">Nutrition Facts</h4>
               {parsedServingSizeStr && (
                 <p className="text-[13px] text-[#7A6A5C] font-medium mt-0.5">
-                  Serving Size: {parsedServingSizeStr}
+                  Serving Size: <span className="text-[#3D260F] font-semibold">{parsedServingSizeStr}</span>
                 </p>
               )}
             </div>
@@ -567,20 +601,28 @@ export default function ProductDetailPage({
                 <table className="w-full text-left text-[13.5px] border-collapse">
                   <thead>
                     <tr className="border-t border-b-2 border-[#C8B28F] text-[#6E5D4F] font-normal text-[12.5px]">
-                      <th className="py-2.5 px-2 w-[40%]"></th>
+                      <th className="py-2.5 px-2 w-[40%]">Nutrient</th>
                       <th className="py-2.5 px-2 text-right">Value Per<br />100g</th>
                       <th className="py-2.5 px-2 text-right">Value Per<br />Serving</th>
+                      {tableRows.some((r) => r.rda && r.rda.trim() !== "") && (
+                        <th className="py-2.5 px-2 text-right">% RDA</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#EADCC9]/40 text-[#201812] border-b-2 border-[#C8B28F]">
-                    {tableRows.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-[#FAF0DC]/30 transition-colors">
-                        <td className="py-2 px-2 font-medium text-[#201812]">{row.label}</td>
-                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.per100g || "-"}</td>
-                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.perServing || "-"}</td>
-                        <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.rda}</td>
-                      </tr>
-                    ))}
+                    {tableRows.map((row, idx) => {
+                      const hasRda = tableRows.some((r) => r.rda && r.rda.trim() !== "");
+                      return (
+                        <tr key={idx} className="hover:bg-[#FAF0DC]/30 transition-colors">
+                          <td className="py-2 px-2 font-medium text-[#201812]">{row.label}</td>
+                          <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.per100g || "-"}</td>
+                          <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.perServing || "-"}</td>
+                          {hasRda && (
+                            <td className="py-2 px-2 text-right font-normal text-[#3D260F]">{row.rda || "-"}</td>
+                          )}
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

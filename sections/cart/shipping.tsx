@@ -105,7 +105,7 @@ export default function PaymentPage() {
         setLocation({
           phone: loc.phone || "+91 98765 43210",
           phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 7PM",
-          email: loc.email || "connect@honeyveda.in",
+          email: loc.email || "connect@shuddhvedahoney.com",
           email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
           whatsapp: loc.whatsapp || "",
           whatsapp_timing: loc.whatsapp_timing || "",
