@@ -25,9 +25,18 @@ import {
 const MIN_PRICE = 100;
 const MAX_PRICE = 2000;
 
+const DEFAULT_FLORA_SOURCES: string[] = [
+  "Ajwain (Carom) plants – Trachyspermum ammi.",
+  "Fennel (Saunf) plants – Foeniculum vulgare.",
+  "Lychee (Litchi chinensis) trees",
+  "Mustard (Brassica) flowers.",
+  "Natural Mix of Wild and Seasonal Blossoms",
+  "Wildflowers and Flowering Plants",
+];
 
 type ProductFilters = {
   categorySlug: string;
+  floraSource: string;
   weights: string[];
   price: number;
   search: string;
@@ -35,6 +44,7 @@ type ProductFilters = {
 
 const defaultFilters: ProductFilters = {
   categorySlug: "",
+  floraSource: "",
   weights: [],
   price: MAX_PRICE,
   search: "",
@@ -53,6 +63,8 @@ export default function ShopPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
+  const [floraSources, setFloraSources] = useState<string[]>(DEFAULT_FLORA_SOURCES);
+  const [selectedFloraSource, setSelectedFloraSource] = useState<string>("");
   const [selectedWeights, setSelectedWeights] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(MAX_PRICE);
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,10 +93,10 @@ export default function ShopPage() {
 
 
   const [openSections, setOpenSections] = useState({
-    category: true,
-    weight: true,
-    price: true,
-    search: true,
+    category: false,
+    weight: false,
+    price: false,
+    search: false,
   });
 
   const categoryOptions = useMemo(() => {
@@ -150,9 +162,25 @@ export default function ShopPage() {
     }
   };
 
+  const fetchFloraSources = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/filter/flora-sources`);
+      if (res.ok) {
+        const json = await res.json();
+        const list = json.data || json.floraSources || json.sources || [];
+        if (Array.isArray(list) && list.length > 0) {
+          setFloraSources(list);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching flora sources:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchWishlist();
+    fetchFloraSources();
   }, []);
 
   const getSelectedVariantId = (product: ApiProduct) => {
@@ -165,22 +193,47 @@ export default function ShopPage() {
 
   const getRefinedProducts = (list: ApiProduct[], filters: ProductFilters) => {
     const query = filters.search.trim().toLowerCase();
+    const targetFlora = filters.floraSource.trim().toLowerCase();
+    const cleanStr = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const cleanTargetFlora = cleanStr(targetFlora);
+    const floraFirstWord = targetFlora ? targetFlora.split(/[\s–\-()]/)[0].toLowerCase() : "";
+
     return list.filter((product) => {
       const productVariants = getProductVariants(product);
       const prices = productVariants.length > 0
         ? productVariants.map((variant) => Number(variant?.price ?? 0))
         : [Number(product?.price ?? 0)];
+
       const matchesCategory =
         !filters.categorySlug || getCategorySlug(product) === filters.categorySlug;
+
+      const productFlora = String(product?.floral_source || product?.flora_source || product?.flavor || "").toLowerCase();
+      const cleanProductFlora = cleanStr(productFlora);
+      const productName = getProductName(product).toLowerCase();
+
+      let matchesFlora = true;
+      if (targetFlora) {
+        matchesFlora = Boolean(
+          (cleanProductFlora && cleanTargetFlora && (cleanProductFlora.includes(cleanTargetFlora) || cleanTargetFlora.includes(cleanProductFlora))) ||
+          (floraFirstWord && (productFlora.includes(floraFirstWord) || productName.includes(floraFirstWord))) ||
+          (targetFlora.includes("lychee") && (productFlora.includes("litchi") || productName.includes("litchi"))) ||
+          (targetFlora.includes("litchi") && (productFlora.includes("lychee") || productName.includes("lychee"))) ||
+          (targetFlora.includes("wildflower") && (productFlora.includes("wild") || productName.includes("multi flora") || productName.includes("flora")))
+        );
+      }
+
       const matchesWeight =
         filters.weights.length === 0 ||
         productVariants.some((variant) => filters.weights.includes(getVariantLabel(variant)));
+
       const matchesSearch =
         !query ||
-        getProductName(product).toLowerCase().includes(query) ||
-        String(product?.floral_source || "").toLowerCase().includes(query);
+        productName.includes(query) ||
+        productFlora.includes(query);
+
       const matchesPrice = prices.some((price) => price >= MIN_PRICE && price <= filters.price);
-      return matchesCategory && matchesWeight && matchesSearch && matchesPrice;
+
+      return matchesCategory && matchesFlora && matchesWeight && matchesSearch && matchesPrice;
     });
   };
 
@@ -214,6 +267,7 @@ export default function ShopPage() {
       const query = searchTerm.trim();
       const nextAppliedFilters = {
         categorySlug: selectedCategorySlug,
+        floraSource: selectedFloraSource,
         weights: selectedWeights,
         price: priceRange,
         search: query,
@@ -235,8 +289,19 @@ export default function ShopPage() {
       setAppliedFilters(nextAppliedFilters);
       setIsFilterOpen(false);
 
-      if (list && list.length > 0 && (selectedCategorySlug || query || selectedWeights.length > 0)) {
-        const targetProduct = list[0];
+      // Refine against all products to get the EXACT selected product
+      const baseList = list.length > 0 ? list : allProducts;
+      const refinedList = getRefinedProducts(baseList, nextAppliedFilters);
+
+      const hasSpecificFilter = Boolean(
+        selectedFloraSource ||
+        selectedCategorySlug ||
+        query ||
+        selectedWeights.length > 0
+      );
+
+      if (hasSpecificFilter && refinedList.length > 0) {
+        const targetProduct = refinedList[0];
         const targetId = getProductId(targetProduct);
         if (targetId) {
           router.push(`/shop/products/${targetId}`);
@@ -252,6 +317,7 @@ export default function ShopPage() {
 
   const clearFilters = async () => {
     setSelectedCategorySlug("");
+    setSelectedFloraSource("");
     setSelectedWeights([]);
     setPriceRange(MAX_PRICE);
     setSearchTerm("");
@@ -434,25 +500,33 @@ export default function ShopPage() {
         </div>
       </FilterSection>
 
-      <FilterSection title="Honey Category" isOpen={openSections.category} onToggle={() => toggleSection("category")}>
+      <FilterSection title="Honey Flora Source" isOpen={openSections.category} onToggle={() => toggleSection("category")}>
         <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
           <input
             type="radio"
-            checked={!selectedCategorySlug}
-            onChange={() => setSelectedCategorySlug("")}
+            checked={!selectedFloraSource}
+            onChange={() => {
+              setSelectedFloraSource("");
+              setSelectedCategorySlug("");
+              setAppliedFilters((prev) => ({ ...prev, floraSource: "", categorySlug: "" }));
+            }}
             className="h-4 w-4 accent-[#593102]"
           />
-          All Honeys ({allProducts.length})
+          All Flora Sources ({allProducts.length})
         </label>
-        {categoryOptions.map((category) => (
-          <label key={category.slug} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
+        {floraSources.map((source) => (
+          <label key={source} className="flex cursor-pointer items-start gap-2.5 text-[13px] text-[#4E4E4E] leading-snug">
             <input
               type="radio"
-              checked={selectedCategorySlug === category.slug}
-              onChange={() => setSelectedCategorySlug(category.slug)}
-              className="h-4 w-4 accent-[#593102]"
+              checked={selectedFloraSource === source}
+              onChange={() => {
+                setSelectedFloraSource(source);
+                setSelectedCategorySlug("");
+                setAppliedFilters((prev) => ({ ...prev, floraSource: source, categorySlug: "" }));
+              }}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#593102]"
             />
-            {category.name}
+            <span className="hover:text-[#593102] transition-colors">{source}</span>
           </label>
         ))}
       </FilterSection>

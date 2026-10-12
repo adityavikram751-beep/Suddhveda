@@ -15,6 +15,16 @@ import {
 import ProductCard from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { allProducts, categories } from "@/lib/shop-data";
+import { API_BASE_URL } from "@/lib/auth";
+
+const DEFAULT_FLORA_SOURCES: string[] = [
+  "Ajwain (Carom) plants – Trachyspermum ammi.",
+  "Fennel (Saunf) plants – Foeniculum vulgare.",
+  "Lychee (Litchi chinensis) trees",
+  "Mustard (Brassica) flowers.",
+  "Natural Mix of Wild and Seasonal Blossoms",
+  "Wildflowers and Flowering Plants",
+];
 
 const categoryIcons = {
   "All Honey": Leaf,
@@ -32,6 +42,7 @@ export default function ProductListing({
   initialSearch: string;
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [floraSources, setFloraSources] = useState<string[]>(DEFAULT_FLORA_SOURCES);
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const { cartItems, addToCart, updateQuantity } = useCart();
   const router = useRouter();
@@ -44,16 +55,29 @@ export default function ProductListing({
 
   // Filter block collapse states
   const [filterStates, setFilterStates] = useState({
-    category: true,
-    price: true,
-    ratings: true,
-    weight: true,
-    availability: true,
+    category: false,
+    price: false,
+    ratings: false,
+    weight: false,
+    availability: false,
   });
 
   const toggleFilterBlock = (key: keyof typeof filterStates) => {
     setFilterStates((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  // Fetch floral sources from API
+  useState(() => {
+    fetch(`${API_BASE_URL}/api/filter/flora-sources`)
+      .then((res) => res.json())
+      .then((json) => {
+        const list = json.data || json.floraSources || json.sources || [];
+        if (Array.isArray(list) && list.length > 0) {
+          setFloraSources(list);
+        }
+      })
+      .catch((err) => console.error("Error fetching flora sources:", err));
+  });
 
   // Handle rating checkbox toggle
   const toggleRating = (rating: string) => {
@@ -118,25 +142,33 @@ export default function ProductListing({
 
             {/* Category */}
             <FilterBlock
-              title="Category"
+              title="Honey Flora Source"
               isOpen={filterStates.category}
               onToggle={() => toggleFilterBlock("category")}
             >
-              {categories.slice(0, 5).map((category, index) => (
+              <label className="flex items-center gap-3 text-[14px] text-[#6B4A31] cursor-pointer">
+                <input
+                  type="radio"
+                  name="flora-category"
+                  checked={selectedCategory === "All Honey" || !selectedCategory}
+                  onChange={() => setSelectedCategory("All Honey")}
+                  className="h-4 w-4 accent-[#593102]"
+                />
+                All Flora Sources ({allProducts.length})
+              </label>
+              {floraSources.map((source) => (
                 <label
-                  key={category}
-                  className="flex items-center gap-3 text-[14px] text-[#6B4A31]"
+                  key={source}
+                  className="flex items-start gap-3 text-[13px] text-[#6B4A31] cursor-pointer leading-snug"
                 >
                   <input
-                    type="checkbox"
-                    checked={selectedCategory === category}
-                    onChange={() => setSelectedCategory(category)}
-                    className="h-4 w-4 accent-[#593102]"
+                    type="radio"
+                    name="flora-category"
+                    checked={selectedCategory === source}
+                    onChange={() => setSelectedCategory(source)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#593102]"
                   />
-                  {category}
-                  <span className="text-[11px] text-[#9F8266]">
-                    ({index === 0 ? allProducts.length : 6 + index * 2})
-                  </span>
+                  <span>{source}</span>
                 </label>
               ))}
             </FilterBlock>
