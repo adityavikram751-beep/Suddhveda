@@ -396,9 +396,7 @@ export default function WishlistPage() {
           <div className="flex flex-row items-center justify-between gap-3 text-[14px] text-[#6E5D4F] pb-4 border-b border-[#EADCC9]/60">
             <span className="font-bold text-[#593102]">{wishlistItems.length} {wishlistItems.length === 1 ? 'Item' : 'Items'} Saved</span>
             <div className="flex items-center gap-4">
-              <button onClick={clearAll} className="flex items-center gap-1.5 text-[#8D7F73] font-semibold hover:text-red-500 transition-colors cursor-pointer">
-                <Trash2 size={15} /> Clear All
-              </button>
+
             </div>
           </div>
 
