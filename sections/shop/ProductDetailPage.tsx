@@ -183,6 +183,55 @@ export default function ProductDetailPage({
   const [btnLoading, setBtnLoading] = useState(false);
   const [giftMessage, setGiftMessage] = useState<string>("");
 
+  // ---------------- Image Zoom State ---------------- //
+  const ZOOM_FACTOR = 2.5;
+  const mainImageContainerRef = useRef<HTMLDivElement>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [lensPos, setLensPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [zoomPercent, setZoomPercent] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mainImageContainerRef.current || selectedMedia?.type === "video") return;
+
+    const rect = mainImageContainerRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    if (width === 0 || height === 0) return;
+
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Full 0% to 100% continuous tracking where the cursor goes
+    const xPercent = Math.max(0, Math.min(100, (mouseX / width) * 100));
+    const yPercent = Math.max(0, Math.min(100, (mouseY / height) * 100));
+
+    setZoomPercent({ x: xPercent, y: yPercent });
+
+    // Lens dimension
+    const lensWidth = width / ZOOM_FACTOR;
+    const lensHeight = height / ZOOM_FACTOR;
+
+    // Center lens on mouse and clamp within container
+    let lensX = mouseX - lensWidth / 2;
+    let lensY = mouseY - lensHeight / 2;
+
+    lensX = Math.max(0, Math.min(lensX, width - lensWidth));
+    lensY = Math.max(0, Math.min(lensY, height - lensHeight));
+
+    setLensPos({ x: lensX, y: lensY, width: lensWidth, height: lensHeight });
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (selectedMedia?.type === "video") return;
+    setIsZooming(true);
+    handleMouseMove(e);
+  };
+
+  const handleMouseLeave = () => {
+    setIsZooming(false);
+  };
+
   // Recommendations state for selected variants per product ID
   const [recSelectedVariants, setRecSelectedVariants] = useState<Record<string, string>>({});
 
@@ -1160,7 +1209,7 @@ export default function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
           {/* LEFT MEDIA COLUMN (DESKTOP STICKY GALLERY BELOW HEADER) */}
-          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-10 w-full">
+          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-30 w-full">
 
             {/* THUMBNAILS (Desktop & Tablet vertical column / Mobile horizontal scroll) */}
             <div className="flex md:flex-col lg:flex-col gap-3 overflow-x-auto md:overflow-visible lg:overflow-visible pb-2 md:pb-0 lg:pb-0 scrollbar-none shrink-0 w-full md:w-auto justify-start px-0.5">
@@ -1189,27 +1238,66 @@ export default function ProductDetailPage({
               ))}
             </div>
 
-            {/* MAIN MEDIA DISPLAY */}
-            <div className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square max-w-[560px] lg:max-w-[540px] lg:max-h-[540px] mx-auto overflow-hidden shadow-sm">
-              {selectedMedia?.type === "video" ? (
-                <video
-                  src={selectedMedia.url}
-                  controls
-                  autoPlay
-                  loop
-                  muted
-                  className="w-full h-full object-cover lg:object-contain rounded-3xl"
-                />
-              ) : (
-                selectedMedia?.url && (
-                  <Image
+            {/* MAIN MEDIA DISPLAY WRAPPER WITH HOVER ZOOM */}
+            <div className="relative flex-1 w-full max-w-[560px] lg:max-w-[540px] mx-auto">
+              {/* IMAGE/MEDIA VIEWPORT */}
+              <div
+                ref={mainImageContainerRef}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+                className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square overflow-hidden shadow-sm group select-none lg:cursor-crosshair"
+              >
+                {selectedMedia?.type === "video" ? (
+                  <video
                     src={selectedMedia.url}
-                    alt={product.product_name || "Product Media"}
-                    fill
-                    className="w-full h-full object-cover lg:object-contain object-center transition-transform duration-300 lg:hover:scale-[1.01] rounded-3xl p-0"
-                    priority
+                    controls
+                    autoPlay
+                    loop
+                    muted
+                    className="w-full h-full object-cover lg:object-contain rounded-3xl"
                   />
-                )
+                ) : (
+                  selectedMedia?.url && (
+                    <Image
+                      src={selectedMedia.url}
+                      alt={product.product_name || "Product Media"}
+                      fill
+                      className="w-full h-full object-cover lg:object-contain object-center rounded-3xl p-0 pointer-events-none"
+                      priority
+                    />
+                  )
+                )}
+
+                {/* RECTANGULAR MAGNIFYING LENS OVERLAY */}
+                {isZooming && selectedMedia?.type !== "video" && (
+                  <div
+                    className="hidden lg:block absolute pointer-events-none border border-black/25 bg-white/30 backdrop-blur-[0.5px] shadow-sm rounded-lg"
+                    style={{
+                      left: `${lensPos.x}px`,
+                      top: `${lensPos.y}px`,
+                      width: `${lensPos.width}px`,
+                      height: `${lensPos.height}px`,
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* SIDE ZOOM PREVIEW WINDOW ("Bagal mai dikhe zoom ho kar") */}
+              {isZooming && selectedMedia?.type !== "video" && selectedMedia?.url && (
+                <div
+                  className="hidden lg:block absolute left-[calc(100%+20px)] top-0 w-full h-full z-50 bg-[#FAF6F0] rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
+                >
+                  <div
+                    className="w-full h-full rounded-3xl"
+                    style={{
+                      backgroundImage: `url("${selectedMedia.url}")`,
+                      backgroundPosition: `${zoomPercent.x}% ${zoomPercent.y}%`,
+                      backgroundSize: `${ZOOM_FACTOR * 100}% ${ZOOM_FACTOR * 100}%`,
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                </div>
               )}
             </div>
           </div>
