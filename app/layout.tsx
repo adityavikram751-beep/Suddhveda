@@ -17,8 +17,16 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://suddhveda.vercel.app");
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhveda.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     template: "%s | ShuddhVeda Honey",
@@ -47,8 +55,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
-      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
-    url: "https://shuddhveda.com",
+      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
+    url: siteUrl,
     siteName: "ShuddhVeda Honey",
     images: [
       {
