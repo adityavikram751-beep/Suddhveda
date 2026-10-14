@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhveda.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhvedahoney.com"),
   title: {
     default: "ShuddhVeda Honey |Pure Raw & Natural Honey",
     template: "%s | ShuddhVeda Honey",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
       "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
-    url: "https://shuddhveda.com",
+    url: "https://shuddhvedahoney.com",
     siteName: "ShuddhVeda Honey",
     images: [
       {
