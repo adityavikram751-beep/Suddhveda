@@ -224,7 +224,7 @@ export default function Hero() {
             <div className="inline-flex items-center justify-center gap-2 bg-[#FAF3EA]/90 backdrop-blur-sm border border-[#E5D3C2] px-4.5 py-1.5 rounded-full mb-4 shadow-xs">
               <span className="text-[16px] leading-none">🍯</span>
               <span className="text-[#D97706] font-semibold text-[14.5px] xs:text-[15.5px] sm:text-[16.5px] tracking-wide whitespace-nowrap">
-                100% Pure • Raw • Unprocessed
+                Pure • Raw • Unprocessed
               </span>
             </div>
 
