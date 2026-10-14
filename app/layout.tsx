@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     template: "%s | ShuddhVeda Honey",
   },
   description:
-    "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+    "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
   keywords: [
     "ShuddhVeda",
     "Mustard Honey",
-    "Litchi Honey",
+    "Lychee Honey",
     "Fennel Honey",
     "Natural Honey",
     "Ajwain Honey",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     apple: "/yellow logo.png",
   },
   openGraph: {
-    title: "ShuddhVeda Honey |Pure Raw & Natural Honey",
+    title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
-      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
     url: "https://shuddhveda.com",
     siteName: "ShuddhVeda Honey",
     images: [
@@ -55,7 +55,13 @@ export const metadata: Metadata = {
         url: "/billa share.png",
         width: 1200,
         height: 630,
-        alt: "ShuddhVeda Pure & Natural Honey",
+        alt: "ShuddhVeda Honey - Ancient Purity. Modern Trust.",
+      },
+      {
+        url: "/billa share.png",
+        width: 800,
+        height: 800,
+        alt: "ShuddhVeda Honey - Ancient Purity. Modern Trust.",
       },
     ],
     locale: "en_IN",
@@ -63,9 +69,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ShuddhVeda Honey |Pure Raw & Natural Honey",
+    title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
-      "Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
     images: ["/billa share.png"],
   },
 };
@@ -78,19 +84,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
       <head>
-        <link rel="icon" href="/yellow logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/yellow logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/yellow logo.png" />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
-        <meta property="og:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
-        <meta property="og:image" content="/billa share.png" />
-        <meta property="og:image:secure_url" content="/billa share.png" />
-        <meta property="og:site_name" content="ShuddhVeda Honey" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
-        <meta name="twitter:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
-        <meta name="twitter:image" content="/billa share.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
