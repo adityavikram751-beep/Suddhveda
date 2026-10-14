@@ -25,6 +25,8 @@ const siteUrl =
       ? `https://${process.env.VERCEL_URL}`
       : "https://suddhveda.vercel.app");
 
+const permanentOgImage = "https://suddhveda.vercel.app/ogimage.png";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -60,6 +62,12 @@ export const metadata: Metadata = {
     siteName: "ShuddhVeda Honey",
     images: [
       {
+        url: permanentOgImage,
+        width: 600,
+        height: 600,
+        alt: "ShuddhVeda Pure & Natural Honey",
+      },
+      {
         url: "/ogimage.png",
         width: 600,
         height: 600,
@@ -74,7 +82,7 @@ export const metadata: Metadata = {
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
       "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
-    images: ["/ogimage.png"],
+    images: [permanentOgImage],
   },
 };
 
@@ -86,6 +94,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
       <head>
+        <meta property="og:image" content={permanentOgImage} />
+        <meta property="og:image:secure_url" content={permanentOgImage} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="600" />
+        <meta property="og:image:height" content="600" />
+        <meta property="og:image:alt" content="ShuddhVeda Pure & Natural Honey" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:image" content={permanentOgImage} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
