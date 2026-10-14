@@ -53,14 +53,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/billa share.png",
-        width: 1200,
-        height: 630,
-        alt: "ShuddhVeda Honey - Ancient Purity. Modern Trust.",
-      },
-      {
-        url: "/billa share.png",
-        width: 800,
-        height: 800,
+        width: 600,
+        height: 600,
         alt: "ShuddhVeda Honey - Ancient Purity. Modern Trust.",
       },
     ],
@@ -68,7 +62,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
       "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
