@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "ShuddhVeda Honey |Pure Raw & Natural Honey",
     description:
       "Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
-    images: ["/subscribe2.0.png"],
+    images: ["/billa share.png"],
   },
 };
 
@@ -84,13 +84,13 @@ export default function RootLayout({
         <meta property="og:type" content="website" />
         <meta property="og:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
         <meta property="og:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
-        <meta property="og:image" content="/subscribe2.0.png" />
-        <meta property="og:image:secure_url" content="/subscribe2.0.png" />
+        <meta property="og:image" content="/billa share.png" />
+        <meta property="og:image:secure_url" content="/billa share.png" />
         <meta property="og:site_name" content="ShuddhVeda Honey" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
         <meta name="twitter:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
-        <meta name="twitter:image" content="/subscribe2.0.png" />
+        <meta name="twitter:image" content="/billa share.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
