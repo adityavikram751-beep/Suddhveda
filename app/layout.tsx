@@ -20,11 +20,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhveda.com"),
   title: {
-    default: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
+    default: "ShuddhVeda Honey |Pure Raw & Natural Honey",
     template: "%s | ShuddhVeda Honey",
   },
   description:
-    "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+    "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
   keywords: [
     "ShuddhVeda",
     "Mustard Honey",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     apple: "/yellow logo.png",
   },
   openGraph: {
-    title: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
+    title: "ShuddhVeda Honey |Pure Raw & Natural Honey",
     description:
-      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
     url: "https://shuddhveda.com",
     siteName: "ShuddhVeda Honey",
     images: [
@@ -63,9 +63,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ShuddhVeda Honey | 100% Pure Raw & Natural Honey",
+    title: "ShuddhVeda Honey |Pure Raw & Natural Honey",
     description:
-      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
+      "Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey.",
     images: ["/subscribe2.0.png"],
   },
 };
@@ -82,14 +82,14 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/yellow logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/yellow logo.png" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="ShuddhVeda Honey | 100% Pure Raw & Natural Honey" />
-        <meta property="og:description" content="Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
+        <meta property="og:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
+        <meta property="og:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
         <meta property="og:image" content="/subscribe2.0.png" />
         <meta property="og:image:secure_url" content="/subscribe2.0.png" />
         <meta property="og:site_name" content="ShuddhVeda Honey" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ShuddhVeda Honey | 100% Pure Raw & Natural Honey" />
-        <meta name="twitter:description" content="Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
+        <meta name="twitter:title" content="ShuddhVeda Honey |  Pure Raw & Natural Honey" />
+        <meta name="twitter:description" content="Experience  raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Litchi, Ajwain & Multi-Flora Honey." />
         <meta name="twitter:image" content="/subscribe2.0.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
