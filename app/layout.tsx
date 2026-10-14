@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "ShuddhVeda Honey",
     images: [
       {
-        url: "/subscribe2.0.png",
+        url: "/billa share.png",
         width: 1200,
         height: 630,
         alt: "ShuddhVeda Pure & Natural Honey",
