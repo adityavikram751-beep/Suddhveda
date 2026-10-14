@@ -18,9 +18,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhvedahoney.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://shuddhveda.com"),
   title: {
-    default: "ShuddhVeda Honey |Pure Raw & Natural Honey",
+    default: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     template: "%s | ShuddhVeda Honey",
   },
   description:
@@ -47,15 +47,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
-      "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
-    url: "https://shuddhvedahoney.com",
+      "Experience 100% raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
+    url: "https://shuddhveda.com",
     siteName: "ShuddhVeda Honey",
     images: [
       {
-        url: "/billa share.png",
+        url: "/ogimage.png",
         width: 600,
         height: 600,
-        alt: "ShuddhVeda Honey - Ancient Purity. Modern Trust.",
+        alt: "ShuddhVeda Pure & Natural Honey",
       },
     ],
     locale: "en_IN",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     title: "ShuddhVeda Honey | Pure Raw & Natural Honey",
     description:
       "Experience raw, unpasteurized & natural honey straight from hives. Savor authentic Mustard, Lychee, Ajwain & Multi-Flora Honey.",
-    images: ["/billa share.png"],
+    images: ["/ogimage.png"],
   },
 };
 
