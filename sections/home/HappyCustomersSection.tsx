@@ -62,7 +62,7 @@ export default function HappyCustomersSection() {
 
       const formattedVideos: VideoFeedback[] = rawList.map((item: any, index: number) => ({
         id: item._id || item.id || `video-${index}`,
-        name: item.name || item.customerName || item.user?.name || "Happy Customer",
+        name: item.name || item.customerName || item.user?.name || "",
         videoUrl: item.video_url || item.videoUrl || item.video || item.url || "",
         thumbnail: item.thumbnail_url || item.thumbnailUrl || item.thumbnail || item.image || "",
       }));
@@ -238,7 +238,7 @@ export default function HappyCustomersSection() {
           if (modalVideoRef.current) {
             modalVideoRef.current.muted = true;
             setIsMuted(true);
-            modalVideoRef.current.play().catch(() => {});
+            modalVideoRef.current.play().catch(() => { });
           }
         });
       }
@@ -392,7 +392,6 @@ export default function HappyCustomersSection() {
                       {item.name}
                     </h3>
                     <div className="flex items-center gap-1.5 mt-1 text-[#FFD700] text-[12px] font-extrabold uppercase tracking-wider">
-                      <span>✓ Verified Buyer</span>
                     </div>
                   </div>
                 </div>
@@ -576,8 +575,7 @@ export default function HappyCustomersSection() {
                     {currentVideo.name}
                   </h3>
                   <div className="flex items-center gap-1.5 text-[#FFD700] text-[11.5px] font-extrabold uppercase tracking-wider drop-shadow-md">
-                    <Star size={12} className="fill-[#FFD700] text-[#FFD700]" />
-                    <span>Verified Customer</span>
+
                   </div>
                 </div>
 
