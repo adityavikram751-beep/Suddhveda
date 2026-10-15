@@ -221,10 +221,10 @@ export default function Hero() {
           <div className="relative z-20 px-4 xs:px-5 sm:px-8 pt-5 sm:pt-8 text-left flex flex-col items-start w-full">
 
             {/* Top Tagline Pill Badge */}
-            <div className="inline-flex items-center justify-center gap-2 bg-[#FAF3EA]/90 backdrop-blur-sm border border-[#E5D3C2] px-4.5 py-1.5 rounded-full mb-4 shadow-xs">
-              <span className="text-[16px] leading-none">🍯</span>
-              <span className="text-[#D97706] font-semibold text-[14.5px] xs:text-[15.5px] sm:text-[16.5px] tracking-wide whitespace-nowrap">
-                Pure Honey • Raw • Unprocessed
+            <div className="inline-flex items-center justify-center gap-1.5 bg-[#FAF3EA]/90 backdrop-blur-sm border border-[#E5D3C2] px-3 py-1 rounded-full mb-3.5 shadow-2xs">
+              <span className="text-[13.5px] leading-none">🍯</span>
+              <span className="text-[#D97706] font-semibold text-[12.5px] xs:text-[13px] tracking-wide whitespace-nowrap">
+                Pure Honey • Raw • Natural
               </span>
             </div>
 
@@ -366,10 +366,10 @@ export default function Hero() {
                   {/* LEFT TEXT CONTENT */}
                   <div className="col-span-7 flex flex-col items-start text-left -mt-22 relative z-20">
                     {/* Top Tagline Pill */}
-                    <div className="inline-flex items-center justify-center gap-2.5 bg-[#FAF3EA]/75 backdrop-blur-md border border-[#E5D3C2] px-5 py-2 rounded-full mb-4.5 shadow-xs w-full max-w-[335px] min-h-[42px]">
-                      <span className="text-[17px] leading-none">🍯</span>
-                      <span className="text-[#D97706] font-semibold text-[15px] tracking-wide whitespace-nowrap">
-                        Pure Honey • Raw • Unprocessed
+                    <div className="inline-flex items-center justify-center gap-2 bg-[#FAF3EA]/80 backdrop-blur-md border border-[#E5D3C2] px-3.5 py-1.5 rounded-full mb-4 shadow-2xs">
+                      <span className="text-[14.5px] leading-none">🍯</span>
+                      <span className="text-[#D97706] font-semibold text-[13.5px] tracking-wide whitespace-nowrap">
+                        Pure Honey • Raw • Natural
                       </span>
                     </div>
 
