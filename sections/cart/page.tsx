@@ -514,8 +514,8 @@ export default function Cart() {
                                         <div
                                             key={product.cartItemId}
                                             className={`group grid gap-2.5 sm:gap-4 rounded-2xl border-2 p-3 sm:p-4 transition-all md:grid-cols-[1fr_70px_110px_75px] xl:grid-cols-[1fr_90px_130px_100px] md:items-center overflow-hidden ${selected
-                                                    ? "border-[#D49313] bg-white shadow-xs"
-                                                    : "border-[#EADCC9]/70 bg-white/60 opacity-60"
+                                                ? "border-[#D49313] bg-white shadow-xs"
+                                                : "border-[#EADCC9]/70 bg-white/60 opacity-60"
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -1281,14 +1281,15 @@ export function OrderSummaryWithCoupons({
                         <div className="w-9 h-9 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
                             <Image
                                 src="/iso-.png"
-                                alt="22000 : 2015"
+                                alt="9001 : 2015"
                                 width={32}
                                 height={32}
                                 className="object-contain w-full h-full"
                             />
                         </div>
                         <span className="text-[8.5px] font-black text-[#593102] uppercase tracking-wider leading-tight">
-                            22000 : 2015
+                            9001 : 2015
+                            22000 : 2018
                         </span>
                     </div>
 

@@ -226,7 +226,7 @@ export default function PaymentPage() {
             const parsed = JSON.parse(stored);
             if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
             if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
-          } catch (e) {}
+          } catch (e) { }
         } else if (apiDiscount > 0) {
           setCouponDiscount(apiDiscount);
           setAppliedCouponCode(apiCode);
@@ -327,21 +327,19 @@ export default function PaymentPage() {
                     <div key={step.id} className="flex min-w-0 flex-1 items-center justify-between">
                       <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                         <span
-                          className={`flex h-5.5 w-5.5 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[9.5px] sm:text-[16px] font-bold ${
-                            isDone
-                              ? "border-[#77AE61] bg-white text-[#77AE61]"
-                              : isActive
+                          className={`flex h-5.5 w-5.5 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[9.5px] sm:text-[16px] font-bold ${isDone
+                            ? "border-[#77AE61] bg-white text-[#77AE61]"
+                            : isActive
                               ? "border-[#F24E1E] bg-[#F24E1E] text-white"
                               : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                          }`}
+                            }`}
                         >
                           {isDone ? <CheckCircle2 size={12} className="sm:w-[28px] sm:h-[28px]" strokeWidth={2} /> : step.id}
                         </span>
                         <div className="min-w-0">
                           <p
-                            className={`text-[9.5px] sm:text-[15px] font-semibold leading-tight truncate ${
-                              isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
-                            }`}
+                            className={`text-[9.5px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
+                              }`}
                           >
                             {step.title}
                           </p>
@@ -373,19 +371,17 @@ export default function PaymentPage() {
                   return (
                     <label
                       key={method.id}
-                      className={`flex min-h-[112px] cursor-pointer items-center justify-between rounded-lg border bg-white px-5 py-5 transition ${
-                        isSelected
-                          ? "border-[#F24E1E] shadow-[0_0_0_1px_rgba(242,78,30,0.15)] bg-[#FFF8EF]"
-                          : "border-[#E8E4DE] hover:border-[#F24E1E]/50"
-                      }`}
+                      className={`flex min-h-[112px] cursor-pointer items-center justify-between rounded-lg border bg-white px-5 py-5 transition ${isSelected
+                        ? "border-[#F24E1E] shadow-[0_0_0_1px_rgba(242,78,30,0.15)] bg-[#FFF8EF]"
+                        : "border-[#E8E4DE] hover:border-[#F24E1E]/50"
+                        }`}
                     >
                       <div className="flex min-w-0 items-center gap-5">
                         <span
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                            isSelected
-                              ? "border-[#F24E1E] bg-[#F24E1E]"
-                              : "border-[#8D99A8] bg-white"
-                          }`}
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${isSelected
+                            ? "border-[#F24E1E] bg-[#F24E1E]"
+                            : "border-[#8D99A8] bg-white"
+                            }`}
                         >
                           {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
                         </span>
@@ -555,14 +551,15 @@ export default function PaymentPage() {
                   <div className="w-11 h-11 rounded-full border border-[#E5D7C3] bg-white shadow-2xs flex items-center justify-center overflow-hidden p-1">
                     <Image
                       src="/iso-.png"
-                      alt="22000 : 2015"
+                      alt="9001 : 2015"
                       width={40}
                       height={40}
                       className="object-contain w-full h-full"
                     />
                   </div>
                   <span className="text-[10px] font-black text-[#593102] uppercase tracking-wider leading-tight text-center">
-                    22000 : 2015
+                    9001 : 2015
+                    22000 : 2018
                   </span>
                 </div>
 
