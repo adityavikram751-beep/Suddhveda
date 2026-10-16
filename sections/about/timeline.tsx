@@ -13,7 +13,7 @@ const timeline = [
   {
     year: "2019",
     title: "The Discovery",
-    desc: "We discovered the magic of raw, unprocessed honey and its incredible benefits.",
+    desc: "We discovered the magic of raw, pure honey and its incredible benefits.",
     image: "/discovered.png",
   },
   {

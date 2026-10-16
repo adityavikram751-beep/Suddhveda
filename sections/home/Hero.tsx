@@ -95,11 +95,11 @@ const slides = [
     name: "Multi Flora Honey",
     accent: "Wild",
     titleSuffix: "forest nectar.",
-    titleLine2: "rich & unprocessed.",
+    titleLine2: "rich & natural.",
     subtitle: "Harvested from pristine wild mountain blooms of Nagrota, Jammu.",
     mobileTitleLine1: "Wild",
     mobileAccent: "forest nectar.",
-    mobileTitleLine2: "Rich & unprocessed.",
+    mobileTitleLine2: "Rich & Natural.",
     mobileSubtitle: "Harvested from pristine wild mountain blooms of Nagrota.",
     regions: "Nagata (jammu)",
     flavorNotes: "Layered & Wild Floral",
@@ -268,7 +268,7 @@ export default function Hero() {
                   <br />
                   nectar. Rich &
                   <br />
-                  unprocessed.
+                  Natural.
                 </>
               ) : (
                 <>

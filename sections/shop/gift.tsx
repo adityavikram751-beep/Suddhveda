@@ -48,7 +48,7 @@ const faqs: Faq[] = [
   {
     id: 1,
     question: "Is Shuddh Veda Honey raw & natural?",
-    answer: "Yes, our honey is raw, natural, and unprocessed with no additives.",
+    answer: "Yes, our honey is raw, natural, and  pure with no additives.",
   },
   {
     id: 2,

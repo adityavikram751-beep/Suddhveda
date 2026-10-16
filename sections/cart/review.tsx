@@ -558,14 +558,14 @@ export default function ReviewPage() {
           const rawComboSets = prodObj.comboSets || item.comboSets || pd.comboSets || [];
           const comboSets = Array.isArray(rawComboSets) && rawComboSets.length > 0
             ? rawComboSets.map((c: any) => ({
-                name: c.name || c.product_name || "Honey Jar",
-                weight: typeof c.weight === "number" ? c.weight : (parseInt(c.weight) || 250),
-                unit: c.unit || "g",
-              }))
+              name: c.name || c.product_name || "Honey Jar",
+              weight: typeof c.weight === "number" ? c.weight : (parseInt(c.weight) || 250),
+              unit: c.unit || "g",
+            }))
             : [
-                { name: "Mustard Honey", weight: 250, unit: "g" },
-                { name: "Lychee Honey", weight: 250, unit: "g" },
-              ];
+              { name: "Mustard Honey", weight: 250, unit: "g" },
+              { name: "Lychee Honey", weight: 250, unit: "g" },
+            ];
 
           const comboMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
 
@@ -579,7 +579,7 @@ export default function ReviewPage() {
                 _id: prodObj._id || prodObj.comboProductId || prodObj.id || item.comboProductId || item.id || "",
                 product_name: prodObj.product_name || prodObj.combo_name || prodObj.name || item.title || "Golden Duo",
                 brand: prodObj.brand || "SudhVeda Honey",
-                description: prodObj.description || "A specially curated combo of Mustard Honey and Lychee Honey — 100% pure, unprocessed, and sourced directly from trusted apiaries.",
+                description: prodObj.description || "A specially curated combo of Mustard Honey and Lychee Honey —  pure Honey, and sourced directly from trusted apiaries.",
                 product_type: "combo",
                 comboSets: comboSets,
                 image: {

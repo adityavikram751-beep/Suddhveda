@@ -40,7 +40,7 @@ const rightFaqs: Faq[] = [
   {
     question: "Is your pure honey?",
     answer:
-      "Every drop of Shuddha Veda honey is raw, unheated, and unprocessed. We provide lab reports for every batch to guarantee its purity and natural goodness.",
+      "Every drop of Shuddha Veda honey is raw, unheated, and Natural. We provide lab reports for every batch to guarantee its purity and natural goodness.",
   },
 ];
 
@@ -81,8 +81,8 @@ export default function SubscribeFaqSection() {
 
         <div
           className={`grid transition-all duration-300 ease-in-out ${isOpen
-              ? "grid-rows-[1fr] opacity-100 mt-3 pt-3 border-t border-[#EADCC9]/50"
-              : "grid-rows-[0fr] opacity-0"
+            ? "grid-rows-[1fr] opacity-100 mt-3 pt-3 border-t border-[#EADCC9]/50"
+            : "grid-rows-[0fr] opacity-0"
             }`}
         >
           <div className="overflow-hidden">

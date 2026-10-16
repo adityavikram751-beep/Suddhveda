@@ -64,7 +64,7 @@ const faqs: Faq[] = [
   {
     id: 1,
     question: "Is Shuddh Veda Honey raw & natural?",
-    answer: "Yes, our honey is raw, natural, and unprocessed with no artificial additives or preservatives.",
+    answer: "Yes, our honey is raw, natural, and pure with no artificial additives or preservatives.",
   },
   {
     id: 2,
@@ -109,7 +109,7 @@ export default function RecipesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ title: string; video_url: string } | null>(null);
-  
+
   // Category from URL params or default
   const [activeCategory, setActiveCategory] = useState<"benefits" | "healthy">("benefits");
 

@@ -79,7 +79,7 @@ export default function ShopHero() {
                   Raw &amp; Natural
                 </span>
                 <span className="text-[13px] font-medium text-[#7A6A5C]">
-                  Unprocessed &amp; Filtered
+                  Pure &amp; Filtered
                 </span>
               </div>
             </div>
