@@ -339,7 +339,7 @@ export default function HoneySelection() {
             {/* Shop All Range Button Below 4 Cards */}
             <div className="mt-9 sm:mt-11 flex justify-center px-4">
               <Link
-                href="/shop"
+                href="/shop#productsection"
                 className="w-full max-w-[280px] sm:max-w-[320px] h-[48px] inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[#FDF0DF] hover:bg-[#FBE4C6] text-[#3D260F] text-sm sm:text-base font-semibold tracking-wide border border-[#EADBCC] shadow-2xs transition-all active:scale-98 cursor-pointer"
               >
                 <span>Shop All Range</span>
