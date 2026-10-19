@@ -146,7 +146,7 @@ export default function Footer() {
               <div className="flex items-center justify-center gap-3">
                 <Phone size={15} className="text-[#E2D2C4] shrink-0" />
                 <a href={`tel:${loading ? "+918796632478" : (locationData?.phone || "+918796632478").replace(/[^0-9+]/g, "")}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
+                  {loading ? "Loading..." : locationData?.phone || "+91 8796632478"}
                 </a>
               </div>
               <div className="flex items-center justify-center gap-3">
@@ -157,7 +157,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
+                  {loading ? "Loading..." : locationData?.whatsapp || "+91 8796632478"}
                 </a>
               </div>
               <div className="flex items-center justify-center gap-3">
@@ -322,7 +322,7 @@ export default function Footer() {
                   href={`tel:${loading ? "+918796632478" : (locationData?.phone || "+918796632478").replace(/[^0-9+]/g, "")}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
+                  {loading ? "Loading..." : locationData?.phone || "+91 8796632478"}
                 </a>
               </div>
 
@@ -335,7 +335,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.whatsapp || "+91 98765 43210"}
+                  {loading ? "Loading..." : locationData?.whatsapp || "+91 8796632478"}
                 </a>
               </div>
 
