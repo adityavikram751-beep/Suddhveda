@@ -174,21 +174,19 @@ export default function PaymentPage() {
                                         <div key={step.id} className="flex min-w-0 flex-1 items-center justify-between">
                                             <div className="flex min-w-0 items-center gap-1 sm:gap-3">
                                                 <span
-                                                    className={`flex h-5.5 w-5.5 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[9.5px] sm:text-[16px] font-bold ${
-                                                        isDone
+                                                    className={`flex h-5.5 w-5.5 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border text-[9.5px] sm:text-[16px] font-bold ${isDone
                                                             ? "border-[#77AE61] bg-white text-[#77AE61]"
                                                             : isActive
-                                                            ? "border-[#F24E1E] bg-[#F24E1E] text-white"
-                                                            : "border-[#F0DDC8] bg-white text-[#2F241C]"
-                                                    }`}
+                                                                ? "border-[#F24E1E] bg-[#F24E1E] text-white"
+                                                                : "border-[#F0DDC8] bg-white text-[#2F241C]"
+                                                        }`}
                                                 >
                                                     {isDone ? <CheckCircle2 size={12} className="sm:w-[28px] sm:h-[28px]" strokeWidth={2} /> : step.id}
                                                 </span>
                                                 <div className="min-w-0">
                                                     <p
-                                                        className={`text-[9.5px] sm:text-[15px] font-semibold leading-tight truncate ${
-                                                            isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
-                                                        }`}
+                                                        className={`text-[9.5px] sm:text-[15px] font-semibold leading-tight truncate ${isActive ? "text-[#F24E1E]" : "text-[#2F241C]"
+                                                            }`}
                                                     >
                                                         {step.title}
                                                     </p>
@@ -222,18 +220,16 @@ export default function PaymentPage() {
                                         return (
                                             <label
                                                 key={method.id}
-                                                className={`flex min-h-[76px] cursor-pointer items-center gap-4 border-b border-[#F1E3D2] px-3 py-3 last:border-b-0 ${
-                                                    isSelected
+                                                className={`flex min-h-[76px] cursor-pointer items-center gap-4 border-b border-[#F1E3D2] px-3 py-3 last:border-b-0 ${isSelected
                                                         ? "rounded-md border border-[#E9A760] bg-[#FFF8EF]"
                                                         : "bg-white"
-                                                }`}
+                                                    }`}
                                             >
                                                 <span
-                                                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                                                        isSelected
+                                                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${isSelected
                                                             ? "border-[#D98200] bg-[#D98200]"
                                                             : "border-[#8D99A8] bg-white"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
                                                 </span>
@@ -478,7 +474,7 @@ export default function PaymentPage() {
                                     <Phone size={16} className="text-[#593102]" /> +91 98765 43210
                                 </p>
                                 <p className="flex items-center gap-2">
-                                    <Mail size={16} className="text-[#593102]" /> connect@shuddhvedahoney.com
+                                    <Mail size={16} className="text-[#593102]" /> shuddhvedahoney@gmail.com
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <Clock size={16} className="text-[#593102]" /> Mon - Sat : 9AM - 7PM

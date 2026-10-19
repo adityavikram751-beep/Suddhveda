@@ -318,9 +318,9 @@ export default function ReviewPage() {
         const data = await res.json();
         const loc = data.data || data;
         setLocation({
-          phone: loc.phone || "+91 98765 43210",
+          phone: loc.phone || "",
           phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 7PM",
-          email: loc.email || "connect@shuddhvedahoney.com",
+          email: loc.email || "",
           email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
           whatsapp: loc.whatsapp || "",
           whatsapp_timing: loc.whatsapp_timing || "",
@@ -388,7 +388,7 @@ export default function ReviewPage() {
       const storedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment") || "" : "";
       const isCodMode = storedPayment.toLowerCase() === "cod" || paymentLabel.toLowerCase().includes("cash");
 
-      const userPhone = address?.phone || getStoredSession()?.user?.mobile || (getStoredSession()?.user as any)?.phone || "9876543210";
+      const userPhone = address?.phone || getStoredSession()?.user?.mobile || (getStoredSession()?.user as any)?.phone || "";
 
       const shippingAddressObj = {
         full_name: address?.name || getStoredSession()?.user?.name || "Customer",
@@ -506,7 +506,7 @@ export default function ReviewPage() {
           const finalAmount = pd.finalAmount || Math.max(totalAmount - itemCouponDiscount, 0);
           const totalsave = pd.totalsave || item.totalsave || 0;
 
-          const itemMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+          const itemMessage = pd.message || item.message || pd.customMessage || item.customMessage || "";
 
           return {
             type: "CUSTOM",
@@ -567,7 +567,7 @@ export default function ReviewPage() {
               { name: "Lychee Honey", weight: 250, unit: "g" },
             ];
 
-          const comboMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+          const comboMessage = pd.message || item.message || pd.customMessage || item.customMessage || "";
 
           return {
             type: "COMBO",
@@ -626,7 +626,7 @@ export default function ReviewPage() {
           const totalsave = pd.totalsave ?? item.totalsave ?? (saveVal * quantity);
           const itemSku = variantObj.sku || prodObj.sku || item.sku || pd.sku || "SHV-MST-250";
 
-          const normalMessage = pd.message || item.message || pd.customMessage || item.customMessage || "birth day gift";
+          const normalMessage = pd.message || item.message || pd.customMessage || item.customMessage || "";
 
           return {
             type: "NORMAL",
@@ -1060,11 +1060,11 @@ export default function ReviewPage() {
                   <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
                     <p className="flex items-center gap-2">
                       <Phone size={14} className="text-[#D49313] shrink-0" />
-                      <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
+                      <span className="text-[#593102]">{location?.phone || ""}</span>
                     </p>
                     <p className="flex items-center gap-2 min-w-0">
                       <Mail size={14} className="text-[#D49313] shrink-0" />
-                      <span className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate">{location?.email || "hello@shuddhaveda.com"}</span>
+                      <span className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate">{location?.email || ""}</span>
                     </p>
                     <p className="flex items-center gap-2">
                       <Clock size={14} className="text-[#D49313] shrink-0" />

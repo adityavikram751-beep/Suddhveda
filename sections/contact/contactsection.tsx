@@ -279,7 +279,7 @@ export default function ContactSection() {
 
   const phoneNumber = locationData?.phone || "+911234567890";
   const emailAddress = locationData?.email || "hello@shuddhadeva.com";
-  const whatsappNumber = locationData?.whatsapp || "+919876543210";
+  const whatsappNumber = locationData?.whatsapp || "+918796632478";
 
   return (
     <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pt-4 sm:pt-8 lg:pt-10 pb-10 sm:pb-12 lg:pb-16 relative overflow-hidden">

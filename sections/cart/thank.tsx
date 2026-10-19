@@ -84,7 +84,7 @@ export default function OrderConfirmation() {
       localStorage.removeItem("applied_coupon");
     }
     if (fetchCart) {
-      fetchCart().catch(() => {});
+      fetchCart().catch(() => { });
     }
     window.dispatchEvent(new CustomEvent("trigger-live-update"));
     window.dispatchEvent(new Event("cart-updated"));
@@ -188,29 +188,29 @@ export default function OrderConfirmation() {
 
   const subscriptionItems = isSubscriptionOrder
     ? [
-        {
-          title: order?.planName || order?.purchase?.plan?.name || "Subscription Plan",
-          weight: order?.purchase?.plan?.packageLabel || `${order?.purchase?.plan?.numberOfJars || 6} Jars Delivery`,
-          quantity: 1,
-          price: order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || 4299,
-          image:
-            order?.planImage ||
-            order?.purchase?.plan?.image_url ||
-            (typeof order?.purchase?.plan?.image === "string" ? order?.purchase?.plan?.image : order?.purchase?.plan?.image?.image_url) ||
-            order?.plan?.image_url ||
-            (typeof order?.plan?.image === "string" ? order?.plan?.image : order?.plan?.image?.image_url) ||
-            order?.image ||
-            "/subscribe2.0.png",
-        },
-      ]
+      {
+        title: order?.planName || order?.purchase?.plan?.name || "Subscription Plan",
+        weight: order?.purchase?.plan?.packageLabel || `${order?.purchase?.plan?.numberOfJars || 6} Jars Delivery`,
+        quantity: 1,
+        price: order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || 4299,
+        image:
+          order?.planImage ||
+          order?.purchase?.plan?.image_url ||
+          (typeof order?.purchase?.plan?.image === "string" ? order?.purchase?.plan?.image : order?.purchase?.plan?.image?.image_url) ||
+          order?.plan?.image_url ||
+          (typeof order?.plan?.image === "string" ? order?.plan?.image : order?.plan?.image?.image_url) ||
+          order?.image ||
+          "/subscribe2.0.png",
+      },
+    ]
     : [];
 
   const orderItems =
     order?.items && order.items.length > 0
       ? order.items
       : isSubscriptionOrder
-      ? subscriptionItems
-      : visibleProducts;
+        ? subscriptionItems
+        : visibleProducts;
 
   const subscriptionTotal =
     order?.pricing?.total || order?.purchase?.finalAmount || order?.finalAmount || (isSubscriptionOrder ? 4299 : 0);
@@ -478,8 +478,8 @@ export default function OrderConfirmation() {
                         </p>
                         <p className="flex items-center gap-2 min-w-0">
                           <Mail size={14} className="text-[#D49313] shrink-0" />
-                          <a href={`mailto:${location?.email || "connect@shuddhvedahoney.com"}`} className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate hover:underline">
-                            {location?.email || "connect@shuddhvedahoney.com"}
+                          <a href={`mailto:${location?.email || "shuddhvedahoney@gmail.com"}`} className="text-[#593102] whitespace-nowrap text-[11.5px] sm:text-[12.5px] truncate hover:underline">
+                            {location?.email || "shuddhvedahoney@gmail.com"}
                           </a>
                         </p>
                         <p className="flex items-center gap-2">

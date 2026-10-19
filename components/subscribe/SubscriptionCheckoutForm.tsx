@@ -463,7 +463,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                                     const val = e.target.value.replace(/\D/g, "").slice(0, 10);
                                     setCheckoutForm({ ...checkoutForm, mobile: val });
                                 }}
-                                placeholder="9876543210"
+                                placeholder="8796632478"
                                 className="h-10 sm:h-11 w-full rounded-xl border border-[#EADBCA] bg-[#FAF5EC] px-3.5 text-xs sm:text-sm font-medium text-[#593102] focus:border-[#D97706] focus:bg-white focus:outline-none transition"
                             />
                         </div>
@@ -525,17 +525,15 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                                         <div
                                             key={addr.id}
                                             onClick={() => toggleAddressSelection(addr)}
-                                            className={`p-3.5 rounded-2xl border-2 text-xs cursor-pointer transition-all flex flex-col justify-between ${
-                                                isSelected
+                                            className={`p-3.5 rounded-2xl border-2 text-xs cursor-pointer transition-all flex flex-col justify-between ${isSelected
                                                     ? "border-[#D97706] bg-white ring-2 ring-[#D97706]/20 shadow-md"
                                                     : "border-[#EADBCA] bg-white/90 hover:border-[#D97706]/60 hover:bg-white"
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-colors ${
-                                                        isSelected ? "border-[#D97706] bg-[#D97706] text-white" : "border-[#C8B28F] bg-white"
-                                                    }`}>
+                                                    <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center transition-colors ${isSelected ? "border-[#D97706] bg-[#D97706] text-white" : "border-[#C8B28F] bg-white"
+                                                        }`}>
                                                         {isSelected && <CheckCircle2 size={13} />}
                                                     </span>
                                                     <span className="font-bold text-[#593102] text-sm">{addr.full_name || "Saved Address"}</span>
@@ -585,7 +583,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                                         const val = e.target.value.replace(/\D/g, "").slice(0, 10);
                                         setCheckoutForm({ ...checkoutForm, shipping_phone: val });
                                     }}
-                                    placeholder="9876543210"
+                                    placeholder="8796632478"
                                     className="h-10 sm:h-11 w-full rounded-xl border border-[#EADBCA] bg-[#FAF5EC] px-3.5 text-xs sm:text-sm font-medium text-[#593102] focus:border-[#D97706] focus:bg-white focus:outline-none transition"
                                 />
                             </div>

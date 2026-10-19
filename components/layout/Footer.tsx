@@ -145,14 +145,14 @@ export default function Footer() {
             <div className="mt-4 space-y-3 max-w-md w-full">
               <div className="flex items-center justify-center gap-3">
                 <Phone size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`tel:${loading ? "+919876543210" : (locationData?.phone || "+919876543210").replace(/[^0-9+]/g, "")}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <a href={`tel:${loading ? "+918796632478" : (locationData?.phone || "+918796632478").replace(/[^0-9+]/g, "")}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
                 </a>
               </div>
               <div className="flex items-center justify-center gap-3">
                 <FaWhatsapp size={16} className="text-[#E2D2C4] shrink-0" />
                 <a
-                  href={`https://wa.me/${loading ? "919876543210" : (locationData?.whatsapp || "+919876543210").replace(/[^0-9]/g, "")}`}
+                  href={`https://wa.me/${loading ? "918796632478" : (locationData?.whatsapp || "+918796632478").replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
@@ -162,8 +162,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center justify-center gap-3">
                 <Mail size={15} className="text-[#E2D2C4] shrink-0" />
-                <a href={`mailto:${loading ? "connect@shuddhvedahoney.com" : locationData?.email || "connect@shuddhvedahoney.com"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
-                  {loading ? "Loading..." : locationData?.email || "connect@shuddhvedahoney.com"}
+                <a href={`mailto:${loading ? "shuddhvedahoney@gmail.com" : locationData?.email || "shuddhvedahoney@gmail.com"}`} className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                  {loading ? "Loading..." : locationData?.email || "shuddhvedahoney@gmail.com"}
                 </a>
               </div>
               <div className="flex items-start justify-center gap-3">
@@ -319,7 +319,7 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <Phone size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
-                  href={`tel:${loading ? "+919876543210" : (locationData?.phone || "+919876543210").replace(/[^0-9+]/g, "")}`}
+                  href={`tel:${loading ? "+918796632478" : (locationData?.phone || "+918796632478").replace(/[^0-9+]/g, "")}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.phone || "+91 98765 43210"}
@@ -330,7 +330,7 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <FaWhatsapp size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <a
-                  href={`https://wa.me/${loading ? "919876543210" : (locationData?.whatsapp || "+919876543210").replace(/[^0-9]/g, "")}`}
+                  href={`https://wa.me/${loading ? "918796632478" : (locationData?.whatsapp || "+918796632478").replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
@@ -343,10 +343,10 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <Mail size={15} className="mt-1 text-[#E2D2C4]" />
                 <a
-                  href={`mailto:${loading ? "connect@shuddhvedahoney.com" : locationData?.email || "connect@shuddhvedahoney.com"}`}
+                  href={`mailto:${loading ? "shuddhvedahoney@gmail.com" : locationData?.email || "shuddhvedahoney@gmail.com"}`}
                   className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
-                  {loading ? "Loading..." : locationData?.email || "connect@shuddhvedahoney.com"}
+                  {loading ? "Loading..." : locationData?.email || "shuddhvedahoney@gmail.com"}
                 </a>
               </div>
 

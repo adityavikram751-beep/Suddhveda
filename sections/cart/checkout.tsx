@@ -108,7 +108,7 @@ export default function Checkout() {
         setLocation({
           phone: loc.phone || "+91 98765 43210",
           phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
-          email: loc.email || "connect@shuddhvedahoney.com",
+          email: loc.email || "shuddhvedahoney@gmail.com",
           email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
           whatsapp: loc.whatsapp || "",
           whatsapp_timing: loc.whatsapp_timing || "",
@@ -1102,7 +1102,7 @@ function CheckoutOrderSummary({ products, subtotal, saved, couponDiscount = 0, c
             <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
               <p className="flex items-center gap-2">
                 <Phone size={14} className="text-[#D49313] shrink-0" />
-                <span className="text-[#593102]">{location?.phone || "9876543210"}</span>
+                <span className="text-[#593102]">{location?.phone || "8796632478"}</span>
               </p>
               <p className="flex items-center gap-2 min-w-0">
                 <Mail size={14} className="text-[#D49313] shrink-0" />
