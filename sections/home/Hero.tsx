@@ -25,7 +25,7 @@ const slides = [
     bottleImg: "/mustardnew.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Mustard Honey Jar",
-    link: "/shop?category=mustard",
+    link: "/shop#productsection",
   },
   {
     id: 2,
@@ -46,7 +46,7 @@ const slides = [
     bottleImg: "/ajwainnew.png",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Ajwain Honey Jar",
-    link: "/shop?category=ajwain",
+    link: "/shop#productsection",
   },
   {
     id: 3,
@@ -67,7 +67,7 @@ const slides = [
     bottleImg: "/funnelnew.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Fennel Honey Jar",
-    link: "/shop?category=fennel",
+    link: "/productsection",
   },
   {
     id: 4,
@@ -88,7 +88,7 @@ const slides = [
     bottleImg: "/Lychee.png",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Lychee Honey Jar",
-    link: "/shop?category=lychee",
+    link: "/shop#productsection",
   },
   {
     id: 5,
@@ -109,7 +109,7 @@ const slides = [
     bottleImg: "/multinew.png",
     bottleOffset: "-translate-x-8 sm:translate-x-16 lg:translate-x-24",
     alt: "Multi Flora Honey Jar",
-    link: "/shop?category=multiflora",
+    link: "/shop#productsection",
   },
   {
     id: 6,
@@ -130,7 +130,7 @@ const slides = [
     bottleImg: "/naturalnew.png",
     bottleOffset: "-translate-x-8 sm:translate-x-16 lg:translate-x-22",
     alt: "Raw Natural Honey Jar",
-    link: "/shop?category=natural",
+    link: "/shop#productsection",
   },
 ];
 

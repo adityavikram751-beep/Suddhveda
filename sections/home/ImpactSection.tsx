@@ -72,7 +72,7 @@ export default function ImpactSection() {
             {/* CTA Button */}
             <div className="mt-5 sm:mt-6 md:mt-6 lg:mt-7 w-full sm:w-auto flex justify-center md:justify-start">
               <Link
-                href="/shop"
+                href="/shop#productsection"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 sm:gap-3 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[11px] sm:text-[12px] md:text-[12px] lg:text-[13px] font-bold tracking-[0.16em] uppercase px-7 sm:px-8 md:px-7 lg:px-9 h-[44px] sm:h-[48px] md:h-[46px] lg:h-[50px] rounded-full shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
               >
                 <span>DISCOVER YOUR HONEY</span>
