@@ -94,7 +94,7 @@ export default function GiftSetSection() {
             {/* Action CTA */}
             <div className="mt-6 sm:mt-8 md:mt-8 lg:mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <Link
-                href="/giftsets"
+                href="/giftsets#curatedgift"
                 className="inline-flex items-center justify-center gap-2 bg-[#FA4B1B] hover:bg-[#E64216] text-white font-black text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 h-[42px] sm:h-[44px] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer w-full sm:w-auto"
               >
                 <span>EXPLORE GIFT BOX</span>
