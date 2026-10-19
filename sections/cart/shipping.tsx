@@ -103,7 +103,7 @@ export default function PaymentPage() {
         const data = await res.json();
         const loc = data.data || data;
         setLocation({
-          phone: loc.phone || "+91 98765 43210",
+          phone: loc.phone || "+91 8796632478",
           phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 7PM",
           email: loc.email || "shuddhvedahoney@gmail.com",
           email_reply_time: loc.email_reply_time || "We reply within 24 hrs",

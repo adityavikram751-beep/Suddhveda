@@ -261,7 +261,7 @@ export default function Cart() {
                     const data = await res.json();
                     const loc = data.data || data;
                     setLocation({
-                        phone: loc.phone || "+91 98765 43210",
+                        phone: loc.phone || "+91 8796632478",
                         phone_timing: loc.phone_timing || "Mon - Sat : 9AM - 6PM",
                         email: loc.email || "shuddhvedahoney@gmail.com",
                         email_reply_time: loc.email_reply_time || "We reply within 24 hrs",
@@ -271,7 +271,7 @@ export default function Cart() {
                     });
                 } else {
                     setLocation({
-                        phone: "+91 98765 43210",
+                        phone: "+91 8796632478",
                         phone_timing: "Mon - Sat : 9AM - 6PM",
                         email: "shuddhvedahoney@gmail.com",
                         email_reply_time: "We reply within 24 hrs",
@@ -283,7 +283,7 @@ export default function Cart() {
             } catch (err) {
                 console.error("Error fetching location:", err);
                 setLocation({
-                    phone: "+91 98765 43210",
+                    phone: "+91 8796632478",
                     phone_timing: "Mon - Sat : 9AM - 6PM",
                     email: "shuddhvedahoney@gmail.com",
                     email_reply_time: "We reply within 24 hrs",
@@ -1356,7 +1356,7 @@ function HelpPanel({
                     <p className="flex items-center gap-2.5">
                         <Phone size={15} className="text-[#D49313] shrink-0" />
                         <span className="text-[#593102] whitespace-nowrap">
-                            {loading ? "Loading..." : location?.phone || "+91 98765 43210"}
+                            {loading ? "Loading..." : location?.phone || "+91 8796632478"}
                         </span>
                     </p>
                     <p className="flex items-center gap-2.5 min-w-0">

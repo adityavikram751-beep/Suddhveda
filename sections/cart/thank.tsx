@@ -472,8 +472,8 @@ export default function OrderConfirmation() {
                       <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
                         <p className="flex items-center gap-2">
                           <Phone size={14} className="text-[#D49313] shrink-0" />
-                          <a href={`tel:${location?.phone || "+91 98765 43210"}`} className="text-[#593102] hover:underline">
-                            {location?.phone || "+91 98765 43210"}
+                          <a href={`tel:${location?.phone || "+91 8796632478"}`} className="text-[#593102] hover:underline">
+                            {location?.phone || "+91 8796632478"}
                           </a>
                         </p>
                         <p className="flex items-center gap-2 min-w-0">
