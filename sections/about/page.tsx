@@ -87,7 +87,7 @@ export default function Hero() {
 
             {/* CTA Button - Compact & Sleek */}
             <Link
-              href="/shop"
+              href="/shop#productsection"
               className="mt-6 bg-[#FA4B1B] hover:bg-[#E64216] text-white text-[12px] sm:text-[13px] font-extrabold tracking-wide uppercase px-5 sm:px-6 h-[40px] rounded-xl cursor-pointer shadow-xs transition-colors inline-flex items-center justify-center gap-2"
             >
               <ShoppingBag size={15} />
