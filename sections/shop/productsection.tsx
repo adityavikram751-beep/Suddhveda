@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
@@ -53,7 +53,6 @@ const defaultFilters: ProductFilters = {
 export default function ShopPage() {
   const { updateQuantity, addToCart } = useCart();
   const router = useRouter();
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   const [allProducts, setAllProducts] = useState<ApiProduct[]>([]);
   const [products, setProducts] = useState<ApiProduct[]>([]);
@@ -74,7 +73,6 @@ export default function ShopPage() {
 
   // Mobile Filter Drawer State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isMobileSliderHovered, setIsMobileSliderHovered] = useState(false);
 
   // 🟢 Strict Background Scroll Lock when Filter Drawer is Open
   useEffect(() => {
@@ -241,23 +239,6 @@ export default function ShopPage() {
     () => getRefinedProducts(products, appliedFilters),
     [products, appliedFilters]
   );
-
-  // 🟢 Mobile Products Auto-Scroll Effect (Interval every 3.5s)
-  useEffect(() => {
-    if (isMobileSliderHovered || filteredProducts.length === 0) return;
-    const interval = setInterval(() => {
-      if (sliderRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 15) {
-          sliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          sliderRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
-        }
-      }
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [isMobileSliderHovered, filteredProducts]);
 
   const applyFilters = async () => {
     try {
@@ -623,57 +604,8 @@ export default function ShopPage() {
           <section className="lg:col-span-9 w-full">
             {error && <p className="mb-4 text-[13px] text-red-600">{error}</p>}
 
-            {/* Mobile View: Auto-Scrolling Horizontal Carousel */}
-            <div
-              ref={sliderRef}
-              onMouseEnter={() => setIsMobileSliderHovered(true)}
-              onMouseLeave={() => setIsMobileSliderHovered(false)}
-              onTouchStart={() => setIsMobileSliderHovered(true)}
-              onTouchEnd={() => setIsMobileSliderHovered(false)}
-              className="flex lg:hidden overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-1 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-            >
-              {filteredProducts.map((item) => {
-                const productId = getProductId(item);
-                const variants = getProductVariants(item);
-                const selectedVariantId = getSelectedVariantId(item);
-                const product = normalizeProduct(item, selectedVariantId);
-
-                return (
-                  <div key={productId} className="w-full sm:w-[calc(50%-8px)] shrink-0 snap-center flex flex-col h-full items-center">
-                    <ProductCardShop
-                      badge={product.badge}
-                      image={product.image}
-                      title={product.title}
-                      subtitle={product.subtitle}
-                      category={product.category}
-                      tasteProfile={product.tasteProfile}
-                      shortDescription={product.shortDescription}
-                      weight={product.weight}
-                      price={product.price}
-                      oldPrice={product.oldPrice}
-                      rating={product.rating}
-                      reviews={product.reviews}
-                      quantity={0}
-                      variants={variants}
-                      selectedVariantId={selectedVariantId}
-                      onVariantSelect={(variantId) =>
-                        setSelectedVariants((prev) => ({ ...prev, [productId]: variantId }))
-                      }
-                      isWishlisted={wishlistIds.includes(productId)}
-                      onToggleWishlist={() => handleToggleWishlist(productId)}
-                      onAddToCart={() => handleAddToCart(item)}
-                      onBuyNow={() => handleBuyNow(item)}
-                      onIncrement={() => { }}
-                      onDecrement={() => { }}
-                      onOpenDetails={() => router.push(`/shop/products/${productId}`)}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Desktop View: 3-Column Grid */}
-            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+            {/* Products Grid: 2 Columns on Mobile, 3 Columns on Desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
               {filteredProducts.map((item) => {
                 const productId = getProductId(item);
                 const variants = getProductVariants(item);
