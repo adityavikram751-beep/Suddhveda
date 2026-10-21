@@ -77,12 +77,44 @@ const accordionSections = [
 export default function ProductDetailPage({
   product,
   recommendations = [],
+  initialLabReports = [],
 }: {
   product: any;
   recommendations?: any[];
+  initialLabReports?: any[];
 }) {
   const { cartItems, fetchCart, openCart, updateQuantity, addToCart } = useCart();
   const router = useRouter();
+
+  // Lab Reports State (fetched from {{baseUrl}}/api/admin/lab-report/all and filtered by product name)
+  const [labReports, setLabReports] = useState<any[]>(initialLabReports);
+
+  useEffect(() => {
+    fetchLabReports();
+  }, []);
+
+  const fetchLabReports = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/lab-report/all`, {
+        method: "GET",
+        headers: {
+          "X-Tunnel-Skip-Anti-Phishing-Page": "true",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        },
+      });
+      if (res.ok) {
+        const result = await res.json();
+        const list = Array.isArray(result)
+          ? result
+          : result?.data || result?.reports || result?.labReports || [];
+        if (Array.isArray(list)) {
+          setLabReports(list);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch lab reports:", err);
+    }
+  };
 
   // Recommendations Carousel Ref & Auto-scroll state
   const recSliderRef = useRef<HTMLDivElement>(null);
@@ -376,17 +408,21 @@ export default function ProductDetailPage({
 
       if (rawBenefits) {
         if (Array.isArray(rawBenefits)) {
-          benefitsList = rawBenefits.map((b) => String(b).trim()).filter(Boolean);
+          benefitsList = rawBenefits
+            .map((b) => String(b).replace(/^\s*(\d+[\.\)\:\-]|[•\-\*])\s*/, "").trim())
+            .filter(Boolean);
         } else {
           const str = String(rawBenefits).trim();
           let lines = str.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
           if (lines.length <= 1) {
-            const splitByNumbers = str.split(/(?=\b\d+[\.\)]\s*)/).map((s) => s.trim()).filter(Boolean);
+            const splitByNumbers = str.split(/(?=\b\d+[\.\)\:\-]\s*)/).map((s) => s.trim()).filter(Boolean);
             if (splitByNumbers.length > 1) {
               lines = splitByNumbers;
             }
           }
-          benefitsList = lines.map((line) => line.replace(/^[\d+[\.\)]\s*•\-\*]+/, "").trim()).filter(Boolean);
+          benefitsList = lines
+            .map((line) => line.replace(/^\s*(\d+[\.\)\:\-]|[•\-\*])\s*/, "").trim())
+            .filter(Boolean);
         }
       }
 
@@ -396,23 +432,110 @@ export default function ProductDetailPage({
           icon: Sparkles,
           title: "Key Benefits",
           customContent: (
-            <div className="space-y-2.5 pt-1">
-              {benefitsList.map((benefit, idx) => {
-                const hasBulletOrNumber = /^(\d+[\.\)]|[•\-\*])\s*/.test(benefit);
-                return (
-                  <div key={idx} className="flex items-start gap-2.5 text-[14px] text-[#3D260F] font-medium leading-snug">
-                    {!hasBulletOrNumber && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D49313] mt-2 shrink-0" />
-                    )}
-                    <span>{benefit}</span>
-                  </div>
-                );
-              })}
+            <div className="space-y-2 pt-1">
+              {benefitsList.map((benefit, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3 bg-white border border-[#EADCC9] rounded-xl p-3 px-3.5 shadow-2xs hover:border-[#D49313]/50 transition-colors"
+                >
+                  <span className="w-6 h-6 rounded-full bg-[#FAF0DC] text-[#D49313] font-bold text-[12px] flex items-center justify-center shrink-0 border border-[#D49313]/30">
+                    {idx + 1}
+                  </span>
+                  <span className="text-[14px] text-[#3D260F] font-semibold leading-snug">
+                    {benefit}
+                  </span>
+                </div>
+              ))}
             </div>
           ),
         });
       }
     }
+
+    // 3. Lab Report (Directly below Key Benefits, filtered by product name from GET /api/admin/lab-report/all)
+    const currentProdName = String(product?.product_name || product?.name || product?.title || "").trim();
+    const normalizeStr = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const prodNorm = normalizeStr(currentProdName);
+
+    let matchedReport = Array.isArray(labReports)
+      ? labReports.find((item: any) => {
+          const repName = String(item?.honeyName || item?.name || item?.productName || item?.title || "").trim();
+          const repNorm = normalizeStr(repName);
+          if (!repNorm || !prodNorm) return false;
+          return repNorm === prodNorm || repNorm.includes(prodNorm) || prodNorm.includes(repNorm);
+        })
+      : null;
+
+    if (!matchedReport && Array.isArray(labReports) && currentProdName) {
+      const prodWords = currentProdName
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((w) => w.length > 2 && w !== "honey");
+
+      matchedReport = labReports.find((item: any) => {
+        const repName = String(item?.honeyName || item?.name || item?.productName || item?.title || "").toLowerCase();
+        return prodWords.some((word) => repName.includes(word));
+      }) || null;
+    }
+
+    const reportHoneyName = matchedReport?.honeyName || matchedReport?.name || matchedReport?.title || currentProdName;
+    const labReportUrl =
+      matchedReport?.report?.url ||
+      (typeof matchedReport?.report === "string" ? matchedReport.report : null) ||
+      matchedReport?.pdfUrl ||
+      matchedReport?.pdf_url ||
+      matchedReport?.url ||
+      matchedReport?.fileUrl ||
+      matchedReport?.reportUrl ||
+      product?.lab_report_url ||
+      product?.lab_report ||
+      product?.test_report ||
+      product?.labReportUrl ||
+      null;
+
+    const isLabReportImage = typeof labReportUrl === "string" && /\.(jpg|jpeg|png|webp|avif|gif)$/i.test(labReportUrl);
+    const batchNo = product?.batch_number ? String(product.batch_number).trim() : "HONEY-MFH-002";
+
+    list.push({
+      key: "lab_report",
+      icon: FileText,
+      title: "Lab Report",
+      customContent: (
+        <div className="pt-1 text-[14px]">
+          <div className="bg-white border border-[#EADCC9] rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/30 text-[#D49313]">
+                <FileText size={20} />
+              </div>
+              <div>
+                <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
+                  {reportHoneyName || currentProdName}
+                </span>
+                <span className="text-[12px] text-[#8D7F73]">
+                  Lab Test &amp; Purity Certificate
+                </span>
+              </div>
+            </div>
+
+            {labReportUrl ? (
+              <a
+                href={labReportUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FA4B1B] hover:bg-[#d63a0d] text-white rounded-xl text-[13px] font-bold transition-all shadow-xs shrink-0"
+              >
+                <FileText size={15} />
+                <span>View Lab Report</span>
+              </a>
+            ) : (
+              <span className="text-[12px] font-semibold text-[#8D7F73] bg-[#FAF0DC] px-3 py-1.5 rounded-lg border border-[#D49313]/30">
+                Report Available Soon
+              </span>
+            )}
+          </div>
+        </div>
+      ),
+    });
 
     // 4. Storage Instructions
     if (product?.storage_instructions && String(product.storage_instructions).trim()) {
@@ -783,7 +906,7 @@ export default function ProductDetailPage({
     });
 
     return list;
-  }, [product]);
+  }, [product, labReports]);
 
   // Computed Dynamic Prices & Discount Percent
   const currentPrice = selectedVariant?.price ?? 0;

@@ -78,10 +78,27 @@ export default async function ProductPage({
     console.error("❌ Failed to fetch recommendations:", error);
   }
 
+  let labReports: any[] = [];
+  try {
+    const labRes = await fetch(`${API_BASE_URL}/api/admin/lab-report/all`, {
+      cache: "no-store",
+      headers: FETCH_HEADERS,
+    });
+
+    if (labRes.ok) {
+      const labResult = await labRes.json();
+      labReports = Array.isArray(labResult)
+        ? labResult
+        : labResult?.data || labResult?.reports || [];
+    }
+  } catch (error) {
+    console.error("❌ Failed to fetch lab reports:", error);
+  }
+
   return (
     <>
       <Header />
-      <ProductDetailPage product={product} recommendations={recommendations} />
+      <ProductDetailPage product={product} recommendations={recommendations} initialLabReports={labReports} />
       <Footer />
     </>
   );
