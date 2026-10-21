@@ -74,13 +74,167 @@ const accordionSections = [
   },
 ];
 
+const HONEY_BOTTLE_IMAGES: Record<string, string> = {
+  mustard: "https://res.cloudinary.com/anjp8e9i/image/upload/v1790835678/products/weqsgswwo1xivmjgrmgc.webp",
+  "multi flora": "https://res.cloudinary.com/anjp8e9i/image/upload/v1790861064/products/cflt1s6tsbqvareopj3s.png",
+  multiflora: "https://res.cloudinary.com/anjp8e9i/image/upload/v1790861064/products/cflt1s6tsbqvareopj3s.png",
+  lychee: "https://res.cloudinary.com/anjp8e9i/image/upload/v1791028242/products/yr23htwlbdhazilczlbl.png",
+  natural: "https://res.cloudinary.com/anjp8e9i/image/upload/v1790763601/products/aqvwlomjjtoy8hjijm5r.webp",
+  ajwain: "https://res.cloudinary.com/anjp8e9i/image/upload/v1790764203/products/uj0cmlfwse1w1ujkn4by.webp",
+  fennel: "https://res.cloudinary.com/anjp8e9i/image/upload/v1790764762/products/rklw9bbtnkiic2ku67iw.webp",
+};
+
+function findLabReportForHoney(name: string, reports: any[]) {
+  if (!name || !Array.isArray(reports) || reports.length === 0) return null;
+  const normalize = (s: string) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const target = normalize(name);
+  if (!target) return null;
+
+  // 1. Direct normalized match or substring
+  let found = reports.find((rep: any) => {
+    const repName = normalize(rep?.honeyName || rep?.name || rep?.productName || rep?.title || "");
+    if (!repName) return false;
+    return repName === target || repName.includes(target) || target.includes(repName);
+  });
+  if (found) return found;
+
+  // 2. Keyword matching (words > 2 chars, omitting generic 'honey')
+  const keywords = name
+    .toLowerCase()
+    .split(/[\s\-_]+/)
+    .map((w) => w.replace(/[^a-z0-9]/g, ""))
+    .filter((w) => w.length > 2 && w !== "honey");
+
+  if (keywords.length > 0) {
+    found = reports.find((rep: any) => {
+      const repStr = String(rep?.honeyName || rep?.name || rep?.productName || rep?.title || "").toLowerCase();
+      return keywords.some((k) => repStr.includes(k));
+    });
+  }
+
+  return found || null;
+}
+
+interface BottleReportItem {
+  name: string;
+  weight?: string;
+  image?: string;
+}
+
+function LabReportAccordionContent({
+  items,
+  labReports,
+  getBottleImage,
+  singleFallbackReportUrl,
+}: {
+  items: BottleReportItem[];
+  labReports: any[];
+  getBottleImage: (name: string) => string;
+  singleFallbackReportUrl?: string | null;
+}) {
+  const [selectedIdx, setSelectedIdx] = useState(0);
+
+  const activeIdx = Math.min(Math.max(0, selectedIdx), Math.max(0, items.length - 1));
+  const currentItem = items[activeIdx] || items[0] || { name: "Honey" };
+
+  const matchedReport = useMemo(() => {
+    return findLabReportForHoney(currentItem.name, labReports);
+  }, [currentItem.name, labReports]);
+
+  const reportUrl =
+    matchedReport?.report?.url ||
+    (typeof matchedReport?.report === "string" ? matchedReport.report : null) ||
+    matchedReport?.pdfUrl ||
+    matchedReport?.pdf_url ||
+    matchedReport?.url ||
+    matchedReport?.fileUrl ||
+    matchedReport?.reportUrl ||
+    (items.length === 1 ? singleFallbackReportUrl : null) ||
+    null;
+
+  const currentBottleImg = currentItem.image || getBottleImage(currentItem.name);
+
+  return (
+    <div className="pt-2 text-[14px] space-y-3">
+      {/* If multi-bottle combo (e.g. 2, 3, 4 bottles), show individual tabs */}
+      {items.length > 1 && (
+        <div className="space-y-1.5">
+          <div className="text-[12px] font-semibold text-[#8D7F73]">
+            Select Bottle to View Lab Report:
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {items.map((item, idx) => {
+              const isSelected = activeIdx === idx;
+              const tabImg = item.image || getBottleImage(item.name);
+
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setSelectedIdx(idx)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all border cursor-pointer ${
+                    isSelected
+                      ? "bg-[#FAF0DC] text-[#593102] border-[#D49313] shadow-xs ring-1 ring-[#D49313]/30"
+                      : "bg-white text-[#7A6E65] border-[#EADCC9] hover:bg-[#FAF6F0] hover:text-[#593102]"
+                  }`}
+                >
+                  <div className="w-6 h-6 rounded-md overflow-hidden bg-white shrink-0 border border-[#EADCC9]/60 flex items-center justify-center">
+                    <img src={tabImg} alt={item.name} className="w-full h-full object-contain p-0.5" />
+                  </div>
+                  <span>{item.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Selected Bottle Card */}
+      <div className="bg-white border border-[#EADCC9] rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#FAF6F0] p-1.5 flex items-center justify-center shrink-0 border border-[#EADCC9]">
+            <img
+              src={currentBottleImg}
+              alt={currentItem.name}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div>
+            <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
+              {currentItem.name}
+            </span>
+          </div>
+        </div>
+
+        {reportUrl ? (
+          <a
+            href={reportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FA4B1B] hover:bg-[#d63a0d] text-white rounded-xl text-[13px] font-bold transition-all shadow-xs shrink-0"
+          >
+            <FileText size={15} />
+            <span>View Lab Report</span>
+          </a>
+        ) : (
+          <span className="text-[12px] font-semibold text-[#8D7F73] bg-[#FAF0DC] px-3.5 py-2 rounded-lg border border-[#D49313]/30 shrink-0 text-center">
+            Report Available Soon
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ProductDetailPage({
   product,
   recommendations = [],
+  allProducts = [],
   initialLabReports = [],
 }: {
   product: any;
   recommendations?: any[];
+  allProducts?: any[];
   initialLabReports?: any[];
 }) {
   const { cartItems, fetchCart, openCart, updateQuantity, addToCart } = useCart();
@@ -114,6 +268,30 @@ export default function ProductDetailPage({
     } catch (err) {
       console.error("Failed to fetch lab reports:", err);
     }
+  };
+
+  const getBottleImageForHoney = (honeyName: string) => {
+    const norm = String(honeyName || "").toLowerCase().trim();
+
+    for (const [key, url] of Object.entries(HONEY_BOTTLE_IMAGES)) {
+      if (norm.includes(key) || key.includes(norm)) {
+        return url;
+      }
+    }
+
+    const productSources = [...(allProducts || []), ...(recommendations || [])];
+    if (productSources.length > 0) {
+      const matched = productSources.find((p: any) => {
+        const pName = String(p?.product_name || p?.name || "").toLowerCase();
+        return pName && (pName.includes(norm) || norm.includes(pName));
+      });
+      if (matched) {
+        const img = getPrimaryImage(matched);
+        if (img) return img;
+      }
+    }
+
+    return getPrimaryImage(product) || "/honneycart.png";
   };
 
   // Recommendations Carousel Ref & Auto-scroll state
@@ -452,80 +630,54 @@ export default function ProductDetailPage({
       }
     }
 
-    // 3. Lab Report (Directly below Key Benefits, filtered by product name from GET /api/admin/lab-report/all)
-    const currentProdName = String(product?.product_name || product?.name || product?.title || "").trim();
-    const normalizeStr = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-    const prodNorm = normalizeStr(currentProdName);
-
-    let matchedReport = Array.isArray(labReports)
-      ? labReports.find((item: any) => {
-          const repName = String(item?.honeyName || item?.name || item?.productName || item?.title || "").trim();
-          const repNorm = normalizeStr(repName);
-          if (!repNorm || !prodNorm) return false;
-          return repNorm === prodNorm || repNorm.includes(prodNorm) || prodNorm.includes(repNorm);
-        })
-      : null;
-
-    if (!matchedReport && Array.isArray(labReports) && currentProdName) {
-      const prodWords = currentProdName
-        .toLowerCase()
-        .split(/\s+/)
-        .filter((w) => w.length > 2 && w !== "honey");
-
-      matchedReport = labReports.find((item: any) => {
-        const repName = String(item?.honeyName || item?.name || item?.productName || item?.title || "").toLowerCase();
-        return prodWords.some((word) => repName.includes(word));
-      }) || null;
+    // 3. Lab Report (Directly below Key Benefits, supports multi-bottle combos with tabs & individual honeys)
+    const honeyItems: BottleReportItem[] = [];
+    if (Array.isArray(product?.products) && product.products.length > 0) {
+      product.products.forEach((p: any) => {
+        const name = typeof p === "string" ? p.trim() : String(p?.name || p?.title || p?.product_name || "").trim();
+        if (name) {
+          const weight =
+            typeof p === "object" && p?.weight
+              ? `${p.weight}${p.unit ? p.unit : typeof p.weight === "number" ? "g" : ""}`
+              : "";
+          honeyItems.push({
+            name,
+            weight,
+            image: typeof p === "object" ? p?.image || p?.image_url : undefined,
+          });
+        }
+      });
     }
 
-    const reportHoneyName = matchedReport?.honeyName || matchedReport?.name || matchedReport?.title || currentProdName;
-    const labReportUrl =
-      matchedReport?.report?.url ||
-      (typeof matchedReport?.report === "string" ? matchedReport.report : null) ||
-      matchedReport?.pdfUrl ||
-      matchedReport?.pdf_url ||
-      matchedReport?.url ||
-      matchedReport?.fileUrl ||
-      matchedReport?.reportUrl ||
+    if (honeyItems.length === 0) {
+      const currentProdName = String(product?.product_name || product?.name || product?.title || "").trim();
+      if (currentProdName) {
+        honeyItems.push({
+          name: currentProdName,
+          weight: "",
+          image: getPrimaryImage(product) || "/honneycart.png",
+        });
+      }
+    }
+
+    const singleFallbackReportUrl =
       product?.lab_report_url ||
       product?.lab_report ||
       product?.test_report ||
       product?.labReportUrl ||
       null;
 
-    const isLabReportImage = typeof labReportUrl === "string" && /\.(jpg|jpeg|png|webp|avif|gif)$/i.test(labReportUrl);
-    const batchNo = product?.batch_number ? String(product.batch_number).trim() : "HONEY-MFH-002";
-
     list.push({
       key: "lab_report",
       icon: FileText,
       title: "Lab Report",
       customContent: (
-        <div className="pt-1 text-[14px]">
-          <div className="bg-white border border-[#EADCC9] rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
-                {reportHoneyName || currentProdName}
-              </span>
-            </div>
-
-            {labReportUrl ? (
-              <a
-                href={labReportUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FA4B1B] hover:bg-[#d63a0d] text-white rounded-xl text-[13px] font-bold transition-all shadow-xs shrink-0"
-              >
-                <FileText size={15} />
-                <span>View Lab Report</span>
-              </a>
-            ) : (
-              <span className="text-[12px] font-semibold text-[#8D7F73] bg-[#FAF0DC] px-3 py-1.5 rounded-lg border border-[#D49313]/30">
-                Report Available Soon
-              </span>
-            )}
-          </div>
-        </div>
+        <LabReportAccordionContent
+          items={honeyItems}
+          labReports={labReports}
+          getBottleImage={getBottleImageForHoney}
+          singleFallbackReportUrl={singleFallbackReportUrl}
+        />
       ),
     });
 
@@ -898,7 +1050,7 @@ export default function ProductDetailPage({
     });
 
     return list;
-  }, [product, labReports]);
+  }, [product, labReports, recommendations, allProducts]);
 
   // Computed Dynamic Prices & Discount Percent
   const currentPrice = selectedVariant?.price ?? 0;

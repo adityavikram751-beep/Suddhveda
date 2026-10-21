@@ -30,6 +30,7 @@ import {
     Crown,
     AlertTriangle,
     Loader2,
+    HelpCircle,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -69,6 +70,7 @@ interface Order {
     orderId: string;
     orderGroupId?: string;
     rawId?: string;
+    mongoId?: string;
     orderedOn: string;
     paymentMethod: string;
     paymentStatus: string;
@@ -339,11 +341,13 @@ function OrderActions({
     order,
     onCancelClick,
     onRetryPayment,
+    onViewDetailClick,
     isRetrying,
 }: {
     order: Order;
     onCancelClick: (order: Order) => void;
     onRetryPayment: (order: Order) => void;
+    onViewDetailClick?: (order: Order) => void;
     isRetrying?: boolean;
 }) {
     const payStatusLower = (order.paymentStatus || "").toLowerCase();
@@ -351,7 +355,23 @@ function OrderActions({
     const displayLower = (order.displayStatus || "").toLowerCase();
     const noteLower = (order.statusNote || "").toLowerCase();
 
-    // 0. Payment Failed -> Return null (no buttons)
+    const targetGroupId = order.orderGroupId || order.rawId || order.id || order.orderId || "";
+    const trackHref = targetGroupId ? `/trackorder?ordergroupId=${encodeURIComponent(targetGroupId)}` : "/trackorder";
+
+    const viewDetailBtn = (
+        <button
+            type="button"
+            onClick={(e) => {
+                e.stopPropagation();
+                onViewDetailClick?.(order);
+            }}
+            className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#D49313]/60 bg-[#FAF5EC] hover:bg-[#FAF0DC] text-xs font-extrabold text-[#593102] transition shadow-2xs cursor-pointer active:scale-95 whitespace-nowrap"
+        >
+            View Detail
+        </button>
+    );
+
+    // 0. Payment Failed
     const isFailed =
         payStatusLower.includes("fail") ||
         statusLower.includes("fail") ||
@@ -359,10 +379,14 @@ function OrderActions({
         noteLower.includes("fail");
 
     if (isFailed) {
-        return null;
+        return (
+            <div className="flex w-full flex-col gap-2 sm:w-44">
+                {viewDetailBtn}
+            </div>
+        );
     }
 
-    // 1. Cancelled -> Show Cancelled badge only
+    // 1. Cancelled -> Show View Detail + Cancelled badge
     const isCancelled =
         statusLower.includes("cancel") ||
         displayLower.includes("cancel") ||
@@ -371,6 +395,7 @@ function OrderActions({
     if (isCancelled) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
+                {viewDetailBtn}
                 <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-red-50 text-xs font-extrabold text-red-600 border border-red-200/80 cursor-not-allowed">
                     Order Cancelled
                 </span>
@@ -378,7 +403,7 @@ function OrderActions({
         );
     }
 
-    // 2. Refund / Refunding -> No Cancel button
+    // 2. Refund / Refunding -> Show View Detail + Refund In Progress badge
     const isRefund =
         statusLower.includes("refund") ||
         displayLower.includes("refund") ||
@@ -387,6 +412,7 @@ function OrderActions({
     if (isRefund) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
+                {viewDetailBtn}
                 <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-purple-50 text-xs font-extrabold text-purple-700 border border-purple-200/80 cursor-not-allowed">
                     {order.displayStatus || "Refund In Progress"}
                 </span>
@@ -394,7 +420,7 @@ function OrderActions({
         );
     }
 
-    // 3. Delivered / Completed -> No Cancel button
+    // 3. Delivered / Completed -> Show View Detail + Delivered badge
     const isDelivered =
         statusLower.includes("deliver") ||
         displayLower.includes("deliver") ||
@@ -404,6 +430,7 @@ function OrderActions({
     if (isDelivered) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
+                {viewDetailBtn}
                 <span className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-green-50 text-xs font-extrabold text-green-700 border border-green-200/80">
                     Delivered
                 </span>
@@ -411,7 +438,7 @@ function OrderActions({
         );
     }
 
-    // 4. Shipped / In Transit / Out for delivery -> No Cancel button
+    // 4. Shipped / In Transit / Out for delivery
     const isShipped =
         statusLower.includes("ship") ||
         displayLower.includes("ship") ||
@@ -420,23 +447,22 @@ function OrderActions({
         statusLower.includes("out") ||
         displayLower.includes("out");
 
-    const targetGroupId = order.orderGroupId || order.rawId || order.id || order.orderId || "";
-    const trackHref = targetGroupId ? `/trackorder?ordergroupId=${encodeURIComponent(targetGroupId)}` : "/trackorder";
-
     if (isShipped) {
         return (
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href={trackHref}
+                    onClick={(e) => e.stopPropagation()}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Shipment
                 </Link>
+                {viewDetailBtn}
             </div>
         );
     }
 
-    // 5. Confirmed or beyond (Confirmed, Packed, Dispatched, etc.) -> NEVER show Cancel Order
+    // 5. Confirmed or beyond (Confirmed, Packed, Dispatched, etc.)
     const isConfirmed =
         statusLower.includes("confirm") ||
         displayLower.includes("confirm") ||
@@ -454,16 +480,17 @@ function OrderActions({
             <div className="flex w-full flex-col gap-2 sm:w-44">
                 <Link
                     href={trackHref}
+                    onClick={(e) => e.stopPropagation()}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Track Order
                 </Link>
+                {viewDetailBtn}
             </div>
         );
     }
 
     // 6. Strictly ONLY when in "Processing" / "Pending" / "Order Placed" state:
-    // "jab process mai rahe yaar tab he yaar cancel order ka button dikhe"
     const isProcessing =
         statusLower.includes("process") ||
         displayLower.includes("process") ||
@@ -477,15 +504,13 @@ function OrderActions({
     if (isProcessing) {
         return (
             <div className="flex w-full flex-col sm:flex-col gap-2 sm:w-44">
-                <Link
-                    href={trackHref}
-                    className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
-                >
-                    Track Order
-                </Link>
+                {viewDetailBtn}
                 <button
                     type="button"
-                    onClick={() => onCancelClick(order)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onCancelClick(order);
+                    }}
                     className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl border border-[#593102] text-xs font-extrabold text-[#593102] hover:bg-red-50 hover:border-red-600 hover:text-red-600 transition cursor-pointer active:scale-95 whitespace-nowrap"
                 >
                     Cancel Order
@@ -494,15 +519,10 @@ function OrderActions({
         );
     }
 
-    // Fallback: For any other state, DO NOT show Cancel Order! Only Track Order!
+    // Fallback: For any other state
     return (
         <div className="flex w-full flex-col gap-2 sm:w-44">
-            <Link
-                href={trackHref}
-                className="flex h-10 sm:h-9 w-full items-center justify-center rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-xs font-extrabold text-white transition shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
-            >
-                Track Order
-            </Link>
+            {viewDetailBtn}
         </div>
     );
 }
@@ -706,6 +726,17 @@ export default function MyOrdersPage() {
 
     const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
 
+    const handleViewDetail = (orderToView: Order) => {
+        const targetId = orderToView.mongoId || orderToView.rawId || orderToView.orderGroupId || orderToView.id;
+        const refParam = orderToView.orderId ? `&ref=${encodeURIComponent(orderToView.orderId)}` : "";
+        const groupParam = orderToView.orderGroupId ? `&groupId=${encodeURIComponent(orderToView.orderGroupId)}` : "";
+        if (targetId) {
+            router.push(`/account/order-details?id=${encodeURIComponent(targetId)}${refParam}${groupParam}`);
+        } else {
+            router.push("/account/order-details");
+        }
+    };
+
     const handleRetryPayment = async (orderToRetry: Order) => {
         const targetId = orderToRetry.orderGroupId || orderToRetry.rawId || orderToRetry.orderId || orderToRetry.id;
         if (!targetId) {
@@ -826,7 +857,12 @@ export default function MyOrdersPage() {
 
                 const mappedOrders: Order[] = [];
 
+                const isMongoId = (val: any) => typeof val === "string" && /^[0-9a-fA-F]{24}$/.test(val.trim());
+
                 rawList.forEach((group: any, gIdx: number) => {
+                    const subOrders = Array.isArray(group.orders) ? group.orders : [];
+                    const subItems = Array.isArray(group.items) ? group.items : [];
+
                     const groupOrderGroupId = String(
                         group.order_group_id ||
                         group.orderGroupId ||
@@ -835,16 +871,45 @@ export default function MyOrdersPage() {
                         group.id ||
                         ""
                     );
-                    const groupRawId = String(
-                        group._id ||
-                        group.id ||
-                        group.order_id ||
-                        group.orderId ||
-                        group.order_group_id ||
-                        group.orderGroupId ||
-                        group.group_id ||
-                        ""
-                    );
+
+                    // Prioritize exact 24-character hexadecimal MongoDB ObjectId (_id)
+                    let groupRawId = "";
+                    let resolvedMongoId = "";
+                    if (isMongoId(group._id)) {
+                        resolvedMongoId = String(group._id).trim();
+                    } else if (subOrders.length > 0 && isMongoId(subOrders[0]._id)) {
+                        resolvedMongoId = String(subOrders[0]._id).trim();
+                    } else if (isMongoId(group.id)) {
+                        resolvedMongoId = String(group.id).trim();
+                    } else if (subOrders.length > 0 && isMongoId(subOrders[0].id)) {
+                        resolvedMongoId = String(subOrders[0].id).trim();
+                    } else if (subItems.length > 0 && isMongoId(subItems[0]._id)) {
+                        resolvedMongoId = String(subItems[0]._id).trim();
+                    } else if (subOrders.length > 0 && isMongoId(subOrders[0].order_id)) {
+                        resolvedMongoId = String(subOrders[0].order_id).trim();
+                    } else if (isMongoId(group.order_id)) {
+                        resolvedMongoId = String(group.order_id).trim();
+                    } else if (isMongoId(group.order_group_id)) {
+                        resolvedMongoId = String(group.order_group_id).trim();
+                    } else {
+                        resolvedMongoId = String(group._id || group.id || "");
+                    }
+
+                    if (resolvedMongoId) {
+                        groupRawId = resolvedMongoId;
+                    } else {
+                        groupRawId = String(
+                            group._id ||
+                            group.id ||
+                            group.order_id ||
+                            group.orderId ||
+                            group.order_group_id ||
+                            group.orderGroupId ||
+                            group.group_id ||
+                            ""
+                        );
+                    }
+
                     const groupOrderId = String(
                         group.order_id || group.orderId || group.group_id || group.order_group_id || group._id || `ORD-${gIdx + 1}`
                     );
@@ -1029,7 +1094,8 @@ export default function MyOrdersPage() {
                         id: `${groupOrderId}-${gIdx}`,
                         orderId: groupOrderId,
                         orderGroupId: groupOrderGroupId || groupRawId,
-                        rawId: groupRawId || groupOrderId,
+                        rawId: resolvedMongoId || groupRawId || groupOrderId,
+                        mongoId: resolvedMongoId,
                         orderedOn: formattedDate,
                         paymentMethod: paymentMethod,
                         paymentStatus: paymentStatusFormatted,
@@ -1395,7 +1461,8 @@ export default function MyOrdersPage() {
                                     return (
                                         <div
                                             key={order.id}
-                                            className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/95 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/60 transition-all space-y-4"
+                                            onClick={() => handleViewDetail(order)}
+                                            className="rounded-3xl border-2 border-[#EADCC9]/80 bg-white/95 backdrop-blur-sm p-5 md:p-6 shadow-xs hover:shadow-md hover:border-[#D49313]/70 transition-all space-y-4 cursor-pointer group"
                                         >
                                             {/* Top Header Bar */}
                                             <div className="pb-3.5 border-b border-[#EADCC9]/60">
@@ -1407,11 +1474,11 @@ export default function MyOrdersPage() {
                                                         </div>
                                                         <div>
                                                             <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
-                                                            <p className="text-sm font-extrabold text-[#593102]">{order.orderId.replace(/\s+-\s+/g, "-")}</p>
+                                                            <p className="text-sm font-extrabold text-[#593102] group-hover:text-[#D49313] transition-colors">{order.orderId.replace(/\s+-\s+/g, "-")}</p>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-4">
+                                                    <div className="flex items-center gap-3">
                                                         <div className="text-right">
                                                             <p className="text-[10px] font-bold text-[#8D7F73]">Ordered on</p>
                                                             <p className="text-xs font-extrabold text-[#593102]">{order.orderedOn}</p>
@@ -1428,6 +1495,18 @@ export default function MyOrdersPage() {
                                                                 </span>
                                                             );
                                                         })()}
+
+                                                        {(order.displayStatus || order.status || "").toLowerCase().includes("deliver") && (
+                                                            <Link
+                                                                href={`/account/help?orderId=${encodeURIComponent(order.rawId || order.id || order.orderId)}&ref=${encodeURIComponent(order.orderId)}`}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-extrabold text-[#593102] hover:text-[#D49313] bg-[#FAF5EC] hover:bg-[#FAF0DC] border border-[#D49313]/40 shadow-2xs transition active:scale-95 cursor-pointer"
+                                                                title="Need Help? Return & Exchange"
+                                                            >
+                                                                <HelpCircle size={13} className="text-[#D49313]" />
+                                                                Help
+                                                            </Link>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -1440,23 +1519,37 @@ export default function MyOrdersPage() {
                                                             </div>
                                                             <div className="min-w-0 flex-1">
                                                                 <p className="text-[9px] font-extrabold uppercase tracking-wider text-[#8D7F73]">Order ID</p>
-                                                                <p className="text-[11.5px] xs:text-[12px] font-extrabold text-[#593102] tracking-tight leading-tight whitespace-normal break-all">
+                                                                <p className="text-[11.5px] xs:text-[12px] font-extrabold text-[#593102] tracking-tight leading-tight whitespace-normal break-all group-hover:text-[#D49313] transition-colors">
                                                                     {order.orderId.replace(/\s+-\s+/g, "-")}
                                                                 </p>
                                                             </div>
                                                         </div>
 
-                                                        {(() => {
-                                                            const displayTxt = order.displayStatus || order.status;
-                                                            const style = getStatusStyle(displayTxt);
-                                                            const StatusIcon = style.icon;
-                                                            return (
-                                                                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold shadow-2xs shrink-0 ${style.bg} ${style.text}`}>
-                                                                    <StatusIcon size={12} className="shrink-0" />
-                                                                    {displayTxt}
-                                                                </span>
-                                                            );
-                                                        })()}
+                                                        <div className="flex items-center gap-1.5 shrink-0">
+                                                            {(() => {
+                                                                const displayTxt = order.displayStatus || order.status;
+                                                                const style = getStatusStyle(displayTxt);
+                                                                const StatusIcon = style.icon;
+                                                                return (
+                                                                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold shadow-2xs shrink-0 ${style.bg} ${style.text}`}>
+                                                                        <StatusIcon size={12} className="shrink-0" />
+                                                                        {displayTxt}
+                                                                    </span>
+                                                                );
+                                                            })()}
+
+                                                            {(order.displayStatus || order.status || "").toLowerCase().includes("deliver") && (
+                                                                <Link
+                                                                    href={`/account/help?orderId=${encodeURIComponent(order.rawId || order.id || order.orderId)}&ref=${encodeURIComponent(order.orderId)}`}
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold text-[#593102] bg-[#FAF5EC] hover:bg-[#FAF0DC] border border-[#D49313]/40 shadow-2xs transition active:scale-95 cursor-pointer shrink-0"
+                                                                    title="Need Help? Return & Exchange"
+                                                                >
+                                                                    <HelpCircle size={12} className="text-[#D49313]" />
+                                                                    Help
+                                                                </Link>
+                                                            )}
+                                                        </div>
                                                     </div>
 
                                                     <div className="flex items-center justify-between rounded-xl bg-[#FAF5EC] px-3 py-2 text-xs border border-[#EADCC9]/50">
@@ -1578,6 +1671,7 @@ export default function MyOrdersPage() {
                                                     order={order}
                                                     onCancelClick={(orderToCancel) => setSelectedOrderForCancel(orderToCancel)}
                                                     onRetryPayment={(orderToRetry) => handleRetryPayment(orderToRetry)}
+                                                    onViewDetailClick={handleViewDetail}
                                                     isRetrying={retryingOrderId === order.id}
                                                 />
                                             </div>

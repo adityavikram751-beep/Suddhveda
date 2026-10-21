@@ -63,6 +63,7 @@ export default async function ProductPage({
     notFound();
   }
 
+  let allProducts: ApiProduct[] = [];
   try {
     const recRes = await fetch(`${API_BASE_URL}/api/products`, {
       cache: "no-store",
@@ -72,6 +73,7 @@ export default async function ProductPage({
     if (recRes.ok) {
       const recResult = await recRes.json();
       const allList = getProductsFromResponse(recResult);
+      allProducts = allList;
       recommendations = allList.filter((item) => item._id !== id);
     }
   } catch (error) {
@@ -98,7 +100,12 @@ export default async function ProductPage({
   return (
     <>
       <Header />
-      <ProductDetailPage product={product} recommendations={recommendations} initialLabReports={labReports} />
+      <ProductDetailPage
+        product={product}
+        recommendations={recommendations}
+        allProducts={allProducts}
+        initialLabReports={labReports}
+      />
       <Footer />
     </>
   );
