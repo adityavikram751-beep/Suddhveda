@@ -273,6 +273,7 @@ export default function HoneySelection() {
                     className={`w-full flex flex-col items-center h-full ${idx >= 4 ? "lg:hidden" : ""}`}
                   >
                     <ProductCardShop
+                      compactOnMobile
                       badge={normalized.badge}
                       image={normalized.image}
                       title={normalized.title}
