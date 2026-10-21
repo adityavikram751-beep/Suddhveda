@@ -274,7 +274,6 @@ export default function HoneySelection() {
                   >
                     <ProductCardShop
                       compactOnMobile
-                      badge={normalized.badge}
                       image={normalized.image}
                       title={normalized.title}
                       subtitle={normalized.subtitle}
