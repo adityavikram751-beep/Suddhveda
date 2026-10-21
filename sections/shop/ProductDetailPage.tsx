@@ -151,17 +151,17 @@ function LabReportAccordionContent({
     return (
       <div
         key={idx}
-        className="bg-white border border-[#EADCC9] rounded-xl p-2.5 sm:p-3 shadow-2xs flex items-center justify-between gap-2.5 hover:border-[#D49313]/40 transition-colors"
+        className="bg-white border border-[#EADCC9] rounded-xl p-2 sm:p-2.5 shadow-2xs inline-flex items-center justify-between gap-3 hover:border-[#D49313]/40 transition-colors w-full max-w-[240px]"
       >
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FAF6F0] p-1 flex items-center justify-center shrink-0 border border-[#EADCC9]">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF6F0] p-1 flex items-center justify-center shrink-0 border border-[#EADCC9]">
             <img
               src={bottleImg}
               alt={item.name}
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-[13.5px] sm:text-[14px] font-bold text-[#593102] block leading-tight">
+          <span className="text-[13px] sm:text-[13.5px] font-bold text-[#593102] block leading-tight whitespace-nowrap">
             {item.name}
           </span>
         </div>
@@ -173,28 +173,30 @@ function LabReportAccordionContent({
             rel="noopener noreferrer"
             title="View Lab Report"
             aria-label={`View Lab Report for ${item.name}`}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FA4B1B] hover:bg-[#d63a0d] text-white flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-95 cursor-pointer"
+            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-xl bg-[#FA4B1B] hover:bg-[#d63a0d] text-white flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-95 cursor-pointer ml-1"
           >
-            <Eye size={17} />
+            <Eye size={16} />
           </a>
         ) : (
           <span
             title="Report Available Soon"
             aria-label="Report Available Soon"
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FAF0DC] text-[#A8988B] border border-[#D49313]/30 flex items-center justify-center shrink-0"
+            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-xl bg-[#FAF0DC] text-[#A8988B] border border-[#D49313]/30 flex items-center justify-center shrink-0 ml-1"
           >
-            <Eye size={17} className="opacity-40" />
+            <Eye size={16} className="opacity-40" />
           </span>
         )}
       </div>
     );
   };
 
-  // Single bottle: 1 compact card
+  // Single bottle: 1 compact card (fits snugly, width reduced)
   if (items.length <= 1) {
     return (
       <div className="pt-1 text-[14px]">
-        {items.map((item, idx) => renderBottleCard(item, idx))}
+        <div className="w-fit max-w-[240px]">
+          {items.map((item, idx) => renderBottleCard(item, idx))}
+        </div>
       </div>
     );
   }
