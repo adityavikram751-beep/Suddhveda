@@ -151,17 +151,17 @@ function LabReportAccordionContent({
     return (
       <div
         key={idx}
-        className="bg-white border border-[#EADCC9] rounded-xl p-2 sm:p-2.5 shadow-2xs inline-flex items-center justify-between gap-3 hover:border-[#D49313]/40 transition-colors w-full max-w-[240px]"
+        className="bg-white border border-[#EADCC9] rounded-xl p-1.5 sm:p-2.5 shadow-2xs flex items-center justify-between gap-1.5 sm:gap-2.5 hover:border-[#D49313]/40 transition-colors w-full"
       >
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF6F0] p-1 flex items-center justify-center shrink-0 border border-[#EADCC9]">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#FAF6F0] p-0.5 sm:p-1 flex items-center justify-center shrink-0 border border-[#EADCC9]">
             <img
               src={bottleImg}
               alt={item.name}
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="text-[13px] sm:text-[13.5px] font-bold text-[#593102] block leading-tight whitespace-nowrap">
+          <span className="text-[11px] sm:text-[13.5px] font-bold text-[#593102] block leading-tight truncate">
             {item.name}
           </span>
         </div>
@@ -173,17 +173,19 @@ function LabReportAccordionContent({
             rel="noopener noreferrer"
             title="View Lab Report"
             aria-label={`View Lab Report for ${item.name}`}
-            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-xl bg-[#FA4B1B] hover:bg-[#d63a0d] text-white flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-95 cursor-pointer ml-1"
+            className="w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-lg sm:rounded-xl bg-[#FA4B1B] hover:bg-[#d63a0d] text-white flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-95 cursor-pointer ml-1"
           >
-            <Eye size={16} />
+            <Eye size={13} className="sm:hidden" />
+            <Eye size={16} className="hidden sm:block" />
           </a>
         ) : (
           <span
             title="Report Available Soon"
             aria-label="Report Available Soon"
-            className="w-8 h-8 sm:w-8.5 sm:h-8.5 rounded-xl bg-[#FAF0DC] text-[#A8988B] border border-[#D49313]/30 flex items-center justify-center shrink-0 ml-1"
+            className="w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-lg sm:rounded-xl bg-[#FAF0DC] text-[#A8988B] border border-[#D49313]/30 flex items-center justify-center shrink-0 ml-1"
           >
-            <Eye size={16} className="opacity-40" />
+            <Eye size={13} className="opacity-40 sm:hidden" />
+            <Eye size={16} className="opacity-40 hidden sm:block" />
           </span>
         )}
       </div>
@@ -201,21 +203,21 @@ function LabReportAccordionContent({
     );
   }
 
-  // Multi-bottle combos: 2 on left, divider in middle, 2 on right
+  // Multi-bottle combos: 2 on left, divider in middle, 2 on right (always 2 columns on mobile, tablet, and desktop)
   const half = Math.ceil(items.length / 2);
   const leftItems = items.slice(0, half);
   const rightItems = items.slice(half);
 
   return (
     <div className="pt-1 text-[14px]">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-0 md:divide-x md:divide-[#EADCC9]">
+      <div className="grid grid-cols-2 divide-x divide-[#EADCC9]">
         {/* Left Column */}
-        <div className="space-y-2.5 md:pr-3">
+        <div className="space-y-2 pr-2 sm:pr-3">
           {leftItems.map((item, idx) => renderBottleCard(item, idx))}
         </div>
 
         {/* Right Column */}
-        <div className="space-y-2.5 md:pl-3">
+        <div className="space-y-2 pl-2 sm:pl-3">
           {rightItems.map((item, idx) => renderBottleCard(item, half + idx))}
         </div>
       </div>
