@@ -503,18 +503,10 @@ export default function ProductDetailPage({
       customContent: (
         <div className="pt-1 text-[14px]">
           <div className="bg-white border border-[#EADCC9] rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#FAF0DC] flex items-center justify-center shrink-0 border border-[#D49313]/30 text-[#D49313]">
-                <FileText size={20} />
-              </div>
-              <div>
-                <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
-                  {reportHoneyName || currentProdName}
-                </span>
-                <span className="text-[12px] text-[#8D7F73]">
-                  Lab Test &amp; Purity Certificate
-                </span>
-              </div>
+            <div>
+              <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
+                {reportHoneyName || currentProdName}
+              </span>
             </div>
 
             {labReportUrl ? (
