@@ -21,6 +21,7 @@ import {
   Sparkles,
   Utensils,
   FileText,
+  Eye,
   Leaf,
   Award,
   Mail,
@@ -132,78 +133,37 @@ function LabReportAccordionContent({
   getBottleImage: (name: string) => string;
   singleFallbackReportUrl?: string | null;
 }) {
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const renderBottleCard = (item: BottleReportItem, idx: number) => {
+    const bottleImg = item.image || getBottleImage(item.name);
+    const matchedReport = findLabReportForHoney(item.name, labReports);
 
-  const activeIdx = Math.min(Math.max(0, selectedIdx), Math.max(0, items.length - 1));
-  const currentItem = items[activeIdx] || items[0] || { name: "Honey" };
+    const reportUrl =
+      matchedReport?.report?.url ||
+      (typeof matchedReport?.report === "string" ? matchedReport.report : null) ||
+      matchedReport?.pdfUrl ||
+      matchedReport?.pdf_url ||
+      matchedReport?.url ||
+      matchedReport?.fileUrl ||
+      matchedReport?.reportUrl ||
+      (items.length === 1 ? singleFallbackReportUrl : null) ||
+      null;
 
-  const matchedReport = useMemo(() => {
-    return findLabReportForHoney(currentItem.name, labReports);
-  }, [currentItem.name, labReports]);
-
-  const reportUrl =
-    matchedReport?.report?.url ||
-    (typeof matchedReport?.report === "string" ? matchedReport.report : null) ||
-    matchedReport?.pdfUrl ||
-    matchedReport?.pdf_url ||
-    matchedReport?.url ||
-    matchedReport?.fileUrl ||
-    matchedReport?.reportUrl ||
-    (items.length === 1 ? singleFallbackReportUrl : null) ||
-    null;
-
-  const currentBottleImg = currentItem.image || getBottleImage(currentItem.name);
-
-  return (
-    <div className="pt-2 text-[14px] space-y-3">
-      {/* If multi-bottle combo (e.g. 2, 3, 4 bottles), show individual tabs */}
-      {items.length > 1 && (
-        <div className="space-y-1.5">
-          <div className="text-[12px] font-semibold text-[#8D7F73]">
-            Select Bottle to View Lab Report:
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {items.map((item, idx) => {
-              const isSelected = activeIdx === idx;
-              const tabImg = item.image || getBottleImage(item.name);
-
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setSelectedIdx(idx)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all border cursor-pointer ${
-                    isSelected
-                      ? "bg-[#FAF0DC] text-[#593102] border-[#D49313] shadow-xs ring-1 ring-[#D49313]/30"
-                      : "bg-white text-[#7A6E65] border-[#EADCC9] hover:bg-[#FAF6F0] hover:text-[#593102]"
-                  }`}
-                >
-                  <div className="w-6 h-6 rounded-md overflow-hidden bg-white shrink-0 border border-[#EADCC9]/60 flex items-center justify-center">
-                    <img src={tabImg} alt={item.name} className="w-full h-full object-contain p-0.5" />
-                  </div>
-                  <span>{item.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Selected Bottle Card */}
-      <div className="bg-white border border-[#EADCC9] rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#FAF6F0] p-1.5 flex items-center justify-center shrink-0 border border-[#EADCC9]">
+    return (
+      <div
+        key={idx}
+        className="bg-white border border-[#EADCC9] rounded-xl p-2.5 sm:p-3 shadow-2xs flex items-center justify-between gap-2.5 hover:border-[#D49313]/40 transition-colors"
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FAF6F0] p-1 flex items-center justify-center shrink-0 border border-[#EADCC9]">
             <img
-              src={currentBottleImg}
-              alt={currentItem.name}
+              src={bottleImg}
+              alt={item.name}
               className="w-full h-full object-contain"
             />
           </div>
-          <div>
-            <span className="text-[15px] sm:text-[16px] font-bold text-[#593102] block">
-              {currentItem.name}
-            </span>
-          </div>
+          <span className="text-[13.5px] sm:text-[14px] font-bold text-[#593102] block leading-tight">
+            {item.name}
+          </span>
         </div>
 
         {reportUrl ? (
@@ -211,16 +171,51 @@ function LabReportAccordionContent({
             href={reportUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FA4B1B] hover:bg-[#d63a0d] text-white rounded-xl text-[13px] font-bold transition-all shadow-xs shrink-0"
+            title="View Lab Report"
+            aria-label={`View Lab Report for ${item.name}`}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FA4B1B] hover:bg-[#d63a0d] text-white flex items-center justify-center shrink-0 shadow-xs transition-all active:scale-95 cursor-pointer"
           >
-            <FileText size={15} />
-            <span>View Lab Report</span>
+            <Eye size={17} />
           </a>
         ) : (
-          <span className="text-[12px] font-semibold text-[#8D7F73] bg-[#FAF0DC] px-3.5 py-2 rounded-lg border border-[#D49313]/30 shrink-0 text-center">
-            Report Available Soon
+          <span
+            title="Report Available Soon"
+            aria-label="Report Available Soon"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FAF0DC] text-[#A8988B] border border-[#D49313]/30 flex items-center justify-center shrink-0"
+          >
+            <Eye size={17} className="opacity-40" />
           </span>
         )}
+      </div>
+    );
+  };
+
+  // Single bottle: 1 compact card
+  if (items.length <= 1) {
+    return (
+      <div className="pt-1 text-[14px]">
+        {items.map((item, idx) => renderBottleCard(item, idx))}
+      </div>
+    );
+  }
+
+  // Multi-bottle combos: 2 on left, divider in middle, 2 on right
+  const half = Math.ceil(items.length / 2);
+  const leftItems = items.slice(0, half);
+  const rightItems = items.slice(half);
+
+  return (
+    <div className="pt-1 text-[14px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-0 md:divide-x md:divide-[#EADCC9]">
+        {/* Left Column */}
+        <div className="space-y-2.5 md:pr-3">
+          {leftItems.map((item, idx) => renderBottleCard(item, idx))}
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-2.5 md:pl-3">
+          {rightItems.map((item, idx) => renderBottleCard(item, half + idx))}
+        </div>
       </div>
     </div>
   );
