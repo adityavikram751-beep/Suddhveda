@@ -70,6 +70,7 @@ export default function ShopPage() {
   const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [comboProducts, setComboProducts] = useState<any[]>([]);
 
   // Mobile Filter Drawer State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -160,6 +161,30 @@ export default function ShopPage() {
     }
   };
 
+  const fetchComboProducts = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const rawData = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json?.comboProducts)
+          ? json.comboProducts
+          : Array.isArray(json?.products)
+          ? json.products
+          : Array.isArray(json)
+          ? json
+          : [];
+        const active = rawData.filter((item: any) => item.is_active !== false && item.isActive !== false);
+        setComboProducts(active);
+      }
+    } catch (err) {
+      console.error("Error fetching combo products:", err);
+    }
+  };
+
   const fetchFloraSources = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/filter/flora-sources`);
@@ -177,6 +202,7 @@ export default function ShopPage() {
 
   useEffect(() => {
     fetchProducts();
+    fetchComboProducts();
     fetchWishlist();
     fetchFloraSources();
   }, []);
@@ -239,6 +265,36 @@ export default function ShopPage() {
     () => getRefinedProducts(products, appliedFilters),
     [products, appliedFilters]
   );
+
+  const filteredComboProducts = useMemo(() => {
+    return comboProducts.filter((combo) => {
+      if (appliedFilters.categorySlug) {
+        const slug = appliedFilters.categorySlug.toLowerCase();
+        const isGiftCategory = slug.includes("gift") || slug.includes("combo") || slug.includes("set");
+        if (!isGiftCategory) return false;
+      }
+
+      if (appliedFilters.weights.length > 0) {
+        const comboHasWeight = combo.products?.some((p: any) => {
+          const w = `${p.weight || ""}${p.unit || "g"}`;
+          return appliedFilters.weights.includes(w);
+        });
+        if (!comboHasWeight) return false;
+      }
+
+      const price = Number(combo.selling_price || combo.price || 0);
+      if (price > appliedFilters.price) return false;
+
+      if (appliedFilters.search.trim()) {
+        const query = appliedFilters.search.toLowerCase();
+        const name = (combo.combo_name || combo.name || "").toLowerCase();
+        const desc = (combo.description || "").toLowerCase();
+        if (!name.includes(query) && !desc.includes(query)) return false;
+      }
+
+      return true;
+    });
+  }, [comboProducts, appliedFilters]);
 
   const applyFilters = async () => {
     try {
@@ -303,7 +359,7 @@ export default function ShopPage() {
     setPriceRange(MAX_PRICE);
     setSearchTerm("");
     setAppliedFilters(defaultFilters);
-    await fetchProducts();
+    await Promise.all([fetchProducts(), fetchComboProducts()]);
     setIsFilterOpen(false);
   };
 
@@ -386,6 +442,75 @@ export default function ShopPage() {
     } catch (error) {
       console.error("Error in Buy Now:", error);
     }
+  };
+
+  const handleAddComboToCart = async (combo: any) => {
+    const comboProdId = combo._id || combo.id;
+    const token = typeof window !== "undefined"
+      ? document.cookie.match(/(^| )sudhveda_token=([^;]+)/)?.[2] ||
+        document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
+        localStorage.getItem("token") ||
+        localStorage.getItem("sudhveda_token") ||
+        ""
+      : "";
+
+    let success = false;
+    if (token) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/cart/add`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${decodeURIComponent(token)}`,
+          },
+          body: JSON.stringify({
+            comboProductId: comboProdId,
+            quantity: 1,
+            message: "",
+          }),
+        });
+        if (res.ok) success = true;
+      } catch (e) {
+        console.error("Combo Cart API failed, fallback to guest cart:", e);
+      }
+    }
+
+    if (!success && typeof window !== "undefined") {
+      const GUEST_CART_KEY = "sudhveda_guest_cart";
+      const stored = localStorage.getItem(GUEST_CART_KEY);
+      const guestItems: Record<string, any> = stored ? JSON.parse(stored) : {};
+
+      const cartItemId = `guest_combo_${comboProdId}_${Date.now()}`;
+      guestItems[cartItemId] = {
+        type: "COMBO",
+        cartItemId,
+        comboProductId: comboProdId,
+        productName: combo.combo_name || combo.name || "Gift Box",
+        image: combo.images?.[1]?.url || combo.images?.[0]?.url || combo.image || "/honneycart.png",
+        price: Number(combo.selling_price || combo.price || 999),
+        quantity: 1,
+        comboProduct: combo,
+        message: "",
+      };
+
+      localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
+    }
+
+    window.dispatchEvent(new Event("cart-updated"));
+    window.dispatchEvent(new CustomEvent("trigger-live-update"));
+    showToast("Added combo to cart!");
+  };
+
+  const handleBuyComboNow = async (combo: any) => {
+    const token = getStoredToken();
+    const session = getStoredSession();
+    if (!token || !session || !session.user?.mobile) {
+      router.push("/login");
+      return;
+    }
+    await handleAddComboToCart(combo);
+    router.push("/cart");
   };
 
   const handleToggleWishlist = async (productId: string) => {
@@ -587,7 +712,7 @@ export default function ShopPage() {
             <span>Filters</span>
           </button>
           <span className="text-[13px] font-extrabold text-[#7A6A5C]">
-            {filteredProducts.length} Products
+            {filteredProducts.length + filteredComboProducts.length} Products
           </span>
         </div>
 
@@ -616,7 +741,6 @@ export default function ShopPage() {
                   <div key={productId} className="w-full flex flex-col items-center h-full">
                     <ProductCardShop
                       compactOnMobile
-                      badge={product.badge}
                       image={product.image}
                       title={product.title}
                       subtitle={product.subtitle}
@@ -645,9 +769,60 @@ export default function ShopPage() {
                   </div>
                 );
               })}
+
+              {/* Gift / Combo Products rendered right below normal products */}
+              {filteredComboProducts.map((combo) => {
+                const comboId = combo._id || combo.id;
+                const primaryImg =
+                  combo.images?.[1]?.url ||
+                  combo.images?.find((img: any) => !img.is_primary)?.url ||
+                  combo.images?.[0]?.url ||
+                  combo.image ||
+                  "/honneycart.png";
+
+                const price = Number(combo.selling_price || combo.price || 999);
+                const oldPrice = Number(combo.mrp || combo.originalPrice || 0);
+                const discount =
+                  Number(combo.discount_percent) ||
+                  (oldPrice > price ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0);
+
+                const jarCount = combo.combo_size || (combo.products ? combo.products.length : 2);
+                const subtitle = `Gift Box • ${jarCount} Jars`;
+
+                return (
+                  <div key={comboId} className="w-full flex flex-col items-center h-full">
+                    <ProductCardShop
+                      fullImage
+                      compactOnMobile
+                      image={primaryImg}
+                      title={combo.combo_name || combo.name || "Gift Box"}
+                      subtitle={subtitle}
+                      category="Gift Set"
+                      tasteProfile={combo.description}
+                      shortDescription={combo.description}
+                      weight={`${jarCount} Jars`}
+                      price={price}
+                      oldPrice={oldPrice > price ? oldPrice : undefined}
+                      rating={5}
+                      reviews={12}
+                      quantity={0}
+                      includedProducts={combo.products || []}
+                      variants={[]}
+                      onVariantSelect={() => { }}
+                      isWishlisted={wishlistIds.includes(comboId)}
+                      onToggleWishlist={() => handleToggleWishlist(comboId)}
+                      onAddToCart={() => handleAddComboToCart(combo)}
+                      onBuyNow={() => handleBuyComboNow(combo)}
+                      onIncrement={() => { }}
+                      onDecrement={() => { }}
+                      onOpenDetails={() => router.push(`/shop/products/${comboId}`)}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
-            {filteredProducts.length === 0 && (
+            {filteredProducts.length === 0 && filteredComboProducts.length === 0 && (
               <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-[#697386]">
                 <ShoppingCart size={32} className="text-[#593102]" />
                 <p>No honey matches your filters right now.</p>

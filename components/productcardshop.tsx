@@ -47,6 +47,12 @@ export type ProductCardShopProps = {
   isWishlisted?: boolean;
 
   compactOnMobile?: boolean;
+  fullImage?: boolean;
+  includedProducts?: Array<{
+    name: string;
+    weight?: number | string;
+    unit?: string;
+  }>;
 
   onAddToCart: () => void;
   onBuyNow?: () => void;
@@ -75,6 +81,8 @@ export default function ProductCardShop({
   onVariantSelect,
   isWishlisted = false,
   compactOnMobile = false,
+  fullImage = false,
+  includedProducts,
   onAddToCart,
   onBuyNow,
   onIncrement,
@@ -120,7 +128,9 @@ export default function ProductCardShop({
     <div
       onClick={onOpenDetails}
       className={`relative flex h-full ${
-        compactOnMobile
+        fullImage
+          ? "p-0 min-h-[300px] sm:min-h-[460px] rounded-[18px] sm:rounded-[22px]"
+          : compactOnMobile
           ? "min-h-[295px] sm:min-h-[470px] p-2.5 sm:p-5 rounded-[18px] sm:rounded-[22px]"
           : "min-h-[440px] sm:min-h-[470px] p-4 sm:p-5 rounded-[22px]"
       } w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden border border-[#EADCC9]/60 bg-[#FCF9F3] shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto ${className || ""}`}
@@ -147,27 +157,58 @@ export default function ProductCardShop({
         />
       </button>
 
+      {/* Badge (Top Right) - Only for combo / fullImage cards */}
+      {badge && fullImage && (
+        <div
+          className={`absolute ${
+            compactOnMobile ? "right-2 top-2 sm:right-3.5 sm:top-3.5" : "right-3.5 top-3.5"
+          } z-20`}
+        >
+          <span
+            className={`${
+              compactOnMobile ? "px-2 py-0.5 text-[9.5px] sm:text-[10.5px]" : "px-2.5 py-0.5 text-[10.5px]"
+            } font-extrabold rounded-full bg-[#191919]/90 text-white shadow-sm border border-white/20 uppercase tracking-wider backdrop-blur-xs`}
+          >
+            {badge}
+          </span>
+        </div>
+      )}
+
       {/* Dynamic Product Image */}
       <div
         className={`relative ${
-          compactOnMobile
-            ? "mt-0.5 sm:mt-1.5 h-[118px] sm:h-[210px] p-1 sm:p-2"
-            : "mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] p-2"
-        } w-full overflow-hidden shrink-0 flex items-center justify-center`}
+          fullImage
+            ? "w-full aspect-square overflow-hidden shrink-0 bg-white"
+            : compactOnMobile
+            ? "mt-0.5 sm:mt-1.5 h-[118px] sm:h-[210px] p-1 sm:p-2 w-full overflow-hidden shrink-0 flex items-center justify-center"
+            : "mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] p-2 w-full overflow-hidden shrink-0 flex items-center justify-center"
+        }`}
       >
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className={`object-contain ${
-            compactOnMobile ? "p-1 sm:p-1.5" : "p-1.5"
+          className={`${
+            fullImage
+              ? "object-cover object-center"
+              : `object-contain ${compactOnMobile ? "p-1 sm:p-1.5" : "p-1.5"}`
           } transition-transform duration-500 group-hover:scale-105`}
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>
 
       {/* Text Content & Details */}
-      <div className={`${compactOnMobile ? "mt-1 sm:mt-3" : "mt-3"} flex flex-col flex-1 justify-between text-center`}>
+      <div
+        className={`${
+          fullImage
+            ? compactOnMobile
+              ? "p-2 sm:p-4 mt-0.5 sm:mt-1"
+              : "p-3 sm:p-4 mt-1 sm:mt-2"
+            : compactOnMobile
+            ? "mt-1 sm:mt-3"
+            : "mt-3"
+        } flex flex-col flex-1 justify-between text-center`}
+      >
         <div>
           {/* Dynamic Title with Fixed Equal Height */}
           <div className={`${compactOnMobile ? "h-[34px] sm:h-[48px] px-1" : "h-[44px] sm:h-[48px]"} flex items-center justify-center`}>
@@ -212,8 +253,32 @@ export default function ProductCardShop({
 
         {/* Variant Selection & Action Area */}
         <div className={`${compactOnMobile ? "mt-1 sm:mt-2" : "mt-2"}`}>
-          {/* Variant Selection Buttons */}
-          {variants && variants.length > 0 && (
+          {/* If Combo Products list is provided, show the included varieties as clean normal text */}
+          {includedProducts && includedProducts.length > 0 ? (
+            <div
+              className={`${
+                compactOnMobile
+                  ? "mb-1.5 sm:mb-2.5 min-h-[24px] sm:min-h-[28px] px-1"
+                  : "mb-2.5 min-h-[28px] px-2"
+              } flex items-center justify-center`}
+            >
+              <p
+                className={`${
+                  compactOnMobile
+                    ? "text-[10.5px] sm:text-[11.5px] leading-tight"
+                    : "text-[11.5px] sm:text-[12.5px] leading-snug"
+                } text-[#6E5D4F] font-medium text-center line-clamp-2`}
+              >
+                {includedProducts
+                  .map((p) => {
+                    const cleanName =
+                      (p.name || "").replace(/\s*Honey\s*/gi, "").trim() || p.name || "Honey";
+                    return cleanName;
+                  })
+                  .join(" + ")}
+              </p>
+            </div>
+          ) : variants && variants.length > 0 ? (
             <div
               className={`${
                 compactOnMobile
@@ -250,7 +315,7 @@ export default function ProductCardShop({
                 );
               })}
             </div>
-          )}
+          ) : null}
 
           {/* Buy Now Button */}
           <div className={`${compactOnMobile ? "pb-0.5 sm:pb-1" : "pb-1"} flex justify-center`}>
