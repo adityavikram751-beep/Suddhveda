@@ -615,6 +615,7 @@ export default function ShopPage() {
                 return (
                   <div key={productId} className="w-full flex flex-col items-center h-full">
                     <ProductCardShop
+                      compactOnMobile
                       badge={product.badge}
                       image={product.image}
                       title={product.title}

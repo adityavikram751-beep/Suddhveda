@@ -46,6 +46,8 @@ export type ProductCardShopProps = {
 
   isWishlisted?: boolean;
 
+  compactOnMobile?: boolean;
+
   onAddToCart: () => void;
   onBuyNow?: () => void;
   onIncrement: () => void;
@@ -72,6 +74,7 @@ export default function ProductCardShop({
   selectedVariantId,
   onVariantSelect,
   isWishlisted = false,
+  compactOnMobile = false,
   onAddToCart,
   onBuyNow,
   onIncrement,
@@ -116,7 +119,11 @@ export default function ProductCardShop({
   return (
     <div
       onClick={onOpenDetails}
-      className={`relative flex h-full min-h-[440px] sm:min-h-[470px] w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden rounded-[22px] border border-[#EADCC9]/60 bg-[#FCF9F3] p-4 sm:p-5 shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto ${className || ""}`}
+      className={`relative flex h-full ${
+        compactOnMobile
+          ? "min-h-[295px] sm:min-h-[470px] p-2.5 sm:p-5 rounded-[18px] sm:rounded-[22px]"
+          : "min-h-[440px] sm:min-h-[470px] p-4 sm:p-5 rounded-[22px]"
+      } w-full max-w-[280px] sm:max-w-[300px] flex-col overflow-hidden border border-[#EADCC9]/60 bg-[#FCF9F3] shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto ${className || ""}`}
     >
 
       {/* Wishlist Button (Top Left) */}
@@ -124,51 +131,79 @@ export default function ProductCardShop({
         type="button"
         onClick={handleWishlistClick}
         aria-label="Wishlist"
-        className="absolute left-3.5 top-3.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110"
+        className={`absolute ${
+          compactOnMobile
+            ? "left-2.5 top-2.5 sm:left-3.5 sm:top-3.5 h-7 w-7 sm:h-8 sm:w-8"
+            : "left-3.5 top-3.5 h-8 w-8"
+        } z-20 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#593102] hover:bg-white transition-all cursor-pointer shadow-md border border-[#EADCC9]/60 hover:scale-110`}
       >
         <Heart
           size={16}
-          className={
+          className={`${compactOnMobile ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"} ${
             isWishlisted
               ? "fill-[#FA4B1B] text-[#FA4B1B]"
               : "text-[#7C6E63] hover:text-[#FA4B1B]"
-          }
+          }`}
         />
       </button>
 
       {/* Dynamic Product Image */}
-      <div className="relative mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] w-full overflow-hidden shrink-0 flex items-center justify-center p-2">
+      <div
+        className={`relative ${
+          compactOnMobile
+            ? "mt-0.5 sm:mt-1.5 h-[118px] sm:h-[210px] p-1 sm:p-2"
+            : "mt-1 sm:mt-1.5 h-[190px] sm:h-[210px] p-2"
+        } w-full overflow-hidden shrink-0 flex items-center justify-center`}
+      >
         <Image
           src={imageSrc}
           alt={title || "Product"}
           fill
-          className="object-contain p-1.5 transition-transform duration-500 group-hover:scale-105"
+          className={`object-contain ${
+            compactOnMobile ? "p-1 sm:p-1.5" : "p-1.5"
+          } transition-transform duration-500 group-hover:scale-105`}
           onError={() => setImageSrc(fallbackImage)}
         />
       </div>
 
       {/* Text Content & Details */}
-      <div className="mt-3 flex flex-col flex-1 justify-between text-center">
+      <div className={`${compactOnMobile ? "mt-1 sm:mt-3" : "mt-3"} flex flex-col flex-1 justify-between text-center`}>
         <div>
           {/* Dynamic Title with Fixed Equal Height */}
-          <div className="h-[44px] sm:h-[48px] flex items-center justify-center">
-            <h3 className="font-serif text-[15px] sm:text-[17px] font-bold text-[#593102] group-hover:text-[#D49313] transition-colors leading-snug line-clamp-2 text-center">
+          <div className={`${compactOnMobile ? "h-[34px] sm:h-[48px] px-1" : "h-[44px] sm:h-[48px]"} flex items-center justify-center`}>
+            <h3
+              className={`font-serif ${
+                compactOnMobile ? "text-[13px] sm:text-[17px]" : "text-[15px] sm:text-[17px]"
+              } font-bold text-[#593102] group-hover:text-[#D49313] transition-colors leading-snug line-clamp-2 text-center`}
+            >
               {title}
             </h3>
           </div>
 
           {/* Dynamic Category Name with Fixed Equal Height */}
-          <div className="h-[18px] mt-0.5 flex items-center justify-center text-[12px] font-semibold text-[#8D7F73]">
+          <div
+            className={`${
+              compactOnMobile ? "h-[15px] sm:h-[18px] text-[10.5px] sm:text-[12px]" : "h-[18px] text-[12px]"
+            } mt-0.5 flex items-center justify-center font-semibold text-[#8D7F73]`}
+          >
             {category || subtitle || ""}
           </div>
 
           {/* Dynamic Price Row */}
-          <div className="mt-2.5 mb-1 flex items-center justify-center gap-2">
-            <span className="font-extrabold text-[#593102] text-[17px] sm:text-[18px] tracking-tight">
+          <div className={`${compactOnMobile ? "mt-1 sm:mt-2.5 mb-1 gap-1.5 sm:gap-2" : "mt-2.5 mb-1 gap-2"} flex items-center justify-center`}>
+            <span
+              className={`font-extrabold text-[#593102] ${
+                compactOnMobile ? "text-[14.5px] sm:text-[18px]" : "text-[17px] sm:text-[18px]"
+              } tracking-tight`}
+            >
               ₹{currentPrice}
             </span>
             {currentOldPrice && currentOldPrice > currentPrice ? (
-              <span className="line-through text-[#8D7F73] font-normal text-[13px] sm:text-[14px]">
+              <span
+                className={`line-through text-[#8D7F73] font-normal ${
+                  compactOnMobile ? "text-[11px] sm:text-[14px]" : "text-[13px] sm:text-[14px]"
+                }`}
+              >
                 ₹{currentOldPrice}
               </span>
             ) : null}
@@ -176,10 +211,16 @@ export default function ProductCardShop({
         </div>
 
         {/* Variant Selection & Action Area */}
-        <div className="mt-2">
+        <div className={`${compactOnMobile ? "mt-1 sm:mt-2" : "mt-2"}`}>
           {/* Variant Selection Buttons */}
           {variants && variants.length > 0 && (
-            <div className="mb-2.5 flex items-center justify-center gap-1.5 flex-wrap min-h-[30px]">
+            <div
+              className={`${
+                compactOnMobile
+                  ? "mb-1.5 sm:mb-2.5 gap-1 sm:gap-1.5 min-h-[24px] sm:min-h-[30px]"
+                  : "mb-2.5 gap-1.5 min-h-[30px]"
+              } flex items-center justify-center flex-wrap`}
+            >
               {variants.map((v) => {
                 const vId = getVariantId(v);
                 const selected = isSelected(vId);
@@ -192,7 +233,11 @@ export default function ProductCardShop({
                     type="button"
                     disabled={outOfStock}
                     onClick={(e) => handleVariantClick(vId, e)}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer border ${
+                    className={`${
+                      compactOnMobile
+                        ? "px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] rounded-md sm:rounded-lg"
+                        : "px-2.5 py-1 text-[11px] rounded-lg"
+                    } font-bold transition-all cursor-pointer border ${
                       selected
                         ? "bg-[#593102] text-white border-[#593102] shadow-2xs scale-105"
                         : outOfStock
@@ -208,7 +253,7 @@ export default function ProductCardShop({
           )}
 
           {/* Buy Now Button */}
-          <div className="pb-1 flex justify-center">
+          <div className={`${compactOnMobile ? "pb-0.5 sm:pb-1" : "pb-1"} flex justify-center`}>
             <button
               type="button"
               disabled={isSelectedOutOfStock}
@@ -227,7 +272,11 @@ export default function ProductCardShop({
                   onOpenDetails();
                 }
               }}
-              className={`h-[44px] w-full max-w-[170px] rounded-xl font-extrabold text-[15px] sm:text-[16px] transition-all duration-300 flex items-center justify-center border ${
+              className={`${
+                compactOnMobile
+                  ? "h-[33px] sm:h-[44px] max-w-[125px] sm:max-w-[170px] text-[12.5px] sm:text-[16px] rounded-lg sm:rounded-xl"
+                  : "h-[44px] max-w-[170px] text-[15px] sm:text-[16px] rounded-xl"
+              } w-full font-extrabold transition-all duration-300 flex items-center justify-center border ${
                 isSelectedOutOfStock
                   ? "bg-gray-200 text-gray-500 border-gray-300 shadow-none cursor-not-allowed opacity-80"
                   : "bg-[#FA4B1B] hover:bg-[#E64216] text-white shadow-md hover:shadow-lg hover:scale-[1.02] cursor-pointer active:scale-98 border-white/20"
