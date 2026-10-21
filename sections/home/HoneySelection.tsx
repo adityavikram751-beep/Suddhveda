@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
@@ -27,7 +27,6 @@ export default function HoneySelection() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   // ---------- Fetch Wishlist ----------
   const fetchWishlist = async (broadcast = true) => {
@@ -104,28 +103,6 @@ export default function HoneySelection() {
       window.removeEventListener("wishlist-count-update", handleWishlistChange);
     };
   }, []);
-
-  // ---------- Auto Slide for Mobile ----------
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    if (products.length === 0 || isPaused) return;
-
-    let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (window.innerWidth < 1024 && sliderRef.current) {
-        const maxLen = products.length;
-        currentIndex = (currentIndex + 1) % maxLen;
-        const cardWidth = sliderRef.current.offsetWidth;
-        sliderRef.current.scrollTo({
-          left: cardWidth * currentIndex,
-          behavior: "smooth",
-        });
-      }
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [products, isPaused]);
 
   // ---------- Variant Selection ----------
   const handleVariantSelect = (productId: string, variantId: string) => {
@@ -276,13 +253,7 @@ export default function HoneySelection() {
         ) : (
           <div className="relative">
             <div
-              ref={sliderRef}
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-              onTouchStart={() => setIsPaused(true)}
-              onTouchEnd={() => setIsPaused(false)}
-              onTouchCancel={() => setIsPaused(false)}
-              className="flex lg:grid lg:grid-cols-4 overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scrollbar-none gap-4 lg:gap-x-7 lg:gap-y-9 mt-8 pb-4 lg:pb-0 px-2 sm:px-0 scroll-smooth"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-x-7 lg:gap-y-9 mt-8"
             >
               {products.map((product, idx) => {
                 const productId = getProductId(product);
@@ -299,38 +270,35 @@ export default function HoneySelection() {
                 return (
                   <div
                     key={productId}
-                    className={`w-full min-w-full lg:min-w-0 snap-center flex-shrink-0 px-4 sm:px-16 lg:px-0 flex justify-center ${idx >= 4 ? "lg:hidden" : ""
-                      }`}
+                    className={`w-full flex flex-col items-center h-full ${idx >= 4 ? "lg:hidden" : ""}`}
                   >
-                    <div className="w-full max-w-[340px] lg:max-w-none">
-                      <ProductCardShop
-                        badge={cardBadge}
-                        image={normalized.image}
-                        title={normalized.title}
-                        subtitle={normalized.subtitle}
-                        category={normalized.category}
-                        tasteProfile={normalized.tasteProfile}
-                        shortDescription={normalized.shortDescription}
-                        weight={normalized.weight}
-                        price={normalized.price}
-                        oldPrice={normalized.oldPrice}
-                        rating={normalized.rating}
-                        reviews={normalized.reviews}
-                        quantity={0}
-                        variants={variants}
-                        selectedVariantId={selectedVariantId}
-                        onVariantSelect={(variantId: string) =>
-                          handleVariantSelect(productId, variantId)
-                        }
-                        onAddToCart={() => handleAddToCart(product)}
-                        onBuyNow={() => handleBuyNow(product)}
-                        onIncrement={dummyHandler}
-                        onDecrement={dummyHandler}
-                        onToggleWishlist={() => handleToggleWishlist(productId)}
-                        isWishlisted={wishlistIds.includes(productId)}
-                        onOpenDetails={() => router.push(`/shop/products/${productId}`)}
-                      />
-                    </div>
+                    <ProductCardShop
+                      badge={normalized.badge}
+                      image={normalized.image}
+                      title={normalized.title}
+                      subtitle={normalized.subtitle}
+                      category={normalized.category}
+                      tasteProfile={normalized.tasteProfile}
+                      shortDescription={normalized.shortDescription}
+                      weight={normalized.weight}
+                      price={normalized.price}
+                      oldPrice={normalized.oldPrice}
+                      rating={normalized.rating}
+                      reviews={normalized.reviews}
+                      quantity={0}
+                      variants={variants}
+                      selectedVariantId={selectedVariantId}
+                      onVariantSelect={(variantId: string) =>
+                        handleVariantSelect(productId, variantId)
+                      }
+                      onAddToCart={() => handleAddToCart(product)}
+                      onBuyNow={() => handleBuyNow(product)}
+                      onIncrement={dummyHandler}
+                      onDecrement={dummyHandler}
+                      onToggleWishlist={() => handleToggleWishlist(productId)}
+                      isWishlisted={wishlistIds.includes(productId)}
+                      onOpenDetails={() => router.push(`/shop/products/${productId}`)}
+                    />
                   </div>
                 );
               })}
