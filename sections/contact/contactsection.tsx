@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData } from "@/lib/cache-utils";
 import Image from "next/image";
 import { FiPhone, FiMail, FiMapPin, FiArrowUp, FiChevronDown, FiCheck } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
@@ -37,8 +38,12 @@ interface FormData {
 }
 
 export default function ContactSection() {
-  const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [locationData, setLocationData] = useState<LocationData | null>(() => {
+    return getCachedData<LocationData>("contact_location_data") || null;
+  });
+  const [loading, setLoading] = useState(() => {
+    return !getCachedData<LocationData>("contact_location_data");
+  });
   const [isMapActive, setIsMapActive] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -89,6 +94,7 @@ export default function ContactSection() {
         const data = await response.json();
         if (data.success) {
           setLocationData(data.data);
+          setCachedData("contact_location_data", data.data);
         }
       } catch (error) {
         console.error("Error fetching location data:", error);
@@ -446,7 +452,7 @@ export default function ContactSection() {
           {/* RIGHT - Photo Card */}
           <div className="relative rounded-3xl overflow-hidden min-h-[250px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[460px] xl:min-h-[520px] border-4 border-white ring-1 ring-[#D49313]/30 shadow-xl">
             <Image
-              src="/shuudhveda.png"
+              src="/shuudhveda.webp"
               alt="Honey being drizzled into a bowl"
               fill
               className="object-cover"

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Heart, ArrowUpRight, X, ShoppingCart, Trash2, Check, Loader2, Share2 } from "lucide-react";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
 import { getPrimaryImage, getProductVariants } from "@/lib/api-products";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 interface WishlistItem {
   id: string;
@@ -159,14 +160,21 @@ export default function WishlistPage() {
         return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/products`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to fetch products");
-      const data = await res.json();
-      const allProducts = data?.data || data?.products || (Array.isArray(data) ? data : []);
+      let allProducts = getCachedData<any[]>("all_products");
+      if (!allProducts || allProducts.length === 0) {
+        const res = await fetch(`${API_BASE_URL}/api/products`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          allProducts = data?.data || data?.products || (Array.isArray(data) ? data : []);
+          setCachedData("all_products", allProducts);
+        } else {
+          allProducts = [];
+        }
+      }
 
-      const formattedGuestItems = allProducts
+      const formattedGuestItems = (allProducts || [])
         .filter((prod: any) => guestIds.includes(String(prod._id || prod.id)))
         .map((product: any) => {
           const title = product.product_name || product.name || product.title || "Honey Product";

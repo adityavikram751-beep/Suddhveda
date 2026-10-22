@@ -527,7 +527,7 @@ export default function Cart() {
                                                 />
                                                 <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[#FAF5EC] border border-[#EADCC9]">
                                                     <Image
-                                                        src={product.image && product.image.trim() !== "" ? product.image : "/giftset.png"}
+                                                        src={product.image && product.image.trim() !== "" ? product.image : "/giftset.webp"}
                                                         alt={product.productName}
                                                         fill
                                                         unoptimized

@@ -90,7 +90,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
         detail: "500g × 6 Jars",
         price: 2099,
         mrp: 2394,
-        image_url: "/subscribe2.0.png",
+        image_url: "/subscribe2.0.webp",
     });
 
     const [submittingCheckout, setSubmittingCheckout] = useState(false);
@@ -245,7 +245,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                             found.image_url ||
                             (typeof found.image === "string" ? found.image : (found.image?.image_url || found.image?.url)) ||
                             found.imageUrl ||
-                            "/subscribe2.0.png";
+                            "/subscribe2.0.webp";
 
                         setSelectedPlan({
                             id: found._id || found.id,
@@ -330,7 +330,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
                     (typeof resData.purchase?.plan?.image === "string" ? resData.purchase?.plan?.image : resData.purchase?.plan?.image?.image_url) ||
                     selectedPlan.image_url ||
                     selectedPlan.image ||
-                    "/subscribe2.0.png";
+                    "/subscribe2.0.webp";
 
                 if (resData.payment_required && resData.razorpay) {
                     await loadRazorpayScript();
@@ -418,7 +418,7 @@ export default function SubscriptionCheckoutForm({ planId, onClose }: Subscripti
             {/* Header Banner Image (Background.svg - Full width, exact aspect ratio, no side cuts) */}
             <div className="relative w-full aspect-[1040/205] rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#FAF4E8]">
                 <Image
-                    src="/shuddpng.png"
+                    src="/shuddpng.webp"
                     alt="Subscribe Honey Subscription Banner"
                     fill
                     priority

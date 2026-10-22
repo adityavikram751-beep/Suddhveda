@@ -49,10 +49,11 @@ export default function Hero() {
           <div className="relative flex justify-center items-center w-full mt-6 lg:mt-0">
             <div className="relative w-full max-w-[640px] aspect-[16/10.4] overflow-hidden rounded-[28px] shadow-[0_20px_50px_rgba(212,147,19,0.22)] border-2 border-[#D49313] bg-white group">
               <Image
-                src="/Honey Gift Set.png"
+                src="/Honey Gift Set.webp"
                 alt="ShudhVeda Himalayan Forest Bloom Gift Set"
                 fill
                 priority
+                sizes="(max-width: 1024px) 100vw, 640px"
                 className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105 rounded-[26px]"
               />
             </div>

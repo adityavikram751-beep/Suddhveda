@@ -58,7 +58,7 @@ export default function MomentsMadeSweeter() {
               {/* Card 1 */}
               <div className="relative rounded-[24px] overflow-hidden h-[240px] sm:h-[280px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
                 <Image
-                  src="/PURE.png"
+                  src="/PURE.webp"
                   alt="Elderly couple unboxing a gift"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -70,7 +70,7 @@ export default function MomentsMadeSweeter() {
               {/* Card 2 */}
               <div className="relative rounded-[24px] overflow-hidden h-[240px] sm:h-[280px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
                 <Image
-                  src="/occlychee3.png"
+                  src="/occlychee3.webp"
                   alt="Family celebrating with gift box"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -84,7 +84,7 @@ export default function MomentsMadeSweeter() {
             {/* Bottom Row: Wide Image (5 rows height on lg) */}
             <div className="w-full lg:row-span-5 relative rounded-[24px] overflow-hidden h-[220px] sm:h-[260px] lg:h-full border-2 border-white ring-1 ring-[#D49313]/30 shadow-lg group cursor-pointer">
               <Image
-                src="/occlychee1.png"
+                src="/occlychee1.webp"
                 alt="Family sweet moments with pure honey gift"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl, preloadImage } from "@/lib/cache-utils";
 
 interface BannerData {
   _id: string;
@@ -27,14 +28,21 @@ interface ApiResponse {
 }
 
 export default function UpcomingProduct() {
-  const [banner, setBanner] = useState<BannerData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [banner, setBanner] = useState<BannerData | null>(() => {
+    return getCachedData<BannerData>("upcoming_banner") || null;
+  });
+  const [loading, setLoading] = useState(() => {
+    return !getCachedData<BannerData>("upcoming_banner");
+  });
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // Fetch banner data
   useEffect(() => {
     const fetchBanner = async () => {
       try {
+        if (!banner) {
+          setLoading(true);
+        }
         const res = await fetch(`${API_BASE_URL}/api/upcoming/all-banners`, {
           credentials: "include",
         });
@@ -42,6 +50,8 @@ export default function UpcomingProduct() {
         const data: ApiResponse = await res.json();
         if (data.success && data.data.banner) {
           setBanner(data.data.banner);
+          setCachedData("upcoming_banner", data.data.banner);
+          preloadImage(optimizeCloudinaryUrl(data.data.banner.banner_image, 600));
         } else {
           console.error("No banner data");
         }
@@ -151,11 +161,10 @@ export default function UpcomingProduct() {
                 </span>
               </div>
               <Image
-                src={banner.banner_image}
+                src={optimizeCloudinaryUrl(banner.banner_image, 600)}
                 alt={banner.product_name}
                 fill
                 priority
-                quality={100}
                 sizes="(max-width: 1024px) 100vw, 320px"
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -221,12 +230,11 @@ export default function UpcomingProduct() {
                 </span>
               </div>
               <Image
-                src={banner.banner_image}
+                src={optimizeCloudinaryUrl(banner.banner_image, 500)}
                 alt={banner.product_name}
                 width={400}
                 height={300}
                 priority
-                quality={100}
                 sizes="(max-width: 640px) 100vw, 400px"
                 className="w-full h-[240px] object-cover"
               />

@@ -618,7 +618,7 @@ export default function OrderDetailsSection() {
                         prod.image_url ||
                         item.image ||
                         (typeof prod.image === "string" ? prod.image : "") ||
-                        "/giftset.png";
+                        "/giftset.webp";
 
                       const qty = item.quantity || item.qty || 1;
                       const unitPrice = variant.price || pd.totalAmount || item.price || 0;

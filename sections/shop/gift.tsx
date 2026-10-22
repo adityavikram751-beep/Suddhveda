@@ -26,19 +26,19 @@ const features: Feature[] = [
   },
   {
     id: 2,
-    image: "/craft.png",
+    image: "/craft.webp",
     title: "Crafted with Care",
     description: "Handled with care to preserve purity.",
   },
   {
     id: 3,
-    image: "/hygene.png",
+    image: "/hygene.webp",
     title: "Packed Hygienically",
     description: "Sealed to retain freshness and nutrients.",
   },
   {
     id: 4,
-    image: "/safely.png",
+    image: "/safely.webp",
     title: "Delivered Safely",
     description: "Secure delivery to your doorstep.",
   },

@@ -1,4 +1,7 @@
 import type { Product } from "@/lib/shop-data";
+import { optimizeCloudinaryUrl } from "@/lib/cache-utils";
+
+export { optimizeCloudinaryUrl };
 
 export type ProductVariant = {
   _id?: string;
@@ -324,13 +327,24 @@ export function getProductImages(product: ApiProduct): any[] {
   if (rawList.length > 0) {
     return rawList.map((img: any, idx: number) => {
       if (typeof img === "string") {
-        return { _id: `img-${idx}`, image_url: img, is_primary: idx === 0 };
+        return {
+          _id: `img-${idx}`,
+          image_url: optimizeCloudinaryUrl(img, 600),
+          is_primary: idx === 0,
+        };
       }
+      const rawUrl =
+        img.image_url || img.url || img.src || img.secure_url || "/placeholder.png";
+      const optimizedUrl = optimizeCloudinaryUrl(rawUrl, 600);
+      const thumbUrl = optimizeCloudinaryUrl(
+        img.thumbnail || img.thumbnail_url || rawUrl,
+        300
+      );
       return {
         _id: img._id || img.id || `img-${idx}`,
-        image_url: img.image_url || img.url || img.src || img.secure_url || "/placeholder.png",
+        image_url: optimizedUrl,
         is_primary: img.is_primary ?? idx === 0,
-        thumbnail: img.thumbnail || img.thumbnail_url || img.image_url || img.url || img.secure_url || "/placeholder.png",
+        thumbnail: thumbUrl,
       };
     });
   }
@@ -340,14 +354,14 @@ export function getProductImages(product: ApiProduct): any[] {
 
 export function getPrimaryImage(product: ApiProduct): string {
   const images = getProductImages(product);
-  return (
+  const rawUrl =
     images.find((img: any) => img?.is_primary)?.image_url ||
     images[0]?.image_url ||
     product?.image_url ||
     product?.imageUrl ||
     (typeof product?.image === "string" ? product.image : null) ||
-    "/placeholder.png"
-  );
+    "/placeholder.png";
+  return optimizeCloudinaryUrl(rawUrl, 600);
 }
 
 export function getProductVariants(product: ApiProduct): ProductVariant[] {

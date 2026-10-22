@@ -8,25 +8,25 @@ const timeline = [
     year: "2018",
     title: "The Beginning",
     desc: "Our journey began with a passion for bees and a desire to create something pure.",
-    image: "/bigin2.png",
+    image: "/bigin2.webp",
   },
   {
     year: "2019",
     title: "The Discovery",
     desc: "We discovered the magic of raw, pure honey and its incredible benefits.",
-    image: "/discovered.png",
+    image: "/discovered.webp",
   },
   {
     year: "2020",
     title: "The Commitment",
     desc: "We built relationships with ethical beekeepers who share our values and vision.",
-    image: "/commit.png",
+    image: "/commit.webp",
   },
   {
     year: "NOW & ALWAYS",
     title: "The Promise",
     desc: "Today, we deliver nature's purest honey to thousands of homes, continuing our journey.",
-    image: "/trusted.png",
+    image: "/trusted.webp",
   },
 ];
 

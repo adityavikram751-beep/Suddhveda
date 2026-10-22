@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
+import { getCachedData, setCachedData, preloadImages } from "@/lib/cache-utils";
 import {
   type ApiProduct,
   getProductId,
   getProductName,
   getProductVariants,
+  getProductImages,
   getProductsFromResponse,
   getVariantId,
   normalizeProduct,
@@ -22,8 +24,13 @@ import {
 export default function HoneySelection() {
   const router = useRouter();
   const { addToCart } = useCart();
-  const [products, setProducts] = useState<ApiProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<ApiProduct[]>(() => {
+    return getCachedData<ApiProduct[]>("all_products") || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedData<ApiProduct[]>("all_products");
+    return !cached || cached.length === 0;
+  });
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
@@ -73,7 +80,9 @@ export default function HoneySelection() {
   // ---------- Fetch Products ----------
   const fetchProducts = async () => {
     try {
-      setLoading(true);
+      if (products.length === 0) {
+        setLoading(true);
+      }
       const res = await fetch(`${API_BASE_URL}/api/products`, {
         credentials: "include",
       });
@@ -81,6 +90,15 @@ export default function HoneySelection() {
       const result = await res.json();
       const productList = getProductsFromResponse(result);
       setProducts(productList);
+      setCachedData("all_products", productList);
+      preloadImages(
+        productList
+          .map((p) => {
+            const doc = getProductImages(p);
+            return doc?.[0]?.image_url;
+          })
+          .filter(Boolean)
+      );
     } catch (err) {
       console.error("Error loading products:", err);
     } finally {

@@ -53,6 +53,7 @@ function ProcessStepIcon({ icon, title, step }: { icon: string; title: string; s
           src={icon}
           alt={title}
           fill
+          sizes="90px"
           className="object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
           onError={() => setImgError(true)}
         />

@@ -18,43 +18,33 @@ export default async function ProductPage({
 }) {
   const { id } = await params;
 
+  const FETCH_OPTIONS: RequestInit = {
+    next: { revalidate: 60 },
+    headers: FETCH_HEADERS,
+  };
+
+  // Fetch combo, standard, all products (recommendations), and lab reports concurrently in parallel
+  const [comboSettled, standardSettled, recSettled, labSettled] = await Promise.allSettled([
+    fetch(`${API_BASE_URL}/api/combo/products/details/${id}`, FETCH_OPTIONS).then((r) =>
+      r.ok ? r.json() : null
+    ),
+    fetch(`${API_BASE_URL}/api/products/${id}`, FETCH_OPTIONS).then((r) =>
+      r.ok ? r.json() : null
+    ),
+    fetch(`${API_BASE_URL}/api/products`, FETCH_OPTIONS).then((r) =>
+      r.ok ? r.json() : null
+    ),
+    fetch(`${API_BASE_URL}/api/admin/lab-report/all`, FETCH_OPTIONS).then((r) =>
+      r.ok ? r.json() : null
+    ),
+  ]);
+
   let product: ApiProduct | null = null;
-  let recommendations: ApiProduct[] = [];
-
-  try {
-    console.log("🔍 Requesting Combo Product URL:", `${API_BASE_URL}/api/combo/products/details/${id}`);
-
-    const comboRes = await fetch(`${API_BASE_URL}/api/combo/products/details/${id}`, {
-      cache: "no-store",
-      headers: FETCH_HEADERS,
-    });
-
-    if (comboRes.ok) {
-      const comboResult = await comboRes.json();
-      console.log("📦 Combo API Data fetched successfully");
-      product = getSingleProductFromResponse(comboResult);
-    }
-  } catch (error) {
-    console.error("❌ Failed to fetch combo product:", error);
+  if (comboSettled.status === "fulfilled" && comboSettled.value) {
+    product = getSingleProductFromResponse(comboSettled.value);
   }
-
-  if (!product) {
-    try {
-      console.log("🔍 Requesting Standard Product URL:", `${API_BASE_URL}/api/products/${id}`);
-
-      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-        cache: "no-store",
-        headers: FETCH_HEADERS,
-      });
-
-      if (res.ok) {
-        const result = await res.json();
-        console.log("📦 Standard API Data fetched successfully");
-        product = getSingleProductFromResponse(result);
-      }
-    } catch (error) {
-      console.error("❌ Failed to fetch standard product:", error);
-    }
+  if (!product && standardSettled.status === "fulfilled" && standardSettled.value) {
+    product = getSingleProductFromResponse(standardSettled.value);
   }
 
   // Agar product fetch nahi hua tabhi notFound() hoga
@@ -64,37 +54,18 @@ export default async function ProductPage({
   }
 
   let allProducts: ApiProduct[] = [];
-  try {
-    const recRes = await fetch(`${API_BASE_URL}/api/products`, {
-      cache: "no-store",
-      headers: FETCH_HEADERS,
-    });
-
-    if (recRes.ok) {
-      const recResult = await recRes.json();
-      const allList = getProductsFromResponse(recResult);
-      allProducts = allList;
-      recommendations = allList.filter((item) => item._id !== id);
-    }
-  } catch (error) {
-    console.error("❌ Failed to fetch recommendations:", error);
+  let recommendations: ApiProduct[] = [];
+  if (recSettled.status === "fulfilled" && recSettled.value) {
+    allProducts = getProductsFromResponse(recSettled.value);
+    recommendations = allProducts.filter((item) => item._id !== id);
   }
 
   let labReports: any[] = [];
-  try {
-    const labRes = await fetch(`${API_BASE_URL}/api/admin/lab-report/all`, {
-      cache: "no-store",
-      headers: FETCH_HEADERS,
-    });
-
-    if (labRes.ok) {
-      const labResult = await labRes.json();
-      labReports = Array.isArray(labResult)
-        ? labResult
-        : labResult?.data || labResult?.reports || [];
-    }
-  } catch (error) {
-    console.error("❌ Failed to fetch lab reports:", error);
+  if (labSettled.status === "fulfilled" && labSettled.value) {
+    const labResult = labSettled.value;
+    labReports = Array.isArray(labResult)
+      ? labResult
+      : labResult?.data || labResult?.reports || [];
   }
 
   return (

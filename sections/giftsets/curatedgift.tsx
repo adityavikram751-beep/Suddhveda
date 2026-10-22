@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
 import { useCart } from "@/components/cart/CartProvider";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl, preloadImages } from "@/lib/cache-utils";
 
 // ================= TYPES =================
 type ProductItem = {
@@ -56,8 +57,13 @@ export default function CuratedGift() {
   const router = useRouter();
   const { fetchCart, openCart } = useCart();
 
-  const [comboProducts, setComboProducts] = useState<ComboProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [comboProducts, setComboProducts] = useState<ComboProduct[]>(() => {
+    return getCachedData<ComboProduct[]>("curated_combos_all") || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedData<ComboProduct[]>("curated_combos_all");
+    return !cached || cached.length === 0;
+  });
 
   // Selected combo item for Detail Modal Popup
   const [selectedCombo, setSelectedCombo] = useState<ComboProduct | null>(null);
@@ -69,7 +75,9 @@ export default function CuratedGift() {
   useEffect(() => {
     const fetchComboProducts = async () => {
       try {
-        setLoading(true);
+        if (comboProducts.length === 0) {
+          setLoading(true);
+        }
         let res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
           credentials: "include",
         });
@@ -100,11 +108,14 @@ export default function CuratedGift() {
 
                 if (Array.isArray(item.images) && item.images.length > 0) {
                   imgList = item.images.map((img: any) => ({
-                    url: typeof img === "string" ? img : img?.url || img?.image_url || "/honneycart.png",
+                    url: optimizeCloudinaryUrl(
+                      typeof img === "string" ? img : img?.url || img?.image_url || "/honneycart.png",
+                      600
+                    ),
                     is_primary: typeof img === "object" ? !!img?.is_primary : false,
                   }));
                 } else if (item.image || item.image_url) {
-                  imgList = [{ url: item.image || item.image_url, is_primary: true }];
+                  imgList = [{ url: optimizeCloudinaryUrl(item.image || item.image_url, 600), is_primary: true }];
                 }
 
                 const price = Number(item.selling_price || item.price || item.salePrice || 999);
@@ -152,15 +163,17 @@ export default function CuratedGift() {
               });
 
             setComboProducts(parsed);
+            setCachedData("curated_combos_all", parsed);
+            preloadImages(parsed.map((c) => c.images?.[0]?.url));
           } else {
-            setComboProducts([]);
+            if (comboProducts.length === 0) setComboProducts([]);
           }
         } else {
-          setComboProducts([]);
+          if (comboProducts.length === 0) setComboProducts([]);
         }
       } catch (err) {
         console.error("Error fetching combo products API:", err);
-        setComboProducts([]);
+        if (comboProducts.length === 0) setComboProducts([]);
       } finally {
         setLoading(false);
       }
@@ -633,7 +646,7 @@ export default function CuratedGift() {
 }
 
 // Default fallback images
-const FALLBACK_IMAGES = ["/home 2.png", "/ajwainnew.png", "/dashboardm1.png", "/honneycart.png"];
+const FALLBACK_IMAGES = ["/home 2.webp", "/ajwainnew.webp", "/dashboardm1.webp", "/honneycart.png"];
 
 function getFallbackImage(seed: string) {
   const hash = (seed || "").split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -642,10 +655,11 @@ function getFallbackImage(seed: string) {
 
 // ================= COMBO CARD COMPONENT =================
 function ComboCard({ product, onClick }: { product: ComboProduct; onClick: () => void }) {
-  let primaryImg = product.images?.find((img) => img.is_primary)?.url || product.images?.[0]?.url;
-  if (!primaryImg || primaryImg.trim() === "") {
-    primaryImg = getFallbackImage(product._id || product.combo_name);
+  let rawPrimaryImg = product.images?.find((img) => img.is_primary)?.url || product.images?.[0]?.url;
+  if (!rawPrimaryImg || rawPrimaryImg.trim() === "") {
+    rawPrimaryImg = getFallbackImage(product._id || product.combo_name);
   }
+  const primaryImg = optimizeCloudinaryUrl(rawPrimaryImg, 600);
 
   const jarCount = product.combo_size || (product.products ? product.products.length : 2);
 
@@ -671,7 +685,7 @@ function ComboCard({ product, onClick }: { product: ComboProduct; onClick: () =>
           src={primaryImg}
           alt={product.combo_name}
           fill
-          priority
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
           className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
           onError={(e) => {
             const target = e.target as HTMLImageElement;

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Play, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 type Recipe = {
   _id: string;
@@ -18,8 +19,13 @@ type Recipe = {
 };
 
 export default function HealthyIdeas() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [recipes, setRecipes] = useState<Recipe[]>(() => {
+    return getCachedData<Recipe[]>("benefits_recipes") || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedData<Recipe[]>("benefits_recipes");
+    return !cached || cached.length === 0;
+  });
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ title: string; video_url: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -29,26 +35,27 @@ export default function HealthyIdeas() {
   useEffect(() => {
     const fetchBenefits = async () => {
       try {
-        setLoading(true);
+        if (recipes.length === 0) {
+          setLoading(true);
+        }
         setError(null);
 
-        // Fetch benefits category first
-        let response = await fetch(`${API_BASE_URL}/api/benefits/all-benefits/benefits`);
-        let data = response.ok ? await response.json() : null;
+        // Fetch both categories in parallel
+        const [benefitsRes, healthyRes] = await Promise.allSettled([
+          fetch(`${API_BASE_URL}/api/benefits/all-benefits/benefits`).then((r) =>
+            r.ok ? r.json() : null
+          ),
+          fetch(`${API_BASE_URL}/api/benefits/all-benefits/healthy`).then((r) =>
+            r.ok ? r.json() : null
+          ),
+        ]);
 
-        let allData = (data && data.success && Array.isArray(data.data)) ? data.data : [];
-
-        // Also fetch healthy category to get all video items
-        try {
-          const healthyRes = await fetch(`${API_BASE_URL}/api/benefits/all-benefits/healthy`);
-          if (healthyRes.ok) {
-            const healthyData = await healthyRes.json();
-            if (healthyData.success && Array.isArray(healthyData.data)) {
-              allData = [...allData, ...healthyData.data];
-            }
-          }
-        } catch (e) {
-          console.warn("Healthy category fetch fallback warning", e);
+        let allData: any[] = [];
+        if (benefitsRes.status === "fulfilled" && benefitsRes.value?.data) {
+          allData = [...allData, ...benefitsRes.value.data];
+        }
+        if (healthyRes.status === "fulfilled" && healthyRes.value?.data) {
+          allData = [...allData, ...healthyRes.value.data];
         }
 
         if (allData.length > 0) {
@@ -57,18 +64,21 @@ export default function HealthyIdeas() {
             title: item.title,
             description: item.description || "",
             video_url: item.video_url || item.videoUrl || item.video || "",
-            thumbnail_url: item.thumbnail_url || item.thumbnailUrl || item.image || "",
-            image: item.thumbnail_url || item.thumbnailUrl || item.image || "/placeholder-image.png",
+            thumbnail_url: optimizeCloudinaryUrl(item.thumbnail_url || item.thumbnailUrl || item.image || "", 500),
+            image: optimizeCloudinaryUrl(item.thumbnail_url || item.thumbnailUrl || item.image || "/placeholder-image.png", 500),
             duration: item.duration,
             slug: item.title.toLowerCase().replace(/\s+/g, "-"),
           }));
           setRecipes(mappedRecipes);
+          setCachedData("benefits_recipes", mappedRecipes);
         } else {
-          setRecipes([]);
+          if (recipes.length === 0) setRecipes([]);
         }
       } catch (err) {
         console.error("Error fetching benefits:", err);
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        if (recipes.length === 0) {
+          setError(err instanceof Error ? err.message : "Something went wrong");
+        }
       } finally {
         setLoading(false);
       }

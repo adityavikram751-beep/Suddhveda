@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Star, StarHalf, Quote } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 type Review = {
   _id: string;
@@ -66,7 +67,9 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function RealReview() {
-  const [reviews, setReviews] = useState<Review[]>(FALLBACK_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>(() => {
+    return getCachedData<Review[]>("reviews_all") || FALLBACK_REVIEWS;
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
@@ -84,11 +87,12 @@ export default function RealReview() {
           text: item.review || item.text || item.comment || "",
           name: item.fullname || item.name || item.userName || "Anonymous",
           role: item.role || "Verified Buyer",
-          image: item.profile_url || item.image || item.userImage || "/female.png",
+          image: optimizeCloudinaryUrl(item.profile_url || item.image || item.userImage || "/female.png", 100),
         }));
 
         if (items.length > 0) {
           setReviews(items);
+          setCachedData("reviews_all", items);
         }
       } catch (err) {
         console.error("Error fetching reviews:", err);

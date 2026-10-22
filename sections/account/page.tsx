@@ -981,7 +981,7 @@ export default function MyOrdersPage() {
                             const title = extractItemTitle(item);
                             let img = extractImageUrl(item);
                             if (!img) {
-                                img = isCustomGift ? "/giftset.png" : "/Upcoming.png";
+                                img = isCustomGift ? "/giftset.webp" : "/Upcoming.png";
                             }
 
                             const pd = (typeof item.product_details === "object" && item.product_details !== null && item.product_details)

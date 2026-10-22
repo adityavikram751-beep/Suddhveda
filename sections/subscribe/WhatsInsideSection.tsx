@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData } from "@/lib/cache-utils";
 
 interface FeatureItem {
     icon: string;
@@ -10,8 +11,32 @@ interface FeatureItem {
     descLines: string[];
 }
 
+const computeSavings = (rawList: any[]): number => {
+    if (!Array.isArray(rawList) || rawList.length === 0) return 16;
+    const plan = rawList[0];
+    let disc: number | null = null;
+    if (typeof plan.discountPercentage === "number") {
+        disc = plan.discountPercentage;
+    } else if (typeof plan.discountPercentage === "string") {
+        disc = parseFloat(plan.discountPercentage);
+    } else if (typeof plan.discount_percentage === "number") {
+        disc = plan.discount_percentage;
+    }
+    if (disc !== null && !isNaN(disc) && disc > 0) return Math.round(disc);
+    const price = typeof plan.price === "number" ? plan.price : null;
+    const mrp = typeof plan.originalPrice === "number" ? plan.originalPrice : (typeof plan.mrp === "number" ? plan.mrp : null);
+    if (price && mrp && mrp > price) {
+        const computed = Math.round(((mrp - price) / mrp) * 100);
+        if (computed > 0) return computed;
+    }
+    return 16;
+};
+
 export default function WhatsInsideSection() {
-    const [savingsPercent, setSavingsPercent] = useState<number>(16);
+    const [savingsPercent, setSavingsPercent] = useState<number>(() => {
+        const cached = getCachedData<any[]>("subscription_plans_raw");
+        return cached ? computeSavings(cached) : 16;
+    });
 
     useEffect(() => {
         const fetchPlanSavings = async () => {
@@ -23,30 +48,8 @@ export default function WhatsInsideSection() {
                 const rawList = data.data || data.plans || data || [];
 
                 if (Array.isArray(rawList) && rawList.length > 0) {
-                    const plan = rawList[0];
-                    let disc: number | null = null;
-
-                    if (typeof plan.discountPercentage === "number") {
-                        disc = plan.discountPercentage;
-                    } else if (typeof plan.discountPercentage === "string") {
-                        disc = parseFloat(plan.discountPercentage);
-                    } else if (typeof plan.discount_percentage === "number") {
-                        disc = plan.discount_percentage;
-                    }
-
-                    if (disc !== null && !isNaN(disc) && disc > 0) {
-                        setSavingsPercent(Math.round(disc));
-                    } else {
-                        const price = typeof plan.price === "number" ? plan.price : null;
-                        const mrp = typeof plan.originalPrice === "number" ? plan.originalPrice : (typeof plan.mrp === "number" ? plan.mrp : null);
-
-                        if (price && mrp && mrp > price) {
-                            const computed = Math.round(((mrp - price) / mrp) * 100);
-                            if (computed > 0) {
-                                setSavingsPercent(computed);
-                            }
-                        }
-                    }
+                    setCachedData("subscription_plans_raw", rawList);
+                    setSavingsPercent(computeSavings(rawList));
                 }
             } catch (error) {
                 console.error("Error fetching plan savings in WhatsInsideSection:", error);
@@ -228,7 +231,7 @@ export default function WhatsInsideSection() {
                     <div className="lg:col-span-4 flex justify-center lg:justify-end items-center mt-6 lg:mt-0 lg:mr-0 xl:-mr-18">
                         <div className="relative w-full max-w-[360px] sm:max-w-[440px] lg:max-w-[500px] xl:max-w-[550px] h-[330px] sm:h-[390px] lg:h-[430px] xl:h-[470px] flex items-center justify-end">
                             <Image
-                                src="/image 1861 (3).png"
+                                src="/image 1861 (3).webp"
                                 alt="Shuddhveda Natural Honey Jar"
                                 fill
                                 className="object-contain object-right"

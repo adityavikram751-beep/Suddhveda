@@ -6,6 +6,7 @@ import { Heart, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getStoredSession, getStoredToken } from "@/lib/auth";
 import { isVariantOutOfStock } from "@/lib/api-products";
+import { optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 type Variant = {
   _id?: string;
@@ -93,11 +94,14 @@ export default function ProductCardShop({
 }: ProductCardShopProps) {
   const router = useRouter();
   const fallbackImage = "/honneycart.png";
-  const initialImageSrc = image && image.trim() !== "" ? image : fallbackImage;
+  const initialImageSrc =
+    image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 500) : fallbackImage;
   const [imageSrc, setImageSrc] = useState(initialImageSrc);
 
   useEffect(() => {
-    setImageSrc(image && image.trim() !== "" ? image : fallbackImage);
+    setImageSrc(
+      image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 500) : fallbackImage
+    );
   }, [image]);
 
   const handleWishlistClick = (e: React.MouseEvent) => {
@@ -188,6 +192,7 @@ export default function ProductCardShop({
           src={imageSrc}
           alt={title || "Product"}
           fill
+          sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 300px"
           className={`${
             fullImage
               ? "object-cover object-center"

@@ -30,6 +30,7 @@ import {
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 import { getCategoryName, getProductImages, getProductVariants, getPrimaryImage, getProductName, isVariantOutOfStock, getVariantId } from "@/lib/api-products";
 
 const accordionSections = [
@@ -240,7 +241,11 @@ export default function ProductDetailPage({
   const router = useRouter();
 
   // Lab Reports State (fetched from {{baseUrl}}/api/admin/lab-report/all and filtered by product name)
-  const [labReports, setLabReports] = useState<any[]>(initialLabReports);
+  const [labReports, setLabReports] = useState<any[]>(() => {
+    return initialLabReports && initialLabReports.length > 0
+      ? initialLabReports
+      : getCachedData<any[]>("all_lab_reports") || [];
+  });
 
   useEffect(() => {
     fetchLabReports();
@@ -262,6 +267,7 @@ export default function ProductDetailPage({
           : result?.data || result?.reports || result?.labReports || [];
         if (Array.isArray(list)) {
           setLabReports(list);
+          setCachedData("all_lab_reports", list);
         }
       }
     } catch (err) {
@@ -448,7 +454,9 @@ export default function ProductDetailPage({
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
 
   // Recommended Combo Products State
-  const [comboRecommendations, setComboRecommendations] = useState<any[]>([]);
+  const [comboRecommendations, setComboRecommendations] = useState<any[]>(() => {
+    return getCachedData<any[]>("recommended_combos") || [];
+  });
 
   useEffect(() => {
     if (isComboProduct) {
@@ -478,6 +486,7 @@ export default function ProductDetailPage({
           (Array.isArray(data) ? data : []);
         if (Array.isArray(list)) {
           setComboRecommendations(list);
+          setCachedData("recommended_combos", list);
         }
       }
     } catch (err) {

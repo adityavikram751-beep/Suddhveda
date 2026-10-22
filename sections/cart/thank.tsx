@@ -200,7 +200,7 @@ export default function OrderConfirmation() {
           order?.plan?.image_url ||
           (typeof order?.plan?.image === "string" ? order?.plan?.image : order?.plan?.image?.image_url) ||
           order?.image ||
-          "/subscribe2.0.png",
+          "/subscribe2.0.webp",
       },
     ]
     : [];

@@ -559,7 +559,7 @@
 //         <div className="mt-24 grid grid-cols-1 items-center gap-12 lg:grid-cols-[480px_1fr]">
 //           <div className="relative mx-auto h-[550px] w-full max-w-[480px] overflow-hidden rounded-[28px]">
 //             <Image
-//               src="/image2.png"
+//               src="/image2.webp"
 //               alt="Gift Packaging"
 //               fill
 //               className="object-cover"

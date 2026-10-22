@@ -18,10 +18,11 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
       {/* Background Hero Image - Full Screen Background for Desktop */}
       <div className="hidden lg:block absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/lycheebak.png"
+          src="/lycheebak.webp"
           alt="Shuddhveda Honey Subscription"
           fill
           priority
+          sizes="100vw"
           className="object-cover object-right pointer-events-none"
         />
       </div>
@@ -30,10 +31,11 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
       {/* Background Hero Image - Full Screen Background for Mobile */}
       <div className="block lg:hidden absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/mobilesub.png"
+          src="/mobilesub.webp"
           alt="Shuddhveda Honey Subscription Mobile Background"
           fill
           priority
+          sizes="100vw"
           className="object-cover object-center pointer-events-none"
         />
       </div>
@@ -225,10 +227,10 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
           {/* Honey Jars Showcase Image (Shown after feature cards & before CTA on Mobile) */}
           <div className="relative w-full max-w-[360px] aspect-[4/3] mx-auto my-4">
             <Image
-              src="/newlychee.png"
+              src="/newlychee.webp"
               alt="Shuddhveda Honey Subscription Jars"
               fill
-              priority
+              sizes="(max-width: 640px) 360px, 400px"
               className="object-contain pointer-events-none"
             />
           </div>

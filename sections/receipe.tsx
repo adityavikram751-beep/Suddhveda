@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Play, X, HelpCircle } from "lucide-react";
 import { FiChevronRight, FiChevronDown } from "react-icons/fi";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 // ================= TYPES =================
 type Recipe = {
@@ -105,13 +106,15 @@ const faqs: Faq[] = [
 
 // ================= MAIN COMPONENT =================
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<"benefits" | "healthy">("benefits");
+  const [recipes, setRecipes] = useState<Recipe[]>(() => {
+    return getCachedData<Recipe[]>("benefits_benefits") || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    return !getCachedData<Recipe[]>("benefits_benefits");
+  });
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ title: string; video_url: string } | null>(null);
-
-  // Category from URL params or default
-  const [activeCategory, setActiveCategory] = useState<"benefits" | "healthy">("benefits");
 
   // Get category from URL on mount
   useEffect(() => {
@@ -119,6 +122,11 @@ export default function RecipesPage() {
     const category = params.get("category");
     if (category === "benefits" || category === "healthy") {
       setActiveCategory(category);
+      const cached = getCachedData<Recipe[]>(`benefits_${category}`);
+      if (cached && cached.length > 0) {
+        setRecipes(cached);
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -126,7 +134,14 @@ export default function RecipesPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        const cacheKey = `benefits_${activeCategory}`;
+        const cached = getCachedData<Recipe[]>(cacheKey);
+        if (cached && cached.length > 0) {
+          setRecipes(cached);
+          setLoading(false);
+        } else {
+          setLoading(true);
+        }
         setError(null);
 
         // Fetch active category data
@@ -153,19 +168,19 @@ export default function RecipesPage() {
             title: item.title,
             description: item.description || "",
             video_url: item.video_url || item.videoUrl || item.video || "",
-            thumbnail_url: item.thumbnail_url || item.thumbnailUrl || item.image || "",
-            image: item.thumbnail_url || item.thumbnailUrl || item.image || "/placeholder-image.png",
+            thumbnail_url: optimizeCloudinaryUrl(item.thumbnail_url || item.thumbnailUrl || item.image || "", 500),
+            image: optimizeCloudinaryUrl(item.thumbnail_url || item.thumbnailUrl || item.image || "/placeholder-image.png", 500),
             duration: item.duration,
             slug: item.title.toLowerCase().replace(/\s+/g, "-"),
           }));
           setRecipes(mappedRecipes);
+          setCachedData(cacheKey, mappedRecipes);
         } else {
-          setRecipes([]);
+          if (!cached) setRecipes([]);
         }
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err instanceof Error ? err.message : "Something went wrong");
-        setRecipes([]);
       } finally {
         setLoading(false);
       }

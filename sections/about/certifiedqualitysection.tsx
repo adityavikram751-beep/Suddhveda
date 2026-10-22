@@ -5,17 +5,17 @@ import { ShieldCheck, Award } from "lucide-react";
 
 const features = [
   {
-    icon: "/raw.png",
+    icon: "/raw.webp",
     title: "RAW HONEY",
     subtitle: "Cold Extracted",
   },
   {
-    icon: "/gmo.png",
+    icon: "/gmo.webp",
     title: "GMO FREE",
     subtitle: "Natural Flora",
   },
   {
-    icon: "/bpa.png",
+    icon: "/bpa.webp",
     title: "BPA FREE",
     subtitle: "Glass Jar Packed",
   },
@@ -25,12 +25,12 @@ const features = [
     subtitle: "Safety Certified",
   },
   {
-    icon: "/labtest.png",
+    icon: "/labtest.webp",
     title: "LAB TESTED",
     subtitle: "Multi-Parameter",
   },
   {
-    icon: "/nosugar.png",
+    icon: "/nosugar.webp",
     title: "NO ADDED SUGAR",
     subtitle: "Pure Unfiltered",
   },
@@ -80,6 +80,7 @@ export default function CertifiedQualitySection() {
                       src={item.icon}
                       alt={item.title}
                       fill
+                      sizes="60px"
                       className="object-cover rounded-2xl"
                     />
                   </div>

@@ -102,8 +102,13 @@ export default function RootLayout({
         <meta property="og:image:alt" content="ShuddhVeda Pure & Natural Honey" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:image" content={permanentOgImage} />
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://api.shuddhvedahoney.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.shuddhvedahoney.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preload" as="image" href="/mustardnewdes.webp" type="image/webp" fetchPriority="high" />
+        <link rel="preload" as="image" href="/mustardnew.webp" type="image/webp" fetchPriority="high" />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
           rel="stylesheet"

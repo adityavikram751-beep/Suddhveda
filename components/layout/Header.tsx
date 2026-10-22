@@ -20,6 +20,7 @@ import {
   getProductName,
   getCategoryName,
 } from "@/lib/api-products";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 import {
   FiHeart,
   FiUser,
@@ -50,7 +51,9 @@ export default function Header() {
   const router = useRouter();
   const [shopMenuOpen, setShopMenuOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
-  const [apiProducts, setApiProducts] = useState<any[]>([]);
+  const [apiProducts, setApiProducts] = useState<any[]>(() => {
+    return getCachedData<any[]>("all_products") || [];
+  });
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
   const headerWrapperRef = useRef<HTMLDivElement>(null);
@@ -58,12 +61,17 @@ export default function Header() {
   useEffect(() => {
     async function loadShopProducts() {
       try {
+        const cached = getCachedData<any[]>("all_products");
+        if (cached && cached.length > 0 && apiProducts.length === 0) {
+          setApiProducts(cached);
+        }
         const res = await fetch(`${API_BASE_URL}/api/products`, { credentials: "include" });
         if (!res.ok) return;
         const data = await res.json();
         const list = getProductsFromResponse(data);
         if (list && list.length > 0) {
           setApiProducts(list);
+          setCachedData("all_products", list);
         }
       } catch (err) {
         console.error("Error fetching mega menu products:", err);

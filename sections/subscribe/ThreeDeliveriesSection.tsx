@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 interface DeliveryCard {
     month: string;
@@ -13,12 +14,44 @@ interface DeliveryCard {
     image: string;
 }
 
-const DEFAULT_DELIVERIES: DeliveryCard[] = [
+const DEFAULT_DELIVERIES: DeliveryCard[] = [];
 
-];
+const parseDeliveriesFromRaw = (rawList: any[]): DeliveryCard[] => {
+    if (!Array.isArray(rawList) || rawList.length === 0) return DEFAULT_DELIVERIES;
+    const activePlan = rawList.find((p: any) => p.isActive !== false) || rawList[0];
+    const comboSetData = activePlan?.comboSetId;
+    const combosets = Array.isArray(comboSetData?.combosets)
+        ? comboSetData.combosets
+        : (Array.isArray(comboSetData) ? comboSetData : (Array.isArray(activePlan?.combosets) ? activePlan.combosets : []));
+
+    if (!Array.isArray(combosets) || combosets.length === 0) return DEFAULT_DELIVERIES;
+
+    return combosets.map((c: any, index: number) => {
+        const defaultRef = DEFAULT_DELIVERIES[index] || DEFAULT_DELIVERIES[0] || {
+            month: "DELIVERY",
+            title: "Honey Jar Set",
+            season: "SEASONAL",
+            description: "",
+            image: "/homegift.webp",
+        };
+
+        const rawImg = c.image || defaultRef.image;
+        return {
+            month: (c.monthName || defaultRef.month).toUpperCase(),
+            title: c.title || (Array.isArray(c.products) && c.products.length > 0 ? c.products.map((p: any) => p.name).join(" + ") : defaultRef.title),
+            season: (c.season || c.harvestTitle || defaultRef.season).toUpperCase(),
+            description: c.description || defaultRef.description,
+            deliveryLabel: index === 0 ? "Your First Delivery" : index === 1 ? "Your Second Delivery" : "Your Third Delivery",
+            image: optimizeCloudinaryUrl(rawImg, 500),
+        };
+    });
+};
 
 export default function ThreeDeliveriesSection() {
-    const [deliveries, setDeliveries] = useState<DeliveryCard[]>(DEFAULT_DELIVERIES);
+    const [deliveries, setDeliveries] = useState<DeliveryCard[]>(() => {
+        const cached = getCachedData<any[]>("subscription_plans_raw");
+        return cached ? parseDeliveriesFromRaw(cached) : DEFAULT_DELIVERIES;
+    });
     const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
     const [mobileIndex, setMobileIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
@@ -86,26 +119,10 @@ export default function ThreeDeliveriesSection() {
                 const rawList = data.data || data.plans || data || [];
 
                 if (Array.isArray(rawList) && rawList.length > 0) {
-                    const activePlan = rawList.find((p: any) => p.isActive !== false) || rawList[0];
-                    const comboSetData = activePlan?.comboSetId;
-                    const combosets = Array.isArray(comboSetData?.combosets)
-                        ? comboSetData.combosets
-                        : (Array.isArray(comboSetData) ? comboSetData : (Array.isArray(activePlan?.combosets) ? activePlan.combosets : []));
-
-                    if (Array.isArray(combosets) && combosets.length > 0) {
-                        const formattedDeliveries: DeliveryCard[] = combosets.map((c: any, index: number) => {
-                            const defaultRef = DEFAULT_DELIVERIES[index] || DEFAULT_DELIVERIES[0];
-
-                            return {
-                                month: (c.monthName || defaultRef.month).toUpperCase(),
-                                title: c.title || (Array.isArray(c.products) && c.products.length > 0 ? c.products.map((p: any) => p.name).join(" + ") : defaultRef.title),
-                                season: (c.season || c.harvestTitle || defaultRef.season).toUpperCase(),
-                                description: c.description || defaultRef.description,
-                                deliveryLabel: index === 0 ? "Your First Delivery" : index === 1 ? "Your Second Delivery" : "Your Third Delivery",
-                                image: c.image || defaultRef.image,
-                            };
-                        });
-                        setDeliveries(formattedDeliveries);
+                    setCachedData("subscription_plans_raw", rawList);
+                    const formatted = parseDeliveriesFromRaw(rawList);
+                    if (formatted.length > 0) {
+                        setDeliveries(formatted);
                     }
                 }
             } catch (err) {

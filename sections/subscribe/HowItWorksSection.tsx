@@ -51,11 +51,12 @@ export default function HowItWorksSection() {
                     <div className="lg:col-span-4 flex items-center justify-center">
                         <div className="relative w-full h-full min-h-[340px] sm:min-h-[400px] lg:min-h-[440px] flex items-center justify-center overflow-hidden">
                             <Image
-                                src="/lycheesub.png"
+                                src="/lycheesub.webp"
                                 alt="Inside Every Harvest Box - Shuddhveda Honey"
                                 fill
+                                sizes="(max-width: 1024px) 100vw, 440px"
                                 className="object-contain object-center"
-                                priority
+                                loading="lazy"
                             />
                         </div>
                     </div>

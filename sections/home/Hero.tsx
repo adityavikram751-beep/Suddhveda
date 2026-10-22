@@ -21,7 +21,7 @@ const slides = [
     flavorNotes: "Mild & Buttery",
     aroma: "Pungent mustardy aroma",
     desktopBg: "/mustardnewdes.webp",
-    mobileBg: "/mustardm.png",
+    mobileBg: "/mustardnewdes.webp",
     bottleImg: "/mustardnew.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Mustard Honey Jar",
@@ -42,8 +42,8 @@ const slides = [
     flavorNotes: "Slight Herbal & Earthy",
     aroma: "Subtle spice-like & Earthy",
     desktopBg: "/ajwainnewdes.webp",
-    mobileBg: "/ajwain.png",
-    bottleImg: "/ajwainnew.png",
+    mobileBg: "/ajwain.webp",
+    bottleImg: "/ajwainnew.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Ajwain Honey Jar",
     link: "/shop#productsection",
@@ -63,7 +63,7 @@ const slides = [
     flavorNotes: "Clean & Slightly Viscous",
     aroma: "Fresh Fennel & Delicately Floral",
     desktopBg: "/funeelnewdes.webp",
-    mobileBg: "/fannel.png",
+    mobileBg: "/funeelnewdes.webp",
     bottleImg: "/funnelnew.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Fennel Honey Jar",
@@ -84,8 +84,8 @@ const slides = [
     flavorNotes: "Lightly fruity & Mild",
     aroma: "Light Fruity & lychee blossom",
     desktopBg: "/lychinewdes.webp",
-    mobileBg: "/dashboard1.png",
-    bottleImg: "/Lychee.png",
+    mobileBg: "/dashboard1.webp",
+    bottleImg: "/Lychee.webp",
     bottleOffset: "translate-x-8 sm:translate-x-20 lg:translate-x-30",
     alt: "Lychee Honey Jar",
     link: "/shop#productsection",
@@ -105,8 +105,8 @@ const slides = [
     flavorNotes: "Layered & Wild Floral",
     aroma: "Meadow blooms& Slightly earthy",
     desktopBg: "/multinewdes.webp",
-    mobileBg: "/multim.png",
-    bottleImg: "/multinew.png",
+    mobileBg: "/multim.webp",
+    bottleImg: "/multinew.webp",
     bottleOffset: "-translate-x-8 sm:translate-x-16 lg:translate-x-24",
     alt: "Multi Flora Honey Jar",
     link: "/shop#productsection",
@@ -126,8 +126,8 @@ const slides = [
     flavorNotes: "Light, Clean & Floral",
     aroma: "Fresh, light & Botanical",
     desktopBg: "/naturalnewdes.webp",
-    mobileBg: "/natural.png",
-    bottleImg: "/naturalnew.png",
+    mobileBg: "/natural.webp",
+    bottleImg: "/naturalnew.webp",
     bottleOffset: "-translate-x-8 sm:translate-x-16 lg:translate-x-22",
     alt: "Raw Natural Honey Jar",
     link: "/shop#productsection",
@@ -153,6 +153,19 @@ export default function Hero() {
     }, 4500);
     return () => clearInterval(interval);
   }, [nextSlide]);
+
+  // Non-blocking background prefetch for slides 1-5 after initial slide paints
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      slides.slice(1).forEach((s) => {
+        const bgImg = new window.Image();
+        bgImg.src = s.desktopBg;
+        const bottle = new window.Image();
+        bottle.src = s.bottleImg;
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -181,19 +194,6 @@ export default function Hero() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* ========================================================= */}
-      {/* MOBILE & TABLET VIEW (< lg screens)                       */}
-      {/* Exactly matching reference screenshots                     */}
-      {/* ========================================================= */}
-      {/* Hidden preloader so browser caches all slide background and bottle assets instantly */}
-      <div className="hidden" aria-hidden="true">
-        {slides.map((s) => (
-          <div key={`preload-${s.id}`}>
-            <img src={s.desktopBg || s.mobileBg} alt="" />
-            <img src={s.bottleImg} alt="" />
-          </div>
-        ))}
-      </div>
 
       <div className="block lg:hidden w-full px-3 sm:px-6 pt-3 sm:pt-4 pb-5">
         {/* Mobile Slide Card Container (Compact height & responsive proportion) */}
@@ -302,7 +302,9 @@ export default function Hero() {
                     alt={slide.alt}
                     width={800}
                     height={800}
-                    priority
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    sizes="(max-width: 640px) 340px, (max-width: 1024px) 450px, 600px"
                     className="w-auto h-[300px] xs:h-[340px] sm:h-[410px] max-w-[99%] object-contain drop-shadow-[0_26px_34px_rgba(0,0,0,0.35)] scale-110 sm:scale-120 translate-y-8 xs:translate-y-9 sm:translate-y-12 transition-transform duration-300"
                   />
                 </div>
@@ -522,7 +524,9 @@ export default function Hero() {
                         alt={slide.alt}
                         width={900}
                         height={900}
-                        priority
+                        priority={index === 0}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        sizes="(max-width: 1280px) 500px, 620px"
                         className={`w-auto h-full max-h-[590px] object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.38)] scale-110 translate-y-14 ${slide.bottleOffset} transition-transform duration-300 ease-out`}
                       />
                     </div>

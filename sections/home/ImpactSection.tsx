@@ -7,13 +7,13 @@ import { ArrowRight } from "lucide-react";
 export default function ImpactSection() {
   return (
     <section className="relative w-full overflow-hidden bg-[#FAF4E8] py-8 sm:py-10 md:py-12 lg:py-16 border-t border-b border-[#EADCC9]/50">
-      {/* Background Canvas Image - public.png */}
+      {/* Background Canvas Image - public.webp */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src="/public.png"
+          src="/public.webp"
           alt="Shuddh Veda Honey Background"
           fill
-          priority
+          loading="lazy"
           className="object-cover object-center w-full h-full"
           sizes="100vw"
         />
@@ -23,15 +23,16 @@ export default function ImpactSection() {
       <div className="relative z-10 w-full max-w-[1450px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2 md:py-3 lg:py-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 lg:gap-10 xl:gap-12 items-center">
 
-          {/* Left Column: impactimage.png Overlay Graphic */}
+          {/* Left Column: impactimage.webp Overlay Graphic */}
           <div className="md:col-span-6 flex justify-center md:justify-center lg:justify-start items-center">
             <div className="relative w-full max-w-[340px] xs:max-w-[400px] sm:max-w-[480px] md:max-w-[440px] lg:max-w-[580px] xl:max-w-[640px] transform hover:scale-[1.02] transition-transform duration-500">
               <Image
-                src="/impact6.png"
+                src="/impact6.webp"
                 alt="Six Distinct Honey Flavours - Shuddh Veda"
                 width={1471}
                 height={1069}
-                priority
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 640px"
                 className="w-full h-auto object-contain drop-shadow-sm"
               />
             </div>

@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizont
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl, preloadImages } from "@/lib/cache-utils";
 import {
   type ApiProduct,
   getCategoryName,
@@ -15,6 +16,7 @@ import {
   getProductId,
   getProductName,
   getProductVariants,
+  getProductImages,
   getProductsFromResponse,
   getVariantId,
   getVariantLabel,
@@ -55,15 +57,24 @@ export default function ShopPage() {
   const { updateQuantity, addToCart } = useCart();
   const router = useRouter();
 
-  const [allProducts, setAllProducts] = useState<ApiProduct[]>([]);
-  const [products, setProducts] = useState<ApiProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState<ApiProduct[]>(() => {
+    return getCachedData<ApiProduct[]>("all_products") || [];
+  });
+  const [products, setProducts] = useState<ApiProduct[]>(() => {
+    return getCachedData<ApiProduct[]>("all_products") || [];
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedData<ApiProduct[]>("all_products");
+    return !cached || cached.length === 0;
+  });
   const [filterLoading, setFilterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [selectedCategorySlug, setSelectedCategorySlug] = useState("");
-  const [floraSources, setFloraSources] = useState<string[]>(DEFAULT_FLORA_SOURCES);
+  const [floraSources, setFloraSources] = useState<string[]>(() => {
+    return getCachedData<string[]>("flora_sources") || DEFAULT_FLORA_SOURCES;
+  });
   const [selectedFloraSource, setSelectedFloraSource] = useState<string>("");
   const [selectedWeights, setSelectedWeights] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState(MAX_PRICE);
@@ -71,7 +82,9 @@ export default function ShopPage() {
   const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const [comboProducts, setComboProducts] = useState<any[]>([]);
+  const [comboProducts, setComboProducts] = useState<any[]>(() => {
+    return getCachedData<any[]>("combo_products_2_3_4") || [];
+  });
 
   // Mobile Filter Drawer State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -160,18 +173,31 @@ export default function ShopPage() {
 
   const fetchProducts = async () => {
     try {
-      setLoading(true);
+      if (allProducts.length === 0) {
+        setLoading(true);
+      }
       setError(null);
       const list = await fetchJsonProducts(`${API_BASE_URL}/api/products`);
       setAllProducts(list);
       setProducts(list);
+      setCachedData("all_products", list);
+
+      // Preload primary product images in background for instant responsiveness
+      const imagesToPreload = list
+        .map((p) => {
+          const doc = getProductImages(p);
+          return doc?.[0]?.image_url;
+        })
+        .filter(Boolean);
+      preloadImages(imagesToPreload);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      if (allProducts.length === 0) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
   };
-
 
   const fetchComboProducts = async () => {
     try {
@@ -199,16 +225,13 @@ export default function ShopPage() {
           (item: any) => item.is_active !== false && item.isActive !== false
         );
 
+        let finalCombos: any[] = [];
         if (isSpecificEndpoint && active.length > 0) {
-          // Endpoint /2-3-4 data: sorted by combo size (2, 3, 4)
-          setComboProducts(
-            active.sort(
-              (a: any, b: any) =>
-                (Number(a.combo_size) || 0) - (Number(b.combo_size) || 0)
-            )
+          finalCombos = active.sort(
+            (a: any, b: any) =>
+              (Number(a.combo_size) || 0) - (Number(b.combo_size) || 0)
           );
         } else {
-          // Fallback: Pick exactly 3 combos (one of size 2, one of size 3, one of size 4)
           const combo2 =
             active.find((c: any) => Number(c.combo_size) === 2 && c.slug?.includes("golden")) ||
             active.find((c: any) => Number(c.combo_size) === 2);
@@ -219,9 +242,17 @@ export default function ShopPage() {
             active.find((c: any) => Number(c.combo_size) === 4 && (c.slug?.includes("signature") || c.slug?.includes("explorer"))) ||
             active.find((c: any) => Number(c.combo_size) === 4);
 
-          const trioList = [combo2, combo3, combo4].filter(Boolean);
-          setComboProducts(trioList);
+          finalCombos = [combo2, combo3, combo4].filter(Boolean);
         }
+
+        setComboProducts(finalCombos);
+        setCachedData("combo_products_2_3_4", finalCombos);
+
+        const comboImgs = finalCombos.map((c) => {
+          const raw = c.images?.find((img: any) => img.is_primary)?.url || c.images?.[0]?.url || c.image || c.image_url;
+          return optimizeCloudinaryUrl(raw, 500);
+        });
+        preloadImages(comboImgs);
       }
     } catch (err) {
       console.error("Error fetching combo products:", err);
@@ -236,6 +267,7 @@ export default function ShopPage() {
         const list = json.data || json.floraSources || json.sources || [];
         if (Array.isArray(list) && list.length > 0) {
           setFloraSources(list);
+          setCachedData("flora_sources", list);
         }
       }
     } catch (err) {
@@ -731,12 +763,14 @@ export default function ShopPage() {
               {/* Curated Honey Combos (2, 3, 4 jars) displayed directly in the product cards grid */}
               {comboProducts.map((combo) => {
                 const comboId = combo._id || combo.id;
-                const primaryImg =
+                const primaryImg = optimizeCloudinaryUrl(
                   combo.images?.find((img: any) => img.is_primary)?.url ||
                   combo.images?.[0]?.url ||
                   combo.image ||
                   combo.image_url ||
-                  "/homegift.webp";
+                  "/homegift.webp",
+                  500
+                );
                 const jarCount = Number(
                   combo.combo_size ||
                   (Array.isArray(combo.products) ? combo.products.length : 0)
@@ -788,6 +822,7 @@ export default function ShopPage() {
                             src={primaryImg}
                             alt={title}
                             fill
+                            sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 300px"
                             className="object-cover object-center scale-110 group-hover:scale-115 transition-transform duration-500"
                           />
                         </div>

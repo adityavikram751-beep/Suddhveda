@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Pause, Star, X, Loader2, Volume2, VolumeX } from "lucide-react";
 import { API_BASE_URL } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 interface VideoFeedback {
   id: string;
@@ -13,8 +14,13 @@ interface VideoFeedback {
 }
 
 export default function HappyCustomersSection() {
-  const [videos, setVideos] = useState<VideoFeedback[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [videos, setVideos] = useState<VideoFeedback[]>(() => {
+    return getCachedData<VideoFeedback[]>("customer_videos") || [];
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    const cached = getCachedData<VideoFeedback[]>("customer_videos");
+    return !cached || cached.length === 0;
+  });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
@@ -68,6 +74,7 @@ export default function HappyCustomersSection() {
       }));
 
       setVideos(formattedVideos);
+      setCachedData("customer_videos", formattedVideos);
     } catch (error) {
       console.error("Error fetching video feedback:", error);
     } finally {
