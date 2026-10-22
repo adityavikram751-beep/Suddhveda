@@ -87,11 +87,48 @@ const faqs: Faq[] = [
   },
 ];
 
+// FAQs split into two independent columns to prevent row-stretching
+const leftFaqs = faqs.filter((_, i) => i % 2 === 0);
+const rightFaqs = faqs.filter((_, i) => i % 2 === 1);
+
 export default function GiftSetSection() {
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [openIds, setOpenIds] = useState<number[]>([]);
 
   const toggleFaq = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
+    setOpenIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const renderFaqCard = (faq: Faq) => {
+    const isOpen = openIds.includes(faq.id);
+    return (
+      <div
+        key={faq.id}
+        onClick={() => toggleFaq(faq.id)}
+        className="rounded-2xl border border-[#EADCC9] bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-2xs hover:shadow-md hover:border-[#D49313]/60 transition-all duration-300 cursor-pointer select-none"
+      >
+        <div className="w-full flex items-center justify-between gap-4 text-left">
+          <span className="font-serif font-extrabold text-[15px] sm:text-[16px] lg:text-[17px] text-[#593102] leading-snug">
+            {faq.question}
+          </span>
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
+            <FiChevronDown
+              size={18}
+              className={`text-[#D49313] transition-transform duration-300 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </div>
+
+        {isOpen && (
+          <p className="mt-3.5 pt-3.5 border-t border-[#EADCC9]/70 text-[13px] sm:text-[14px] lg:text-[15px] text-[#6E5D4F] leading-[1.65] font-medium">
+            {faq.answer}
+          </p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -127,7 +164,7 @@ export default function GiftSetSection() {
 
         {/* ================= FAQ SECTION ================= */}
         <div className="py-16 md:py-24 bg-gradient-to-b from-[#FAF6F0] to-[#FDF9F3]">
-          <div className="max-w-[1040px] mx-auto w-full px-6 lg:px-8">
+          <div className="max-w-[1480px] mx-auto w-full px-4 sm:px-6 lg:px-12 xl:px-16">
             {/* Heading */}
             <div className="text-center flex flex-col items-center">
               <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-3">
@@ -139,34 +176,14 @@ export default function GiftSetSection() {
               <div className="w-24 h-1 bg-gradient-to-r from-[#D49313] via-[#8F590A] to-transparent my-4 rounded-full" />
             </div>
 
-            {/* FAQ Accordion Grid */}
-            <div className="grid sm:grid-cols-2 gap-5 mt-10">
-              {faqs.map((faq) => (
-                <div key={faq.id} className="rounded-2xl border border-[#EADCC9] bg-white/90 backdrop-blur-md p-5 shadow-2xs hover:shadow-md transition-all">
-                  <button
-                    type="button"
-                    onClick={() => toggleFaq(faq.id)}
-                    className="w-full flex items-center justify-between gap-4 text-left cursor-pointer"
-                  >
-                    <span className="font-serif font-extrabold text-[15px] sm:text-[16px] text-[#593102] leading-snug">
-                      {faq.question}
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-[#FAF0DC] border border-[#D49313]/40 flex items-center justify-center shrink-0">
-                      <FiChevronDown
-                        size={18}
-                        className={`text-[#D49313] transition-transform duration-300 ${expandedId === faq.id ? "rotate-180" : ""
-                          }`}
-                      />
-                    </div>
-                  </button>
-
-                  {expandedId === faq.id && (
-                    <p className="mt-3 pt-3 border-t border-[#EADCC9]/60 text-[13px] sm:text-[14px] text-[#6E5D4F] leading-[1.65] font-medium">
-                      {faq.answer}
-                    </p>
-                  )}
-                </div>
-              ))}
+            {/* FAQ Accordion Grid: 2 Independent Columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-4 sm:gap-5 lg:gap-6 mt-10">
+              <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
+                {leftFaqs.map(renderFaqCard)}
+              </div>
+              <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
+                {rightFaqs.map(renderFaqCard)}
+              </div>
             </div>
           </div>
         </div>
