@@ -23,9 +23,9 @@ const siteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "https://suddhveda.vercel.app");
+      : "https://shuddhvedahoney.com");
 
-const permanentOgImage = "https://suddhveda.vercel.app/ogimage.png";
+const permanentOgImage = "https://shuddhvedahoney.com/ogimage.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
