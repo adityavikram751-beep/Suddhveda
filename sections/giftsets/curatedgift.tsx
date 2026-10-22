@@ -85,12 +85,12 @@ export default function CuratedGift() {
           const rawData = Array.isArray(json?.data)
             ? json.data
             : Array.isArray(json?.comboProducts)
-            ? json.comboProducts
-            : Array.isArray(json?.products)
-            ? json.products
-            : Array.isArray(json)
-            ? json
-            : [];
+              ? json.comboProducts
+              : Array.isArray(json?.products)
+                ? json.products
+                : Array.isArray(json)
+                  ? json
+                  : [];
 
           if (rawData.length > 0) {
             const parsed: ComboProduct[] = rawData
@@ -123,9 +123,9 @@ export default function CuratedGift() {
                   combo_size: size,
                   products: Array.isArray(item.products)
                     ? item.products.map((p: any) => ({
-                        name: typeof p === "string" ? p : p.name || p.title || "Honey Jar",
-                        weight: typeof p === "object" ? p.weight || "250g" : "250g",
-                      }))
+                      name: typeof p === "string" ? p : p.name || p.title || "Honey Jar",
+                      weight: typeof p === "object" ? p.weight || "250g" : "250g",
+                    }))
                     : [],
                   mrp,
                   selling_price: price,
@@ -197,10 +197,10 @@ export default function CuratedGift() {
       const token =
         typeof document !== "undefined"
           ? document.cookie.match(/(^| )sudhveda_token=([^;]+)/)?.[2] ||
-            document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
-            localStorage.getItem("token") ||
-            localStorage.getItem("sudhveda_token") ||
-            ""
+          document.cookie.match(/(^| )token=([^;]+)/)?.[2] ||
+          localStorage.getItem("token") ||
+          localStorage.getItem("sudhveda_token") ||
+          ""
           : "";
 
       let success = false;
@@ -248,7 +248,7 @@ export default function CuratedGift() {
         localStorage.setItem(GUEST_CART_KEY, JSON.stringify(guestItems));
       }
 
-      if (fetchCart) await fetchCart().catch(() => {});
+      if (fetchCart) await fetchCart().catch(() => { });
       window.dispatchEvent(new Event("cart-updated"));
       window.dispatchEvent(new CustomEvent("trigger-live-update"));
 
@@ -417,11 +417,10 @@ export default function CuratedGift() {
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-14 h-14 rounded-[12px] overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
-                        selectedImageIndex === idx
+                      className={`relative w-14 h-14 rounded-[12px] overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${selectedImageIndex === idx
                           ? "border-[#D97706] shadow-sm scale-105"
                           : "border-[#EADBCE] opacity-70 hover:opacity-100"
-                      }`}
+                        }`}
                     >
                       <Image src={img.url} alt={`Thumbnail ${idx}`} fill className="object-cover" />
                     </button>
@@ -705,7 +704,7 @@ function ComboCard({ product, onClick }: { product: ComboProduct; onClick: () =>
           {/* Jar Icon & Count */}
           <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#593102]">
             <Image
-              src="/pote.svg"
+              src="/botelgiftc.svg"
               alt="Honey Pot Icon"
               width={22}
               height={22}
