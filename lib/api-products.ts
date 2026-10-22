@@ -329,13 +329,13 @@ export function getProductImages(product: ApiProduct): any[] {
       if (typeof img === "string") {
         return {
           _id: `img-${idx}`,
-          image_url: optimizeCloudinaryUrl(img, 600),
+          image_url: optimizeCloudinaryUrl(img, 1600),
           is_primary: idx === 0,
         };
       }
       const rawUrl =
         img.image_url || img.url || img.src || img.secure_url || "/placeholder.png";
-      const optimizedUrl = optimizeCloudinaryUrl(rawUrl, 600);
+      const optimizedUrl = optimizeCloudinaryUrl(rawUrl, 1600);
       const thumbUrl = optimizeCloudinaryUrl(
         img.thumbnail || img.thumbnail_url || rawUrl,
         300
@@ -361,7 +361,7 @@ export function getPrimaryImage(product: ApiProduct): string {
     product?.imageUrl ||
     (typeof product?.image === "string" ? product.image : null) ||
     "/placeholder.png";
-  return optimizeCloudinaryUrl(rawUrl, 600);
+  return optimizeCloudinaryUrl(rawUrl, 1000);
 }
 
 export function getProductVariants(product: ApiProduct): ProductVariant[] {

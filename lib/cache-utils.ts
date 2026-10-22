@@ -14,20 +14,48 @@ const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes cache
  */
 export function optimizeCloudinaryUrl(
   url?: string | null,
-  width: number = 600
+  width: number = 1200
 ): string {
   if (!url || typeof url !== "string") return "/placeholder.png";
-  if (!url.startsWith("http")) return url;
-  if (!url.includes("cloudinary.com") || !url.includes("/image/upload/")) {
-    return url;
-  }
-  // If already contains optimization flags, return as is
-  if (url.includes("/f_auto") || url.includes("/q_auto")) {
-    return url;
+  const trimmed = url.trim();
+  if (!trimmed) return "/placeholder.png";
+  if (!trimmed.startsWith("http")) return trimmed;
+  if (!trimmed.includes("cloudinary.com") || !trimmed.includes("/image/upload/")) {
+    return trimmed;
   }
 
-  const transform = width ? `f_auto,q_auto,w_${width}/` : "f_auto,q_auto/";
-  return url.replace("/image/upload/", `/image/upload/${transform}`);
+  const uploadMarker = "/image/upload/";
+  const uploadIndex = trimmed.indexOf(uploadMarker);
+  if (uploadIndex === -1) return trimmed;
+
+  const prefix = trimmed.slice(0, uploadIndex + uploadMarker.length);
+  const remaining = trimmed.slice(uploadIndex + uploadMarker.length);
+  const parts = remaining.split("/");
+
+  // Strip any old transformation segments (e.g. "f_auto,q_auto", "w_500", "f_auto,q_auto:best,w_600,c_limit", etc.)
+  // We preserve the version segment (e.g. "v1790763601") and the folder/file path
+  while (parts.length > 0) {
+    const first = parts[0];
+    if (
+      first &&
+      !first.includes(".") &&
+      !/^v\d+$/.test(first) &&
+      (first.includes("f_auto") ||
+        first.includes("q_auto") ||
+        /^(?:[a-z]{1,3}_[a-zA-Z0-9.:_-]+(?:,|$))+$/i.test(first))
+    ) {
+      parts.shift();
+    } else {
+      break;
+    }
+  }
+
+  // Use q_auto:best and c_limit for crystal-clear labels, vibrant honey tones, and zero blurriness
+  const transform = width
+    ? `f_auto,q_auto:best,w_${width},c_limit`
+    : "f_auto,q_auto:best";
+
+  return `${prefix}${transform}/${parts.join("/")}`;
 }
 
 /**

@@ -95,12 +95,12 @@ export default function ProductCardShop({
   const router = useRouter();
   const fallbackImage = "/honneycart.png";
   const initialImageSrc =
-    image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 500) : fallbackImage;
+    image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 1000) : fallbackImage;
   const [imageSrc, setImageSrc] = useState(initialImageSrc);
 
   useEffect(() => {
     setImageSrc(
-      image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 500) : fallbackImage
+      image && image.trim() !== "" ? optimizeCloudinaryUrl(image, 1000) : fallbackImage
     );
   }, [image]);
 
@@ -192,7 +192,8 @@ export default function ProductCardShop({
           src={imageSrc}
           alt={title || "Product"}
           fill
-          sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 300px"
+          unoptimized
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 400px"
           className={`${
             fullImage
               ? "object-cover object-center"

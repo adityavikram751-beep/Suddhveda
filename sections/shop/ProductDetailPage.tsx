@@ -1498,10 +1498,11 @@ export default function ProductDetailPage({
                     }`}
                 >
                   <Image
-                    src={item.type === "video" ? item.thumbnail : item.url}
+                    src={optimizeCloudinaryUrl(item.type === "video" ? item.thumbnail : item.url, 300)}
                     alt={product.product_name || "Thumbnail"}
                     width={80}
                     height={80}
+                    unoptimized
                     className="h-full w-full object-cover rounded-2xl"
                   />
                   {item.type === "video" && (
@@ -1535,11 +1536,12 @@ export default function ProductDetailPage({
                 ) : (
                   selectedMedia?.url && (
                     <Image
-                      src={selectedMedia.url}
+                      src={optimizeCloudinaryUrl(selectedMedia.url, 1600)}
                       alt={product.product_name || "Product Media"}
                       fill
-                      className="w-full h-full object-cover lg:object-contain object-center rounded-3xl p-0 pointer-events-none"
+                      unoptimized
                       priority
+                      className="w-full h-full object-cover lg:object-contain object-center rounded-3xl p-0 pointer-events-none"
                     />
                   )
                 )}
@@ -1566,7 +1568,7 @@ export default function ProductDetailPage({
                   <div
                     className="w-full h-full rounded-3xl"
                     style={{
-                      backgroundImage: `url("${selectedMedia.url}")`,
+                      backgroundImage: `url("${optimizeCloudinaryUrl(selectedMedia.url, 2400)}")`,
                       backgroundPosition: `${zoomPercent.x}% ${zoomPercent.y}%`,
                       backgroundSize: `${ZOOM_FACTOR * 100}% ${ZOOM_FACTOR * 100}%`,
                       backgroundRepeat: "no-repeat",
@@ -1781,10 +1783,11 @@ export default function ProductDetailPage({
                           } ${outOfStock ? "border-red-200 opacity-50 grayscale" : "border-[#EADCC9]"}`}>
                           {optionImg && (
                             <Image
-                              src={optionImg}
+                              src={optimizeCloudinaryUrl(optionImg, 320)}
                               alt={`${option.weight}${option.unit}`}
                               fill
-                              className="object-cover"
+                              unoptimized
+                              className="object-contain p-0.5"
                             />
                           )}
                         </div>
@@ -1929,7 +1932,7 @@ export default function ProductDetailPage({
                         >
                           <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">
                             <Image
-                              src={img}
+                              src={optimizeCloudinaryUrl(img, 600)}
                               alt={name}
                               fill
                               unoptimized
@@ -1986,7 +1989,7 @@ export default function ProductDetailPage({
                           >
                             <div className="relative w-full h-[120px] sm:h-[135px] overflow-hidden rounded-xl bg-[#FAF6F0] mb-2.5">
                               <Image
-                                src={packImg}
+                                src={optimizeCloudinaryUrl(packImg, 600)}
                                 alt={packName}
                                 fill
                                 unoptimized

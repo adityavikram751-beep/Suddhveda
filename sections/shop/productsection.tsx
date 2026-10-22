@@ -250,7 +250,7 @@ export default function ShopPage() {
 
         const comboImgs = finalCombos.map((c) => {
           const raw = c.images?.find((img: any) => img.is_primary)?.url || c.images?.[0]?.url || c.image || c.image_url;
-          return optimizeCloudinaryUrl(raw, 500);
+          return optimizeCloudinaryUrl(raw, 1000);
         });
         preloadImages(comboImgs);
       }
@@ -769,7 +769,7 @@ export default function ShopPage() {
                   combo.image ||
                   combo.image_url ||
                   "/homegift.webp",
-                  500
+                  1000
                 );
                 const jarCount = Number(
                   combo.combo_size ||

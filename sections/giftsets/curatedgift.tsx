@@ -110,12 +110,12 @@ export default function CuratedGift() {
                   imgList = item.images.map((img: any) => ({
                     url: optimizeCloudinaryUrl(
                       typeof img === "string" ? img : img?.url || img?.image_url || "/honneycart.png",
-                      600
+                      1000
                     ),
                     is_primary: typeof img === "object" ? !!img?.is_primary : false,
                   }));
                 } else if (item.image || item.image_url) {
-                  imgList = [{ url: optimizeCloudinaryUrl(item.image || item.image_url, 600), is_primary: true }];
+                  imgList = [{ url: optimizeCloudinaryUrl(item.image || item.image_url, 1000), is_primary: true }];
                 }
 
                 const price = Number(item.selling_price || item.price || item.salePrice || 999);
@@ -659,7 +659,7 @@ function ComboCard({ product, onClick }: { product: ComboProduct; onClick: () =>
   if (!rawPrimaryImg || rawPrimaryImg.trim() === "") {
     rawPrimaryImg = getFallbackImage(product._id || product.combo_name);
   }
-  const primaryImg = optimizeCloudinaryUrl(rawPrimaryImg, 600);
+  const primaryImg = optimizeCloudinaryUrl(rawPrimaryImg, 1000);
 
   const jarCount = product.combo_size || (product.products ? product.products.length : 2);
 
