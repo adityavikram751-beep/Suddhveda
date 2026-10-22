@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Loader2, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
@@ -70,6 +71,7 @@ export default function ShopPage() {
   const [appliedFilters, setAppliedFilters] = useState<ProductFilters>(defaultFilters);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [comboProducts, setComboProducts] = useState<any[]>([]);
 
   // Mobile Filter Drawer State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -96,6 +98,16 @@ export default function ShopPage() {
     price: false,
     search: false,
   });
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (selectedFloraSource || appliedFilters.floraSource) count++;
+    if (selectedWeights.length > 0 || appliedFilters.weights.length > 0) count++;
+    if (priceRange < MAX_PRICE || appliedFilters.price < MAX_PRICE) count++;
+    if (searchTerm.trim() || appliedFilters.search.trim()) count++;
+    if (selectedCategorySlug || appliedFilters.categorySlug) count++;
+    return count;
+  }, [selectedFloraSource, selectedWeights, priceRange, searchTerm, selectedCategorySlug, appliedFilters]);
 
   const categoryOptions = useMemo(() => {
     const map = new Map<string, string>();
@@ -161,6 +173,61 @@ export default function ShopPage() {
   };
 
 
+  const fetchComboProducts = async () => {
+    try {
+      let res = await fetch(`${API_BASE_URL}/api/combo/products/combo-products/2-3-4`, {
+        credentials: "include",
+      });
+      const isSpecificEndpoint = res.ok;
+      if (!res.ok) {
+        res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
+          credentials: "include",
+        });
+      }
+      if (res.ok) {
+        const json = await res.json();
+        const rawData: any[] = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json?.comboProducts)
+          ? json.comboProducts
+          : Array.isArray(json?.products)
+          ? json.products
+          : Array.isArray(json)
+          ? json
+          : [];
+        const active = rawData.filter(
+          (item: any) => item.is_active !== false && item.isActive !== false
+        );
+
+        if (isSpecificEndpoint && active.length > 0) {
+          // Endpoint /2-3-4 data: sorted by combo size (2, 3, 4)
+          setComboProducts(
+            active.sort(
+              (a: any, b: any) =>
+                (Number(a.combo_size) || 0) - (Number(b.combo_size) || 0)
+            )
+          );
+        } else {
+          // Fallback: Pick exactly 3 combos (one of size 2, one of size 3, one of size 4)
+          const combo2 =
+            active.find((c: any) => Number(c.combo_size) === 2 && c.slug?.includes("golden")) ||
+            active.find((c: any) => Number(c.combo_size) === 2);
+          const combo3 =
+            active.find((c: any) => Number(c.combo_size) === 3 && c.slug?.includes("golden")) ||
+            active.find((c: any) => Number(c.combo_size) === 3);
+          const combo4 =
+            active.find((c: any) => Number(c.combo_size) === 4 && (c.slug?.includes("signature") || c.slug?.includes("explorer"))) ||
+            active.find((c: any) => Number(c.combo_size) === 4);
+
+          const trioList = [combo2, combo3, combo4].filter(Boolean);
+          setComboProducts(trioList);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching combo products:", err);
+    }
+  };
+
   const fetchFloraSources = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/filter/flora-sources`);
@@ -178,6 +245,7 @@ export default function ShopPage() {
 
   useEffect(() => {
     fetchProducts();
+    fetchComboProducts();
     fetchWishlist();
     fetchFloraSources();
   }, []);
@@ -305,7 +373,7 @@ export default function ShopPage() {
     setPriceRange(MAX_PRICE);
     setSearchTerm("");
     setAppliedFilters(defaultFilters);
-    await fetchProducts();
+    await Promise.all([fetchProducts(), fetchComboProducts()]);
     setIsFilterOpen(false);
   };
 
@@ -459,18 +527,22 @@ export default function ShopPage() {
     </div>
   );
 
-  const filterContent = (
+  const desktopFilterContent = (
     <div className="rounded-2xl bg-white p-5 border border-[#EADCC9] shadow-2xs">
-      <div className="flex items-center justify-between lg:hidden pb-4 mb-2 border-b border-[#F0E4D0]">
-        <h2 className="font-serif text-[18px] font-bold text-[#593102]">Filters</h2>
-        <button onClick={() => setIsFilterOpen(false)} className="p-1 text-gray-500 hover:text-black cursor-pointer">
-          <X size={20} />
-        </button>
+      <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#F0E4D0]">
+        <h2 className="font-serif text-[15px] font-bold uppercase tracking-wide text-[#593102]">
+          Filter By
+        </h2>
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-[12px] font-bold text-[#8C5E1E] hover:text-[#593102] hover:underline cursor-pointer"
+          >
+            Reset All
+          </button>
+        )}
       </div>
-
-      <h2 className="hidden lg:block font-serif text-[15px] font-bold uppercase tracking-wide text-[#593102]">
-        Filter By
-      </h2>
 
       <FilterSection title="Search" isOpen={openSections.search} onToggle={() => toggleSection("search")}>
         <div className="relative">
@@ -516,17 +588,25 @@ export default function ShopPage() {
       </FilterSection>
 
       <FilterSection title="Net Weight" isOpen={openSections.weight} onToggle={() => toggleSection("weight")}>
-        {weightOptions.map((weight) => (
-          <label key={weight} className="flex cursor-pointer items-center gap-2.5 text-[13px] text-[#4E4E4E]">
-            <input
-              type="checkbox"
-              checked={selectedWeights.includes(weight)}
-              onChange={() => toggleWeight(weight)}
-              className="h-4 w-4 accent-[#593102]"
-            />
-            {weight}
-          </label>
-        ))}
+        <div className="flex flex-wrap gap-2 pt-1">
+          {weightOptions.map((weight) => {
+            const isSelected = selectedWeights.includes(weight);
+            return (
+              <button
+                key={weight}
+                type="button"
+                onClick={() => toggleWeight(weight)}
+                className={`rounded-full px-3 py-1 text-[12px] font-bold transition-all cursor-pointer ${
+                  isSelected
+                    ? "bg-[#593102] text-white shadow-xs"
+                    : "bg-[#FAF7F2] text-[#4E4E4E] border border-[#EADCC9] hover:border-[#D49313]"
+                }`}
+              >
+                {weight} {isSelected && "✓"}
+              </button>
+            );
+          })}
+        </div>
       </FilterSection>
 
       <FilterSection title="Price Range" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
@@ -553,11 +633,6 @@ export default function ShopPage() {
         {filterLoading && <Loader2 size={15} className="animate-spin" />}
         Apply Filter
       </button>
-
-      {/* Promo Banner inside mobile drawer */}
-      <div className="lg:hidden">
-        {promoBannerComponent}
-      </div>
     </div>
   );
 
@@ -588,6 +663,11 @@ export default function ShopPage() {
           >
             <SlidersHorizontal size={16} className="text-[#D49313]" />
             <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#593102] px-1.5 text-[11px] font-bold text-white">
+                {activeFilterCount}
+              </span>
+            )}
           </button>
           <span className="text-[13px] font-extrabold text-[#7A6A5C]">
             {filteredProducts.length} Products
@@ -599,7 +679,7 @@ export default function ShopPage() {
 
           {/* Desktop Left Sidebar (Filters + Promo Banner) */}
           <aside className="hidden lg:block lg:col-span-3 space-y-6 sticky top-[135px]">
-            {filterContent}
+            {desktopFilterContent}
             {promoBannerComponent}
           </aside>
 
@@ -648,6 +728,121 @@ export default function ShopPage() {
                 );
               })}
 
+              {/* Curated Honey Combos (2, 3, 4 jars) displayed directly in the product cards grid */}
+              {comboProducts.map((combo) => {
+                const comboId = combo._id || combo.id;
+                const primaryImg =
+                  combo.images?.find((img: any) => img.is_primary)?.url ||
+                  combo.images?.[0]?.url ||
+                  combo.image ||
+                  combo.image_url ||
+                  "/homegift.webp";
+                const jarCount = Number(
+                  combo.combo_size ||
+                  (Array.isArray(combo.products) ? combo.products.length : 0)
+                );
+                const fallbackTitle =
+                  jarCount === 2
+                    ? "Duo Sets"
+                    : jarCount === 3
+                    ? "Trio Sets"
+                    : jarCount === 4
+                    ? "Quad Sets"
+                    : "Gift Set";
+                const title = combo.combo_name || combo.name || fallbackTitle;
+                const fallbackDesc =
+                  jarCount === 2
+                    ? "Two premium varieties, crafted for meaningful impressions."
+                    : jarCount === 3
+                    ? "Three premium varieties, crafted for meaningful impressions."
+                    : "Four premium varieties, crafted for meaningful impressions.";
+                const description = combo.description || fallbackDesc;
+                const subText =
+                  combo.occasions ||
+                  combo.occasion ||
+                  combo.tagline ||
+                  combo.subtitle ||
+                  (Array.isArray(combo.products) && combo.products.length > 0
+                    ? combo.products.map((p: any) => p.name?.replace(/ Honey$/i, "")).join(" / ")
+                    : "Festivals / Celebration / Just because");
+
+                const targetUrl =
+                  jarCount === 2
+                    ? "/giftsets?size=2#curatedgift"
+                    : jarCount === 3
+                    ? "/giftsets?size=3#curatedgift"
+                    : jarCount === 4
+                    ? "/giftsets?size=4#curatedgift"
+                    : "/giftsets#curatedgift";
+
+                return (
+                  <div key={comboId} className="w-full flex flex-col items-center h-full">
+                    <div
+                      onClick={() => router.push(targetUrl)}
+                      className="relative flex h-full min-h-[295px] sm:min-h-[470px] p-2 sm:p-2.5 pb-2.5 sm:pb-3.5 rounded-[18px] sm:rounded-[22px] w-full max-w-[280px] sm:max-w-[300px] flex-col justify-between overflow-hidden border border-[#EADCC9] bg-[#FAF5EE] shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto"
+                    >
+                      <div>
+                        {/* Image - Maximized for prominence with scale-110 */}
+                        <div className="relative w-full aspect-square rounded-[14px] sm:rounded-[18px] overflow-hidden bg-white shadow-2xs shrink-0">
+                          <Image
+                            src={primaryImg}
+                            alt={title}
+                            fill
+                            className="object-cover object-center scale-110 group-hover:scale-115 transition-transform duration-500"
+                          />
+                        </div>
+
+                        <div className="px-1 sm:px-1.5 pt-0.5">
+                          {/* Title */}
+                          <h4 className="font-serif text-[13px] sm:text-[18px] font-bold text-[#593102] mt-2 sm:mt-2.5 leading-snug line-clamp-1 sm:line-clamp-2 group-hover:text-[#7A450A] transition-colors">
+                            {title}
+                          </h4>
+
+                          {/* Description */}
+                          <p className="text-[11px] sm:text-[12.5px] text-[#5E6D7E] leading-relaxed line-clamp-2 mt-1 font-normal">
+                            {description}
+                          </p>
+
+                          {/* Occasion / Sub-tagline */}
+                          <p className="font-serif text-[10px] sm:text-[12px] text-[#8C5823] mt-1 line-clamp-1">
+                            {subText}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="px-1 sm:px-1.5">
+                        {/* Divider */}
+                        <div className="border-t border-[#E8DCCB] my-2 sm:my-2.5" />
+
+                        {/* Bottom Bar: Single botelgiftc.svg icon + Explore Gift button */}
+                        <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                          <div className="flex items-center gap-1 sm:gap-1.5 text-[#2F241C] shrink-0">
+                            <Image
+                              src="/botelgiftc.svg"
+                              alt="Jar"
+                              width={18}
+                              height={18}
+                              className="object-contain shrink-0 sm:w-5 sm:h-5"
+                            />
+                            <span className="text-[11.5px] sm:text-[13.5px] font-bold text-[#2F241C]">
+                              {jarCount > 0 ? `${jarCount} Jars` : "Gift Set"}
+                            </span>
+                          </div>
+
+                          <Link
+                            href={targetUrl}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 rounded-full bg-[#5D3716] hover:bg-[#784318] text-white px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-[12.5px] font-medium shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+                          >
+                            <span>Explore Gift</span>
+                            <ArrowRight size={12} className="sm:w-3.5 sm:h-3.5" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {filteredProducts.length === 0 && (
@@ -663,20 +858,240 @@ export default function ShopPage() {
         </div>
       </div>
 
-      {/* Mobile Slide-Over Filter Drawer */}
-      {isFilterOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
-            onClick={() => setIsFilterOpen(false)}
-          />
-          {/* Drawer Content */}
-          <div className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white p-4 shadow-2xl z-10">
-            {filterContent}
+      {/* Mobile Slide-Over Filter Drawer with Curved Sides & Smooth Animation */}
+      <div
+        className={`fixed inset-0 z-50 flex justify-end lg:hidden transition-all duration-300 ease-in-out ${
+          isFilterOpen ? "visible" : "invisible pointer-events-none"
+        }`}
+        aria-hidden={!isFilterOpen}
+      >
+        {/* Backdrop with Fade */}
+        <div
+          className={`fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 ease-out ${
+            isFilterOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setIsFilterOpen(false)}
+        />
+
+        {/* Drawer Panel: Curved Left Side (rounded-l-[32px]) with Smooth Slide-in */}
+        <div
+          className={`relative z-10 flex h-full w-[86vw] max-w-[360px] flex-col bg-[#FAF7F2] shadow-[-16px_0_40px_rgba(89,49,2,0.25)] transition-transform duration-300 ease-out rounded-l-[32px] sm:rounded-l-[36px] border-l-2 border-[#D49313]/35 overflow-hidden ${
+            isFilterOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          {/* 1. Sticky Header */}
+          <div className="sticky top-0 z-20 flex items-center justify-between border-b border-[#EADCC9] bg-[#FAF7F2]/95 px-5 py-4 backdrop-blur-md">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FAF0DC] border border-[#D49313]/40 text-[#D49313]">
+                <SlidersHorizontal size={16} />
+              </div>
+              <h2 className="font-serif text-[18px] font-bold text-[#593102]">Filters</h2>
+              {activeFilterCount > 0 && (
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#593102] px-1.5 text-[11px] font-bold text-white shadow-xs">
+                  {activeFilterCount}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2.5">
+              {activeFilterCount > 0 && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="text-[12px] font-bold text-[#8C5E1E] hover:text-[#593102] hover:underline cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsFilterOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EFE6D8] text-[#593102] hover:bg-[#E2D4C0] active:scale-95 transition-all cursor-pointer"
+                aria-label="Close filters"
+              >
+                <X size={17} />
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Scrollable Filter Body */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 overscroll-contain">
+            {/* Search Honey Card */}
+            <div className="rounded-2xl bg-white p-4 border border-[#EADCC9] shadow-2xs">
+              <button
+                type="button"
+                onClick={() => toggleSection("search")}
+                className="flex w-full items-center justify-between text-left cursor-pointer"
+              >
+                <p className="text-[14px] font-bold text-[#593102]">Search Honey</p>
+                <ChevronDown
+                  size={16}
+                  className={`text-[#8C5E1E] transition-transform duration-200 ${
+                    openSections.search ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {openSections.search && (
+                <div className="mt-3.5 border-t border-[#F2E8DC] pt-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9A9A9A]" />
+                    <input
+                      value={searchTerm}
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                      placeholder="Search pure honey..."
+                      className="h-10 w-full rounded-xl border border-[#E4E8EE] pl-9 pr-3 text-[13px] outline-none focus:border-[#593102] focus:ring-1 focus:ring-[#593102]"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Honey Flora Source Card */}
+            <div className="rounded-2xl bg-white p-4 border border-[#EADCC9] shadow-2xs">
+              <button
+                type="button"
+                onClick={() => toggleSection("category")}
+                className="flex w-full items-center justify-between text-left cursor-pointer"
+              >
+                <p className="text-[14px] font-bold text-[#593102]">Honey Flora Source</p>
+                <ChevronDown
+                  size={16}
+                  className={`text-[#8C5E1E] transition-transform duration-200 ${
+                    openSections.category ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {openSections.category && (
+                <div className="mt-3.5 space-y-2 border-t border-[#F2E8DC] pt-3">
+                  <label className="flex cursor-pointer items-center gap-2.5 rounded-xl p-2 text-[13px] text-[#4E4E4E] hover:bg-[#FAF7F2] transition-colors">
+                    <input
+                      type="radio"
+                      checked={!selectedFloraSource}
+                      onChange={() => {
+                        setSelectedFloraSource("");
+                        setSelectedCategorySlug("");
+                        setAppliedFilters((prev) => ({ ...prev, floraSource: "", categorySlug: "" }));
+                      }}
+                      className="h-4 w-4 accent-[#593102]"
+                    />
+                    <span className="font-semibold text-[#593102]">All Flora Sources ({allProducts.length})</span>
+                  </label>
+                  {floraSources.map((source) => (
+                    <label
+                      key={source}
+                      className="flex cursor-pointer items-start gap-2.5 rounded-xl p-2 text-[13px] text-[#4E4E4E] hover:bg-[#FAF7F2] transition-colors leading-snug"
+                    >
+                      <input
+                        type="radio"
+                        checked={selectedFloraSource === source}
+                        onChange={() => {
+                          setSelectedFloraSource(source);
+                          setSelectedCategorySlug("");
+                          setAppliedFilters((prev) => ({ ...prev, floraSource: source, categorySlug: "" }));
+                        }}
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#593102]"
+                      />
+                      <span className={selectedFloraSource === source ? "font-bold text-[#593102]" : ""}>
+                        {source}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Net Weight Card */}
+            <div className="rounded-2xl bg-white p-4 border border-[#EADCC9] shadow-2xs">
+              <button
+                type="button"
+                onClick={() => toggleSection("weight")}
+                className="flex w-full items-center justify-between text-left cursor-pointer"
+              >
+                <p className="text-[14px] font-bold text-[#593102]">Net Weight</p>
+                <ChevronDown
+                  size={16}
+                  className={`text-[#8C5E1E] transition-transform duration-200 ${
+                    openSections.weight ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {openSections.weight && (
+                <div className="mt-3.5 border-t border-[#F2E8DC] pt-3">
+                  <div className="flex flex-wrap gap-2">
+                    {weightOptions.map((weight) => {
+                      const isSelected = selectedWeights.includes(weight);
+                      return (
+                        <button
+                          key={weight}
+                          type="button"
+                          onClick={() => toggleWeight(weight)}
+                          className={`rounded-full px-3.5 py-1.5 text-[12px] font-bold transition-all cursor-pointer ${
+                            isSelected
+                              ? "bg-[#593102] text-white shadow-xs"
+                              : "bg-[#FAF7F2] text-[#4E4E4E] border border-[#EADCC9] hover:border-[#D49313]"
+                          }`}
+                        >
+                          {weight} {isSelected && "✓"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Price Range Card */}
+            <div className="rounded-2xl bg-white p-4 border border-[#EADCC9] shadow-2xs">
+              <button
+                type="button"
+                onClick={() => toggleSection("price")}
+                className="flex w-full items-center justify-between text-left cursor-pointer"
+              >
+                <p className="text-[14px] font-bold text-[#593102]">Price Range</p>
+                <ChevronDown
+                  size={16}
+                  className={`text-[#8C5E1E] transition-transform duration-200 ${
+                    openSections.price ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {openSections.price && (
+                <div className="mt-3.5 border-t border-[#F2E8DC] pt-3">
+                  <div className="flex items-center justify-between text-[13px] font-bold text-[#593102]">
+                    <span className="rounded-lg bg-[#FAF7F2] border border-[#EADCC9] px-2.5 py-1 text-[12px]">
+                      Rs. {MIN_PRICE}
+                    </span>
+                    <span className="text-[11px] text-[#8C7A6B]">to</span>
+                    <span className="rounded-lg bg-[#FAF0DC] border border-[#D49313]/40 px-2.5 py-1 text-[12px] text-[#593102]">
+                      Rs. {priceRange}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={MIN_PRICE}
+                    max={MAX_PRICE}
+                    value={priceRange}
+                    onChange={(event) => setPriceRange(Number(event.target.value))}
+                    className="mt-3 w-full accent-[#593102] cursor-pointer"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 3. Sticky Bottom Action Bar */}
+          <div className="sticky bottom-0 z-20 border-t border-[#EADCC9] bg-[#FAF7F2]/95 px-5 py-4 backdrop-blur-md shadow-lg">
+            <button
+              type="button"
+              onClick={applyFilters}
+              disabled={filterLoading}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] hover:from-[#D49313] hover:to-[#593102] py-3.5 text-[14px] font-bold uppercase tracking-wider text-white shadow-md active:scale-[0.98] transition-all disabled:opacity-60 cursor-pointer"
+            >
+              {filterLoading && <Loader2 size={16} className="animate-spin" />}
+              Apply Filters
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
       {toastMessage && (
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-gradient-to-r from-[#593102] via-[#7A450A] to-[#593102] border border-[#D49313]/50 px-7 py-3.5 text-white font-extrabold shadow-2xl flex items-center gap-2 text-[14px]">

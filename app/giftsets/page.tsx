@@ -13,21 +13,24 @@ export default function GiftsetPage() {
     const scrollToCurated = () => {
       if (typeof window === "undefined") return;
 
-      const hash = window.location.hash;
+      const hash = window.location.hash || "";
+      const search = window.location.search || "";
       const isTarget =
         hash === "#curatedgift" ||
         hash === "#curatedgiftwale" ||
         hash === "#curated-gift-boxes" ||
-        window.location.search.includes("curatedgift");
+        hash.includes("curated") ||
+        search.includes("curatedgift") ||
+        search.includes("size=");
 
       if (isTarget) {
         const target =
           document.getElementById("curatedgift") ||
           document.getElementById("curated-gift-boxes");
         if (target) {
-          const headerHeight = 80;
+          const headerHeight = 70;
           const rect = target.getBoundingClientRect();
-          if (Math.abs(rect.top - headerHeight) > 40) {
+          if (Math.abs(rect.top - headerHeight) > 20) {
             const targetY = rect.top + window.pageYOffset - headerHeight;
             window.scrollTo({
               top: targetY,
@@ -39,9 +42,10 @@ export default function GiftsetPage() {
     };
 
     scrollToCurated();
-    const t1 = setTimeout(scrollToCurated, 150);
-    const t2 = setTimeout(scrollToCurated, 450);
-    const t3 = setTimeout(scrollToCurated, 900);
+    const t1 = setTimeout(scrollToCurated, 100);
+    const t2 = setTimeout(scrollToCurated, 300);
+    const t3 = setTimeout(scrollToCurated, 600);
+    const t4 = setTimeout(scrollToCurated, 1200);
 
     window.addEventListener("hashchange", scrollToCurated);
 
@@ -49,6 +53,7 @@ export default function GiftsetPage() {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
       window.removeEventListener("hashchange", scrollToCurated);
     };
   }, []);
