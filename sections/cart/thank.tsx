@@ -82,6 +82,7 @@ export default function OrderConfirmation() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("sudhveda_guest_cart");
       localStorage.removeItem("applied_coupon");
+      localStorage.removeItem("applied_coupons");
     }
     if (fetchCart) {
       fetchCart().catch(() => { });
@@ -423,7 +424,14 @@ export default function OrderConfirmation() {
                 )}
                 {displayCouponDiscount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-bold">
-                    <span>Coupon Discount</span>
+                    <div className="flex items-center gap-1.5">
+                      <span>Coupon Discount</span>
+                      {(order?.couponCode || order?.coupon_code || order?.pricing?.couponCode) && (
+                        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 uppercase">
+                          {order.couponCode || order.coupon_code || order?.pricing?.couponCode}
+                        </span>
+                      )}
+                    </div>
                     <span>- ₹{typeof displayCouponDiscount === "number" && displayCouponDiscount % 1 !== 0 ? displayCouponDiscount.toFixed(2) : displayCouponDiscount.toLocaleString("en-IN")}</span>
                   </div>
                 )}

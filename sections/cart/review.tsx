@@ -177,12 +177,32 @@ export default function ReviewPage() {
 
   useEffect(() => {
     if (isMounted && typeof window !== "undefined") {
+      const storedCoupons = localStorage.getItem("applied_coupons");
+      if (storedCoupons) {
+        try {
+          const parsed = JSON.parse(storedCoupons);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const codes = parsed.map((c: any) => c.code || c.couponCode).filter(Boolean).join(", ");
+            const disc = parsed.reduce(
+              (acc: number, c: any) => acc + (Number(c.calculatedDiscount) || Number(c.flatDiscount) || Number(c.discount) || 0),
+              0
+            );
+            if (codes) setAppliedCouponCode(codes);
+            if (disc > 0) setCouponDiscount(disc);
+          }
+        } catch (e) {
+          console.error("Error parsing saved applied_coupons", e);
+        }
+      }
+
       const storedCoupon = localStorage.getItem("applied_coupon");
       if (storedCoupon) {
         try {
           const parsed = JSON.parse(storedCoupon);
-          if (parsed?.discount) setCouponDiscount(parsed.discount);
+          if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
           if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+          else if (parsed?.code) setAppliedCouponCode(parsed.code);
+          else if (parsed?.couponCode) setAppliedCouponCode(parsed.couponCode);
         } catch (e) {
           console.error("Error parsing saved coupon", e);
         }
@@ -247,15 +267,28 @@ export default function ReviewPage() {
 
       if (isMounted && typeof window !== "undefined") {
         const stored = localStorage.getItem("applied_coupon");
+        const storedList = localStorage.getItem("applied_coupons");
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
             if (parsed?.discount !== undefined && parsed?.discount !== null) setCouponDiscount(Number(parsed.discount));
             if (parsed?.coupon?.code) setAppliedCouponCode(parsed.coupon.code);
+            else if (parsed?.code) setAppliedCouponCode(parsed.code);
+            else if (parsed?.couponCode) setAppliedCouponCode(parsed.couponCode);
           } catch (e) { }
-        } else if (apiDiscount > 0) {
-          setCouponDiscount(apiDiscount);
-          setAppliedCouponCode(apiCode);
+        } else if (storedList) {
+          try {
+            const list = JSON.parse(storedList);
+            if (Array.isArray(list) && list.length > 0) {
+              const codes = list.map((c: any) => c.code || c.couponCode).filter(Boolean).join(", ");
+              const disc = list.reduce((acc: number, c: any) => acc + (Number(c.calculatedDiscount) || Number(c.flatDiscount) || Number(c.discount) || 0), 0);
+              if (codes) setAppliedCouponCode(codes);
+              if (disc > 0) setCouponDiscount(disc);
+            }
+          } catch (e) { }
+        } else if (apiDiscount > 0 || apiCode) {
+          if (apiDiscount > 0) setCouponDiscount(apiDiscount);
+          if (apiCode) setAppliedCouponCode(apiCode);
         }
       }
 
@@ -383,6 +416,12 @@ export default function ReviewPage() {
 
   const handlePlaceOrder = async () => {
     if (placingOrder) return;
+    const couponObj = appliedCouponCode
+      ? {
+          code: appliedCouponCode,
+          discount: couponDiscount,
+        }
+      : null;
     try {
       setPlacingOrder(true);
       const storedPayment = typeof window !== "undefined" ? localStorage.getItem("selected_payment") || "" : "";
@@ -523,14 +562,20 @@ export default function ReviewPage() {
               },
               products: formattedProducts,
               coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+              couponCode: appliedCouponCode || undefined,
+              coupon_code: appliedCouponCode || undefined,
               totalWeight: totalWeight,
               totalWeightUnit: "g",
               packingPrice: packingPrice,
               totalAmount: totalAmount,
-              couponDiscount: itemCouponDiscount,
+              couponDiscount: itemCouponDiscount || couponDiscount,
               finalAmount: finalAmount,
               totalsave: totalsave,
             },
+            coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+            couponCode: appliedCouponCode || undefined,
+            coupon_code: appliedCouponCode || undefined,
+            couponDiscount: itemCouponDiscount || couponDiscount,
             quantity: quantity,
             reserved_quantity: reservedQuantity,
           };
@@ -595,11 +640,19 @@ export default function ReviewPage() {
                   save: saveVal,
                 },
               },
+              coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+              couponCode: appliedCouponCode || undefined,
+              coupon_code: appliedCouponCode || undefined,
+              couponDiscount: pd.couponDiscount || (couponDiscount > 0 ? couponDiscount : 0),
               totalAmount: totalAmount,
               totalWeight: totalWeight,
               totalWeightUnit: weightUnit,
               totalsave: totalsave,
             },
+            coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+            couponCode: appliedCouponCode || undefined,
+            coupon_code: appliedCouponCode || undefined,
+            couponDiscount: pd.couponDiscount || (couponDiscount > 0 ? couponDiscount : 0),
             quantity: quantity,
             reserved_quantity: reservedQuantity,
           };
@@ -655,11 +708,19 @@ export default function ReviewPage() {
                   save: saveVal,
                 },
               },
+              coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+              couponCode: appliedCouponCode || undefined,
+              coupon_code: appliedCouponCode || undefined,
+              couponDiscount: pd.couponDiscount || (couponDiscount > 0 ? couponDiscount : 0),
               totalAmount: totalAmount,
               totalWeight: totalWeight,
               totalWeightUnit: weightUnit,
               totalsave: totalsave,
             },
+            coupon: pd.coupon || (appliedCouponCode ? { code: appliedCouponCode, discount: couponDiscount } : null),
+            couponCode: appliedCouponCode || undefined,
+            coupon_code: appliedCouponCode || undefined,
+            couponDiscount: pd.couponDiscount || (couponDiscount > 0 ? couponDiscount : 0),
             quantity: quantity,
             reserved_quantity: reservedQuantity,
           };
@@ -668,6 +729,14 @@ export default function ReviewPage() {
 
       const calculatedFinalAmount = total > 0 ? total : formattedItems.reduce((sum: number, it: any) => sum + (it.product_details?.totalAmount || 0), 0);
 
+      let storedCouponsList: any[] = [];
+      if (typeof window !== "undefined") {
+        try {
+          const rawList = localStorage.getItem("applied_coupons");
+          if (rawList) storedCouponsList = JSON.parse(rawList);
+        } catch {}
+      }
+
       const payload = {
         items: formattedItems,
         finalAmount: calculatedFinalAmount,
@@ -675,6 +744,16 @@ export default function ReviewPage() {
         billing_address: billingAddressObj,
         payment_mode: isCodMode || isCod ? "cod" : (storedPayment || "upi"),
         customer_note: "Please deliver during daytime.",
+        couponCode: appliedCouponCode || undefined,
+        coupon_code: appliedCouponCode || undefined,
+        coupon: couponObj,
+        appliedCoupon: couponObj,
+        appliedCoupons: storedCouponsList.length > 0 ? storedCouponsList : (couponObj ? [couponObj] : []),
+        couponDiscount: couponDiscount,
+        coupon_discount: couponDiscount,
+        discountAmount: couponDiscount,
+        discount: couponDiscount,
+        totalDiscount: couponDiscount,
       };
 
       const token = getTokenFromCookie();
@@ -718,10 +797,15 @@ export default function ReviewPage() {
                   },
                   items: cartProducts,
                   pricing: { subtotal, saved, couponDiscount, codFee: 0, total: calculatedFinalAmount },
+                  couponCode: appliedCouponCode,
+                  coupon_code: appliedCouponCode,
+                  coupon: couponObj,
+                  couponDiscount: couponDiscount,
                 };
                 if (typeof window !== "undefined") {
                   localStorage.setItem("latest_order", JSON.stringify(finalOrder));
                   localStorage.removeItem("applied_coupon");
+                  localStorage.removeItem("applied_coupons");
                 }
                 router.push("/thank");
               },
@@ -755,10 +839,15 @@ export default function ReviewPage() {
           },
           items: cartProducts,
           pricing: { subtotal, saved, couponDiscount, codFee: isCodMode || isCod ? computedCodCharge : 0, total: calculatedFinalAmount },
+          couponCode: appliedCouponCode,
+          coupon_code: appliedCouponCode,
+          coupon: couponObj,
+          couponDiscount: couponDiscount,
         };
         if (typeof window !== "undefined") {
           localStorage.setItem("latest_order", JSON.stringify(finalOrder));
           localStorage.removeItem("applied_coupon");
+          localStorage.removeItem("applied_coupons");
         }
         router.push("/thank");
         return;
@@ -782,9 +871,15 @@ export default function ReviewPage() {
         },
         items: cartProducts,
         pricing: { subtotal, saved, couponDiscount, codFee: isCod ? computedCodCharge : 0, total },
+        couponCode: appliedCouponCode,
+        coupon_code: appliedCouponCode,
+        coupon: couponObj,
+        couponDiscount: couponDiscount,
       };
       if (typeof window !== "undefined") {
         localStorage.setItem("latest_order", JSON.stringify(fallbackOrder));
+        localStorage.removeItem("applied_coupon");
+        localStorage.removeItem("applied_coupons");
       }
       router.push("/thank");
     } finally {
@@ -1029,6 +1124,7 @@ export default function ReviewPage() {
                     )}
                   </div>
                 )}
+
                 {computedCodCharge > 0 && (
                   <div className="flex justify-between text-[#F24E1E] font-bold pt-1 border-t border-dashed border-[#E5E8ED]">
                     <span>COD Charge</span>
