@@ -150,11 +150,11 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
 
 
       {/* ==================== MOBILE & TABLET MODE (< lg) ==================== */}
-      <div className="block lg:hidden mx-auto max-w-[1440px] px-4 sm:px-8 relative z-10 w-full py-8 sm:py-12">
+      <div className="block lg:hidden mx-auto max-w-[1440px] px-4 sm:px-8 relative z-10 w-full pt-14 xs:pt-16 sm:pt-20 pb-8 sm:pb-12">
         <div className="w-full max-w-[680px] mx-auto flex flex-col items-center text-center">
 
           {/* Hero Header Wrapper with safe horizontal padding away from side floral background images */}
-          <div className="w-full max-w-[310px] xs:max-w-[350px] sm:max-w-[460px] px-2 xs:px-4 mx-auto flex flex-col items-center">
+          <div className="w-full max-w-[310px] xs:max-w-[350px] sm:max-w-[460px] px-2 xs:px-4 mx-auto flex flex-col items-center mt-3 xs:mt-5">
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-[#FAF2E6]/95 backdrop-blur-xs border border-[#F0DFCA] px-3.5 py-1.5 rounded-full text-[12px] sm:text-[14px] font-medium text-[#6B4725] mb-3.5 shadow-2xs">
               <span className="text-[14px] sm:text-[15px]">🍯</span>
@@ -168,13 +168,13 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
             </h1>
 
             {/* Subtitle */}
-            <p className="font-cormorant italic text-[14px] xs:text-[15.5px] sm:text-[17.5px] text-[#593102] leading-snug sm:leading-relaxed max-w-[270px] xs:max-w-[320px] sm:max-w-[440px] mt-2.5 sm:mt-3 mb-5 text-center mx-auto">
+            <p className="font-cormorant italic text-[14px] xs:text-[15.5px] sm:text-[17.5px] text-[#593102] leading-snug sm:leading-relaxed max-w-[270px] xs:max-w-[320px] sm:max-w-[440px] mt-2.5 sm:mt-3 mb-3 sm:mb-5 text-center mx-auto">
               Discover six distinctive honey varieties, thoughtfully delivered to your doorstep throughout the year.
             </p>
           </div>
 
           {/* 3 Feature Cards Row (1-row layout) */}
-          <div className="flex items-center justify-between gap-1.5 sm:gap-3 my-5 w-full">
+          <div className="flex items-center justify-between gap-1.5 sm:gap-3 mt-3 sm:mt-5 mb-5 w-full">
             {/* Card 1: 6 Honey variety */}
             <div className="bg-[#FAF4E8] border border-[#E9DAC3] rounded-[16px] sm:rounded-[22px] px-2 sm:px-4 py-2.5 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_rgba(89,49,2,0.06)] flex-1 min-w-0 h-[96px] sm:h-[114px]">
               <div className="relative w-5 h-5 sm:w-7 sm:h-7 mb-1.5">
