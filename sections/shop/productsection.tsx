@@ -845,21 +845,21 @@ export default function ShopPage() {
                         </div>
                       </div>
 
-                      <div className="px-1 sm:px-1.5">
+                      <div className="px-0.5 sm:px-1.5">
                         {/* Divider */}
-                        <div className="border-t border-[#E8DCCB] my-2 sm:my-2.5" />
+                        <div className="border-t border-[#E8DCCB] my-1.5 sm:my-2.5" />
 
                         {/* Bottom Bar: Single botelgiftc.svg icon + Explore Gift button */}
-                        <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                        <div className="flex flex-wrap items-center justify-between gap-x-1 sm:gap-x-1.5 gap-y-1.5 pt-0.5">
                           <div className="flex items-center gap-1 sm:gap-1.5 text-[#2F241C] shrink-0">
                             <Image
                               src="/botelgiftc.svg"
                               alt="Jar"
-                              width={18}
-                              height={18}
-                              className="object-contain shrink-0 sm:w-5 sm:h-5"
+                              width={16}
+                              height={16}
+                              className="w-3.5 h-3.5 sm:w-5 sm:h-5 object-contain shrink-0"
                             />
-                            <span className="text-[11.5px] sm:text-[13.5px] font-bold text-[#2F241C]">
+                            <span className="text-[10px] min-[370px]:text-[11px] sm:text-[13.5px] font-bold text-[#2F241C] whitespace-nowrap">
                               {jarCount > 0 ? `${jarCount} Jars` : "Gift Set"}
                             </span>
                           </div>
@@ -867,10 +867,10 @@ export default function ShopPage() {
                           <Link
                             href={targetUrl}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 rounded-full bg-[#5D3716] hover:bg-[#784318] text-white px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-[12.5px] font-medium shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+                            className="inline-flex items-center justify-center gap-0.5 sm:gap-1 rounded-full bg-[#5D3716] hover:bg-[#784318] text-white px-2 min-[360px]:px-2.5 min-[390px]:px-3 sm:px-4 py-1 sm:py-1.5 text-[9.5px] min-[370px]:text-[10.5px] sm:text-[12.5px] font-medium shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap shrink-0 ml-auto"
                           >
                             <span>Explore Gift</span>
-                            <ArrowRight size={12} className="sm:w-3.5 sm:h-3.5" />
+                            <ArrowRight size={10} className="shrink-0 sm:w-3.5 sm:h-3.5" />
                           </Link>
                         </div>
                       </div>
