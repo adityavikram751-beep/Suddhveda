@@ -1478,7 +1478,7 @@ export default function ProductDetailPage({
   if (!product) return null;
 
   return (
-    <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth">
+    <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth overflow-x-clip">
       <div className="max-w-[1350px] mx-auto px-4 py-3 sm:py-4">
         {/* MAIN GRID - DESKTOP STICKY GALLERY */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -2077,14 +2077,14 @@ export default function ProductDetailPage({
         </div>
 
         {/* HONEY PROCESS & TRUST POSTER */}
-        <div className="mt-12 sm:mt-16 w-full overflow-hidden rounded-3xl border border-[#EADCC9] shadow-md bg-white">
+        <div className="mt-10 sm:mt-16 -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-full overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
           <Image
-            src="https://res.cloudinary.com/anjp8e9i/image/upload/v1791543776/r_qukxod.png"
+            src="https://res.cloudinary.com/anjp8e9i/image/upload/v1792752496/Product_journey_ztqkwt.png"
             alt="ShuddhVeda Honey Journey & Quality Process Poster"
-            width={1400}
-            height={2000}
-            className="w-full h-auto object-contain rounded-3xl block"
-            sizes="(max-width: 1280px) 100vw, 1350px"
+            width={1358}
+            height={3528}
+            className="w-full h-auto object-cover sm:object-contain rounded-none sm:rounded-3xl block"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1350px"
           />
         </div>
 
