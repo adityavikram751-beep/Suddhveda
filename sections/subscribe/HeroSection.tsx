@@ -151,24 +151,27 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
 
       {/* ==================== MOBILE & TABLET MODE (< lg) ==================== */}
       <div className="block lg:hidden mx-auto max-w-[1440px] px-4 sm:px-8 relative z-10 w-full py-8 sm:py-12">
-        <div className="w-full max-w-[680px] mx-auto">
+        <div className="w-full max-w-[680px] mx-auto flex flex-col items-center text-center">
 
-          {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#FAF2E6] border border-[#F0DFCA] px-3.5 py-1.5 rounded-full text-[12.5px] sm:text-[14px] font-medium text-[#6B4725] mb-4 shadow-2xs">
-            <span className="text-[14px] sm:text-[15px]">🍯</span>
-            <span>Shuddhveda honey Subscription</span>
+          {/* Hero Header Wrapper with safe horizontal padding away from side floral background images */}
+          <div className="w-full max-w-[310px] xs:max-w-[350px] sm:max-w-[460px] px-2 xs:px-4 mx-auto flex flex-col items-center">
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#FAF2E6]/95 backdrop-blur-xs border border-[#F0DFCA] px-3.5 py-1.5 rounded-full text-[12px] sm:text-[14px] font-medium text-[#6B4725] mb-3.5 shadow-2xs">
+              <span className="text-[14px] sm:text-[15px]">🍯</span>
+              <span>Shuddhveda honey Subscription</span>
+            </div>
+
+            {/* Main Title - Responsive & constrained to avoid overlapping side floral art */}
+            <h1 className="font-libre-caslon text-[25px] xs:text-[28px] sm:text-[40px] text-[#1A1410] leading-[1.15] tracking-tight text-center">
+              A Year of Honey.<br />
+              A Journey of <span className="text-[#E08A00]">Flavours.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="font-cormorant italic text-[14px] xs:text-[15.5px] sm:text-[17.5px] text-[#593102] leading-snug sm:leading-relaxed max-w-[270px] xs:max-w-[320px] sm:max-w-[440px] mt-2.5 sm:mt-3 mb-5 text-center mx-auto">
+              Discover six distinctive honey varieties, thoughtfully delivered to your doorstep throughout the year.
+            </p>
           </div>
-
-          {/* Main Title */}
-          <h1 className="font-libre-caslon text-[30px] xs:text-[35px] sm:text-[44px] text-[#1A1410] leading-[1.12] tracking-tight">
-            A Year of Honey.<br />
-            A Journey of Flavours.
-          </h1>
-
-          {/* Subtitle */}
-          <p className="font-cormorant italic text-[15px] sm:text-[18px] text-[#593102] leading-snug sm:leading-relaxed max-w-[560px] mt-3 sm:mt-4 mb-5">
-            Discover six distinctive honey varieties, thoughtfully delivered to your doorstep throughout the year.
-          </p>
 
           {/* 3 Feature Cards Row (1-row layout) */}
           <div className="flex items-center justify-between gap-1.5 sm:gap-3 my-5 w-full">
@@ -236,7 +239,7 @@ export default function HeroSection({ onScrollToPlans }: { onScrollToPlans?: () 
           </div>
 
           {/* CTA Button */}
-          <div className="mt-4">
+          <div className="mt-4 w-full max-w-[380px] mx-auto">
             <button
               type="button"
               onClick={handleScroll}
