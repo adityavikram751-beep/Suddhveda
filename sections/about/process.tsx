@@ -66,7 +66,7 @@ function ProcessStepIcon({ icon, title, step }: { icon: string; title: string; s
 
 export default function BeekeepingProcess() {
   return (
-    <section className="relative bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] border-y border-[#EADCC9]/50 py-16 lg:py-24 overflow-hidden mt-10 lg:mt-14">
+    <section className="relative bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] border-b border-[#EADCC9]/50 py-16 lg:py-24 overflow-hidden">
       {/* Decorative Glow Blobs */}
       <div className="absolute top-1/3 left-1/3 w-[600px] h-[300px] bg-[#D49313]/6 rounded-full blur-3xl pointer-events-none" />
 

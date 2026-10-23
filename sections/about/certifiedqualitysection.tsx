@@ -68,28 +68,28 @@ export default function CertifiedQualitySection() {
             </p>
 
             {/* Feature Grid */}
-            <div className="grid grid-cols-3 gap-3.5 sm:gap-5">
+            <div className="grid grid-cols-3 gap-2 sm:gap-5">
               {features.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm border-2 border-[#EADCC9]/80 rounded-[22px] p-4 sm:p-5 flex flex-col items-center text-center shadow-xs relative overflow-hidden"
+                  className="bg-white/85 backdrop-blur-sm border sm:border-2 border-[#EADCC9]/80 rounded-xl sm:rounded-[22px] py-2.5 px-1.5 sm:p-5 flex flex-col items-center text-center shadow-xs hover:shadow-md transition-all duration-300 relative overflow-hidden"
                 >
-                  {/* Icon Box Container - Original Box Size with Full Image Fill */}
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-[#D49313]/40 overflow-hidden shadow-2xs mb-2.5 shrink-0 bg-white">
+                  {/* Icon Box Container - Optimized for mobile & desktop */}
+                  <div className="relative w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl border border-[#D49313]/40 overflow-hidden shadow-2xs mb-1.5 sm:mb-2.5 shrink-0 bg-white">
                     <Image
                       src={item.icon}
                       alt={item.title}
                       fill
-                      sizes="60px"
-                      className="object-cover rounded-2xl"
+                      sizes="(max-width: 640px) 40px, 64px"
+                      className="object-cover rounded-xl sm:rounded-2xl"
                     />
                   </div>
 
                   {/* Title */}
-                  <h4 className="text-[11.5px] sm:text-[13px] font-extrabold text-[#593102] tracking-wide uppercase font-serif leading-tight">
+                  <h4 className="text-[10px] sm:text-[13px] font-extrabold text-[#593102] tracking-tight sm:tracking-wide uppercase font-serif leading-tight">
                     {item.title}
                   </h4>
-                  <span className="text-[10px] font-bold text-[#8D7F73] mt-0.5">
+                  <span className="text-[8.5px] sm:text-[10px] font-medium text-[#8D7F73] mt-0.5 leading-tight line-clamp-1 sm:line-clamp-none">
                     {item.subtitle}
                   </span>
                 </div>
