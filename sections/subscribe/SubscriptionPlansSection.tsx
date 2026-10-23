@@ -253,7 +253,7 @@ export default function SubscriptionPlansSection() {
                 </div>
 
                 {/* ==================== MOBILE MODE (< lg) ==================== */}
-                <div className="flex lg:hidden flex-col items-center text-left py-4 w-full max-w-[540px] mx-auto">
+                <div className="flex lg:hidden flex-col items-center text-center py-4 w-full max-w-[540px] mx-auto">
 
                     {/* Top Pill Badge */}
                     <div className="inline-flex items-center gap-2 bg-[#F9F0DF] border border-[#E6D5C3] px-4 py-1.5 rounded-full mb-5 text-[#593102] shadow-2xs self-center">
@@ -281,7 +281,7 @@ export default function SubscriptionPlansSection() {
                     </div>
 
                     {/* Main Title */}
-                    <h2 className="font-playfair font-normal not-italic text-[28px] xs:text-[32px] sm:text-[38px] leading-[1.18] tracking-normal w-full text-left">
+                    <h2 className="font-playfair font-normal not-italic text-[28px] xs:text-[32px] sm:text-[38px] leading-[1.18] tracking-normal w-full text-center">
                         <span className="bg-gradient-to-r from-[#C6900E] via-[#A8720A] to-[#4A2E0A] bg-clip-text text-transparent block">
                             A Year of Honey,
                         </span>
@@ -291,13 +291,13 @@ export default function SubscriptionPlansSection() {
                     </h2>
 
                     {/* Subtitle */}
-                    <p className="font-cormorant font-normal not-italic text-[16px] xs:text-[18px] sm:text-[20px] leading-[22px] sm:leading-[26px] text-[#593102] opacity-90 mt-3 mb-4 w-full text-left">
+                    <p className="font-cormorant font-normal not-italic text-[16px] xs:text-[18px] sm:text-[20px] leading-[22px] sm:leading-[26px] text-[#593102] opacity-90 mt-3 mb-4 w-full text-center max-w-[440px] mx-auto">
                         {activePlan.description || "Discover Six distinctive Shuddhveda Honey Verieties delivered throughout the Year"}
                     </p>
 
                     {/* Multiple Plans Selection Bar (Mobile) */}
                     {plans.length > 1 && (
-                        <div className="flex flex-wrap gap-2 my-2 w-full">
+                        <div className="flex flex-wrap justify-center gap-2 my-2 w-full">
                             {plans.map((p) => (
                                 <button
                                     key={p.id}
