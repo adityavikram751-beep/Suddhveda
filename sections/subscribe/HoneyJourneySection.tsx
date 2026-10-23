@@ -53,23 +53,23 @@ export default function HoneyJourneySection() {
                     className="object-contain"
                   />
                 </div>
-                <span className="font-cormorant text-[12px] xl:text-[14px] text-[#000000] font-normal tracking-wide -mt-1">
+                <span className="font-cormorant text-[12px] xl:text-[14px] text-[#2C1E14] font-light font-[300] tracking-wide -mt-1">
                   honey
                 </span>
               </div>
 
               <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
-                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-light font-[300] text-[#2C1E14] leading-none">
                   6
                 </span>
-                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#2C1E14] font-light font-[300] tracking-wide">
                   Jars
                 </span>
               </div>
             </div>
 
             <div className="ml-1.5 xl:ml-3">
-              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-light font-[300] text-[#2C1E14] leading-tight block">
                 Of Seasonal Honey
               </span>
             </div>
@@ -88,17 +88,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
-                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-light font-[300] text-[#2C1E14] leading-none">
                   4
                 </span>
-                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#2C1E14] font-light font-[300] tracking-wide">
                   Months
                 </span>
               </div>
             </div>
 
             <div className="ml-1.5 xl:ml-3">
-              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-light font-[300] text-[#2C1E14] leading-tight block">
                 Between Deliveries
               </span>
             </div>
@@ -117,17 +117,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-0.5 xl:gap-1 self-start pt-0.5 mr-1.5 xl:mr-3">
-                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-light font-[300] text-[#2C1E14] leading-none">
                   3
                 </span>
-                <span className="font-cormorant text-[14px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[14px] xl:text-[18.5px] text-[#2C1E14] font-light font-[300] tracking-wide">
                   Delivery
                 </span>
               </div>
             </div>
 
             <div className="ml-1.5 xl:ml-3">
-              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-light font-[300] text-[#2C1E14] leading-tight block">
                 Seasonal Harvest
               </span>
             </div>
@@ -146,17 +146,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-0.5 self-start pt-0.5 mr-1.5 xl:mr-3">
-                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[58px] xl:text-[80px] font-light font-[300] text-[#2C1E14] leading-none">
                   1
                 </span>
-                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#000000] font-medium tracking-wide">
+                <span className="font-cormorant text-[15px] xl:text-[18.5px] text-[#2C1E14] font-light font-[300] tracking-wide">
                   pay
                 </span>
               </div>
             </div>
 
             <div className="ml-1.5 xl:ml-3">
-              <span className="font-cormorant text-[17px] xl:text-[20px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[17px] xl:text-[20px] font-light font-[300] text-[#2C1E14] leading-tight block">
                 Annual Payment
               </span>
             </div>
@@ -235,23 +235,23 @@ export default function HoneyJourneySection() {
                     className="object-contain"
                   />
                 </div>
-                <span className="font-cormorant text-[11px] text-[#000000] font-normal -mt-0.5">
+                <span className="font-cormorant text-[12.5px] text-[#2C1E14] font-bold tracking-wide -mt-0.5">
                   honey
                 </span>
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[52px] font-bold text-[#2C1E14] leading-none">
                   6
                 </span>
-                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[15px] text-[#2C1E14] font-bold tracking-wide">
                   Jars
                 </span>
               </div>
             </div>
 
             <div className="text-center pb-0.5">
-              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[18.5px] font-bold text-[#2C1E14] leading-tight block">
                 Of Seasonal Honey
               </span>
             </div>
@@ -270,17 +270,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[52px] font-bold text-[#2C1E14] leading-none">
                   4
                 </span>
-                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[15px] text-[#2C1E14] font-bold tracking-wide">
                   Months
                 </span>
               </div>
             </div>
 
             <div className="text-center pb-0.5">
-              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[18.5px] font-bold text-[#2C1E14] leading-tight block">
                 Between Deliveries
               </span>
             </div>
@@ -299,17 +299,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[52px] font-bold text-[#2C1E14] leading-none">
                   3
                 </span>
-                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[15px] text-[#2C1E14] font-bold tracking-wide">
                   Delivery
                 </span>
               </div>
             </div>
 
             <div className="text-center pb-0.5">
-              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[18.5px] font-bold text-[#2C1E14] leading-tight block">
                 Seasonal Harvest
               </span>
             </div>
@@ -328,17 +328,17 @@ export default function HoneyJourneySection() {
               </div>
 
               <div className="flex items-baseline gap-0.5">
-                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
+                <span className="font-cormorant italic text-[52px] font-bold text-[#2C1E14] leading-none">
                   1
                 </span>
-                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[15px] text-[#2C1E14] font-bold tracking-wide">
                   pay
                 </span>
               </div>
             </div>
 
             <div className="text-center pb-0.5">
-              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
+              <span className="font-cormorant text-[18.5px] font-bold text-[#2C1E14] leading-tight block">
                 Annual Payment
               </span>
             </div>
