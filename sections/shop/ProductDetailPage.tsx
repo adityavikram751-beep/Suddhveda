@@ -2077,14 +2077,14 @@ export default function ProductDetailPage({
         </div>
 
         {/* HONEY PROCESS & TRUST POSTER */}
-        <div className="mt-10 sm:mt-16 -mx-4 sm:mx-0 w-[calc(100%+2rem)] sm:w-full overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
+        <div className="mt-10 sm:mt-16 -mx-4 sm:mx-auto w-[calc(100%+2rem)] sm:w-full sm:max-w-[1050px] lg:max-w-[1180px] overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
           <Image
             src="https://res.cloudinary.com/anjp8e9i/image/upload/v1792752496/Product_journey_ztqkwt.png"
             alt="ShuddhVeda Honey Journey & Quality Process Poster"
             width={1358}
             height={3528}
             className="w-full h-auto object-cover sm:object-contain rounded-none sm:rounded-3xl block"
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1350px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1180px"
           />
         </div>
 
