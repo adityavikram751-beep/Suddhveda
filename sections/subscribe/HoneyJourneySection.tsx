@@ -224,10 +224,10 @@ export default function HoneyJourneySection() {
         <div className="flex lg:hidden flex-col items-center gap-4 mt-6 w-full mx-auto">
 
           {/* Card 1: 6 Jars Of Seasonal Honey */}
-          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[215px] xs:w-[235px] flex flex-col justify-between h-[135px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
-            <div className="flex items-center justify-between px-1">
+          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[230px] xs:w-[250px] flex flex-col justify-between h-[142px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
+            <div className="flex items-center justify-center gap-3 pt-1">
               <div className="flex flex-col items-center">
-                <div className="relative w-10 h-10">
+                <div className="relative w-11 h-11">
                   <Image
                     src="/Group 33950 (1).svg"
                     alt="Honey Jar Icon"
@@ -240,27 +240,27 @@ export default function HoneyJourneySection() {
                 </span>
               </div>
 
-              <div className="flex items-baseline gap-1 pt-0.5">
-                <span className="font-cormorant italic text-[46px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-1">
+                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
                   6
                 </span>
-                <span className="font-cormorant text-[13px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
                   Jars
                 </span>
               </div>
             </div>
 
-            <div className="text-center">
-              <span className="font-cormorant text-[17px] font-normal text-[#000000] leading-tight block">
+            <div className="text-center pb-0.5">
+              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
                 Of Seasonal Honey
               </span>
             </div>
           </div>
 
           {/* Card 2: 4 Months Between Deliveries */}
-          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[215px] xs:w-[235px] flex flex-col justify-between h-[135px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
-            <div className="flex items-center justify-between px-1">
-              <div className="relative w-10 h-10">
+          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[230px] xs:w-[250px] flex flex-col justify-between h-[142px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
+            <div className="flex items-center justify-center gap-3 pt-1">
+              <div className="relative w-11 h-11">
                 <Image
                   src="/Vector (4).svg"
                   alt="Calendar Icon"
@@ -269,27 +269,27 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-1 pt-0.5">
-                <span className="font-cormorant italic text-[46px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-1">
+                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
                   4
                 </span>
-                <span className="font-cormorant text-[13px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
                   Months
                 </span>
               </div>
             </div>
 
-            <div className="text-center">
-              <span className="font-cormorant text-[17px] font-normal text-[#000000] leading-tight block">
+            <div className="text-center pb-0.5">
+              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
                 Between Deliveries
               </span>
             </div>
           </div>
 
           {/* Card 3: 3 Delivery Seasonal Harvest */}
-          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[215px] xs:w-[235px] flex flex-col justify-between h-[135px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
-            <div className="flex items-center justify-between px-1">
-              <div className="relative w-10 h-10">
+          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[230px] xs:w-[250px] flex flex-col justify-between h-[142px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
+            <div className="flex items-center justify-center gap-3 pt-1">
+              <div className="relative w-11 h-11">
                 <Image
                   src="/griddy-icons_package-delivery-fast (1).svg"
                   alt="Delivery Icon"
@@ -298,27 +298,27 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-1 pt-0.5">
-                <span className="font-cormorant italic text-[46px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-1">
+                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
                   3
                 </span>
-                <span className="font-cormorant text-[13px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
                   Delivery
                 </span>
               </div>
             </div>
 
-            <div className="text-center">
-              <span className="font-cormorant text-[17px] font-normal text-[#000000] leading-tight block">
+            <div className="text-center pb-0.5">
+              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
                 Seasonal Harvest
               </span>
             </div>
           </div>
 
           {/* Card 4: 1 pay Annual Payment */}
-          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[215px] xs:w-[235px] flex flex-col justify-between h-[135px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
-            <div className="flex items-center justify-between px-1">
-              <div className="relative w-10 h-10">
+          <div className="bg-[#FFEDD0] rounded-[22px] p-3.5 w-[230px] xs:w-[250px] flex flex-col justify-between h-[142px] shadow-[0_2px_10px_rgba(89,49,2,0.03)]">
+            <div className="flex items-center justify-center gap-3 pt-1">
+              <div className="relative w-11 h-11">
                 <Image
                   src="/Vector (5).svg"
                   alt="Payment Card Icon"
@@ -327,25 +327,25 @@ export default function HoneyJourneySection() {
                 />
               </div>
 
-              <div className="flex items-baseline gap-0.5 pt-0.5">
-                <span className="font-cormorant italic text-[46px] font-normal text-[#000000] leading-none">
+              <div className="flex items-baseline gap-0.5">
+                <span className="font-cormorant italic text-[50px] font-normal text-[#000000] leading-none">
                   1
                 </span>
-                <span className="font-cormorant text-[13px] text-[#000000] font-normal">
+                <span className="font-cormorant text-[14px] text-[#000000] font-normal">
                   pay
                 </span>
               </div>
             </div>
 
-            <div className="text-center">
-              <span className="font-cormorant text-[17px] font-normal text-[#000000] leading-tight block">
+            <div className="text-center pb-0.5">
+              <span className="font-cormorant text-[18px] font-normal text-[#000000] leading-tight block">
                 Annual Payment
               </span>
             </div>
           </div>
 
           {/* Card 5: THE HONEY CLUB INCLUDES */}
-          <div className="bg-[#F6DFBE] rounded-[22px] p-4.5 w-[215px] xs:w-[235px] flex flex-col justify-start text-left shadow-[0_8px_24px_rgba(89,49,2,0.1)]">
+          <div className="bg-[#F6DFBE] rounded-[22px] p-4.5 w-[230px] xs:w-[250px] flex flex-col justify-start text-left shadow-[0_8px_24px_rgba(89,49,2,0.1)]">
             <div className="flex items-center gap-2 mb-2.5">
               <div className="relative w-4.5 h-4.5 flex-shrink-0">
                 <Image
