@@ -39,7 +39,7 @@ const steps = [
     step: "06",
     title: "Delivered with Love",
     desc: "From our hive directly to your home with care and responsibility.",
-    icon: "/usehoney.png",
+    icon: "/delivert.png",
   },
 ];
 
