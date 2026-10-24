@@ -289,12 +289,12 @@ export default function ContactSection() {
 
   return (
     <section className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EC] to-[#FFFDF9] pt-4 sm:pt-8 lg:pt-10 pb-10 sm:pb-12 lg:pb-16 relative overflow-hidden">
-      <div className="max-w-[1500px] mx-auto w-full px-4 sm:px-6 lg:px-16 relative">
+      <div className="max-w-[1500px] mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-16 relative">
 
         {/* TOP ROW - Form + Photo */}
         <div className="grid lg:grid-cols-2 gap-6 xl:gap-10 items-stretch">
           {/* LEFT - Form Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-4 sm:p-7 lg:p-7 xl:p-9 flex flex-col justify-between">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl border border-[#EADCC9] shadow-sm p-4 sm:p-7 lg:p-6 xl:p-9 flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 bg-[#FAF0DC] border border-[#D49313]/40 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase text-[#593102] tracking-[0.16em] mb-2">
                 <span>WE&apos;D LOVE TO</span>
@@ -423,17 +423,17 @@ export default function ContactSection() {
                   </span>
                 </label>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2">
+                <div className="flex flex-wrap items-center gap-3.5 mt-2">
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[42px] sm:h-[40px] px-5 sm:px-6 rounded-xl flex items-center justify-center gap-2 font-extrabold text-[12px] sm:text-[13px] tracking-wide uppercase shadow-xs transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto"
+                    className="bg-[#FA4B1B] hover:bg-[#E64216] text-white h-[44px] px-6 sm:px-7 rounded-2xl inline-flex items-center justify-center gap-2 font-extrabold text-[12.5px] sm:text-[13px] tracking-wider uppercase shadow-xs transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap shrink-0"
                   >
-                    {isSubmitting ? "Sending..." : "Send Message"}
-                    <FiArrowUp size={14} className="rotate-45" />
+                    <span className="whitespace-nowrap">{isSubmitting ? "Sending..." : "Send Message"}</span>
+                    <FiArrowUp size={15} className="rotate-45 shrink-0" />
                   </button>
 
-                  <div className="flex items-center justify-center sm:justify-start gap-2 text-[12px] sm:text-[12.5px] text-[#D49313] font-bold">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 text-[12px] sm:text-[12.5px] text-[#D49313] font-bold shrink-0">
                     <svg width="24" height="14" viewBox="0 0 24 14" fill="none" className="flex-shrink-0">
                       <path
                         d="M1 10C4 2 7 2 9 8C11 13 14 13 16 6C18 1 21 1 23 4"
@@ -442,7 +442,7 @@ export default function ContactSection() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span>We will get back to you soon!</span>
+                    <span className="whitespace-nowrap">We will get back to you soon!</span>
                   </div>
                 </div>
               </form>

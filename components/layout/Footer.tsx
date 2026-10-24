@@ -193,12 +193,12 @@ export default function Footer() {
 
 
         {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
-        <div className="hidden lg:grid grid-cols-4 gap-10">
+        <div className="hidden lg:grid grid-cols-12 gap-6 xl:gap-8 2xl:gap-10">
 
-          {/* ================= Logo ================= */}
-          <div>
+          {/* ================= Logo & Brand Info ================= */}
+          <div className="lg:col-span-4 xl:col-span-4">
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5">
+              <div className="w-14 h-14 xl:w-16 xl:h-16 rounded-lg bg-[#422402] flex items-center justify-center overflow-hidden p-1.5 shrink-0 shadow-md">
                 <Image
                   src="/yellow logo.png"
                   alt="ShuddhVeda Logo"
@@ -207,21 +207,21 @@ export default function Footer() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h2 className="text-[22px] font-semibold">
+              <h2 className="text-[20px] xl:text-[22px] font-semibold tracking-tight">
                 ShuddhVedaHoney
               </h2>
             </div>
-            <p className="mt-4 max-w-[280px] text-[14px] leading-6 text-[#E2D2C4]">
+            <p className="mt-4 max-w-[280px] text-[13.5px] xl:text-[14px] leading-6 text-[#E2D2C4]">
               Bringing nature&apos;s purest honey from the hive to your home. Committed to quality, purity, and sustainability.
             </p>
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-2.5 xl:gap-3 mt-5 xl:mt-6">
               <a
                 href="https://www.instagram.com/ShuddhVedaHoney"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram - ShuddhVedaHoney"
                 title="ShuddhVedaHoney"
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors shrink-0"
               >
                 <FaInstagram size={16} />
               </a>
@@ -229,48 +229,48 @@ export default function Footer() {
                 href="#"
                 aria-label="Facebook - ShuddhVedaHoney"
                 title="ShuddhVedaHoney"
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors shrink-0"
               >
                 <FaFacebookF size={16} />
               </a>
-              <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a href="#" aria-label="Twitter" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors shrink-0">
                 <FaXTwitter size={16} />
               </a>
-              <a href="#" aria-label="Youtube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a href="#" aria-label="Youtube" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors shrink-0">
                 <FaYoutube size={16} />
               </a>
             </div>
           </div>
 
           {/* ================= Quick Links ================= */}
-          <div>
-            <h3 className="text-[16px] font-semibold">
+          <div className="lg:col-span-2 xl:col-span-2">
+            <h3 className="text-[15px] xl:text-[16px] font-semibold text-white tracking-wide">
               Quick Links
             </h3>
-            <ul className="mt-5 space-y-3">
+            <ul className="mt-4 xl:mt-5 space-y-2.5 xl:space-y-3">
               <li>
-                <Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/shop" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   All Honey
                 </Link>
               </li>
               <li>
-                <Link href="/account" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   My Account
                 </Link>
               </li>
 
               <li>
-                <Link href="/shop" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/shop" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Products
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/contact" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/about" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
@@ -278,73 +278,71 @@ export default function Footer() {
           </div>
 
           {/* ================= Products Information ================= */}
-          <div>
-            <h3 className="text-[16px] font-semibold">
-              Products Information
+          <div className="lg:col-span-2 xl:col-span-2">
+            <h3 className="text-[15px] xl:text-[16px] font-semibold text-white tracking-wide">
+              Products Info
             </h3>
-            <ul className="mt-5 space-y-3">
-
+            <ul className="mt-4 xl:mt-5 space-y-2.5 xl:space-y-3">
               <li>
-                <Link href="/account/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Policy Center
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy/term" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/term" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Terms &amp; Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy/privacy" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/privacy" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/account/privacy/shipping" className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
+                <Link href="/account/privacy/shipping" className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors">
                   Shipping Policy
                 </Link>
               </li>
-
             </ul>
           </div>
 
           {/* ================= Get In Touch ================= */}
-          <div>
-            <h3 className="text-[16px] font-semibold">
+          <div className="lg:col-span-4 xl:col-span-4">
+            <h3 className="text-[15px] xl:text-[16px] font-semibold text-white tracking-wide">
               Get in Touch
             </h3>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 xl:mt-5 space-y-3">
               {/* Phone 1 (Calling) */}
-              <div className="flex items-start gap-3">
-                <Phone size={15} className="mt-1 text-[#E2D2C4] shrink-0" />
+              <div className="flex items-center gap-3">
+                <Phone size={15} className="text-[#E2D2C4] shrink-0" />
                 <a
                   href={`tel:${loading ? "+918796632478" : (locationData?.phone || "+918796632478").replace(/[^0-9+]/g, "")}`}
-                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
+                  className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.phone || "+91 8796632478"}
                 </a>
               </div>
 
               {/* Phone 2 (WhatsApp) */}
-              <div className="flex items-start gap-3">
-                <FaWhatsapp size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
+              <div className="flex items-center gap-3">
+                <FaWhatsapp size={16} className="text-[#E2D2C4] shrink-0" />
                 <a
                   href={`https://wa.me/${loading ? "918796632478" : (locationData?.whatsapp || "+918796632478").replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
+                  className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
                 >
                   {loading ? "Loading..." : locationData?.whatsapp || "+91 8796632478"}
                 </a>
               </div>
 
               {/* Email */}
-              <div className="flex items-start gap-3">
-                <Mail size={15} className="mt-1 text-[#E2D2C4]" />
+              <div className="flex items-center gap-3">
+                <Mail size={15} className="text-[#E2D2C4] shrink-0" />
                 <a
                   href={`mailto:${loading ? "shuddhvedahoney@gmail.com" : locationData?.email || "shuddhvedahoney@gmail.com"}`}
-                  className="text-[14px] text-[#E2D2C4] hover:text-white transition-colors"
+                  className="text-[13.5px] xl:text-[14px] text-[#E2D2C4] hover:text-white transition-colors break-all sm:break-normal"
                 >
                   {loading ? "Loading..." : locationData?.email || "shuddhvedahoney@gmail.com"}
                 </a>
@@ -353,7 +351,7 @@ export default function Footer() {
               {/* Address */}
               <div className="flex items-start gap-3">
                 <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
-                <p className="text-[13px] leading-5 text-[#E2D2C4]">
+                <p className="text-[12.5px] xl:text-[13px] leading-relaxed text-[#E2D2C4]">
                   {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
                 </p>
               </div>
@@ -363,7 +361,7 @@ export default function Footer() {
         </div>
 
         {/* ================= Desktop Bottom Footer ================= */}
-        <div className="hidden lg:flex mt-10 border-t border-white/15 pt-6 items-center justify-between">
+        <div className="hidden lg:flex mt-10 border-t border-white/15 pt-6 items-center justify-between flex-wrap gap-4">
           <p className="text-[13px] text-[#D9C8BA]">
             © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with in India.
           </p>
