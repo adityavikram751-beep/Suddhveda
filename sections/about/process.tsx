@@ -9,37 +9,37 @@ const steps = [
     step: "01",
     title: "Nectar Collection",
     desc: "Bees collect rich nectar from organic wildflowers & mountain blossoms.",
-    icon: "/nector2.jpg",
+    icon: "/nectormadhu.png",
   },
   {
     step: "02",
     title: "Ethical Beekeeping",
     desc: "We follow ethical practices that protect bees, hives, and natural habitat.",
-    icon: "/ethical.jpg",
+    icon: "/harvest.png",
   },
   {
     step: "03",
     title: "Gentle Extraction",
     desc: "Honey is cold-extracted with utmost care to preserve raw enzymes.",
-    icon: "/honey-extraction.webp",
+    icon: "/harv.png",
   },
   {
     step: "04",
     title: "Lab Tested",
     desc: "Every batch is lab tested for raw purity, quality, and zero additives.",
-    icon: "/lab..webp",
+    icon: "/testingh.png",
   },
   {
     step: "05",
     title: "Secure Packaging",
     desc: "Packed in food-grade glass jars to seal in freshness & aroma.",
-    icon: "/Image1.png",
+    icon: "/packibotel.png",
   },
   {
     step: "06",
     title: "Delivered with Love",
     desc: "From our hive directly to your home with care and responsibility.",
-    icon: "/steps4.png",
+    icon: "/usehoney.png",
   },
 ];
 
