@@ -175,11 +175,12 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Bottom Footer for Mobile */}
-          <div className="w-full border-t border-white/15 pt-6 flex flex-col items-center gap-3 text-center">
-            <p className="text-[13px] text-[#D9C8BA]">
-              © {new Date().getFullYear()} Shuddhveda Honey. All rights reserved. Made with in India.
-            </p>
+          {/* Bottom Footer for Mobile & Tablet */}
+          <div className="w-full border-t border-white/15 pt-6 flex flex-col items-center gap-2.5 sm:gap-3 text-center">
+            <div className="text-[13px] text-[#D9C8BA] flex flex-col sm:flex-row items-center justify-center sm:gap-1.5 leading-relaxed">
+              <span>© {new Date().getFullYear()} Shuddhveda Honey. All rights reserved.</span>
+              <span>Made with in India.</span>
+            </div>
             <div className="flex flex-wrap items-center justify-center gap-2 text-[13px] text-[#D9C8BA]">
               <span>FSSAI Licensed</span>
               <span className="text-[#c29665]">•</span>
