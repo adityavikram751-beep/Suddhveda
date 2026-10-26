@@ -20,10 +20,12 @@ import {
     Tag,
     ShieldCheck,
     Truck,
+    ArrowRight,
 } from "lucide-react";
 import ProductCardShop from "@/components/productcardshop";
 import { useCart } from "@/components/cart/CartProvider";
 import { API_BASE_URL, getStoredSession, getStoredToken } from "@/lib/auth";
+import { getCachedData, setCachedData, optimizeCloudinaryUrl } from "@/lib/cache-utils";
 
 // ---------- Helper to get token from cookie ----------
 function getTokenFromCookie(): string | null {
@@ -181,6 +183,9 @@ export default function Cart() {
     };
 
     const [recommendations, setRecommendations] = useState<ApiProduct[]>([]);
+    const [comboProducts, setComboProducts] = useState<any[]>(() => {
+        return getCachedData<any[]>("curated_combos_all") || [];
+    });
     const [wishlistIds, setWishlistIds] = useState<string[]>([]);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -205,10 +210,53 @@ export default function Cart() {
         })();
     }, []);
 
+    // Fetch combo products for recommendations
+    useEffect(() => {
+        (async () => {
+            try {
+                let res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
+                    credentials: "include",
+                });
+                if (!res.ok) {
+                    res = await fetch(`${API_BASE_URL}/api/combo/products/combo-products/2-3-4`, {
+                        credentials: "include",
+                    });
+                }
+                if (!res.ok) {
+                    res = await fetch(`${API_BASE_URL}/api/admin/gift-box`, {
+                        credentials: "include",
+                    });
+                }
+                if (res.ok) {
+                    const json = await res.json();
+                    const rawData = Array.isArray(json?.data)
+                        ? json.data
+                        : Array.isArray(json?.comboProducts)
+                        ? json.comboProducts
+                        : Array.isArray(json?.products)
+                        ? json.products
+                        : Array.isArray(json)
+                        ? json
+                        : [];
+                    const active = rawData.filter(
+                        (item: any) => item.is_active !== false && item.isActive !== false
+                    );
+                    if (active.length > 0) {
+                        setComboProducts(active);
+                        setCachedData("curated_combos_all", active);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch combo products in cart recommendations:", err);
+            }
+        })();
+    }, []);
+
     const [isRecSliderPaused, setIsRecSliderPaused] = useState(false);
 
     useEffect(() => {
-        if (recommendations.length <= 1 || isRecSliderPaused) return;
+        const totalItems = recommendations.length + comboProducts.length;
+        if (totalItems <= 1 || isRecSliderPaused) return;
 
         const timer = window.setInterval(() => {
             recommendationScrollerRefs.current.forEach((scroller) => {
@@ -227,7 +275,7 @@ export default function Cart() {
         }, 3000);
 
         return () => window.clearInterval(timer);
-    }, [recommendations.length, isRecSliderPaused]);
+    }, [recommendations.length, comboProducts.length, isRecSliderPaused]);
 
     // Fetch wishlist
     useEffect(() => {
@@ -335,82 +383,70 @@ export default function Cart() {
     };
 
     // Reusable "You May Also Like" block
-    const renderRecommendations = (scrollerIndex: number) => (
-        <div className="mt-8">
-            <h2 className="font-serif text-[22px] font-extrabold text-[#593102]">You May Also Like</h2>
-            <div
-                ref={(node) => {
-                    recommendationScrollerRefs.current[scrollerIndex] = node;
-                }}
-                onMouseEnter={() => setIsRecSliderPaused(true)}
-                onMouseLeave={() => setIsRecSliderPaused(false)}
-                onTouchStart={() => setIsRecSliderPaused(true)}
-                onTouchEnd={() => setIsRecSliderPaused(false)}
-                className="mt-5 flex w-full max-w-full gap-4 sm:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-                {recommendations.map((item) => {
-                    const variants = item.variantDocumentId || [];
-                    const selectedVariantId =
-                        selectedVariants[item._id] || (variants[0]?._id ?? "");
+    const renderRecommendations = (scrollerIndex: number) => {
+        if (recommendations.length === 0 && comboProducts.length === 0) return null;
 
-                    const currentVariant =
-                        variants.find((v) => v._id === selectedVariantId) || variants[0];
+        return (
+            <div className="mt-8">
+                <h2 className="font-serif text-[22px] font-extrabold text-[#593102]">You May Also Like</h2>
+                <div
+                    ref={(node) => {
+                        recommendationScrollerRefs.current[scrollerIndex] = node;
+                    }}
+                    onMouseEnter={() => setIsRecSliderPaused(true)}
+                    onMouseLeave={() => setIsRecSliderPaused(false)}
+                    onTouchStart={() => setIsRecSliderPaused(true)}
+                    onTouchEnd={() => setIsRecSliderPaused(false)}
+                    className="mt-2 sm:mt-3 pt-3 sm:pt-4 flex w-full max-w-full gap-4 sm:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
+                    {/* 1. Honey Products */}
+                    {recommendations.map((item) => {
+                        const variants = item.variantDocumentId || [];
+                        const selectedVariantId =
+                            selectedVariants[item._id] || (variants[0]?._id ?? "");
 
-                    const primaryImage =
-                        item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
-                        item.imageDocumentId?.find((img) => img.image_url)?.image_url ||
-                        item.image?.image_url ||
-                        "/placeholder.png";
-                    const categoryName =
-                        item.categoryId?.category_name ||
-                        (typeof item.category === "string" ? item.category : item.category?.category_name) ||
-                        item.categoryName;
+                        const currentVariant =
+                            variants.find((v) => v._id === selectedVariantId) || variants[0];
 
-                    return (
-                        <div
-                            key={item._id}
-                            data-recommendation-card
-                            className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-20px)/2)] xl:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col h-full px-0"
-                        >
-                            <ProductCardShop
-                                className="max-w-full w-full"
-                                badge={categoryName}
-                                image={primaryImage}
-                                title={item.product_name}
-                                subtitle={categoryName}
-                                weight={
-                                    currentVariant
-                                        ? `${currentVariant.weight}${currentVariant.unit || "g"}`
-                                        : ""
-                                }
-                                price={currentVariant?.price || 0}
-                                oldPrice={currentVariant?.mrp}
-                                quantity={0}
-                                variants={variants}
-                                selectedVariantId={selectedVariantId}
-                                onVariantSelect={(vId) =>
-                                    setSelectedVariants((prev) => ({ ...prev, [item._id]: vId }))
-                                }
-                                isWishlisted={wishlistIds.includes(item._id)}
-                                onToggleWishlist={() => handleToggleWishlist(item._id)}
-                                onAddToCart={() =>
-                                    currentVariant &&
-                                    handleRecommendationAddToCart(item._id, currentVariant._id, {
-                                        type: "NORMAL",
-                                        productId: item._id,
-                                        variantId: currentVariant._id,
-                                        productName: item.product_name,
-                                        weight: currentVariant.weight ? `${currentVariant.weight}${currentVariant.unit || "g"}` : "",
-                                        price: currentVariant.price || 0,
-                                    })
-                                }
-                                onBuyNow={() => {
-                                    const session = getStoredSession();
-                                    if (!session || !session.user?.mobile) {
-                                        router.push("/login");
-                                        return;
+                        const primaryImage =
+                            item.imageDocumentId?.find((img) => img.is_primary)?.image_url ||
+                            item.imageDocumentId?.find((img) => img.image_url)?.image_url ||
+                            item.image?.image_url ||
+                            "/placeholder.png";
+                        const categoryName =
+                            item.categoryId?.category_name ||
+                            (typeof item.category === "string" ? item.category : item.category?.category_name) ||
+                            item.categoryName;
+
+                        return (
+                            <div
+                                key={item._id}
+                                data-recommendation-card
+                                className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-20px)/2)] xl:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col h-full px-0"
+                            >
+                                <ProductCardShop
+                                    className="max-w-full w-full"
+                                    badge={categoryName}
+                                    image={primaryImage}
+                                    title={item.product_name}
+                                    subtitle={categoryName}
+                                    weight={
+                                        currentVariant
+                                            ? `${currentVariant.weight}${currentVariant.unit || "g"}`
+                                            : ""
                                     }
-                                    if (currentVariant) {
+                                    price={currentVariant?.price || 0}
+                                    oldPrice={currentVariant?.mrp}
+                                    quantity={0}
+                                    variants={variants}
+                                    selectedVariantId={selectedVariantId}
+                                    onVariantSelect={(vId) =>
+                                        setSelectedVariants((prev) => ({ ...prev, [item._id]: vId }))
+                                    }
+                                    isWishlisted={wishlistIds.includes(item._id)}
+                                    onToggleWishlist={() => handleToggleWishlist(item._id)}
+                                    onAddToCart={() =>
+                                        currentVariant &&
                                         handleRecommendationAddToCart(item._id, currentVariant._id, {
                                             type: "NORMAL",
                                             productId: item._id,
@@ -418,19 +454,155 @@ export default function Cart() {
                                             productName: item.product_name,
                                             weight: currentVariant.weight ? `${currentVariant.weight}${currentVariant.unit || "g"}` : "",
                                             price: currentVariant.price || 0,
-                                        });
+                                        })
                                     }
-                                }}
-                                onIncrement={() => { }}
-                                onDecrement={() => { }}
-                                onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
-                            />
-                        </div>
-                    );
-                })}
+                                    onBuyNow={() => {
+                                        const session = getStoredSession();
+                                        if (!session || !session.user?.mobile) {
+                                            router.push("/login");
+                                            return;
+                                        }
+                                        if (currentVariant) {
+                                            handleRecommendationAddToCart(item._id, currentVariant._id, {
+                                                type: "NORMAL",
+                                                productId: item._id,
+                                                variantId: currentVariant._id,
+                                                productName: item.product_name,
+                                                weight: currentVariant.weight ? `${currentVariant.weight}${currentVariant.unit || "g"}` : "",
+                                                price: currentVariant.price || 0,
+                                            });
+                                        }
+                                    }}
+                                    onIncrement={() => { }}
+                                    onDecrement={() => { }}
+                                    onOpenDetails={() => router.push(`/shop/products/${item._id}`)}
+                                />
+                            </div>
+                        );
+                    })}
+
+                    {/* 2. Curated Honey Gift Box / Combo Products */}
+                    {comboProducts.map((combo) => {
+                        const comboId = combo._id || combo.id;
+                        const primaryImg = optimizeCloudinaryUrl(
+                            combo.images?.find((img: any) => img.is_primary)?.url ||
+                            combo.images?.[0]?.url ||
+                            combo.image ||
+                            combo.image_url ||
+                            "/homegift.webp",
+                            1000
+                        );
+                        const jarCount = Number(
+                            combo.combo_size ||
+                            (Array.isArray(combo.products) ? combo.products.length : 0)
+                        );
+                        const fallbackTitle =
+                            jarCount === 2
+                                ? "Duo Sets"
+                                : jarCount === 3
+                                ? "Trio Sets"
+                                : jarCount === 4
+                                ? "Quad Sets"
+                                : "Gift Set";
+                        const title = combo.combo_name || combo.name || fallbackTitle;
+                        const fallbackDesc =
+                            jarCount === 2
+                                ? "Two premium varieties, crafted for meaningful impressions."
+                                : jarCount === 3
+                                ? "Three premium varieties, crafted for meaningful impressions."
+                                : "Four premium varieties, crafted for meaningful impressions.";
+                        const description = combo.description || fallbackDesc;
+                        const subText =
+                            combo.occasions ||
+                            combo.occasion ||
+                            combo.tagline ||
+                            combo.subtitle ||
+                            (Array.isArray(combo.products) && combo.products.length > 0
+                                ? combo.products.map((p: any) => p.name?.replace(/ Honey$/i, "")).join(" / ")
+                                : "Festivals / Celebration / Just because");
+
+                        const targetUrl = `/shop/products/${comboId}`;
+
+                        return (
+                            <div
+                                key={comboId}
+                                data-recommendation-card
+                                className="w-full min-w-full sm:min-w-0 sm:w-[calc((100%-20px)/2)] xl:w-[calc((100%-40px)/3)] shrink-0 snap-start flex flex-col h-full px-0"
+                            >
+                                <div
+                                    onClick={() => router.push(targetUrl)}
+                                    className="relative flex h-full min-h-[440px] sm:min-h-[470px] p-4 sm:p-5 rounded-[22px] w-full max-w-[280px] sm:max-w-[300px] flex-col justify-between overflow-hidden border border-[#EADCC9]/60 bg-[#FAF5EE] shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto"
+                                >
+                                    <div>
+                                        {/* Image */}
+                                        <div className="relative w-full aspect-square rounded-[18px] overflow-hidden bg-white shadow-2xs shrink-0">
+                                            <Image
+                                                src={primaryImg}
+                                                alt={title}
+                                                fill
+                                                sizes="(max-width: 640px) 280px, 300px"
+                                                className="object-cover object-center scale-110 group-hover:scale-115 transition-transform duration-500"
+                                            />
+                                        </div>
+
+                                        <div className="px-1 sm:px-1.5 pt-0.5">
+                                            {/* Title */}
+                                            <h4 className="font-serif text-[15px] sm:text-[18px] font-bold text-[#593102] mt-2.5 leading-snug line-clamp-1 sm:line-clamp-2 group-hover:text-[#7A450A] transition-colors">
+                                                {title}
+                                            </h4>
+
+                                            {/* Description */}
+                                            <p className="text-[11.5px] sm:text-[12.5px] text-[#5E6D7E] leading-relaxed line-clamp-2 mt-1 font-normal">
+                                                {description}
+                                            </p>
+
+                                            {/* Occasion / Sub-tagline */}
+                                            <p className="font-serif text-[11px] sm:text-[12px] text-[#8C5823] mt-1 line-clamp-1">
+                                                {subText}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="px-0.5 sm:px-1.5">
+                                        {/* Divider */}
+                                        <div className="border-t border-[#E8DCC9] my-2 sm:my-2.5" />
+
+                                        {/* Bottom Bar: Single botelgiftc.svg icon + View Details button */}
+                                        <div className="flex flex-wrap items-center justify-between gap-x-1 sm:gap-x-1.5 gap-y-1.5 pt-0.5">
+                                            <div className="flex items-center gap-1 sm:gap-1.5 text-[#2F241C] shrink-0">
+                                                <Image
+                                                    src="/botelgiftc.svg"
+                                                    alt="Jar"
+                                                    width={18}
+                                                    height={18}
+                                                    className="w-4 h-4 sm:w-5 sm:h-5 object-contain shrink-0"
+                                                />
+                                                <span className="text-[11px] sm:text-[13.5px] font-bold text-[#2F241C] whitespace-nowrap">
+                                                    {jarCount > 0 ? `${jarCount} Jars` : "Gift Set"}
+                                                </span>
+                                            </div>
+
+                                            <Link
+                                                href={targetUrl}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    router.push(targetUrl);
+                                                }}
+                                                className="inline-flex items-center justify-center gap-1 rounded-full bg-[#5D3716] hover:bg-[#784318] text-white px-3 sm:px-4 py-1.5 text-[11px] sm:text-[12.5px] font-medium shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap shrink-0 ml-auto"
+                                            >
+                                                <span>View Details</span>
+                                                <ArrowRight size={12} className="shrink-0 sm:w-3.5 sm:h-3.5" />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <main className="bg-[#FFF8EF] min-h-screen py-10 text-[#2F241C]">
