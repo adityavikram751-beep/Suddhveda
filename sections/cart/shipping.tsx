@@ -595,8 +595,8 @@ export default function PaymentPage() {
               </div>
 
               {/* Need help */}
-              <div className="mt-4 w-full box-border flex items-center justify-between gap-3 p-4 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs">
-                <div className="flex-1 space-y-2">
+              <div className="mt-4 w-full box-border flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl bg-[#FFFDF9] border border-[#EADCC9]/80 shadow-2xs overflow-hidden">
+                <div className="flex-1 space-y-2 min-w-0">
                   <h2 className="font-serif text-[17px] font-extrabold text-[#593102]">Need help?</h2>
                   <div className="space-y-1.5 text-[12.5px] font-semibold text-[#6E5D4F]">
                     <p className="flex items-center gap-2">
@@ -613,12 +613,12 @@ export default function PaymentPage() {
                     </p>
                   </div>
                 </div>
-                <div className="relative w-[80px] h-[70px] shrink-0 hidden sm:block">
+                <div className="relative w-[72px] h-[72px] shrink-0 hidden sm:block">
                   <Image
                     src="/need.png"
                     alt="Honey dipper illustration"
                     fill
-                    className="object-contain object-right-bottom"
+                    className="object-contain object-center"
                   />
                 </div>
               </div>

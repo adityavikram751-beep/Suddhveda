@@ -1349,8 +1349,8 @@ function HelpPanel({
     loading: boolean;
 }) {
     return (
-        <div className="w-full box-border flex items-center justify-between gap-4 px-3 py-4 rounded-2xl bg-white/95 border-2 border-[#EADCC9]/80 shadow-xs">
-            <div className="flex-1 space-y-2.5">
+        <div className="w-full box-border flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl bg-white/95 border-2 border-[#EADCC9]/80 shadow-xs overflow-hidden">
+            <div className="flex-1 space-y-2.5 min-w-0">
                 <h2 className="font-serif text-[18px] font-extrabold text-[#593102]">Need help?</h2>
                 <div className="space-y-1.5 text-[13px] font-semibold text-[#6E5D4F]">
                     <p className="flex items-center gap-2.5">
@@ -1373,12 +1373,12 @@ function HelpPanel({
                     </p>
                 </div>
             </div>
-            <div className="relative w-[90px] h-[80px] shrink-0 hidden sm:block">
+            <div className="relative w-[72px] h-[72px] shrink-0 hidden sm:block">
                 <Image
                     src="/need.png"
                     alt="Honey illustration"
                     fill
-                    className="object-contain object-right-bottom"
+                    className="object-contain object-center"
                 />
             </div>
         </div>
