@@ -398,6 +398,87 @@ export default function ProductDetailPage({
   const [btnLoading, setBtnLoading] = useState(false);
   const [giftMessage, setGiftMessage] = useState<string>("");
 
+  // Mobile Thumbnails Scroll & Device Detection (iOS 5 items vs Android 4 items)
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+      const ua = navigator.userAgent || navigator.vendor || (window as any).opera || "";
+      const isIosDevice =
+        /iPad|iPhone|iPod/i.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      setIsIOS(isIosDevice);
+    }
+  }, []);
+
+  const handleThumbnailClick = (item: any, index: number) => {
+    setSelectedMedia(item);
+
+    if (thumbnailContainerRef.current) {
+      const container = thumbnailContainerRef.current;
+      const buttons = container.querySelectorAll<HTMLButtonElement>("button");
+      const targetBtn = buttons[index];
+
+      if (targetBtn) {
+        const containerWidth = container.clientWidth;
+        const scrollLeft = container.scrollLeft;
+
+        // 1. If clicking near the right edge and there is a NEXT thumbnail (e.g. 5th -> reveal 6th, or 4th -> reveal 5th)
+        if (index + 1 < mediaList.length && buttons[index + 1]) {
+          const nextBtn = buttons[index + 1];
+          const nextRight = nextBtn.offsetLeft + nextBtn.offsetWidth;
+          if (nextRight > scrollLeft + containerWidth - 4) {
+            container.scrollTo({
+              left: nextRight - containerWidth + 4,
+              behavior: "smooth",
+            });
+            return;
+          }
+        }
+
+        // 2. If clicking near the left edge and there is a PREVIOUS thumbnail
+        if (index > 0 && buttons[index - 1]) {
+          const prevBtn = buttons[index - 1];
+          const prevLeft = prevBtn.offsetLeft;
+          if (prevLeft < scrollLeft + 4) {
+            container.scrollTo({
+              left: Math.max(0, prevLeft - 4),
+              behavior: "smooth",
+            });
+            return;
+          }
+        }
+
+        // 3. Otherwise smoothly center the target button
+        targetBtn.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    }
+  };
+
+  // Auto-scroll active thumbnail into view when selectedMedia changes
+  useEffect(() => {
+    if (!selectedMedia || !thumbnailContainerRef.current) return;
+    const idx = mediaList.findIndex(
+      (m: any) => m.id === selectedMedia.id || (m.url && m.url === selectedMedia.url)
+    );
+    if (idx !== -1) {
+      const buttons = thumbnailContainerRef.current.querySelectorAll<HTMLButtonElement>("button");
+      const targetBtn = buttons[idx];
+      if (targetBtn) {
+        targetBtn.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    }
+  }, [selectedMedia, mediaList]);
+
   // ---------------- Image Zoom State ---------------- //
   const ZOOM_FACTOR = 2.5;
   const mainImageContainerRef = useRef<HTMLDivElement>(null);
@@ -1479,20 +1560,26 @@ export default function ProductDetailPage({
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth overflow-x-clip">
-      <div className="max-w-[1350px] mx-auto px-4 py-3 sm:py-4">
+      <div className="max-w-[1350px] mx-auto px-4 lg:px-6 py-3 sm:py-4">
         {/* MAIN GRID - DESKTOP STICKY GALLERY */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 xl:gap-10 items-start">
 
           {/* LEFT MEDIA COLUMN (DESKTOP STICKY GALLERY BELOW HEADER) */}
-          <div className="lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-4 lg:sticky lg:top-[120px] lg:self-start z-30 w-full">
+          <div className={`lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-3 lg:gap-3.5 xl:gap-4 lg:sticky lg:top-[120px] lg:self-start ${isZooming ? "z-[100]" : "z-20"} w-full`}>
 
             {/* THUMBNAILS (Desktop & Tablet vertical column / Mobile horizontal scroll) */}
-            <div className="flex md:flex-col lg:flex-col gap-3 overflow-x-auto md:overflow-visible lg:overflow-visible pb-2 md:pb-0 lg:pb-0 scrollbar-none shrink-0 w-full md:w-auto justify-start px-0.5">
-              {mediaList.map((item: any) => (
+            <div
+              ref={thumbnailContainerRef}
+              style={{
+                "--mobile-thumb-width": isIOS ? "calc((100% - 32px) / 5)" : "calc((100% - 24px) / 4)",
+              } as React.CSSProperties}
+              className="flex md:flex-col lg:flex-col gap-2 md:gap-2.5 lg:gap-3 xl:gap-3 overflow-x-auto md:overflow-visible lg:overflow-visible pb-2 md:pb-0 lg:pb-0 scrollbar-none shrink-0 w-full md:w-auto justify-start px-0 md:px-0.5 scroll-smooth touch-pan-x"
+            >
+              {mediaList.map((item: any, idx: number) => (
                 <button
                   key={item.id}
-                  onClick={() => setSelectedMedia(item)}
-                  className={`relative h-[68px] w-[68px] sm:h-[76px] sm:w-[76px] lg:h-[80px] lg:w-[80px] shrink-0 overflow-hidden rounded-2xl border transition-all cursor-pointer p-0 bg-white ${selectedMedia?.id === item.id
+                  onClick={() => handleThumbnailClick(item, idx)}
+                  className={`relative w-[var(--mobile-thumb-width)] aspect-square md:aspect-auto md:h-[72px] md:w-[72px] lg:h-[80px] lg:w-[80px] xl:h-[80px] xl:w-[80px] shrink-0 overflow-hidden rounded-2xl border transition-all cursor-pointer p-0 bg-white ${selectedMedia?.id === item.id
                     ? "border-2 border-[#D49313] shadow-xs scale-100 lg:scale-105"
                     : "border-[#EADCC9] hover:border-[#D49313]"
                     }`}
@@ -1515,14 +1602,14 @@ export default function ProductDetailPage({
             </div>
 
             {/* MAIN MEDIA DISPLAY WRAPPER WITH HOVER ZOOM */}
-            <div className="relative flex-1 w-full max-w-[560px] lg:max-w-[540px] mx-auto">
+            <div className="relative flex-1 w-full max-w-[560px] lg:max-w-[540px] xl:max-w-[540px] mx-auto">
               {/* IMAGE/MEDIA VIEWPORT */}
               <div
                 ref={mainImageContainerRef}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
-                className="bg-[#FAF6F0] border border-[#EADCC9] rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square overflow-hidden shadow-sm group select-none lg:cursor-crosshair"
+                className="bg-[#FAF6F0] border border-[#EADCC9] rounded-2xl sm:rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square overflow-hidden shadow-sm group select-none lg:cursor-crosshair"
               >
                 {selectedMedia?.type === "video" ? (
                   <video
@@ -1531,7 +1618,7 @@ export default function ProductDetailPage({
                     autoPlay
                     loop
                     muted
-                    className="w-full h-full object-cover lg:object-contain rounded-3xl"
+                    className="w-full h-full object-cover lg:object-contain rounded-2xl sm:rounded-3xl"
                   />
                 ) : (
                   selectedMedia?.url && (
@@ -1541,7 +1628,7 @@ export default function ProductDetailPage({
                       fill
                       unoptimized
                       priority
-                      className="w-full h-full object-cover lg:object-contain object-center rounded-3xl p-0 pointer-events-none"
+                      className="w-full h-full object-cover lg:object-contain object-center rounded-2xl sm:rounded-3xl p-0 pointer-events-none"
                     />
                   )
                 )}
@@ -1563,10 +1650,10 @@ export default function ProductDetailPage({
               {/* SIDE ZOOM PREVIEW WINDOW ("Bagal mai dikhe zoom ho kar") */}
               {isZooming && selectedMedia?.type !== "video" && selectedMedia?.url && (
                 <div
-                  className="hidden lg:block absolute left-[calc(100%+20px)] top-0 w-full h-full z-50 bg-[#FAF6F0] rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
+                  className="hidden lg:block absolute left-[calc(100%+16px)] xl:left-[calc(100%+20px)] top-0 w-full aspect-square z-[100] bg-[#FAF6F0] rounded-2xl sm:rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
                 >
                   <div
-                    className="w-full h-full rounded-3xl"
+                    className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#FAF6F0]"
                     style={{
                       backgroundImage: `url("${optimizeCloudinaryUrl(selectedMedia.url, 2400)}")`,
                       backgroundPosition: `${zoomPercent.x}% ${zoomPercent.y}%`,
@@ -1580,7 +1667,7 @@ export default function ProductDetailPage({
           </div>
 
           {/* RIGHT PRODUCT DETAILS COLUMN */}
-          <div className="lg:col-span-6 space-y-4 relative pt-1 lg:pt-2">
+          <div className="lg:col-span-6 space-y-3.5 xl:space-y-4 relative z-10 pt-0.5 lg:pt-1 xl:pt-2">
             {/* Product Category Tag & Title */}
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 bg-[#FAF0DC] border border-[#D49313]/50 px-3.5 py-1.5 rounded-full shadow-2xs">
@@ -1590,7 +1677,7 @@ export default function ProductDetailPage({
               </div>
 
               <div className="flex justify-between items-start w-full gap-4 pt-0.5">
-                <h1 className="font-serif text-[30px] sm:text-[36px] md:text-[40px] font-extrabold text-[#593102] leading-tight tracking-tight">
+                <h1 className="font-serif text-[26px] sm:text-[32px] lg:text-[30px] xl:text-[38px] 2xl:text-[40px] font-extrabold text-[#593102] leading-tight tracking-tight">
                   {product.product_name}
                 </h1>
                 <div className="flex items-center gap-3 mt-1 shrink-0">
@@ -1626,7 +1713,7 @@ export default function ProductDetailPage({
               <div className="flex items-center justify-between w-full max-w-xl">
                 {/* Real Price + Cut MRP Price side by side */}
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <span className="text-[34px] sm:text-[40px] font-serif font-extrabold text-[#593102] leading-none tracking-tight">
+                  <span className="text-[30px] sm:text-[36px] xl:text-[40px] font-serif font-extrabold text-[#593102] leading-none tracking-tight">
                     ₹{currentPrice}
                   </span>
 
@@ -1639,16 +1726,16 @@ export default function ProductDetailPage({
 
                 {/* TICKET / COUPON STAMP DISCOUNT BADGE */}
                 {discountPercent > 0 && (
-                  <div className="ml-auto bg-[#FA4B1B] text-white rounded-2xl border-2 border-dashed border-white w-[54px] h-[60px] sm:w-[58px] sm:h-[64px] shadow-2xs flex flex-col items-center justify-center text-center leading-none select-none shrink-0">
-                    <span className="text-[15px] sm:text-[16px] font-black tracking-tight">{discountPercent}%</span>
-                    <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wider mt-0.5">OFF</span>
+                  <div className="ml-auto bg-[#FA4B1B] text-white rounded-2xl border-2 border-dashed border-white w-[52px] h-[58px] sm:w-[58px] sm:h-[64px] shadow-2xs flex flex-col items-center justify-center text-center leading-none select-none shrink-0">
+                    <span className="text-[14px] sm:text-[16px] font-black tracking-tight">{discountPercent}%</span>
+                    <span className="text-[10.5px] sm:text-[12px] font-bold uppercase tracking-wider mt-0.5">OFF</span>
                   </div>
                 )}
               </div>
 
               {/* You Save Amount (Matching exact user screenshot) */}
               {currentSave > 0 && (
-                <div className="text-[14px] sm:text-[15px] text-[#4A4A4A] font-medium pt-0.5">
+                <div className="text-[13.5px] sm:text-[14.5px] text-[#4A4A4A] font-medium pt-0.5">
                   You Save ₹{currentSave}
                 </div>
               )}
@@ -1660,7 +1747,7 @@ export default function ProductDetailPage({
 
             {/* Delivery Details */}
             <div className="space-y-1.5 max-w-xl">
-              <h3 className="text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
+              <h3 className="text-[13px] sm:text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
                 Check Delivery Availability
               </h3>
 
@@ -1682,13 +1769,13 @@ export default function ProductDetailPage({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleCheckPincode();
                   }}
-                  className="flex-1 px-4 py-2.5 text-[14.5px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
+                  className="flex-1 px-3.5 sm:px-4 py-2 sm:py-2.5 text-[14px] sm:text-[14.5px] placeholder-gray-400 font-medium focus:outline-none bg-white text-gray-800"
                 />
                 <button
                   type="button"
                   onClick={handleCheckPincode}
                   disabled={isCheckingPincode}
-                  className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] disabled:opacity-50 text-white px-7 py-2.5 text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
+                  className="bg-gradient-to-r from-[#D49313] via-[#8F590A] to-[#593102] hover:from-[#593102] hover:to-[#D49313] disabled:opacity-50 text-white px-5 sm:px-7 py-2 sm:py-2.5 text-[12px] sm:text-[13px] font-black tracking-widest uppercase flex-shrink-0 cursor-pointer transition-all border-l border-[#FFD700]/30 shadow-sm"
                 >
                   {isCheckingPincode ? "CHECKING..." : "CHECK"}
                 </button>
@@ -1735,10 +1822,10 @@ export default function ProductDetailPage({
             {/* Weight Selection - Only for standard products */}
             {!isComboProduct && variants.length > 0 && (
               <div className="space-y-2 pt-0.5">
-                <h3 className="text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
+                <h3 className="text-[13px] sm:text-[13.5px] font-bold text-[#593102] uppercase tracking-wider">
                   Select Pack Size
                 </h3>
-                <div className="flex gap-3 sm:gap-4 flex-wrap">
+                <div className="flex gap-2.5 sm:gap-3 xl:gap-4 flex-wrap">
                   {variants.map((option: any) => {
                     const outOfStock = isVariantOutOfStock(option);
                     const isSelectedOption = getVariantId(selectedVariant) === getVariantId(option);
@@ -1758,7 +1845,7 @@ export default function ProductDetailPage({
                             });
                           }
                         }}
-                        className={`relative flex flex-col items-center rounded-2xl border py-3.5 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${isComboProduct ? "w-full" : "w-[100px] sm:w-[110px]"
+                        className={`relative flex flex-col items-center rounded-2xl border py-3 px-2 transition-all overflow-hidden cursor-pointer shadow-2xs hover:shadow-md ${isComboProduct ? "w-full" : "w-[96px] sm:w-[104px] xl:w-[110px]"
                           } ${outOfStock
                             ? isSelectedOption
                               ? "border-red-500 bg-red-50 ring-2 ring-red-300 shadow-md"
@@ -1770,7 +1857,7 @@ export default function ProductDetailPage({
                       >
                         {/* Red Diagonal Cross Line for out of stock variant */}
                         {outOfStock && (
-                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-20">
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-10">
                             <div className="w-[160%] h-[2.5px] bg-red-600 rotate-[-25deg] shadow-xs" />
                           </div>
                         )}
@@ -1793,11 +1880,11 @@ export default function ProductDetailPage({
                         </div>
 
                         {outOfStock ? (
-                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-30 shadow-xs -mb-0.5">
+                          <span className="text-[10px] sm:text-[11px] font-black text-white uppercase tracking-tight bg-red-600 px-2 py-0.5 rounded-full z-10 shadow-xs -mb-0.5 whitespace-nowrap">
                             OUT OF STOCK
                           </span>
                         ) : (
-                          <span className="text-[13.5px] sm:text-[14px] font-bold text-[#D49313]">
+                          <span className="text-[13px] sm:text-[14px] font-bold text-[#D49313]">
                             ₹{option.price}
                           </span>
                         )}
@@ -1850,11 +1937,11 @@ export default function ProductDetailPage({
 
               return (
                 <div className="hidden lg:block space-y-3 pt-2">
-                  <h3 className="text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
+                  <h3 className="text-[13px] sm:text-[14px] font-bold text-[#593102] uppercase tracking-wider">Quantity</h3>
 
-                  <div className="flex items-center gap-3 max-w-xl">
+                  <div className="flex items-center gap-2.5 xl:gap-3 max-w-xl">
                     {/* Quantity Buttons */}
-                    <div className={`flex items-center border border-[#EADCC9] rounded-xl bg-white w-[140px] h-[46px] px-3 shadow-2xs ${isSelectedVariantOutOfStock ? "opacity-50 pointer-events-none" : ""}`}>
+                    <div className={`flex items-center border border-[#EADCC9] rounded-xl bg-white w-[120px] xl:w-[140px] h-[44px] xl:h-[46px] px-2.5 xl:px-3 shadow-2xs shrink-0 ${isSelectedVariantOutOfStock ? "opacity-50 pointer-events-none" : ""}`}>
                       <button
                         disabled={isSelectedVariantOutOfStock}
                         onClick={decrementQty}
@@ -1862,7 +1949,7 @@ export default function ProductDetailPage({
                       >
                         −
                       </button>
-                      <span className="flex-1 text-center font-extrabold text-[16px] text-[#593102]">
+                      <span className="flex-1 text-center font-extrabold text-[15px] xl:text-[16px] text-[#593102]">
                         {selectedQty}
                       </span>
                       <button
@@ -1878,7 +1965,7 @@ export default function ProductDetailPage({
                     <button
                       disabled={btnLoading || isSelectedVariantOutOfStock}
                       onClick={() => handleAddToCart(false)}
-                      className={`flex-1 max-w-[320px] h-[46px] px-8 rounded-xl font-extrabold transition-all duration-200 text-[13.5px] tracking-wide uppercase text-center shadow-sm flex items-center justify-center ${isSelectedVariantOutOfStock
+                      className={`flex-1 max-w-[320px] h-[44px] xl:h-[46px] px-4 sm:px-8 rounded-xl font-extrabold transition-all duration-200 text-[12.5px] xl:text-[13.5px] tracking-wide uppercase text-center shadow-sm flex items-center justify-center shrink-0 ${isSelectedVariantOutOfStock
                         ? "bg-gray-300 text-gray-500 border border-gray-300 shadow-none cursor-not-allowed opacity-80"
                         : "bg-[#FA4B1B] hover:bg-[#E64216] text-white cursor-pointer active:scale-98 disabled:opacity-50"
                         }`}
@@ -1898,13 +1985,13 @@ export default function ProductDetailPage({
             {isComboProduct && (
               <div className="pt-3 space-y-2.5 max-w-xl">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#593102] uppercase tracking-wider flex items-center gap-2">
+                  <h3 className="text-[13px] sm:text-[14px] font-bold text-[#593102] uppercase tracking-wider flex items-center gap-2">
                     <span>Select Gift Combo Set</span>
                   </h3>
                 </div>
 
                 {comboRecommendations.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                  <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xl:gap-3.5">
                     {comboRecommendations.map((comboItem: any) => {
                       const comboId = comboItem._id || comboItem.id;
                       if (!comboId) return null;
@@ -1965,7 +2052,7 @@ export default function ProductDetailPage({
                   </div>
                 ) : (
                   product?.setPacks && Array.isArray(product.setPacks) && product.setPacks.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                    <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xl:gap-3.5">
                       {product.setPacks.map((pack: any, idx: number) => {
                         const price = pack.selling_price || pack.price || 0;
                         const mrp = pack.mrp || (price ? Math.round(price * 1.25) : 0);
@@ -2123,7 +2210,7 @@ export default function ProductDetailPage({
                 return (
                   <div
                     key={item._id || item.id}
-                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
                   >
                     <ProductCardShop
                       badge={getCategoryName(item)}
