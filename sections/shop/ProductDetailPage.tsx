@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, useRef } from "react";
 import {
@@ -11,6 +12,7 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
   Share2,
   Play,
   CheckCircle2,
@@ -231,11 +233,13 @@ export default function ProductDetailPage({
   recommendations = [],
   allProducts = [],
   initialLabReports = [],
+  initialComboProducts = [],
 }: {
   product: any;
   recommendations?: any[];
   allProducts?: any[];
   initialLabReports?: any[];
+  initialComboProducts?: any[];
 }) {
   const { cartItems, fetchCart, openCart, updateQuantity, addToCart } = useCart();
   const router = useRouter();
@@ -302,27 +306,6 @@ export default function ProductDetailPage({
   // Recommendations Carousel Ref & Auto-scroll state
   const recSliderRef = useRef<HTMLDivElement>(null);
   const [isRecHovered, setIsRecHovered] = useState(false);
-
-  // Recommendations Auto-Scroll (Every 2 seconds, hidden scrollbar, pauses on hover)
-  useEffect(() => {
-    if (!recommendations || recommendations.length === 0 || isRecHovered) return;
-    const interval = setInterval(() => {
-      if (recSliderRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = recSliderRef.current;
-        const maxScroll = scrollWidth - clientWidth;
-        const cardsVisible = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1;
-        const step = (clientWidth + 24) / cardsVisible;
-
-        if (scrollLeft + step >= maxScroll - 15) {
-          recSliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          recSliderRef.current.scrollBy({ left: step, behavior: "smooth" });
-        }
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [recommendations, isRecHovered]);
 
   const redirectToLogin = () => {
     router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
@@ -534,7 +517,8 @@ export default function ProductDetailPage({
   // Wishlist store state (Array of Product IDs)
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
 
-  // Recommended Combo Products State
+  // Recommended Combo / Gift Products State
+  // Recommended Combo Products State (Original API for "Select Gift Combo Set" in Right Column)
   const [comboRecommendations, setComboRecommendations] = useState<any[]>(() => {
     return getCachedData<any[]>("recommended_combos") || [];
   });
@@ -574,6 +558,91 @@ export default function ProductDetailPage({
       console.error("Failed to fetch recommended combos:", err);
     }
   };
+
+  // Recommended Combo / Gift Products State (For bottom "Recommended Honey Collections" carousel)
+  const [comboProducts, setComboProducts] = useState<any[]>(() => {
+    if (initialComboProducts && initialComboProducts.length > 0) return initialComboProducts;
+    return getCachedData<any[]>("curated_combos_all") || [];
+  });
+
+  useEffect(() => {
+    fetchAllComboProducts();
+  }, [product?._id]);
+
+  const fetchAllComboProducts = async () => {
+    try {
+      let res = await fetch(`${API_BASE_URL}/api/combo/products/all/combo-products`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        res = await fetch(`${API_BASE_URL}/api/combo/products/combo-products/2-3-4`, {
+          credentials: "include",
+        });
+      }
+      if (!res.ok) {
+        res = await fetch(`${API_BASE_URL}/api/admin/gift-box`, {
+          credentials: "include",
+        });
+      }
+      if (res.ok) {
+        const json = await res.json();
+        const rawData = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json?.comboProducts)
+          ? json.comboProducts
+          : Array.isArray(json?.products)
+          ? json.products
+          : Array.isArray(json)
+          ? json
+          : [];
+        const active = rawData.filter(
+          (item: any) =>
+            item.is_active !== false &&
+            item.isActive !== false &&
+            (item._id || item.id) !== product?._id
+        );
+        if (active.length > 0) {
+          setComboProducts(active);
+          setCachedData("curated_combos_all", active);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch combo products for recommendations:", err);
+    }
+  };
+
+  // Recommendations Auto-Scroll (Every 2 seconds, hidden scrollbar, pauses on hover)
+  useEffect(() => {
+    const hasItems = (recommendations && recommendations.length > 0) || (comboProducts && comboProducts.length > 0);
+    if (!hasItems || isRecHovered) return;
+    const interval = setInterval(() => {
+      if (recSliderRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = recSliderRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const cardsVisible = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1;
+        const step = (clientWidth + 24) / cardsVisible;
+
+        if (scrollLeft + step >= maxScroll - 15) {
+          recSliderRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          recSliderRef.current.scrollBy({ left: step, behavior: "smooth" });
+        }
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [recommendations, comboProducts, isRecHovered]);
+
+  // Dismiss zoom lens preview when user scrolls the page so it never covers the header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isZooming) {
+        setIsZooming(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isZooming]);
 
   // Local quantity picker
   const [selectedQty, setSelectedQty] = useState(1);
@@ -1565,7 +1634,7 @@ export default function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 xl:gap-10 items-start">
 
           {/* LEFT MEDIA COLUMN (DESKTOP STICKY GALLERY BELOW HEADER) */}
-          <div className={`lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-3 lg:gap-3.5 xl:gap-4 lg:sticky lg:top-[120px] lg:self-start ${isZooming ? "z-[100]" : "z-20"} w-full`}>
+          <div className={`lg:col-span-6 flex flex-col-reverse md:flex-row lg:flex-row gap-3 lg:gap-3.5 xl:gap-4 lg:sticky lg:top-[120px] lg:self-start ${isZooming ? "z-30" : "z-20"} w-full`}>
 
             {/* THUMBNAILS (Desktop & Tablet vertical column / Mobile horizontal scroll) */}
             <div
@@ -1650,7 +1719,7 @@ export default function ProductDetailPage({
               {/* SIDE ZOOM PREVIEW WINDOW ("Bagal mai dikhe zoom ho kar") */}
               {isZooming && selectedMedia?.type !== "video" && selectedMedia?.url && (
                 <div
-                  className="hidden lg:block absolute left-[calc(100%+16px)] xl:left-[calc(100%+20px)] top-0 w-full aspect-square z-[100] bg-[#FAF6F0] rounded-2xl sm:rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
+                  className="hidden lg:block absolute left-[calc(100%+16px)] xl:left-[calc(100%+20px)] top-0 w-full aspect-square z-30 bg-[#FAF6F0] rounded-2xl sm:rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
                 >
                   <div
                     className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#FAF6F0]"
@@ -1992,7 +2061,7 @@ export default function ProductDetailPage({
 
                 {comboRecommendations.length > 0 ? (
                   <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 xl:gap-3.5">
-                    {comboRecommendations.map((comboItem: any) => {
+                    {comboRecommendations.slice(0, 3).map((comboItem: any) => {
                       const comboId = comboItem._id || comboItem.id;
                       if (!comboId) return null;
                       const isCurrentProduct = comboId === product._id;
@@ -2163,21 +2232,9 @@ export default function ProductDetailPage({
           </div>
         </div>
 
-        {/* HONEY PROCESS & TRUST POSTER */}
-        <div className="mt-10 sm:mt-16 -mx-4 sm:mx-auto w-[calc(100%+2rem)] sm:w-full sm:max-w-[1050px] lg:max-w-[1180px] overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
-          <Image
-            src="https://res.cloudinary.com/anjp8e9i/image/upload/v1792752496/Product_journey_ztqkwt.png"
-            alt="ShuddhVeda Honey Journey & Quality Process Poster"
-            width={1358}
-            height={3528}
-            className="w-full h-auto object-cover sm:object-contain rounded-none sm:rounded-3xl block"
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1180px"
-          />
-        </div>
-
         {/* RECOMMENDATIONS SECTION - AUTO-SCROLL CAROUSEL */}
-        {recommendations.length > 0 && (
-          <section className="mt-16">
+        {(recommendations.length > 0 || comboProducts.length > 0) && (
+          <section className="mt-12 sm:mt-16">
             <div className="flex flex-col items-start mb-8">
               <span className="uppercase tracking-[0.18em] text-[#593102] text-[12px] font-extrabold bg-[#FAF0DC] border border-[#D49313]/50 px-4 py-1.5 rounded-full shadow-2xs mb-2">
                 YOU MAY ALSO LIKE
@@ -2197,6 +2254,7 @@ export default function ProductDetailPage({
               onTouchCancel={() => setIsRecHovered(false)}
               className="flex overflow-x-auto snap-x snap-mandatory gap-6 pt-3 pb-8 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
+              {/* 1. Single / Standard Honey Products */}
               {recommendations.map((item: any) => {
                 const recVariants = item.variantDocumentId || [];
                 const selectedVariantId = recSelectedVariants[item._id] || recVariants[0]?._id;
@@ -2246,9 +2304,139 @@ export default function ProductDetailPage({
                   </div>
                 );
               })}
+
+              {/* 2. All Curated Honey Gift Box / Combo Products */}
+              {comboProducts.map((combo) => {
+                const comboId = combo._id || combo.id;
+                const primaryImg = optimizeCloudinaryUrl(
+                  combo.images?.find((img: any) => img.is_primary)?.url ||
+                  combo.images?.[0]?.url ||
+                  combo.image ||
+                  combo.image_url ||
+                  "/homegift.webp",
+                  1000
+                );
+                const jarCount = Number(
+                  combo.combo_size ||
+                  (Array.isArray(combo.products) ? combo.products.length : 0)
+                );
+                const fallbackTitle =
+                  jarCount === 2
+                    ? "Duo Sets"
+                    : jarCount === 3
+                    ? "Trio Sets"
+                    : jarCount === 4
+                    ? "Quad Sets"
+                    : "Gift Set";
+                const title = combo.combo_name || combo.name || fallbackTitle;
+                const fallbackDesc =
+                  jarCount === 2
+                    ? "Two premium varieties, crafted for meaningful impressions."
+                    : jarCount === 3
+                    ? "Three premium varieties, crafted for meaningful impressions."
+                    : "Four premium varieties, crafted for meaningful impressions.";
+                const description = combo.description || fallbackDesc;
+                const subText =
+                  combo.occasions ||
+                  combo.occasion ||
+                  combo.tagline ||
+                  combo.subtitle ||
+                  (Array.isArray(combo.products) && combo.products.length > 0
+                    ? combo.products.map((p: any) => p.name?.replace(/ Honey$/i, "")).join(" / ")
+                    : "Festivals / Celebration / Just because");
+
+                const targetUrl = `/shop/products/${comboId}`;
+
+                return (
+                  <div
+                    key={comboId}
+                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                  >
+                    <div
+                      onClick={() => router.push(targetUrl)}
+                      className="relative flex h-full min-h-[295px] sm:min-h-[470px] p-2 sm:p-2.5 pb-2.5 sm:pb-3.5 rounded-[18px] sm:rounded-[22px] w-full max-w-[280px] sm:max-w-[300px] flex-col justify-between overflow-hidden border border-[#EADCC9] bg-[#FAF5EE] shadow-xs transition-all duration-300 group cursor-pointer hover:-translate-y-1.5 hover:shadow-md hover:border-[#D49313]/40 mx-auto"
+                    >
+                      <div>
+                        {/* Image */}
+                        <div className="relative w-full aspect-square rounded-[14px] sm:rounded-[18px] overflow-hidden bg-white shadow-2xs shrink-0">
+                          <Image
+                            src={primaryImg}
+                            alt={title}
+                            fill
+                            sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, 300px"
+                            className="object-cover object-center scale-110 group-hover:scale-115 transition-transform duration-500"
+                          />
+                        </div>
+
+                        <div className="px-1 sm:px-1.5 pt-0.5">
+                          {/* Title */}
+                          <h4 className="font-serif text-[13px] sm:text-[18px] font-bold text-[#593102] mt-2 sm:mt-2.5 leading-snug line-clamp-1 sm:line-clamp-2 group-hover:text-[#7A450A] transition-colors">
+                            {title}
+                          </h4>
+
+                          {/* Description */}
+                          <p className="text-[11px] sm:text-[12.5px] text-[#5E6D7E] leading-relaxed line-clamp-2 mt-1 font-normal">
+                            {description}
+                          </p>
+
+                          {/* Occasion / Sub-tagline */}
+                          <p className="font-serif text-[10px] sm:text-[12px] text-[#8C5823] mt-1 line-clamp-1">
+                            {subText}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="px-0.5 sm:px-1.5">
+                        {/* Divider */}
+                        <div className="border-t border-[#E8DCC9] my-1.5 sm:my-2.5" />
+
+                        {/* Bottom Bar: Single botelgiftc.svg icon + View Details button */}
+                        <div className="flex flex-wrap items-center justify-between gap-x-1 sm:gap-x-1.5 gap-y-1.5 pt-0.5">
+                          <div className="flex items-center gap-1 sm:gap-1.5 text-[#2F241C] shrink-0">
+                            <Image
+                              src="/botelgiftc.svg"
+                              alt="Jar"
+                              width={16}
+                              height={16}
+                              className="w-3.5 h-3.5 sm:w-5 sm:h-5 object-contain shrink-0"
+                            />
+                            <span className="text-[10px] min-[370px]:text-[11px] sm:text-[13.5px] font-bold text-[#2F241C] whitespace-nowrap">
+                              {jarCount > 0 ? `${jarCount} Jars` : "Gift Set"}
+                            </span>
+                          </div>
+
+                          <Link
+                            href={targetUrl}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(targetUrl);
+                            }}
+                            className="inline-flex items-center justify-center gap-0.5 sm:gap-1 rounded-full bg-[#5D3716] hover:bg-[#784318] text-white px-2 min-[360px]:px-2.5 min-[390px]:px-3 sm:px-4 py-1 sm:py-1.5 text-[9.5px] min-[370px]:text-[10.5px] sm:text-[12.5px] font-medium shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap shrink-0 ml-auto"
+                          >
+                            <span>View Details</span>
+                            <ArrowRight size={10} className="shrink-0 sm:w-3.5 sm:h-3.5" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
+
+        {/* HONEY PROCESS & TRUST POSTER */}
+        <div className="mt-12 sm:mt-16 -mx-4 sm:mx-auto w-[calc(100%+2rem)] sm:w-full sm:max-w-[1050px] lg:max-w-[1180px] overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
+          <Image
+            src="https://res.cloudinary.com/anjp8e9i/image/upload/v1792752496/Product_journey_ztqkwt.png"
+            alt="ShuddhVeda Honey Journey & Quality Process Poster"
+            width={1358}
+            height={3528}
+            className="w-full h-auto object-cover sm:object-contain rounded-none sm:rounded-3xl block"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 100vw, 1180px"
+          />
+        </div>
       </div>
 
       {/* Toast Notification (Top Center, Single Line Pill) */}
