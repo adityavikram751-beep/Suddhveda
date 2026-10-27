@@ -122,7 +122,9 @@ export default function ProductCardShop({
   const getVariantId = (v: Variant) => v._id || v.id || "";
   const isSelected = (variantId: string) => variantId === selectedVariantId;
 
-  const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || variants[0];
+  const inStockVariant = variants.find((v) => !isVariantOutOfStock(v));
+  const fallbackVariant = inStockVariant || variants[0];
+  const selectedVariant = variants.find((v) => getVariantId(v) === selectedVariantId) || fallbackVariant;
   const isSelectedOutOfStock = selectedVariant ? isVariantOutOfStock(selectedVariant) : false;
 
   const currentPrice = selectedVariant?.price ?? price;
@@ -302,7 +304,6 @@ export default function ProductCardShop({
                   <button
                     key={vId}
                     type="button"
-                    disabled={outOfStock}
                     onClick={(e) => handleVariantClick(vId, e)}
                     className={`${
                       compactOnMobile
@@ -312,7 +313,7 @@ export default function ProductCardShop({
                       selected
                         ? "bg-[#593102] text-white border-[#593102] shadow-2xs scale-105"
                         : outOfStock
-                        ? "bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed opacity-60"
+                        ? "bg-gray-100 text-gray-400 border-gray-200 line-through cursor-pointer opacity-70 hover:border-gray-400"
                         : "bg-white/90 hover:bg-white text-[#593102] border-[#EADCC9] hover:border-[#D49313]"
                     }`}
                   >

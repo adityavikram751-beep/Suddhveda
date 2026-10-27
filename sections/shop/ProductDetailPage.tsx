@@ -1429,9 +1429,11 @@ export default function ProductDetailPage({
 
   // 4. Recommendation Add to Cart
   const handleRecommendationCartAction = async (item: any) => {
-    const itemVariants = item.variantDocumentId || [];
-    const selectedVariantId = recSelectedVariants[item._id] || itemVariants[0]?._id;
-    const variant = itemVariants.find((v: any) => v._id === selectedVariantId) || itemVariants[0];
+    const itemVariants = item.variantDocumentId || item.variants || [];
+    const firstInStock = itemVariants.find((v: any) => !isVariantOutOfStock(v));
+    const defaultVariantId = firstInStock ? (firstInStock._id || firstInStock.id) : (itemVariants[0]?._id || itemVariants[0]?.id || "");
+    const selectedVariantId = recSelectedVariants[item._id] || defaultVariantId;
+    const variant = itemVariants.find((v: any) => (v._id || v.id) === selectedVariantId) || itemVariants[0];
 
     if (!variant) return;
 
@@ -1628,8 +1630,8 @@ export default function ProductDetailPage({
   if (!product) return null;
 
   return (
-    <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-24 lg:pb-12 font-sans scroll-smooth overflow-x-clip">
-      <div className="max-w-[1350px] mx-auto px-4 lg:px-6 py-3 sm:py-4">
+    <main className="bg-[#FAF7F2] min-h-screen text-[#2F241C] pb-0 sm:pb-24 lg:pb-12 font-sans scroll-smooth overflow-x-clip">
+      <div className="max-w-[1350px] mx-auto px-4 lg:px-6 pt-3 sm:py-4 pb-0 sm:pb-4">
         {/* MAIN GRID - DESKTOP STICKY GALLERY */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 xl:gap-10 items-start">
 
@@ -2256,9 +2258,11 @@ export default function ProductDetailPage({
             >
               {/* 1. Single / Standard Honey Products */}
               {recommendations.map((item: any) => {
-                const recVariants = item.variantDocumentId || [];
-                const selectedVariantId = recSelectedVariants[item._id] || recVariants[0]?._id;
-                const recVariant = recVariants.find((v: any) => v._id === selectedVariantId) || recVariants[0];
+                const recVariants = item.variantDocumentId || item.variants || [];
+                const firstInStockVariant = recVariants.find((v: any) => !isVariantOutOfStock(v));
+                const defaultVariantId = firstInStockVariant ? (firstInStockVariant._id || firstInStockVariant.id) : (recVariants[0]?._id || recVariants[0]?.id || "");
+                const selectedVariantId = recSelectedVariants[item._id] || defaultVariantId;
+                const recVariant = recVariants.find((v: any) => (v._id || v.id) === selectedVariantId) || recVariants[0];
 
                 const primaryImage =
                   item.imageDocumentId?.find((x: any) => x.is_primary)?.image_url ||
@@ -2427,7 +2431,7 @@ export default function ProductDetailPage({
         )}
 
         {/* HONEY PROCESS & TRUST POSTER */}
-        <div className="mt-12 sm:mt-16 -mx-4 sm:mx-auto w-[calc(100%+2rem)] sm:w-full sm:max-w-[1050px] lg:max-w-[1180px] overflow-hidden rounded-none sm:rounded-3xl border-y sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] shadow-none sm:shadow-md bg-transparent sm:bg-white">
+        <div className="mt-12 sm:mt-16 -mx-4 sm:mx-auto w-[calc(100%+2rem)] sm:w-full sm:max-w-[1050px] lg:max-w-[1180px] overflow-hidden rounded-none sm:rounded-3xl border-t sm:border border-[#EADCC9]/50 sm:border-[#EADCC9] border-b-0 sm:border-b shadow-none sm:shadow-md bg-transparent sm:bg-white mb-0">
           <Image
             src="https://res.cloudinary.com/anjp8e9i/image/upload/v1792752496/Product_journey_ztqkwt.png"
             alt="ShuddhVeda Honey Journey & Quality Process Poster"
