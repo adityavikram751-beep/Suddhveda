@@ -2254,7 +2254,7 @@ export default function ProductDetailPage({
               onTouchStart={() => setIsRecHovered(true)}
               onTouchEnd={() => setIsRecHovered(false)}
               onTouchCancel={() => setIsRecHovered(false)}
-              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pt-3 pb-8 px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className="flex overflow-x-auto snap-x snap-mandatory gap-6 pt-3 pb-8 px-0 sm:px-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               {/* 1. Single / Standard Honey Products */}
               {recommendations.map((item: any) => {
@@ -2272,7 +2272,7 @@ export default function ProductDetailPage({
                 return (
                   <div
                     key={item._id || item.id}
-                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                    className="w-full min-w-full sm:min-w-0 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-center sm:snap-start flex flex-col items-center sm:items-stretch h-full"
                   >
                     <ProductCardShop
                       badge={getCategoryName(item)}
@@ -2354,7 +2354,7 @@ export default function ProductDetailPage({
                 return (
                   <div
                     key={comboId}
-                    className="w-[calc(100%-24px)] sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                    className="w-full min-w-full sm:min-w-0 sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] shrink-0 snap-center sm:snap-start flex flex-col items-center sm:items-stretch h-full"
                   >
                     <div
                       onClick={() => router.push(targetUrl)}
