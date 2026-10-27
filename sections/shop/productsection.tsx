@@ -561,7 +561,7 @@ export default function ShopPage() {
 
   const desktopFilterContent = (
     <div className="rounded-2xl bg-white p-5 border border-[#EADCC9] shadow-2xs">
-      <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#F0E4D0]">
+      <div className="flex items-center justify-between">
         <h2 className="font-serif text-[15px] font-bold uppercase tracking-wide text-[#593102]">
           Filter By
         </h2>
