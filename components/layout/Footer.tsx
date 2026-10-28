@@ -169,7 +169,7 @@ export default function Footer() {
               <div className="flex items-start justify-center gap-3">
                 <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <p className="text-[13px] leading-5 text-[#E2D2C4] text-center max-w-sm">
-                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
+                  {loading ? "Loading..." : getFullAddress() || "Block-A, Ftz-91/2, First Floor, Near Nawada Metro Station, Opp. Metro Pillar No. 745, Delhi - 110059, New Delhi, India, Mohan Garden, West Delhi, Delhi, India–110059"}
                 </p>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin size={16} className="mt-1 text-[#E2D2C4] shrink-0" />
                 <p className="text-[12.5px] xl:text-[13px] leading-relaxed text-[#E2D2C4]">
-                  {loading ? "Loading..." : getFullAddress() || "HARISONS VENTURE PRIVATE LIMITED, C-11 Sudarshan Tower, Opp. Sambhavnath Tenaments, Sun N Step Club Road, Thaltej, Ahmedabad, Gujarat, India–380054"}
+                  {loading ? "Loading..." : getFullAddress() || "Block-A, Ftz-91/2, First Floor, Near Nawada Metro Station, Opp. Metro Pillar No. 745, Delhi - 110059, New Delhi, India, Mohan Garden, West Delhi, Delhi, India–110059"}
                 </p>
               </div>
             </div>
