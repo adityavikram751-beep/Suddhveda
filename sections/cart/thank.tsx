@@ -357,7 +357,8 @@ export default function OrderConfirmation() {
             {/* Continue Shopping + Track Order Buttons */}
             <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-between sm:items-center">
               <Link
-                href="/shop"
+                href="/shop#productsection"
+                prefetch={true}
                 className="flex h-[42px] px-6 items-center justify-center gap-2 rounded-xl border border-[#F24E1E] bg-white text-[12px] font-extrabold uppercase tracking-wider text-[#F24E1E] hover:bg-[#FFF0EB] transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap"
               >
                 <ShoppingCart size={16} />
