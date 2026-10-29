@@ -561,6 +561,17 @@ export default function Checkout() {
   const isEditing = editingAddressId !== null;
   const getButtonLabel = () => (isEditing ? "Update Address & Continue" : "Add Address & Continue");
 
+  const handleProceedWithSelectedAddress = () => {
+    if (!selectedAddressId) {
+      alert("Please select a delivery address first.");
+      return;
+    }
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_address_id", selectedAddressId);
+    }
+    router.push("/shipping");
+  };
+
   if (!isMounted) {
     return null;
   }
@@ -583,6 +594,20 @@ export default function Checkout() {
               onEdit={handleEditAddress}
               onDelete={deleteAddressFromAPI}
             />
+
+            {/* Mobile View: Proceed with Selected Address button right BELOW address section */}
+            {selectedAddressId && (
+              <div className="block sm:hidden">
+                <button
+                  type="button"
+                  onClick={handleProceedWithSelectedAddress}
+                  className="flex h-[46px] w-full items-center justify-center gap-2 rounded-xl bg-[#F24E1E] hover:bg-[#D93F13] text-[14px] font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#F24E1E]/35 active:scale-95 transition-all duration-300 cursor-pointer"
+                >
+                  Proceed with Selected Address
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+            )}
 
             {/* Desktop View: Always show address form as originally */}
             <div className="hidden sm:block">
