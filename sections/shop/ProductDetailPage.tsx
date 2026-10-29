@@ -630,12 +630,12 @@ export default function ProductDetailPage({
         const rawData = Array.isArray(json?.data)
           ? json.data
           : Array.isArray(json?.comboProducts)
-          ? json.comboProducts
-          : Array.isArray(json?.products)
-          ? json.products
-          : Array.isArray(json)
-          ? json
-          : [];
+            ? json.comboProducts
+            : Array.isArray(json?.products)
+              ? json.products
+              : Array.isArray(json)
+                ? json
+                : [];
         const active = rawData.filter(
           (item: any) =>
             item.is_active !== false &&
@@ -1748,7 +1748,7 @@ export default function ProductDetailPage({
 
             {/* MAIN MEDIA DISPLAY WRAPPER WITH HOVER ZOOM & MOBILE SWIPE */}
             <div className="relative flex-1 w-full max-w-[560px] lg:max-w-[540px] xl:max-w-[540px] mx-auto">
-              
+
               {/* ── MOBILE VIEW: HAND-SWIPEABLE MAIN IMAGE CAROUSEL (block md:hidden) ── */}
               <div className="block md:hidden relative w-full aspect-square bg-[#FAF6F0] border border-[#EADCC9] rounded-2xl overflow-hidden shadow-sm">
                 <div
@@ -2450,17 +2450,17 @@ export default function ProductDetailPage({
                   jarCount === 2
                     ? "Duo Sets"
                     : jarCount === 3
-                    ? "Trio Sets"
-                    : jarCount === 4
-                    ? "Quad Sets"
-                    : "Gift Set";
+                      ? "Trio Sets"
+                      : jarCount === 4
+                        ? "Quad Sets"
+                        : "Gift Set";
                 const title = combo.combo_name || combo.name || fallbackTitle;
                 const fallbackDesc =
                   jarCount === 2
                     ? "Two premium varieties, crafted for meaningful impressions."
                     : jarCount === 3
-                    ? "Three premium varieties, crafted for meaningful impressions."
-                    : "Four premium varieties, crafted for meaningful impressions.";
+                      ? "Three premium varieties, crafted for meaningful impressions."
+                      : "Four premium varieties, crafted for meaningful impressions.";
                 const description = combo.description || fallbackDesc;
                 const subText =
                   combo.occasions ||
