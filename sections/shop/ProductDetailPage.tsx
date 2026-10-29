@@ -383,6 +383,22 @@ export default function ProductDetailPage({
 
   // Mobile Thumbnails Scroll & Device Detection (iOS 5 items vs Android 4 items)
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
+  const mobileSliderRef = useRef<HTMLDivElement>(null);
+
+  const handleMobileSliderScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const w = container.clientWidth;
+    if (!w) return;
+    const newIdx = Math.round(container.scrollLeft / w);
+    if (newIdx >= 0 && newIdx < mediaList.length) {
+      const currentIdx = mediaList.findIndex(
+        (m: any) => m.id === selectedMedia?.id || (m.url && m.url === selectedMedia?.url)
+      );
+      if (newIdx !== currentIdx) {
+        setSelectedMedia(mediaList[newIdx]);
+      }
+    }
+  };
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
@@ -397,6 +413,16 @@ export default function ProductDetailPage({
 
   const handleThumbnailClick = (item: any, index: number) => {
     setSelectedMedia(item);
+
+    if (mobileSliderRef.current) {
+      const w = mobileSliderRef.current.clientWidth;
+      if (w > 0) {
+        mobileSliderRef.current.scrollTo({
+          left: index * w,
+          behavior: "smooth",
+        });
+      }
+    }
 
     if (thumbnailContainerRef.current) {
       const container = thumbnailContainerRef.current;
@@ -443,21 +469,36 @@ export default function ProductDetailPage({
     }
   };
 
-  // Auto-scroll active thumbnail into view when selectedMedia changes
+  // Auto-scroll active thumbnail and mobile slider into view when selectedMedia changes
   useEffect(() => {
-    if (!selectedMedia || !thumbnailContainerRef.current) return;
+    if (!selectedMedia) return;
     const idx = mediaList.findIndex(
       (m: any) => m.id === selectedMedia.id || (m.url && m.url === selectedMedia.url)
     );
     if (idx !== -1) {
-      const buttons = thumbnailContainerRef.current.querySelectorAll<HTMLButtonElement>("button");
-      const targetBtn = buttons[idx];
-      if (targetBtn) {
-        targetBtn.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
+      if (thumbnailContainerRef.current) {
+        const buttons = thumbnailContainerRef.current.querySelectorAll<HTMLButtonElement>("button");
+        const targetBtn = buttons[idx];
+        if (targetBtn) {
+          targetBtn.scrollIntoView({
+            behavior: "smooth",
+            inline: "center",
+            block: "nearest",
+          });
+        }
+      }
+
+      if (mobileSliderRef.current) {
+        const w = mobileSliderRef.current.clientWidth;
+        if (w > 0) {
+          const currentScrollIdx = Math.round(mobileSliderRef.current.scrollLeft / w);
+          if (currentScrollIdx !== idx) {
+            mobileSliderRef.current.scrollTo({
+              left: idx * w,
+              behavior: "smooth",
+            });
+          }
+        }
       }
     }
   }, [selectedMedia, mediaList]);
@@ -1224,6 +1265,39 @@ export default function ProductDetailPage({
   }, [selectedVariant, currentMrp, currentPrice]);
 
   // 🎯 DISCOUNT CALCULATION (API field OR Dynamic MRP Calculation)
+  // Selected Weight / Quantity Label (for display above price on all screens)
+  const selectedWeightText = useMemo(() => {
+    const formatW = (w: any, u: any) => {
+      if (!w) return "";
+      const strW = String(w).trim();
+      const strU = String(u || "").trim();
+      if (strU) {
+        if (strW.toLowerCase().endsWith(strU.toLowerCase())) return strW;
+        return `${strW}${strU}`;
+      }
+      return strW.toLowerCase().endsWith("g") || strW.toLowerCase().endsWith("kg") || strW.toLowerCase().endsWith("ml") || strW.toLowerCase().endsWith("l")
+        ? strW
+        : `${strW}g`;
+    };
+
+    if (selectedVariant) {
+      if (selectedVariant.weight) {
+        return formatW(selectedVariant.weight, selectedVariant.unit);
+      }
+      if (selectedVariant.combo_size) return String(selectedVariant.combo_size);
+      if (selectedVariant.title) return String(selectedVariant.title);
+      if (selectedVariant.name) return String(selectedVariant.name);
+    }
+    if (variants && variants.length > 0 && variants[0]?.weight) {
+      return formatW(variants[0].weight, variants[0].unit);
+    }
+    if (product?.weight) {
+      return formatW(product.weight, product.unit);
+    }
+    if (product?.combo_size) return String(product.combo_size);
+    return "";
+  }, [selectedVariant, variants, product]);
+
   const discountPercent = useMemo(() => {
     if (selectedVariant?.discount_value) {
       return Math.round(Number(selectedVariant.discount_value));
@@ -1672,68 +1746,108 @@ export default function ProductDetailPage({
               ))}
             </div>
 
-            {/* MAIN MEDIA DISPLAY WRAPPER WITH HOVER ZOOM */}
+            {/* MAIN MEDIA DISPLAY WRAPPER WITH HOVER ZOOM & MOBILE SWIPE */}
             <div className="relative flex-1 w-full max-w-[560px] lg:max-w-[540px] xl:max-w-[540px] mx-auto">
-              {/* IMAGE/MEDIA VIEWPORT */}
-              <div
-                ref={mainImageContainerRef}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onMouseMove={handleMouseMove}
-                className="bg-[#FAF6F0] border border-[#EADCC9] rounded-2xl sm:rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square overflow-hidden shadow-sm group select-none lg:cursor-crosshair"
-              >
-                {selectedMedia?.type === "video" ? (
-                  <video
-                    src={selectedMedia.url}
-                    controls
-                    autoPlay
-                    loop
-                    muted
-                    className="w-full h-full object-cover lg:object-contain rounded-2xl sm:rounded-3xl"
-                  />
-                ) : (
-                  selectedMedia?.url && (
-                    <Image
-                      src={optimizeCloudinaryUrl(selectedMedia.url, 1600)}
-                      alt={product.product_name || "Product Media"}
-                      fill
-                      unoptimized
-                      priority
-                      className="w-full h-full object-cover lg:object-contain object-center rounded-2xl sm:rounded-3xl p-0 pointer-events-none"
-                    />
-                  )
-                )}
-
-                {/* RECTANGULAR MAGNIFYING LENS OVERLAY */}
-                {isZooming && selectedMedia?.type !== "video" && (
-                  <div
-                    className="hidden lg:block absolute pointer-events-none border border-black/25 bg-white/30 backdrop-blur-[0.5px] shadow-sm rounded-lg"
-                    style={{
-                      left: `${lensPos.x}px`,
-                      top: `${lensPos.y}px`,
-                      width: `${lensPos.width}px`,
-                      height: `${lensPos.height}px`,
-                    }}
-                  />
-                )}
+              
+              {/* ── MOBILE VIEW: HAND-SWIPEABLE MAIN IMAGE CAROUSEL (block md:hidden) ── */}
+              <div className="block md:hidden relative w-full aspect-square bg-[#FAF6F0] border border-[#EADCC9] rounded-2xl overflow-hidden shadow-sm">
+                <div
+                  ref={mobileSliderRef}
+                  onScroll={handleMobileSliderScroll}
+                  className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-none touch-pan-x scroll-smooth"
+                >
+                  {mediaList.map((item: any, idx: number) => (
+                    <div
+                      key={`mobile-media-${item.id || idx}`}
+                      className="w-full h-full shrink-0 snap-center relative flex items-center justify-center aspect-square"
+                    >
+                      {item.type === "video" ? (
+                        <video
+                          src={item.url}
+                          controls
+                          autoPlay
+                          loop
+                          muted
+                          className="w-full h-full object-cover rounded-2xl"
+                        />
+                      ) : (
+                        <Image
+                          src={optimizeCloudinaryUrl(item.url, 1200)}
+                          alt={product.product_name || `Product Image ${idx + 1}`}
+                          fill
+                          unoptimized
+                          priority={idx === 0}
+                          className="w-full h-full object-cover object-center rounded-2xl pointer-events-none"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* SIDE ZOOM PREVIEW WINDOW ("Bagal mai dikhe zoom ho kar") */}
-              {isZooming && selectedMedia?.type !== "video" && selectedMedia?.url && (
+              {/* ── DESKTOP & TABLET VIEW: MAGNIFYING HOVER ZOOM (hidden md:block) ── */}
+              <div className="hidden md:block w-full">
+                {/* IMAGE/MEDIA VIEWPORT */}
                 <div
-                  className="hidden lg:block absolute left-[calc(100%+16px)] xl:left-[calc(100%+20px)] top-0 w-full aspect-square z-30 bg-[#FAF6F0] rounded-2xl sm:rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
+                  ref={mainImageContainerRef}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseMove={handleMouseMove}
+                  className="bg-[#FAF6F0] border border-[#EADCC9] rounded-2xl sm:rounded-3xl p-0 flex items-center justify-center relative w-full aspect-square overflow-hidden shadow-sm group select-none lg:cursor-crosshair"
                 >
-                  <div
-                    className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#FAF6F0]"
-                    style={{
-                      backgroundImage: `url("${optimizeCloudinaryUrl(selectedMedia.url, 2400)}")`,
-                      backgroundPosition: `${zoomPercent.x}% ${zoomPercent.y}%`,
-                      backgroundSize: `${ZOOM_FACTOR * 100}% ${ZOOM_FACTOR * 100}%`,
-                      backgroundRepeat: "no-repeat",
-                    }}
-                  />
+                  {selectedMedia?.type === "video" ? (
+                    <video
+                      src={selectedMedia.url}
+                      controls
+                      autoPlay
+                      loop
+                      muted
+                      className="w-full h-full object-cover lg:object-contain rounded-2xl sm:rounded-3xl"
+                    />
+                  ) : (
+                    selectedMedia?.url && (
+                      <Image
+                        src={optimizeCloudinaryUrl(selectedMedia.url, 1600)}
+                        alt={product.product_name || "Product Media"}
+                        fill
+                        unoptimized
+                        priority
+                        className="w-full h-full object-cover lg:object-contain object-center rounded-2xl sm:rounded-3xl p-0 pointer-events-none"
+                      />
+                    )
+                  )}
+
+                  {/* RECTANGULAR MAGNIFYING LENS OVERLAY */}
+                  {isZooming && selectedMedia?.type !== "video" && (
+                    <div
+                      className="hidden lg:block absolute pointer-events-none border border-black/25 bg-white/30 backdrop-blur-[0.5px] shadow-sm rounded-lg"
+                      style={{
+                        left: `${lensPos.x}px`,
+                        top: `${lensPos.y}px`,
+                        width: `${lensPos.width}px`,
+                        height: `${lensPos.height}px`,
+                      }}
+                    />
+                  )}
                 </div>
-              )}
+
+                {/* SIDE ZOOM PREVIEW WINDOW ("Bagal mai dikhe zoom ho kar") */}
+                {isZooming && selectedMedia?.type !== "video" && selectedMedia?.url && (
+                  <div
+                    className="hidden lg:block absolute left-[calc(100%+16px)] xl:left-[calc(100%+20px)] top-0 w-full aspect-square z-30 bg-[#FAF6F0] rounded-2xl sm:rounded-3xl border border-[#EADCC9] shadow-[0_25px_60px_-15px_rgba(89,49,2,0.25)] overflow-hidden pointer-events-none select-none"
+                  >
+                    <div
+                      className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#FAF6F0]"
+                      style={{
+                        backgroundImage: `url("${optimizeCloudinaryUrl(selectedMedia.url, 2400)}")`,
+                        backgroundPosition: `${zoomPercent.x}% ${zoomPercent.y}%`,
+                        backgroundSize: `${ZOOM_FACTOR * 100}% ${ZOOM_FACTOR * 100}%`,
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -1781,6 +1895,14 @@ export default function ProductDetailPage({
 
             {/* Price Block */}
             <div className="space-y-0.5 pt-0">
+              {/* Selected Weight / Quantity display directly above price (All Screens) */}
+              {selectedWeightText && (
+                <div className="text-[13.5px] sm:text-[14.5px] font-bold text-[#593102] tracking-wide flex items-center gap-1.5 pb-0.5">
+                  <span className="text-[#8D7F73] font-semibold text-[12px] sm:text-[13px]">Quantity:</span>
+                  <span className="text-[#593102] font-black">{selectedWeightText}</span>
+                </div>
+              )}
+
               <div className="flex items-center justify-between w-full max-w-xl">
                 {/* Real Price + Cut MRP Price side by side */}
                 <div className="flex items-center gap-2.5 flex-wrap">
